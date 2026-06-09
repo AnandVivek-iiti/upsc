@@ -82,9 +82,8 @@ function SidebarContent({
     >
       {/* ── Brand header ── */}
       <div className="px-4 pt-5 pb-4 border-b border-bg-border flex items-center gap-2.5 shrink-0">
-        {/* Logo — larger on mobile, normal on desktop */}
         <div
-          className="lg:w-9 lg:h-9 w-10 h-10 rounded-xl bg-bg-muted flex items-center justify-center overflow-hidden shrink-0"
+          className="w-9 h-9 rounded-xl bg-bg-muted flex items-center justify-center overflow-hidden shrink-0"
           style={{ border: "1px solid rgba(245,158,11,0.2)" }}
         >
           <img
@@ -93,8 +92,7 @@ function SidebarContent({
             className="w-full h-full object-cover object-center"
           />
         </div>
-        {/* Text: hidden on mobile (logo-only), visible on desktop */}
-        <div className="hidden lg:block">
+        <div>
           <p className="font-display font-semibold text-base text-text-primary leading-tight">
             UPSC Mentor
           </p>
