@@ -61,7 +61,7 @@ export default function App() {
   const { user, token, loading: authLoading, login, logout } = useAuth();
 
   // ── UI state ───────────────────────────────────────────────────────────────
-  const [activeView, setActiveView] = useState("dashboard");
+  const [activeView, setActiveView] = useState("syllabus");
   const [workspaceQuestion, setWorkspaceQuestion] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
@@ -217,7 +217,7 @@ export default function App() {
             {activeView === "auth" && (
               <AuthPage onAuthSuccess={(u, t) => {
                 login(u, t);
-                setActiveView("dashboard");
+                setActiveView("syllabus");
               }} />
             )}
           </div>
