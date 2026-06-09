@@ -190,7 +190,15 @@ function SidebarContent({
           </div>
 
           {daysLeft !== null && (
-            <p className="text-[10px] font-mono text-text-muted">{examLabel}</p>
+            <div className="border-t border-bg-border pt-2 space-y-0.5">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-mono text-text-muted uppercase tracking-wider">Exam in</span>
+                <span className="text-2xl font-display font-bold" style={{ color: daysLeft <= 30 ? "var(--accent-red)" : daysLeft <= 90 ? "var(--accent-gold)" : "var(--accent-green)" }}>
+                  {daysLeft}d
+                </span>
+              </div>
+              <p className="text-[10px] font-mono text-text-muted">{examLabel}</p>
+            </div>
           )}
         </div>
       </div>

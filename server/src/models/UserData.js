@@ -35,15 +35,26 @@ const UserData = sequelize.define(
       allowNull: false,
       unique: true,
     },
+
+    syllabus_progress: {
+      type: DataTypes.JSONB,
+      defaultValue: {},
+    },
+    answers: {
+      type: DataTypes.JSONB,
+      defaultValue: [],
+    },
+    daily_logs: {
+      type: DataTypes.JSONB,
+      defaultValue: [],
+    },
+    spaced_repetition: {
+      type: DataTypes.JSONB,
+      defaultValue: { queue: [] },
+    },
   },
   { timestamps: true, underscored: true }
 );
-
-// ─── SyllabusModule ───────────────────────────────────────────────────────────
-// Replaces the nested prelims/mains/paper/module structure.
-// "exam_stage"  : "prelims" | "mains"
-// "paper"       : "GS1" | "CSAT" | "GS2" … | "Essay"
-// "module_key"  : e.g. "Current Events", "Indian Culture" …
 
 const SyllabusModule = sequelize.define(
   "SyllabusModule",
@@ -153,22 +164,21 @@ const SpacedRepItem = sequelize.define(
 
 // ─── Associations ─────────────────────────────────────────────────────────────
 
+// ─── User ↔ UserData association ──────────────────────────────────────────────
 const User = require("./User");
-
 User.hasOne(UserData, { foreignKey: "user_id", as: "userData", onDelete: "CASCADE" });
 UserData.belongsTo(User, { foreignKey: "user_id" });
-
 
 UserData.hasMany(SyllabusModule, { foreignKey: "user_data_id", as: "syllabusModules", onDelete: "CASCADE" });
 SyllabusModule.belongsTo(UserData, { foreignKey: "user_data_id" });
 
-UserData.hasMany(Answer, { foreignKey: "user_data_id", as: "answers", onDelete: "CASCADE" });
+UserData.hasMany(Answer, { foreignKey: "user_data_id", as: "answerRecords", onDelete: "CASCADE" });
 Answer.belongsTo(UserData, { foreignKey: "user_data_id" });
 
-UserData.hasMany(DailyLog, { foreignKey: "user_data_id", as: "dailyLogs", onDelete: "CASCADE" });
+UserData.hasMany(DailyLog, { foreignKey: "user_data_id", as: "dailyLogRecords", onDelete: "CASCADE" });
 DailyLog.belongsTo(UserData, { foreignKey: "user_data_id" });
 
-UserData.hasMany(SpacedRepItem, { foreignKey: "user_data_id", as: "spacedRepItems", onDelete: "CASCADE" });
+UserData.hasMany(SpacedRepItem, { foreignKey: "user_data_id", as: "spacedRepRecords", onDelete: "CASCADE" });
 SpacedRepItem.belongsTo(UserData, { foreignKey: "user_data_id" });
 
 // ─── Default Syllabus Seed ────────────────────────────────────────────────────
@@ -238,7 +248,13 @@ const DEFAULT_SYLLABUS_MODULES = [
 ];
 
 UserData.seedForUser = async function (userId) {
-  const userData = await UserData.create({ user_id: userId });
+  const userData = await UserData.create({
+    user_id: userId,
+    syllabus_progress: {},
+    answers: [],
+    daily_logs: [],
+    spaced_repetition: { queue: [] },
+  });
 
   const modulesToInsert = DEFAULT_SYLLABUS_MODULES.map((m) => ({
     ...m,

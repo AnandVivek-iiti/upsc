@@ -2,20 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { getUserData, updateSyllabusProgress, logDailyHours } from "../utils/api";
 import { SYLLABUS, deepClone } from "../data/syllabusData";
 
-/**
- * useUserData({ enabled, token })
- *
- * `token` must be passed explicitly from App.jsx.
- * This is the race-condition fix: on the very first post-login render,
- * the module-level _token in api.js may not be set yet because
- * setAuthToken() is a synchronous side-effect inside useAuth's login()
- * callback, but React batches state updates — so by the time useUserData
- * runs its useEffect and calls fetchData(), _token could still be null.
- *
- * Passing the raw token string here and forwarding it directly to
- * getUserData() as an explicit override guarantees the Authorization
- * header is always present on that first critical fetch.
- */
+
 export function useUserData({ enabled = true, token = null } = {}) {
   const [data,    setData]    = useState(null);
   const [loading, setLoading] = useState(enabled);
