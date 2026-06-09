@@ -113,10 +113,19 @@ export default function App() {
 
       {/* Mobile topbar */}
       <div className="lg:hidden fixed top-0 left-0 right-0 z-30 flex items-center justify-between px-4 py-3 bg-bg-surface/95 backdrop-blur border-b border-bg-border">
-        <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-accent-gold">UPSC Mentor</p>
-        <div className="flex items-center gap-2">
-          {/* Logout on mobile */}
+        {/* Logo instead of text */}
+        <div
+          className="w-8 h-8 rounded-lg bg-bg-muted flex items-center justify-center overflow-hidden shrink-0"
+          style={{ border: "1px solid rgba(245,158,11,0.2)" }}
+        >
+          <img
+            src="/logo-upsc.png"
+            alt="UPSC Mentor"
+            className="w-full h-full object-cover object-center"
+          />
+        </div>
 
+        <div className="flex items-center gap-2">
           <button
             onClick={() => setSidebarOpen((v) => !v)}
             className="w-9 h-9 flex items-center justify-center rounded-lg bg-bg-muted border border-bg-border text-text-secondary hover:text-text-primary transition-colors"
