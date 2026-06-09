@@ -127,6 +127,19 @@ export default function Footer() {
           </div>
         </div>
 
+        {/* ── Copyright bar ── */}
+        <div className="mt-5 flex flex-col sm:flex-row items-center justify-between gap-2 border-t border-bg-border pt-4">
+          <p className="text-[11px] font-mono text-text-muted">
+            © {new Date().getFullYear()} UPSC Mentor. All rights reserved.
+          </p>
+          <p className="text-[11px] font-mono text-text-muted flex items-center gap-1">
+            Developed with{" "}
+            <span className="text-rose-400 select-none" aria-label="love">♥</span>
+            {" "}by{" "}
+            <span className="text-accent-gold font-semibold">Anand Vivek</span>
+          </p>
+        </div>
+
       </div>
     </footer>
   );
