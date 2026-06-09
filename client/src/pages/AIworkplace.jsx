@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from "react";
+// import { useState, useRef, useCallback } from "react";
 import {
   Send, RefreshCw, Cpu, FileText, ChevronDown, Copy, CheckCheck,
   AlertTriangle, BookOpen, Hash, Zap, TrendingUp, TrendingDown,
@@ -407,6 +407,7 @@ export default function AIworkspace({ initialQuestion = null, user = null, onNav
   const [evalData, setEvalData] = useState(null);
   const [rawStream, setRawStream] = useState("");
   const [error, setError] = useState(null);
+  const [providerUsed, setProviderUsed] = useState(null);
   const [showSamples, setShowSamples] = useState(false);
   const [mobileTab, setMobileTab] = useState("answer");
 
@@ -436,6 +437,7 @@ export default function AIworkspace({ initialQuestion = null, user = null, onNav
             const parsed = typeof finalResponse === 'string' ? JSON.parse(finalResponse) : finalResponse;
             if (parsed.success && parsed.data) {
               setEvalData(parsed.data);
+              setProviderUsed(parsed.provider_used || null);
             } else {
               setEvalData(parsed);
             }
@@ -459,6 +461,7 @@ export default function AIworkspace({ initialQuestion = null, user = null, onNav
     setEvalData(null);
     setRawStream("");
     setError(null);
+    setProviderUsed(null);
     setMobileTab("answer");
   };
 
@@ -642,6 +645,15 @@ export default function AIworkspace({ initialQuestion = null, user = null, onNav
               </div>
             )}
           </div>
+          {providerUsed && providerUsed.includes("Sample") && (
+            <div className="flex items-center gap-2 px-4 py-2 border-b border-bg-border shrink-0"
+              style={{ background: "var(--accent-gold-dim)" }}>
+              <AlertTriangle size={11} style={{ color: "var(--accent-gold)" }} className="shrink-0" />
+              <p className="text-[11px] font-mono" style={{ color: "var(--accent-gold)" }}>
+                AI providers are currently unavailable — showing a structured sample evaluation. Results will be AI-generated once API keys are active.
+              </p>
+            </div>
+          )}
 
           <EvaluationPanel data={evalData} evaluating={evaluating} rawStream={rawStream} />
         </div>
