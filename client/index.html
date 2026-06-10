@@ -2,16 +2,43 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- Favicon Image -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+
+    <!-- ── PWA / App Meta ── -->
+    <meta name="application-name" content="UPSC Mentor" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="UPSC Mentor" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="theme-color" content="#F59E0B" />
+    <meta name="msapplication-TileColor" content="#0F172A" />
+    <meta name="msapplication-tap-highlight" content="no" />
+
+    <!-- ── SEO / Open Graph ── -->
+    <meta name="description" content="AI-powered UPSC CSE preparation — syllabus tracker, PYQs, Mains evaluator, and Prelims grind in one place." />
+    <meta property="og:title" content="UPSC Mentor" />
+    <meta property="og:description" content="AI-powered UPSC CSE 2026 preparation dashboard." />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="/logo-upsc.png" />
+
+    <!-- ── Icons ── -->
     <link rel="icon" type="image/png" href="/logo-upsc.png" />
-    <title>UPSC Mentor — AI-Powered Preparation Dashboard</title>
+    <!-- Apple touch icon (used on iOS home screen) -->
+    <link rel="apple-touch-icon" href="/logo-upsc.png" />
+
+    <!-- ── PWA Manifest (vite-plugin-pwa injects this automatically on build,
+         but keeping it explicit helps browsers discover it in dev) ── -->
+    <link rel="manifest" href="/manifest.webmanifest" />
+
+    <!-- ── Fonts ── -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
       rel="stylesheet"
     />
+
+    <title>UPSC Mentor — AI-Powered Preparation Dashboard</title>
   </head>
   <body>
     <div id="root"></div>

@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>UPSC Mentor — Offline</title>
+  <style>
+    :root {
+      --bg: #09110F;
+      --surface: #111A17;
+      --border: #1E2D26;
+      --gold: #FBBF24;
+      --text: #EDF7F2;
+      --muted: #607870;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, 'Segoe UI', sans-serif;
+      min-height: 100dvh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 36px 28px;
+      max-width: 380px;
+      width: 100%;
+      text-align: center;
+    }
+    .icon {
+      width: 56px;
+      height: 56px;
+      margin: 0 auto 20px;
+      background: rgba(251,191,36,0.1);
+      border: 1px solid rgba(251,191,36,0.2);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+    }
+    h1 { font-size: 1.2rem; font-weight: 600; color: var(--text); margin-bottom: 8px; }
+    p  { font-size: 0.875rem; color: var(--muted); line-height: 1.6; margin-bottom: 24px; }
+    button {
+      background: var(--gold);
+      color: #07100D;
+      border: none;
+      border-radius: 10px;
+      padding: 12px 28px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      min-height: 44px;
+    }
+    button:active { opacity: 0.85; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="icon">📶</div>
+    <h1>You're offline</h1>
+    <p>UPSC Mentor can't reach the server right now. Check your connection, then try again. Your cached content is still available in the app.</p>
+    <button onclick="window.location.reload()">Try again</button>
+  </div>
+</body>
+</html>

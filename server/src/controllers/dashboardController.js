@@ -97,19 +97,65 @@ const updateModuleProgress = async (req, res, next) => {
   }
 };
 
+// ─── PATCH /api/dashboard/profile ─────────────────────────────────────────────
+// Updates mutable profile fields: daily_target_hours, target_year, exam_date
+const updateProfile = async (req, res, next) => {
+  try {
+    const { daily_target_hours, target_year, exam_date } = req.body;
+    const user = await User.findByPk(req.user.id);
+    if (!user) return res.status(404).json({ success: false, error: "User not found." });
+
+    if (daily_target_hours !== undefined) {
+      const hrs = Number(daily_target_hours);
+      if (isNaN(hrs) || hrs < 1 || hrs > 20)
+        return res.status(400).json({ success: false, error: "daily_target_hours must be 1–20." });
+      user.daily_target_hours = hrs;
+    }
+    if (target_year !== undefined) {
+      const yr = Number(target_year);
+      if (isNaN(yr) || yr < 2025 || yr > 2035)
+        return res.status(400).json({ success: false, error: "target_year must be 2025–2035." });
+      user.target_year = yr;
+    }
+    if (exam_date !== undefined) {
+      user.exam_date = exam_date;
+    }
+
+    await user.save();
+
+    res.json({
+      success: true,
+      profile: {
+        name: user.name,
+        email: user.email,
+        target_year: user.target_year,
+        daily_target_hours: user.daily_target_hours,
+        streak: user.streak || 0,
+        longest_streak: user.longest_streak || 0,
+        examDate: user.exam_date ?? null,
+      },
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
 // ─── POST /api/dashboard/daily-log ────────────────────────────────────────────
 const logStudyHours = async (req, res, next) => {
   try {
     const { hours, notes } = req.body;
 
-    if (typeof hours !== "number" || hours < 0 || hours > 24) {
+    // Accept floats (timer sends e.g. 1.25h), clamp to 2 decimal places
+    const parsedHours = parseFloat(hours);
+    if (isNaN(parsedHours) || parsedHours < 0 || parsedHours > 24) {
       return res.status(400).json({ success: false, error: "hours must be a number between 0 and 24." });
     }
+    const hours_val = Math.round(parsedHours * 100) / 100; // 2dp precision
 
     const today = new Date().toISOString().split("T")[0];
     const logEntry = {
       date: today,
-      hours,
+      hours: hours_val,
       notes: notes?.trim() || "",
       logged_at: new Date().toISOString(),
     };
@@ -235,6 +281,7 @@ module.exports = {
   getUserData,
   updateModuleProgress,
   logStudyHours,
+  updateProfile,
   getSpacedRepetition,
   addSpacedRepetition,
 };

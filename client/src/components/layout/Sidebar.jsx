@@ -12,6 +12,7 @@ import {
   LogOut,
   LogIn,
   Shield,
+  Library,
 } from "lucide-react";
 
 const NAV_ITEMS = [
@@ -21,6 +22,7 @@ const NAV_ITEMS = [
   { id: "pre",          label: "Prelims Grind",     icon: PenLine },
   { id: "ai-workplace", label: "AI Workplace",      icon: Archive },
   { id: "topic-wise",   label: "Topic-wise",        icon: Target },
+  { id: "resources",    label: "Resources",         icon: Library },
 ];
 
 const FALLBACK_USER_DATA = {
@@ -39,7 +41,7 @@ const FALLBACK_USER_DATA = {
   },
   syllabus: {
     prelims: {
-      GS1:  { label: "Prelims GS Paper I", color: "#f59e0b", modules: {} },
+      GS:  { label: "Prelims GS Paper I", color: "#f59e0b", modules: {} },
       CSAT: { label: "CSAT Paper II",       color: "#64748b", modules: {} },
     },
     mains: {

@@ -6,7 +6,7 @@ import {
   Minus, ChevronRight, Sparkles, PenLine,
 } from "lucide-react";
 import { evaluateAnswer } from "../utils/api";
-import AuthGate from "../components/AuthGate";
+import AuthGate from "../components/ui/AuthGate";
 
 const PAPER_OPTIONS = ["GS1", "GS2", "GS3", "GS4", "English", "Indian Language", "Essay"];
 

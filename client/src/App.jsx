@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import Sidebar from "./components/Sidebar";
+import Sidebar from "./components/layout/Sidebar.jsx";
 import Dashboard from "./pages/Dashboard";
 import SyllabusTracker from "./pages/SyllabusTracker";
 import MainsGrind from "./pages/MainsGrind";
 import PrelimsGrind from "./pages/PrelimsGrind";
-import Footer from "./components/Footer";
+import Footer from "./components/layout/Footer";
 import { useUserData } from "./hooks/useUserData";
 import { Loader2, AlertCircle, Menu, X } from "lucide-react";
 import HeroBanner from "./pages/Hero";
@@ -13,6 +13,10 @@ import Topicwise from "./pages/Topicwise";
 import AuthPage from "./pages/AuthPage";
 import { useAuth } from "./hooks/useAuth";
 import Adminpannel from "./pages/AdminPanel";
+import ResourceLibrary from "./pages/ResourceLibrary";
+import ProfilePage, { AvatarCircle } from "./pages/ProfilePage";
+import PWAInstallPrompt from "./components/PWAInstallPrompt";
+
 // ─── Splash screen — shown while useAuth reads localStorage ──────────────────
 function SplashScreen() {
   return (
@@ -61,10 +65,10 @@ export default function App() {
   const { user, token, loading: authLoading, login, logout } = useAuth();
 
   // ── UI state ───────────────────────────────────────────────────────────────
-  const [activeView, setActiveView] = useState("syllabus");
+  const [activeView, setActiveView]       = useState("dashboard");
   const [workspaceQuestion, setWorkspaceQuestion] = useState(null);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-
+  const [sidebarOpen, setSidebarOpen]     = useState(false);
+  const [previousView, setPreviousView]   = useState("dashboard");
   const [theme, setTheme] = useState(() => {
     if (typeof window === "undefined") return "light";
     return localStorage.getItem("upsc-theme") || "light";
@@ -89,7 +93,9 @@ export default function App() {
     localStorage.setItem("upsc-theme", theme);
   }, [theme]);
 
+  // ── Navigation helpers ─────────────────────────────────────────────────────
   const handleViewChange = (view) => {
+    setPreviousView(activeView);
     setActiveView(view);
     setSidebarOpen(false);
     if (view !== "mains") setWorkspaceQuestion(null);
@@ -101,31 +107,37 @@ export default function App() {
     setSidebarOpen(false);
   };
 
-  // ── Splash while auth token is being read from localStorage ──────────────
+  // Navigate to profile page (used by avatar and Dashboard shortcut)
+  const handleNavigateProfile = () => handleViewChange("profile");
+
+  // Called by ProfilePage after a successful save — refresh userData
+  const handleProfileUpdate = () => refetch?.();
+
+  // ── Splash while auth token is being read from localStorage ───────────────
   if (authLoading) return <SplashScreen />;
 
-  // ── Data loading (only show spinner if we have a token and are still fetching) ─
+  // ── Data loading spinner ───────────────────────────────────────────────────
   if (loading && !userData && (user || token)) return <LoadingScreen />;
 
-  // ── 4. Full app ────────────────────────────────────────────────────────────
+  const userName = userData?.profile?.name || user?.name || "";
+
+  // ── Full app ───────────────────────────────────────────────────────────────
   return (
     <div className="min-h-screen">
 
-      {/* Mobile topbar */}
+      {/* ── Mobile topbar ── */}
       <div className="lg:hidden fixed top-0 left-0 right-0 z-30 flex items-center justify-between px-4 py-3 bg-bg-surface/95 backdrop-blur border-b border-bg-border">
-        {/* Logo instead of text */}
         <div
           className="w-8 h-8 rounded-lg bg-bg-muted flex items-center justify-center overflow-hidden shrink-0"
           style={{ border: "1px solid rgba(245,158,11,0.2)" }}
         >
-          <img
-            src="/logo-upsc.png"
-            alt="UPSC Mentor"
-            className="w-full h-full object-cover object-center"
-          />
+          <img src="/logo-upsc.png" alt="UPSC Mentor" className="w-full h-full object-cover object-center" />
         </div>
 
         <div className="flex items-center gap-2">
+          {user && token && userName && (
+            <AvatarCircle name={userName} size="sm" onClick={handleNavigateProfile} />
+          )}
           <button
             onClick={() => setSidebarOpen((v) => !v)}
             className="w-9 h-9 flex items-center justify-center rounded-lg bg-bg-muted border border-bg-border text-text-secondary hover:text-text-primary transition-colors"
@@ -136,7 +148,7 @@ export default function App() {
         </div>
       </div>
 
-      {/* Mobile sidebar overlay */}
+      {/* ── Mobile sidebar overlay ── */}
       {sidebarOpen && (
         <div
           className="lg:hidden fixed inset-0 z-20 bg-black/50 backdrop-blur-sm"
@@ -144,7 +156,7 @@ export default function App() {
         />
       )}
 
-      {/* Sidebar */}
+      {/* ── Sidebar ── */}
       <div className={`
         fixed top-0 left-0 h-screen w-72 z-30 transition-transform duration-300
         lg:translate-x-0
@@ -164,7 +176,7 @@ export default function App() {
         />
       </div>
 
-      {/* Main content */}
+      {/* ── Main content ── */}
       <main className="lg:ml-72 min-h-screen pt-14 lg:pt-0">
         <div className="flex min-h-screen flex-col">
           <div className="flex-1">
@@ -191,14 +203,12 @@ export default function App() {
                 onLogHours={logHours}
                 user={user}
                 onNavigateAuth={() => setActiveView("auth")}
+                onNavigateProfile={handleNavigateProfile}
               />
             )}
 
             {activeView === "syllabus" && (
-              <SyllabusTracker
-                userData={userData}
-                onUpdateProgress={updateProgress}
-              />
+              <SyllabusTracker userData={userData} onUpdateProgress={updateProgress} />
             )}
 
             {activeView === "mains" && (
@@ -206,20 +216,31 @@ export default function App() {
             )}
 
             {activeView === "pre" && <PrelimsGrind />}
+
             {activeView === "ai-workplace" && (
-              <AIWorkplace
+              <AIWorkplace user={user} onNavigateAuth={() => setActiveView("auth")} />
+            )}
+
+            {activeView === "topic-wise" && <Topicwise onSyllabusUpdate={updateProgress} />}
+
+            {activeView === "admin" && <Adminpannel />}
+
+            {activeView === "resources" && <ResourceLibrary />}
+
+            {activeView === "profile" && (
+              <ProfilePage
                 user={user}
-                onNavigateAuth={() => setActiveView("auth")}
+                token={token}
+                onProfileUpdate={handleProfileUpdate}
+                onBack={() => handleViewChange(previousView)}
               />
             )}
-            {activeView === "topic-wise" && <Topicwise />}
-            {activeView === "admin" && <Adminpannel />}
+
             {activeView === "auth" && (
-              <AuthPage onAuthSuccess={(u, t) => {
-                login(u, t);
-                setActiveView("syllabus");
-              }} />
+              <AuthPage onAuthSuccess={(u, t) => { login(u, t); setActiveView("dashboard"); }} />
             )}
+
+            <PWAInstallPrompt />
           </div>
           <Footer />
         </div>

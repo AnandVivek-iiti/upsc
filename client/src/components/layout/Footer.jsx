@@ -1,4 +1,4 @@
-import { ArrowUpRight, ShieldCheck } from "lucide-react";
+import { ArrowUpRight, ShieldCheck, Heart } from "lucide-react";
 import {
   LAST_VERIFIED_DATE,
   OFFICIAL_UPSC_LINKS,
@@ -7,7 +7,7 @@ import {
   LEARNING_LINKS,
   NEWS_LINKS,
   OFFICIAL_UPSC_REFERENCE_LINKS,
-} from "../data/upscLinks";
+} from "../../data/upscLinks";
 
 const TAG_COLOR = {
   gold: "bg-accent-gold/10  text-accent-gold  border-accent-gold/20",
@@ -19,7 +19,7 @@ const TAG_COLOR = {
 
 function LinkItem({ href, label, tag, tagColor = "gold" }) {
   return (
-<a
+    <a
       href={href}
       target="_blank"
       rel="noreferrer"
@@ -110,7 +110,7 @@ export default function Footer() {
         <div className="mt-8 flex flex-wrap items-center justify-between gap-3 border-t border-bg-border pt-5">
           <div className="flex flex-wrap gap-2">
             {OFFICIAL_UPSC_REFERENCE_LINKS.map((item) => (
-<a
+              <a
                 key={item.url}
                 href={item.url}
                 target="_blank"
@@ -134,7 +134,7 @@ export default function Footer() {
           </p>
           <p className="text-sm font-mono text-text-muted flex items-center gap-1.5">
             Developed with{" "}
-            <span className="text-rose-400 text-base select-none" aria-label="love">♥</span>
+            <Heart className="w-4 h-4 inline text-red-500" />
             {" "}by{" "}
             <span className="text-accent-gold font-bold text-sm tracking-wide">Anand Vivek</span>
           </p>
