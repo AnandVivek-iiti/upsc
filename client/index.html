@@ -15,7 +15,7 @@
     <meta name="msapplication-tap-highlight" content="no" />
 
     <!-- ── SEO / Open Graph ── -->
-    <meta name="description" content="AI-powered UPSC CSE preparation — syllabus tracker, PYQs, Mains evaluator, and Prelims grind in one place." />
+    <meta name="description" content="AI-powered UPSC CSE preparation - syllabus tracker, PYQs, Mains evaluator, and Prelims grind in one place." />
     <meta property="og:title" content="UPSC Mentor" />
     <meta property="og:description" content="AI-powered UPSC CSE 2026 preparation dashboard." />
     <meta property="og:type" content="website" />
@@ -23,11 +23,10 @@
 
     <!-- ── Icons ── -->
     <link rel="icon" type="image/png" href="/logo-upsc.png" />
-    <!-- Apple touch icon (used on iOS home screen) -->
+    <!-- Apple touch icon — use a non-maskable version so iOS doesn't add extra rounding -->
     <link rel="apple-touch-icon" href="/logo-upsc.png" />
 
-    <!-- ── PWA Manifest (vite-plugin-pwa injects this automatically on build,
-         but keeping it explicit helps browsers discover it in dev) ── -->
+    <!-- ── PWA Manifest ── -->
     <link rel="manifest" href="/manifest.webmanifest" />
 
     <!-- ── Fonts ── -->
@@ -39,9 +38,280 @@
     />
 
     <title>UPSC Mentor — AI-Powered Preparation Dashboard</title>
+
+    <!-- ═══════════════════════════════════════════════════════════════════════
+         SPLASH SCREEN
+         Pure CSS/HTML — appears instantly before a single byte of React is
+         parsed. Mirrors the AuthPage header: same logo ring + float animation,
+         same gold/blue glows, same grid overlay, same glass card.
+         The inline script at the bottom of <body> fades it out once React
+         renders its first frame.
+    ════════════════════════════════════════════════════════════════════════ -->
+    <style>
+      /* ── Reset ─────────────────────────────────────────────────────────── */
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+      /* ── Design tokens (must match your CSS vars) ───────────────────────── */
+      :root {
+        --bg-base:      #09110F;
+        --bg-surface:   #0E1A17;
+        --bg-muted:     #152119;
+        --bg-border:    rgba(255, 255, 255, 0.08);
+        --accent-gold:  #F59E0B;
+        --accent-blue:  #3B82F6;
+        --text-primary: #F1F5F0;
+        --text-muted:   #6B7280;
+      }
+
+      html, body {
+        background: var(--bg-base);
+        height: 100%;
+      }
+
+      /* ── Splash wrapper ─────────────────────────────────────────────────── */
+      #splash {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+        background: var(--bg-base);
+        /* Smooth exit once React paints */
+        transition: opacity 0.4s ease, visibility 0.4s ease;
+      }
+      #splash.done {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+      }
+
+      /* ── Background decorations ─────────────────────────────────────────── */
+      .sp-grid {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        opacity: 0.03;
+        background-image:
+          linear-gradient(var(--accent-gold) 1px, transparent 1px),
+          linear-gradient(90deg, var(--accent-gold) 1px, transparent 1px);
+        background-size: 48px 48px;
+      }
+      .sp-glow-tr {
+        position: fixed;
+        top: 0; right: 0;
+        width: 500px; height: 400px;
+        background: var(--accent-gold);
+        opacity: 0.08;
+        border-radius: 50%;
+        filter: blur(100px);
+        transform: translate(30%, -30%);
+        pointer-events: none;
+      }
+      .sp-glow-bl {
+        position: fixed;
+        bottom: 0; left: 0;
+        width: 380px; height: 380px;
+        background: var(--accent-blue);
+        opacity: 0.05;
+        border-radius: 50%;
+        filter: blur(90px);
+        transform: translate(-30%, 30%);
+        pointer-events: none;
+      }
+
+      /* ── Glass card ─────────────────────────────────────────────────────── */
+      .sp-card {
+        position: relative;
+        z-index: 10;
+        width: 100%;
+        max-width: 320px;
+        background: rgba(14, 26, 23, 0.85);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 20px;
+        padding: 2.5rem 2rem;
+        text-align: center;
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        /* Card entrance */
+        animation: sp-rise 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+      }
+
+      /* ── Logo block ─────────────────────────────────────────────────────── */
+      .sp-logo-wrap {
+        position: relative;
+        display: inline-block;
+        margin-bottom: 1.25rem;
+      }
+      /* Soft pulse glow behind the icon */
+      .sp-logo-glow {
+        position: absolute;
+        inset: 0;
+        border-radius: 16px;
+        background: rgba(245, 158, 11, 0.12);
+        filter: blur(16px);
+        transform: scale(1.25);
+        animation: sp-pulse 2s ease-in-out infinite;
+      }
+      /* Spinning border ring — same as AuthPage .logo-ring */
+      .sp-logo-ring {
+        position: absolute;
+        inset: 0;
+        border-radius: 16px;
+        border: 1.5px solid transparent;
+        border-top-color: rgba(245, 158, 11, 0.6);
+        border-right-color: rgba(245, 158, 11, 0.2);
+        animation: sp-ring-spin 1.6s linear infinite;
+      }
+      /* Icon box — rounded-10 (border-radius:10px equivalent is rounded-[10px] in Tailwind) */
+      .sp-logo-box {
+        position: relative;
+        width: 80px;
+        height: 80px;
+        border-radius: 16px;          /* ~rounded-2xl — matches AuthPage logo */
+        border: 1px solid rgba(245, 158, 11, 0.25);
+        background: var(--bg-muted);
+        overflow: hidden;
+        animation: sp-float 3s ease-in-out infinite;
+      }
+      .sp-logo-box img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center;
+      }
+
+      /* ── Typography ─────────────────────────────────────────────────────── */
+      .sp-title {
+        font-family: system-ui, -apple-system, sans-serif;
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        letter-spacing: -0.01em;
+        margin-bottom: 0.25rem;
+      }
+      .sp-sub {
+        font-family: 'JetBrains Mono', 'Courier New', monospace;
+        font-size: 0.62rem;
+        color: var(--text-muted);
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        margin-bottom: 1.75rem;
+      }
+
+      /* ── Loading bar ─────────────────────────────────────────────────────── */
+      .sp-bar-track {
+        height: 2px;
+        width: 100%;
+        background: var(--bg-muted);
+        border-radius: 999px;
+        overflow: hidden;
+      }
+      .sp-bar-fill {
+        height: 100%;
+        border-radius: 999px;
+        background: var(--accent-gold);
+        animation: sp-loading-bar 1.4s ease-in-out infinite;
+      }
+      .sp-hint {
+        margin-top: 0.75rem;
+        font-family: 'JetBrains Mono', 'Courier New', monospace;
+        font-size: 0.6rem;
+        color: var(--text-muted);
+      }
+
+      /* ── Keyframes ───────────────────────────────────────────────────────── */
+      @keyframes sp-rise {
+        from { opacity: 0; transform: translateY(18px); }
+        to   { opacity: 1; transform: translateY(0);    }
+      }
+      @keyframes sp-ring-spin {
+        from { transform: rotate(0deg);   opacity: 0.6; }
+        50%  {                             opacity: 1;   }
+        to   { transform: rotate(360deg); opacity: 0.6; }
+      }
+      @keyframes sp-float {
+        0%, 100% { transform: translateY(0px);  }
+        50%       { transform: translateY(-5px); }
+      }
+      @keyframes sp-pulse {
+        0%, 100% { opacity: 0.12; }
+        50%       { opacity: 0.22; }
+      }
+      @keyframes sp-loading-bar {
+        0%   { width: 0%;  margin-left: 0;    }
+        50%  { width: 70%; margin-left: 15%;  }
+        100% { width: 0%;  margin-left: 100%; }
+      }
+    </style>
   </head>
+
   <body>
+
+    <!-- ═══════════════════════════════════════════════════════════════════════
+         SPLASH — visible immediately, before React has parsed a single line
+    ════════════════════════════════════════════════════════════════════════ -->
+    <div id="splash">
+      <!-- Background decorations -->
+      <div class="sp-grid"></div>
+      <div class="sp-glow-tr"></div>
+      <div class="sp-glow-bl"></div>
+
+      <!-- Glass card -->
+      <div class="sp-card">
+
+        <!-- Logo with ring + float + glow -->
+        <div class="sp-logo-wrap">
+          <div class="sp-logo-glow"></div>
+          <div class="sp-logo-ring"></div>
+          <div class="sp-logo-box">
+            <img src="/logo-upsc.png" alt="UPSC Mentor" />
+          </div>
+        </div>
+
+        <!-- Text -->
+        <p class="sp-title">UPSC Mentor</p>
+        <p class="sp-sub">AI-Powered Preparation</p>
+
+        <!-- Loading bar -->
+        <div class="sp-bar-track">
+          <div class="sp-bar-fill"></div>
+        </div>
+        <p class="sp-hint">Starting up…</p>
+
+      </div>
+    </div>
+
+    <!-- ── React root ──────────────────────────────────────────────────────── -->
     <div id="root"></div>
+
+    <!-- ── Dismiss splash once React paints its first frame ───────────────── -->
+    <!--
+      We poll requestAnimationFrame until #root has a child element (meaning
+      React has rendered). Then we add the .done class which triggers the CSS
+      opacity:0 transition, and remove the node from the DOM 500 ms later.
+      This is ~20 bytes of vanilla JS — no framework needed.
+    -->
+    <script>
+      (function () {
+        var splash = document.getElementById('splash');
+        var root   = document.getElementById('root');
+        function check() {
+          if (root && root.firstElementChild) {
+            splash.classList.add('done');
+            setTimeout(function () {
+              splash && splash.parentNode && splash.parentNode.removeChild(splash);
+            }, 500);
+          } else {
+            requestAnimationFrame(check);
+          }
+        }
+        requestAnimationFrame(check);
+      })();
+    </script>
+
+    <!-- ── Vite entry ──────────────────────────────────────────────────────── -->
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

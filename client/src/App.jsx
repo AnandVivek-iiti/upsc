@@ -6,7 +6,7 @@ import MainsGrind from "./pages/MainsGrind";
 import PrelimsGrind from "./pages/PrelimsGrind";
 import Footer from "./components/layout/Footer";
 import { useUserData } from "./hooks/useUserData";
-import { Loader2, AlertCircle, Menu, X } from "lucide-react";
+import { AlertCircle, Menu, X } from "lucide-react";
 import HeroBanner from "./pages/Hero";
 import AIWorkplace from "./pages/AIworkplace.jsx";
 import Topicwise from "./pages/Topicwise";
@@ -17,37 +17,130 @@ import ResourceLibrary from "./pages/ResourceLibrary";
 import ProfilePage, { AvatarCircle } from "./pages/ProfilePage";
 import PWAInstallPrompt from "./components/PWAInstallPrompt";
 
-// ─── Splash screen — shown while useAuth reads localStorage ──────────────────
+// ─── Animated Splash — matches AuthPage header + content style ────────────────
 function SplashScreen() {
   return (
-    <div className="min-h-screen bg-bg-base flex items-center justify-center">
-      <div className="flex flex-col items-center gap-4">
-        <div className="w-10 h-10 rounded-xl bg-accent-gold/10 border border-accent-gold/20 flex items-center justify-center">
-          <Loader2 size={18} className="text-accent-gold animate-spin" />
+    <div
+      className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden"
+      style={{ background: "var(--bg-base)" }}
+    >
+      {/* Grid overlay */}
+      <div
+        className="pointer-events-none fixed inset-0 opacity-[0.03]"
+        style={{
+          backgroundImage:
+            "linear-gradient(var(--accent-gold) 1px, transparent 1px), linear-gradient(90deg, var(--accent-gold) 1px, transparent 1px)",
+          backgroundSize: "48px 48px",
+        }}
+      />
+      {/* Top-right glow */}
+      <div
+        className="pointer-events-none fixed top-0 right-0 w-[500px] h-[400px] opacity-[0.08] rounded-full"
+        style={{
+          background: "var(--accent-gold)",
+          filter: "blur(100px)",
+          transform: "translate(30%, -30%)",
+        }}
+      />
+      {/* Bottom-left glow */}
+      <div
+        className="pointer-events-none fixed bottom-0 left-0 w-[380px] h-[380px] opacity-[0.05] rounded-full"
+        style={{
+          background: "var(--accent-blue)",
+          filter: "blur(90px)",
+          transform: "translate(-30%, 30%)",
+        }}
+      />
+
+      {/* Card */}
+      <div className="glass-panel w-full max-w-xs relative z-10 p-8 animate-rise text-center">
+        {/* Logo with pulse glow + float — same as AuthPage */}
+        <div className="flex justify-center mb-5">
+          <div className="relative">
+            {/* Soft glow */}
+            <div
+              className="absolute inset-0 rounded-2xl animate-pulse"
+              style={{
+                background: "rgba(245,158,11,0.12)",
+                filter: "blur(16px)",
+                transform: "scale(1.25)",
+              }}
+            />
+            {/* Animated border ring */}
+            <div className="absolute inset-0 rounded-2xl logo-ring" />
+            {/* Logo */}
+            <div
+              className="relative w-20 h-20 rounded-2xl bg-bg-muted flex items-center justify-center overflow-hidden logo-float"
+              style={{ border: "1px solid rgba(245,158,11,0.25)" }}
+            >
+              <img
+                src="/logo-upsc.png"
+                alt="UPSC Mentor"
+                className="w-full h-full object-cover object-center"
+              />
+            </div>
+          </div>
         </div>
-        <div className="text-center">
-          <p className="text-sm font-display font-semibold text-text-primary">UPSC Mentor</p>
-          <p className="text-xs text-text-muted font-mono mt-1">Starting up…</p>
+
+        <h1 className="font-display text-xl font-semibold text-text-primary mb-1">
+          UPSC Mentor
+        </h1>
+        <p className="text-[11px] font-mono text-text-muted tracking-widest uppercase mb-6">
+          AI-Powered Preparation
+        </p>
+
+        {/* Animated loading bar */}
+        <div className="h-0.5 w-full bg-bg-muted rounded-full overflow-hidden">
+          <div
+            className="h-full rounded-full animate-loading-bar"
+            style={{ background: "var(--accent-gold)" }}
+          />
         </div>
+
+        <p className="text-[10px] font-mono text-text-muted mt-3">
+          Starting up…
+        </p>
       </div>
+
+      <style>{`
+        @keyframes rise {
+          from { opacity: 0; transform: translateY(16px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        .animate-rise { animation: rise 0.45s cubic-bezier(.22,1,.36,1) both; }
+
+        @keyframes logo-ring-spin {
+          from { transform: rotate(0deg);   opacity: 0.6; }
+          50%  { opacity: 1; }
+          to   { transform: rotate(360deg); opacity: 0.6; }
+        }
+        .logo-ring {
+          border: 1.5px solid transparent;
+          border-top-color: rgba(245,158,11,0.6);
+          border-right-color: rgba(245,158,11,0.2);
+          animation: logo-ring-spin 1.6s linear infinite;
+        }
+
+        @keyframes logo-float {
+          0%, 100% { transform: translateY(0px); }
+          50%       { transform: translateY(-4px); }
+        }
+        .logo-float { animation: logo-float 3s ease-in-out infinite; }
+
+        @keyframes loading-bar {
+          0%   { width: 0%;   margin-left: 0; }
+          50%  { width: 70%;  margin-left: 15%; }
+          100% { width: 0%;   margin-left: 100%; }
+        }
+        .animate-loading-bar { animation: loading-bar 1.4s ease-in-out infinite; }
+      `}</style>
     </div>
   );
 }
 
+// Reuse SplashScreen for data loading too (same animation, different subtitle handled via props if needed)
 function LoadingScreen() {
-  return (
-    <div className="min-h-screen bg-bg-base flex items-center justify-center">
-      <div className="flex flex-col items-center gap-4">
-        <div className="w-10 h-10 rounded-xl bg-accent-gold/10 border border-accent-gold/20 flex items-center justify-center">
-          <Loader2 size={18} className="text-accent-gold animate-spin" />
-        </div>
-        <div className="text-center">
-          <p className="text-sm font-display font-semibold text-text-primary">Connecting to Mentor…</p>
-          <p className="text-xs text-text-muted font-mono mt-1">Fetching your progress data</p>
-        </div>
-      </div>
-    </div>
-  );
+  return <SplashScreen />;
 }
 
 function ErrorBanner({ error }) {
@@ -65,10 +158,10 @@ export default function App() {
   const { user, token, loading: authLoading, login, logout } = useAuth();
 
   // ── UI state ───────────────────────────────────────────────────────────────
-  const [activeView, setActiveView]       = useState("dashboard");
+  const [activeView, setActiveView]               = useState("dashboard");
   const [workspaceQuestion, setWorkspaceQuestion] = useState(null);
-  const [sidebarOpen, setSidebarOpen]     = useState(false);
-  const [previousView, setPreviousView]   = useState("dashboard");
+  const [sidebarOpen, setSidebarOpen]             = useState(false);
+  const [previousView, setPreviousView]           = useState("dashboard");
   const [theme, setTheme] = useState(() => {
     if (typeof window === "undefined") return "light";
     return localStorage.getItem("upsc-theme") || "light";
@@ -107,11 +200,8 @@ export default function App() {
     setSidebarOpen(false);
   };
 
-  // Navigate to profile page (used by avatar and Dashboard shortcut)
   const handleNavigateProfile = () => handleViewChange("profile");
-
-  // Called by ProfilePage after a successful save — refresh userData
-  const handleProfileUpdate = () => refetch?.();
+  const handleProfileUpdate   = () => refetch?.();
 
   // ── Splash while auth token is being read from localStorage ───────────────
   if (authLoading) return <SplashScreen />;
@@ -128,8 +218,12 @@ export default function App() {
       {/* ── Mobile topbar ── */}
       <div className="lg:hidden fixed top-0 left-0 right-0 z-30 flex items-center justify-between px-4 py-3 bg-bg-surface/95 backdrop-blur border-b border-bg-border">
         <div
-          className="w-8 h-8 rounded-lg bg-bg-muted flex items-center justify-center overflow-hidden shrink-0"
-          style={{ border: "1px solid rgba(245,158,11,0.2)" }}
+          className="w-8 h-8 flex items-center justify-center overflow-hidden shrink-0"
+          style={{
+            borderRadius: "10px",
+            border: "1px solid rgba(245,158,11,0.2)",
+            background: "var(--bg-muted)",
+          }}
         >
           <img src="/logo-upsc.png" alt="UPSC Mentor" className="w-full h-full object-cover object-center" />
         </div>
@@ -206,28 +300,14 @@ export default function App() {
                 onNavigateProfile={handleNavigateProfile}
               />
             )}
-
-            {activeView === "syllabus" && (
-              <SyllabusTracker userData={userData} onUpdateProgress={updateProgress} />
-            )}
-
-            {activeView === "mains" && (
-              <MainsGrind workspaceQuestion={workspaceQuestion} />
-            )}
-
-            {activeView === "pre" && <PrelimsGrind />}
-
-            {activeView === "ai-workplace" && (
-              <AIWorkplace user={user} onNavigateAuth={() => setActiveView("auth")} />
-            )}
-
-            {activeView === "topic-wise" && <Topicwise onSyllabusUpdate={updateProgress} />}
-
-            {activeView === "admin" && <Adminpannel />}
-
-            {activeView === "resources" && <ResourceLibrary />}
-
-            {activeView === "profile" && (
+            {activeView === "syllabus"    && <SyllabusTracker userData={userData} onUpdateProgress={updateProgress} />}
+            {activeView === "mains"       && <MainsGrind workspaceQuestion={workspaceQuestion} />}
+            {activeView === "pre"         && <PrelimsGrind />}
+            {activeView === "ai-workplace"&& <AIWorkplace user={user} onNavigateAuth={() => setActiveView("auth")} />}
+            {activeView === "topic-wise"  && <Topicwise onSyllabusUpdate={updateProgress} />}
+            {activeView === "admin"       && <Adminpannel />}
+            {activeView === "resources"   && <ResourceLibrary />}
+            {activeView === "profile"     && (
               <ProfilePage
                 user={user}
                 token={token}
@@ -235,7 +315,6 @@ export default function App() {
                 onBack={() => handleViewChange(previousView)}
               />
             )}
-
             {activeView === "auth" && (
               <AuthPage onAuthSuccess={(u, t) => { login(u, t); setActiveView("dashboard"); }} />
             )}
