@@ -4,7 +4,7 @@
 // Total Questions: 50 | Max Marks: 100 | Time: 60 min
 // Marking: +2 correct, -0.66 wrong (1/3 negative marking)
 
-export const TEST_SERIES = [
+export const TEST_T29 = [
   {
     id: "sfg2026-t29",
     title: "SFG 2026 — Level 1 · Test 29",
@@ -821,4 +821,4 @@ export const TEST_SERIES = [
   },
 ];
 
-export default TEST_SERIES;
+export default TEST_T29;

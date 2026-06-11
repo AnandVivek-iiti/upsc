@@ -12,7 +12,7 @@ import {
   getMainsPaperLink,
   MAINS_LAST_VERIFIED_DATE,
 } from "../data/Mains_papers";
-import AddCustomQuestion from "../components/QuestionStatsPanel";
+import AddCustomQuestion from "../components/QuestionStats";
 import ResourceLibrary from "./ResourceLibrary";
 
 // ─── Constants ────────────────────────────────────────────────────────────────

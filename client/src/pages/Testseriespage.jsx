@@ -1,11 +1,29 @@
 // ─── Test Series Page ─────────────────────────────────────────────────────────
 // Full quiz interface: timer, score calculator, correct/wrong/accuracy display
 // Theme-aware using CSS custom properties from index.css
+// Enhanced with question attempt tracking for unified analytics
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { TEST_SERIES } from "../data/Test/Testseries_t29_data";
-import { TEST_T1 } from "../data/Test/Testseries_t1_data";
-import {  TEST_T18 } from "../data/Test/Testseries_t18_data";
+import { TEST_T29 } from "../data/Test/Testseries_t29_data";
+// Import other test data with fallbacks in case they don't exist
+let TEST_T1 = [];
+let TEST_T18 = [];
+
+try {
+  const t1Module = require("../data/Test/Testseries_t1_data");
+  TEST_T1 = t1Module.TEST_T1 || t1Module.default || [];
+} catch (e) {
+  console.warn("Testseries_t1_data not found, skipping T1 tests");
+}
+
+try {
+  const t18Module = require("../data/Test/Testseries_t18_data");
+  TEST_T18 = t18Module.TEST_T18 || t18Module.default || [];
+} catch (e) {
+  console.warn("Testseries_t18_data not found, skipping T18 tests");
+}
+
+import { useQuestionAttempts } from "../hooks/useQuestionAttempts";
 
 import {
   Clock,
@@ -23,6 +41,18 @@ import {
   AlertCircle,
   TrendingUp,
 } from "lucide-react";
+
+// Combine all test data safely
+const ALL_TESTS = [
+  ...(Array.isArray(TEST_T29) ? TEST_T29 : []),
+  ...(Array.isArray(TEST_T1) ? TEST_T1 : []),
+  ...(Array.isArray(TEST_T18) ? TEST_T18 : []),
+];
+
+// If no tests are available, show a message
+if (ALL_TESTS.length === 0) {
+  console.warn("No test data available. Please check your test data imports.");
+}
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 function formatTime(seconds) {
@@ -89,23 +119,25 @@ function TimerBlock({ totalSeconds, secondsLeft, running }) {
   );
 }
 
-// ─── Question Card ────────────────────────────────────────────────────────────
-function QuestionCard({ question, selectedAnswer, onAnswer, showResult, qIndex, total }) {
+// ─── Question Card (ENHANCED - No answers shown during test) ────────────────
+function QuestionCard({ question, selectedAnswer, onAnswer, showResult, qIndex, total, testMeta, recordAttempt }) {
   const lines = question.text.split("\n").filter(Boolean);
 
   const getOptionStyle = (optId) => {
     const isSelected = selectedAnswer === optId;
-    const isCorrect = optId === question.correct;
 
     if (!showResult) {
+      // DURING TEST: Only show selection highlight, NEVER reveal correctness
       return {
         border: isSelected ? "1.5px solid var(--accent-blue)" : "0.5px solid var(--bg-border)",
         background: isSelected ? "var(--accent-blue-dim)" : "var(--bg-surface)",
         color: isSelected ? "var(--accent-blue)" : "var(--text-primary)",
-        cursor: "pointer",
+        cursor: isSelected ? "default" : "pointer",
       };
     }
-    // show result
+
+    // REVIEW/RESULTS: Show correct/wrong
+    const isCorrect = optId === question.correct;
     if (isCorrect) return {
       border: "1.5px solid var(--accent-green)",
       background: "var(--accent-green-dim)",
@@ -125,6 +157,35 @@ function QuestionCard({ question, selectedAnswer, onAnswer, showResult, qIndex, 
       cursor: "default",
     };
   };
+
+  // Handle answer selection with attempt recording
+  const handleOptionClick = useCallback((optId) => {
+    if (showResult || selectedAnswer) return; // Don't allow re-answering
+
+    // Record the attempt
+    if (recordAttempt && testMeta) {
+      const result = optId === question.correct ? "correct" : "wrong";
+      recordAttempt(
+        {
+          id: question.id,
+          questionText: question.text,
+          topic: question.topic,
+          difficulty: question.difficulty || "Medium",
+          year: question.year || new Date().getFullYear(),
+          testTitle: testMeta.title,
+          testId: testMeta.id,
+          subject: testMeta.subject,
+        },
+        result,
+        {
+          source: "Test",
+          paper: testMeta.paper || testMeta.subject,
+        }
+      );
+    }
+
+    onAnswer(optId);
+  }, [showResult, selectedAnswer, question, recordAttempt, testMeta, onAnswer]);
 
   return (
     <div style={{
@@ -184,7 +245,7 @@ function QuestionCard({ question, selectedAnswer, onAnswer, showResult, qIndex, 
           return (
             <button
               key={opt.id}
-              onClick={() => !showResult && onAnswer(opt.id)}
+              onClick={() => handleOptionClick(opt.id)}
               style={{
                 display: "flex", alignItems: "flex-start", gap: 12, textAlign: "left",
                 padding: "12px 16px", borderRadius: 10, transition: "all .15s",
@@ -205,7 +266,7 @@ function QuestionCard({ question, selectedAnswer, onAnswer, showResult, qIndex, 
         })}
       </div>
 
-      {/* Explanation — shown after answering */}
+      {/* Explanation — ONLY shown after test completion */}
       {showResult && selectedAnswer && (
         <div style={{
           margin: "0 20px 20px",
@@ -226,7 +287,7 @@ function QuestionCard({ question, selectedAnswer, onAnswer, showResult, qIndex, 
         </div>
       )}
 
-      {/* Skipped hint */}
+      {/* Skipped hint - ONLY shown after test completion */}
       {showResult && !selectedAnswer && (
         <div style={{
           margin: "0 20px 20px", borderRadius: 10, padding: "12px 16px",
@@ -244,11 +305,42 @@ function QuestionCard({ question, selectedAnswer, onAnswer, showResult, qIndex, 
   );
 }
 
-// ─── Results Screen ───────────────────────────────────────────────────────────
-function ResultsScreen({ test, answers, onRetry, onReview }) {
+// ─── Results Screen (ENHANCED with attempt recording) ───────────────────────
+function ResultsScreen({ test, answers, onRetry, onReview, recordAttempt }) {
   const stats = calcScore(answers, test.questions, test.markPerQuestion, test.negativeFraction);
   const maxScore = test.totalQuestions * test.markPerQuestion;
   const scorePct = ((stats.score / maxScore) * 100).toFixed(1);
+
+  // Record all attempts when results are shown
+  useEffect(() => {
+    if (recordAttempt && test) {
+      test.questions.forEach(q => {
+        const userAnswer = answers[q.id];
+        if (userAnswer) {
+          const result = userAnswer === q.correct ? "correct" : "wrong";
+          recordAttempt(
+            {
+              id: q.id,
+              questionText: q.text,
+              topic: q.topic,
+              difficulty: q.difficulty || "Medium",
+              year: q.year || new Date().getFullYear(),
+              testTitle: test.title,
+              testId: test.id,
+              subject: test.subject,
+            },
+            result,
+            {
+              source: "Test",
+              paper: test.paper || test.subject,
+              score: stats.score,
+              accuracy: stats.accuracy,
+            }
+          );
+        }
+      });
+    }
+  }, []); // Run once when results component mounts
 
   const grade =
     scorePct >= 80 ? { label: "Excellent", color: "var(--accent-green)" } :
@@ -383,14 +475,13 @@ function ResultsScreen({ test, answers, onRetry, onReview }) {
   );
 }
 
-// ─── Quiz Interface (active test) ─────────────────────────────────────────────
-function QuizInterface({ test, onFinish }) {
+// ─── Quiz Interface (ENHANCED - No marks shown during test) ──────────────────
+function QuizInterface({ test, onFinish, recordAttempt }) {
   const totalSeconds = test.timeMinutes * 60;
   const [answers,     setAnswers]     = useState({});
   const [currentIdx,  setCurrentIdx]  = useState(0);
   const [secondsLeft, setSecondsLeft] = useState(totalSeconds);
   const [running,     setRunning]     = useState(true);
-  const [showExp,     setShowExp]     = useState(false); // show explanation for current q
   const timerRef = useRef(null);
 
   // Timer
@@ -403,18 +494,27 @@ function QuizInterface({ test, onFinish }) {
       });
     }, 1000);
     return () => clearInterval(timerRef.current);
-  }, [running]); // eslint-disable-line
+  }, [running]);
 
   const q = test.questions[currentIdx];
-  const stats = calcScore(answers, test.questions, test.markPerQuestion, test.negativeFraction);
+
+  // Prepare test metadata for attempt recording
+  const testMeta = {
+    id: test.id,
+    title: test.title,
+    subject: test.subject,
+    paper: test.paper || test.subject,
+  };
 
   const handleAnswer = useCallback((optId) => {
     if (answers[q.id]) return; // already answered
     setAnswers((prev) => ({ ...prev, [q.id]: optId }));
-    setShowExp(true);
   }, [q, answers]);
 
-  const goTo = (idx) => { setCurrentIdx(idx); setShowExp(!!answers[test.questions[idx].id]); };
+  const goTo = (idx) => {
+    setCurrentIdx(idx);
+  };
+
   const prev = () => currentIdx > 0 && goTo(currentIdx - 1);
   const next = () => currentIdx < test.questions.length - 1 && goTo(currentIdx + 1);
 
@@ -423,7 +523,7 @@ function QuizInterface({ test, onFinish }) {
 
   return (
     <div style={{ maxWidth: 900, margin: "0 auto", padding: "0 4px" }}>
-      {/* Top bar */}
+      {/* Top bar - NO SCORE shown during test, only timer and progress */}
       <div style={{
         display: "flex", flexWrap: "wrap", gap: 10, alignItems: "stretch",
         marginBottom: 16,
@@ -432,9 +532,20 @@ function QuizInterface({ test, onFinish }) {
           <TimerBlock totalSeconds={totalSeconds} secondsLeft={secondsLeft} running={running} />
         </div>
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
-          <StatPill icon={CheckCircle2} label="Correct"  value={stats.correct}  color="var(--accent-green)" />
-          <StatPill icon={XCircle}      label="Wrong"    value={stats.wrong}    color="var(--accent-red)"   />
-          <StatPill icon={Target}       label="Accuracy" value={`${stats.accuracy}%`} color="var(--accent-blue)" />
+          {/* Only show answered count during test, no correctness info */}
+          <div style={{
+            display: "flex", alignItems: "center", gap: 6,
+            background: "var(--bg-muted)", border: "0.5px solid var(--bg-border)",
+            borderRadius: 10, padding: "8px 14px",
+          }}>
+            <span style={{ fontSize: 11, color: "var(--text-muted)", fontFamily: "'DM Mono', monospace" }}>
+              Answered
+            </span>
+            <span style={{ fontSize: 18, fontWeight: 700, color: "var(--text-primary)", fontFamily: "'DM Mono', monospace" }}>
+              {answered}/{test.totalQuestions}
+            </span>
+          </div>
+
           <button
             onClick={() => setRunning((v) => !v)}
             style={{
@@ -447,6 +558,7 @@ function QuizInterface({ test, onFinish }) {
           >
             {running ? "⏸ Pause" : "▶ Resume"}
           </button>
+
           <button
             onClick={() => onFinish(answers)}
             style={{
@@ -460,7 +572,7 @@ function QuizInterface({ test, onFinish }) {
         </div>
       </div>
 
-      {/* Progress dots */}
+      {/* Progress dots - NO color coding for correct/wrong during test */}
       <div style={{
         display: "flex", gap: 3, flexWrap: "wrap", marginBottom: 16,
         padding: "10px 14px", background: "var(--bg-surface)",
@@ -469,19 +581,18 @@ function QuizInterface({ test, onFinish }) {
         {test.questions.map((qu, i) => {
           const ans = answers[qu.id];
           const isCurrent = i === currentIdx;
-          const isCorrect = ans && ans === qu.correct;
-          const isWrong   = ans && ans !== qu.correct;
+          // During test: only show answered/unanswered, NOT correct/wrong
           const bg = isCurrent ? "var(--accent-blue)" :
-                     isCorrect ? "var(--accent-green)" :
-                     isWrong   ? "var(--accent-red)" :
+                     ans ? "var(--text-secondary)" :
                      "var(--bg-muted)";
           return (
             <button
               key={qu.id}
               onClick={() => goTo(i)}
-              title={`Q${qu.qNo}`}
+              title={`Q${qu.qNo}${ans ? ' - Answered' : ''}`}
               style={{
-                width: 26, height: 26, borderRadius: 6, border: isCurrent ? "1.5px solid var(--accent-blue)" : "0.5px solid var(--bg-border)",
+                width: 26, height: 26, borderRadius: 6,
+                border: isCurrent ? "1.5px solid var(--accent-blue)" : "0.5px solid var(--bg-border)",
                 background: bg, cursor: "pointer", fontSize: 10, fontWeight: 700,
                 color: ans || isCurrent ? "var(--text-inverse)" : "var(--text-muted)",
                 fontFamily: "'DM Mono', monospace", transition: "all .12s",
@@ -493,18 +604,20 @@ function QuizInterface({ test, onFinish }) {
         })}
       </div>
 
-      {/* Question card */}
+      {/* Question card - showResult is ALWAYS false during test */}
       <QuestionCard
         key={q.id}
         question={q}
         selectedAnswer={answers[q.id]}
         onAnswer={handleAnswer}
-        showResult={showExp && !!answers[q.id]}
+        showResult={false}  // NEVER show results during test
         qIndex={currentIdx}
         total={test.totalQuestions}
+        testMeta={testMeta}
+        recordAttempt={recordAttempt}
       />
 
-      {/* Navigation */}
+      {/* Navigation - NO marks/stats shown */}
       <div style={{ display: "flex", gap: 10, marginTop: 14, alignItems: "center" }}>
         <button
           onClick={prev} disabled={currentIdx === 0}
@@ -552,10 +665,11 @@ function QuizInterface({ test, onFinish }) {
   );
 }
 
-// ─── Review Mode ──────────────────────────────────────────────────────────────
+// ─── Review Mode (ENHANCED - Shows results but doesn't re-record) ──────────
 function ReviewMode({ test, answers, onBack }) {
   const [currentIdx, setCurrentIdx] = useState(0);
-  const [filter, setFilter] = useState("all"); // all | correct | wrong | skipped
+  const [filter, setFilter] = useState("all");
+
   const filtered = test.questions.filter((q) => {
     const ans = answers[q.id];
     if (filter === "correct") return ans === q.correct;
@@ -563,7 +677,16 @@ function ReviewMode({ test, answers, onBack }) {
     if (filter === "skipped") return !ans;
     return true;
   });
+
   const q = filtered[currentIdx];
+
+  // Count for filter badges
+  const counts = {
+    all: test.questions.length,
+    correct: test.questions.filter((q) => answers[q.id] === q.correct).length,
+    wrong: test.questions.filter((q) => answers[q.id] && answers[q.id] !== q.correct).length,
+    skipped: test.questions.filter((q) => !answers[q.id]).length,
+  };
 
   return (
     <div style={{ maxWidth: 900, margin: "0 auto", padding: "0 4px" }}>
@@ -589,7 +712,7 @@ function ReviewMode({ test, answers, onBack }) {
               border: filter === f ? "none" : "0.5px solid var(--bg-border)", cursor: "pointer",
               textTransform: "capitalize", fontFamily: "'DM Mono', monospace",
             }}>
-              {f}
+              {f} ({counts[f]})
             </button>
           ))}
         </div>
@@ -606,7 +729,7 @@ function ReviewMode({ test, answers, onBack }) {
             question={q}
             selectedAnswer={answers[q.id]}
             onAnswer={() => {}}
-            showResult={true}
+            showResult={true}  // Show results in review mode
             qIndex={currentIdx}
             total={filtered.length}
           />
@@ -698,11 +821,14 @@ function TestCard({ test, onStart }) {
   );
 }
 
-// ─── Main Page ────────────────────────────────────────────────────────────────
+// ─── Main Page (ENHANCED with attempt tracking and robust data handling) ────
 export default function TestSeriesPage() {
-  const [mode,         setMode]         = useState("list");   // list | quiz | results | review
+  const [mode,         setMode]         = useState("list");
   const [activeTest,   setActiveTest]   = useState(null);
   const [finalAnswers, setFinalAnswers] = useState({});
+
+  // Initialize attempt tracking
+  const { recordAttempt } = useQuestionAttempts();
 
   const handleStart = (test) => {
     setActiveTest(test);
@@ -722,6 +848,22 @@ export default function TestSeriesPage() {
 
   const handleReview = () => setMode("review");
   const handleBackToList = () => { setMode("list"); setActiveTest(null); };
+
+  // Show message if no tests available
+  if (ALL_TESTS.length === 0) {
+    return (
+      <div style={{
+        textAlign: "center",
+        padding: "80px 20px",
+        color: "var(--text-muted)",
+        fontFamily: "'DM Mono', monospace"
+      }}>
+        <div style={{ fontSize: 48, marginBottom: 16 }}>📝</div>
+        <div style={{ fontSize: 18, fontWeight: 600, marginBottom: 8 }}>No Tests Available</div>
+        <div style={{ fontSize: 14 }}>Test data files not found. Please check your data imports.</div>
+      </div>
+    );
+  }
 
   return (
     <div className="h-full overflow-y-auto animate-fade-in" style={{ background: "var(--bg-base)" }}>
@@ -748,9 +890,9 @@ export default function TestSeriesPage() {
               </div>
               <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
                 {[
-                  { icon: ListChecks, label: "Tests",    val: TEST_SERIES.length,                   c: "var(--accent-blue)"   },
-                  { icon: BookOpen,   label: "Questions", val: TEST_SERIES.reduce((a, t) => a + t.totalQuestions, 0), c: "var(--accent-green)" },
-                  { icon: BarChart2,  label: "Subjects",  val: [...new Set(TEST_SERIES.map((t) => t.subject))].length, c: "var(--accent-gold)"  },
+                  { icon: ListChecks, label: "Tests",    val: ALL_TESTS.length,                   c: "var(--accent-blue)"   },
+                  { icon: BookOpen,   label: "Questions", val: ALL_TESTS.reduce((a, t) => a + t.totalQuestions, 0), c: "var(--accent-green)" },
+                  { icon: BarChart2,  label: "Subjects",  val: [...new Set(ALL_TESTS.map((t) => t.subject))].length, c: "var(--accent-gold)"  },
                 ].map(({ icon: Icon, label, val, c }) => (
                   <div key={label} style={{
                     textAlign: "center", padding: "12px 20px",
@@ -798,14 +940,18 @@ export default function TestSeriesPage() {
         {/* ── Views ── */}
         {mode === "list" && (
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: 16 }}>
-            {TEST_SERIES.map((test) => (
+            {ALL_TESTS.map((test) => (
               <TestCard key={test.id} test={test} onStart={handleStart} />
             ))}
           </div>
         )}
 
         {mode === "quiz" && activeTest && (
-          <QuizInterface test={activeTest} onFinish={handleFinish} />
+          <QuizInterface
+            test={activeTest}
+            onFinish={handleFinish}
+            recordAttempt={recordAttempt}
+          />
         )}
 
         {mode === "results" && activeTest && (
@@ -814,6 +960,7 @@ export default function TestSeriesPage() {
             answers={finalAnswers}
             onRetry={handleRetry}
             onReview={handleReview}
+            recordAttempt={recordAttempt}
           />
         )}
 

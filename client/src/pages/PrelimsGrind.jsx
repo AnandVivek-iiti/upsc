@@ -13,7 +13,7 @@ import {
   getPrelimsPaperLink,
   PRELIMS_LAST_VERIFIED_DATE,
 } from "../data/Prelims_paper";
-import AddCustomQuestion from "../components/QuestionStatsPanel";
+import AddCustomQuestion from "../components/QuestionStats";
 import ResourceLibrary from "./ResourceLibrary";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
