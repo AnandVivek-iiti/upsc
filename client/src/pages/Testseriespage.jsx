@@ -4,8 +4,8 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { TEST_SERIES } from "../data/Test/Testseries_t29_data";
-import { TEST_SERIES_1 } from "../data/Test/Testseries_t1_data";
-import { TEST_SERIES_18 } from "../data/Test/Testseries_t18_data";
+import { TEST_T1 } from "../data/Test/Testseries_t1_data";
+import {  TEST_T18 } from "../data/Test/Testseries_t18_data";
 
 import {
   Clock,
