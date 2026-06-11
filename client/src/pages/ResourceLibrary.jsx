@@ -2,7 +2,7 @@
 // Four sections: NCERT Books · My Notes · Reference Books · YouTube Classes
 
 import { useState, useMemo } from "react";
-import TestSeriesPage from "./TestseriesPage";
+import TestSeriesPage from "./Testseriespage";
 import {
   NCERT_BOOKS, SUBJECTS, SUBJECT_PAPER_MAP, NCERT_LAST_UPDATED,
 } from "../data/ncert_data";
