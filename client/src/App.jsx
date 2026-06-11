@@ -17,14 +17,14 @@ import ResourceLibrary from "./pages/ResourceLibrary";
 import ProfilePage, { AvatarCircle } from "./pages/ProfilePage";
 import PWAInstallPrompt from "./components/PWAInstallPrompt";
 
-// ─── Animated Splash — matches AuthPage header + content style ────────────────
+// ─── Animated Splash — exact AuthPage header style, no static logo img ───────
 function SplashScreen() {
   return (
     <div
       className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden"
       style={{ background: "var(--bg-base)" }}
     >
-      {/* Grid overlay */}
+      {/* Subtle grid overlay — same as AuthPage */}
       <div
         className="pointer-events-none fixed inset-0 opacity-[0.03]"
         style={{
@@ -33,31 +33,24 @@ function SplashScreen() {
           backgroundSize: "48px 48px",
         }}
       />
-      {/* Top-right glow */}
+      {/* Radial glow top-right */}
       <div
-        className="pointer-events-none fixed top-0 right-0 w-[500px] h-[400px] opacity-[0.08] rounded-full"
-        style={{
-          background: "var(--accent-gold)",
-          filter: "blur(100px)",
-          transform: "translate(30%, -30%)",
-        }}
+        className="pointer-events-none fixed top-0 right-0 w-[500px] h-[400px] opacity-[0.08] rounded-full blur-[100px]"
+        style={{ background: "var(--accent-gold)", transform: "translate(30%, -30%)" }}
       />
-      {/* Bottom-left glow */}
+      {/* Radial glow bottom-left */}
       <div
-        className="pointer-events-none fixed bottom-0 left-0 w-[380px] h-[380px] opacity-[0.05] rounded-full"
-        style={{
-          background: "var(--accent-blue)",
-          filter: "blur(90px)",
-          transform: "translate(-30%, 30%)",
-        }}
+        className="pointer-events-none fixed bottom-0 left-0 w-[380px] h-[380px] opacity-[0.05] rounded-full blur-[90px]"
+        style={{ background: "var(--accent-blue)", transform: "translate(-30%, 30%)" }}
       />
 
-      {/* Card */}
-      <div className="glass-panel w-full max-w-xs relative z-10 p-8 animate-rise text-center">
-        {/* Logo with pulse glow + float — same as AuthPage */}
+      {/* Card — identical structure to AuthPage glass-panel */}
+      <div className="glass-panel w-full max-w-xs relative z-10 p-8 text-center splash-rise">
+
+        {/* ── Logo block — exact copy of AuthPage brand header ── */}
         <div className="flex justify-center mb-5">
           <div className="relative">
-            {/* Soft glow */}
+            {/* Soft pulse glow */}
             <div
               className="absolute inset-0 rounded-2xl animate-pulse"
               style={{
@@ -66,82 +59,85 @@ function SplashScreen() {
                 transform: "scale(1.25)",
               }}
             />
-            {/* Animated border ring */}
-            <div className="absolute inset-0 rounded-2xl logo-ring" />
-            {/* Logo */}
+            {/* Spinning border ring */}
+            <div className="absolute inset-0 rounded-2xl splash-ring" />
+            {/* Logo container with float — image displayed as AuthPage does */}
             <div
-              className="relative w-20 h-20 rounded-2xl bg-bg-muted flex items-center justify-center overflow-hidden logo-float"
+              className="relative w-20 h-20 rounded-2xl bg-bg-muted flex items-center justify-center overflow-hidden splash-float"
               style={{ border: "1px solid rgba(245,158,11,0.25)" }}
             >
               <img
                 src="/logo-upsc.png"
                 alt="UPSC Mentor"
                 className="w-full h-full object-cover object-center"
+                style={{ borderRadius: "inherit" }}
               />
             </div>
           </div>
         </div>
 
-        <h1 className="font-display text-xl font-semibold text-text-primary mb-1">
+        {/* Title — matches AuthPage h1 */}
+        <h1 className="font-display text-2xl font-semibold text-text-primary mb-1">
           UPSC Mentor
         </h1>
+
+        {/* Subtitle — matches AuthPage mono tag */}
         <p className="text-[11px] font-mono text-text-muted tracking-widest uppercase mb-6">
           AI-Powered Preparation
         </p>
 
         {/* Animated loading bar */}
         <div className="h-0.5 w-full bg-bg-muted rounded-full overflow-hidden">
-          <div
-            className="h-full rounded-full animate-loading-bar"
-            style={{ background: "var(--accent-gold)" }}
-          />
+          <div className="h-full rounded-full splash-bar" style={{ background: "var(--accent-gold)" }} />
         </div>
 
-        <p className="text-[10px] font-mono text-text-muted mt-3">
+        <p className="text-[10px] font-mono text-text-muted mt-3 tracking-wider">
           Starting up…
         </p>
       </div>
 
       <style>{`
-        @keyframes rise {
+        /* ── Rise-in — AuthPage uses animate-rise from index.css; replicate here ── */
+        @keyframes splash-rise {
           from { opacity: 0; transform: translateY(16px); }
           to   { opacity: 1; transform: translateY(0); }
         }
-        .animate-rise { animation: rise 0.45s cubic-bezier(.22,1,.36,1) both; }
+        .splash-rise { animation: splash-rise 0.45s cubic-bezier(.22,1,.36,1) both; }
 
-        @keyframes logo-ring-spin {
+        /* ── Spinning ring — AuthPage logo-ring from index.css ── */
+        @keyframes splash-ring-spin {
           from { transform: rotate(0deg);   opacity: 0.6; }
-          50%  { opacity: 1; }
+          50%  {                             opacity: 1;   }
           to   { transform: rotate(360deg); opacity: 0.6; }
         }
-        .logo-ring {
+        .splash-ring {
           border: 1.5px solid transparent;
-          border-top-color: rgba(245,158,11,0.6);
+          border-top-color:  rgba(245,158,11,0.6);
           border-right-color: rgba(245,158,11,0.2);
-          animation: logo-ring-spin 1.6s linear infinite;
+          animation: splash-ring-spin 1.6s linear infinite;
         }
 
-        @keyframes logo-float {
+        /* ── Float — AuthPage logo-float from index.css ── */
+        @keyframes splash-float {
           0%, 100% { transform: translateY(0px); }
           50%       { transform: translateY(-4px); }
         }
-        .logo-float { animation: logo-float 3s ease-in-out infinite; }
+        .splash-float { animation: splash-float 3s ease-in-out infinite; }
 
-        @keyframes loading-bar {
-          0%   { width: 0%;   margin-left: 0; }
-          50%  { width: 70%;  margin-left: 15%; }
-          100% { width: 0%;   margin-left: 100%; }
+        /* ── Indeterminate loading bar ── */
+        @keyframes splash-bar {
+          0%   { width: 0%;  margin-left: 0;    }
+          50%  { width: 70%; margin-left: 15%;  }
+          100% { width: 0%;  margin-left: 100%; }
         }
-        .animate-loading-bar { animation: loading-bar 1.4s ease-in-out infinite; }
+        .splash-bar { animation: splash-bar 1.4s ease-in-out infinite; }
       `}</style>
     </div>
   );
 }
 
-// Reuse SplashScreen for data loading too (same animation, different subtitle handled via props if needed)
-function LoadingScreen() {
-  return <SplashScreen />;
-}
+// Data loading reuses the same splash
+const LoadingScreen = SplashScreen;
 
 function ErrorBanner({ error }) {
   if (!error) return null;

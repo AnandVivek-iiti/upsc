@@ -2,6 +2,7 @@
 // Four sections: NCERT Books · My Notes · Reference Books · YouTube Classes
 
 import { useState, useMemo } from "react";
+import TestSeriesPage from "./TestSeriesPage";
 import {
   NCERT_BOOKS, SUBJECTS, SUBJECT_PAPER_MAP, NCERT_LAST_UPDATED,
 } from "../data/ncert_data";
@@ -449,18 +450,19 @@ export default function ResourceLibrary() {
       {/* ── Tab Bar ────────────────────────────────────────────────────────── */}
       <div style={{ display: "flex", flexWrap: "wrap", gap: 4, marginBottom: 20 }}>
         {[
-          ["ncert",    "📚 NCERT Books"],
-          ["notes",    "📝 My Notes"],
-          ["refbooks", "📖 Reference Books"],
-          ["classes",  "▶ YouTube Classes"],
+          ["ncert",       "📚 NCERT Books"],
+          ["notes",       "📝 My Notes"],
+          ["refbooks",    "📖 Reference Books"],
+          ["classes",     "▶ YouTube Classes"],
+          ["test-series", "🎯 Test Series"],
         ].map(([id, label]) => (
           <button key={id} onClick={() => { setActiveTab(id); setSearch(""); }} style={{
             padding: "9px 22px", fontSize: 13, fontWeight: activeTab === id ? 600 : 400,
             borderRadius: 10,
-            background: activeTab === id ? (id === "classes" ? "#ff000015" : "var(--text-primary)") : "transparent",
-            color: activeTab === id ? (id === "classes" ? "#f87171" : "var(--bg-base)") : "var(--text-secondary)",
+            background: activeTab === id ? (id === "classes" ? "#ff000015" : id === "test-series" ? "var(--accent-gold-dim)" : "var(--text-primary)") : "transparent",
+            color: activeTab === id ? (id === "classes" ? "#f87171" : id === "test-series" ? "var(--accent-gold)" : "var(--bg-base)") : "var(--text-secondary)",
             border: activeTab === id
-              ? (id === "classes" ? "0.5px solid #ff000044" : "none")
+              ? (id === "classes" ? "0.5px solid #ff000044" : id === "test-series" ? "0.5px solid var(--accent-gold)" : "none")
               : "0.5px solid var(--bg-border)",
             cursor: "pointer", transition: "all .15s",
             fontFamily: "'DM Sans', sans-serif",
@@ -641,6 +643,11 @@ export default function ResourceLibrary() {
             </>
           )}
         </>
+      )}
+
+      {/* ── TAB: TEST SERIES ──────────────────────────────────────────────── */}
+      {activeTab === "test-series" && (
+        <TestSeriesPage />
       )}
 
       {/* ── Footer ─────────────────────────────────────────────────────────── */}

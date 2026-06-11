@@ -11,6 +11,7 @@ import {
   BarChart2,
   X,
   Flame,
+  Target,
   Play,
   Pause,
   RotateCcw,
@@ -21,9 +22,9 @@ import {
 import { useState, useEffect, useCallback } from "react";
 import { SYLLABUS, PAPER_ORDER, getPct } from "../data/syllabusData";
 import AuthGate from "../components/ui/AuthGate";
+import timerStore from "../hooks/timerStore";
 import QuestionStatsPanel from "../components/QuestionStatsPanel";
 import { AvatarCircle } from "./ProfilePage";
-import timerStore from "../hooks/timerStore";
 
 // ─── Tiny helpers ──────────────────────────────────────────────────────────────
 function todayKey() {
@@ -143,7 +144,7 @@ function StudyTimer({ onLogHours, onSynced, targetHours = 8, serverHours = 0 }) 
           >
             {syncState === "syncing" ? "saving…"
              : syncState === "synced" ? "saved"
-             : syncState === "error" ? "sync failed"
+             : syncState === "error"  ? "sync failed"
              : ""}
           </span>
         </span>
@@ -171,7 +172,9 @@ function StudyTimer({ onLogHours, onSynced, targetHours = 8, serverHours = 0 }) 
             />
             <circle
               cx="70" cy="70" r={R}
-              fill="none" stroke={ringColor} strokeWidth="8"
+              fill="none"
+              stroke={ringColor}
+              strokeWidth="8"
               strokeLinecap="round"
               strokeDasharray={CIRC}
               strokeDashoffset={dashOffset}
@@ -295,8 +298,8 @@ function StudyChart({ logs = [], targetHours = 8 }) {
       d.setDate(today.getDate() - (6 - i));
       const dateStr = d.toISOString().split("T")[0];
       return {
-        label: DAY_NAMES[d.getDay()],
-        hours: getHoursForDate(dateStr),
+        label:   DAY_NAMES[d.getDay()],
+        hours:   getHoursForDate(dateStr),
         isToday: i === 6,
       };
     });
@@ -311,7 +314,9 @@ function StudyChart({ logs = [], targetHours = 8 }) {
         day.setDate(today.getDate() - w * 7 + d - 6);
         return day;
       }).filter((d) => d <= today);
+
       if (days.length === 0) continue;
+
       const start = days[0];
       const label = `${String(start.getDate()).padStart(2, "0")}/${String(
         start.getMonth() + 1,
@@ -591,8 +596,8 @@ function TodayPlanner() {
     save([...tasks, { text: input.trim(), done: false }]);
     setInput("");
   };
-  const done = tasks.filter((t) => t.done).length;
 
+  const done = tasks.filter((t) => t.done).length;
   return (
     <div className="glass-panel p-4 space-y-3">
       <div className="flex items-center justify-between">
@@ -786,8 +791,8 @@ function AnswerWritingTracker() {
     setQ("");
     setAdding(false);
   };
-  const thisWeek = logs.filter((l) => (new Date() - new Date(l.date)) / 86400000 <= 7).length;
 
+  const thisWeek = logs.filter((l) => (new Date() - new Date(l.date)) / 86400000 <= 7).length;
   return (
     <div className="glass-panel p-4 space-y-3">
       <div className="flex items-center justify-between">
@@ -955,6 +960,7 @@ export default function Dashboard({
           </p>
         </div>
 
+        {/* Profile button — visible on both mobile and desktop */}
         {userName && (
           <button
             onClick={onNavigateProfile}
@@ -998,6 +1004,13 @@ export default function Dashboard({
           value={`${Math.round(overallProgress)}%`}
           sub="Syllabus"
           iconColor="#C9A84C"
+        />
+        <StatCard
+          icon={Target}
+          label="GS1 Done"
+          value={`${getPct(syllabusData?.mains?.GS1?.modules || {})}%`}
+          sub="GS1 modules"
+          iconColor="#4ade80"
         />
       </div>
 
