@@ -20,8 +20,8 @@ export default defineConfig({
         "logo-maskable-192.png",
         "logo-512.png",
         "logo-maskable-512.png",
-        "logo-upsc.png",
-        "offline.html",
+        
+        "index.html",
         "Motivation.png",
       ],
 
