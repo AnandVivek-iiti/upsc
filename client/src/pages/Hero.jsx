@@ -41,7 +41,7 @@ export default function HeroBanner({
           : "Over";
 
   return (
-    <section className="relative overflow-hidden  sm:rounded-lg mx-2 sm:mx-0 mt-3 sm:mt-0 shadow-xl">
+    <section className="relative overflow-hidden  sm:rounded-lg mx-0 sm:mx-0 mt-0 sm:mt-0 shadow-xl">
       {/* Background - Same size as before */}
       <div className="absolute inset-0 z-0">
         <img
