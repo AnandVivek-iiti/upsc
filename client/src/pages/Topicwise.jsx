@@ -1,12 +1,22 @@
+/**
+ * Topicwise.jsx — Mobile‑first, fully integrated with all Mains PYQ data
+ * ─────────────────────────────────────────────────────────────────────────────
+ * Uses actual imports:
+ *   - mainsGS1Data, mainsGS2Data, mainsGS3Data, (mainsGS4Data) from 2025
+ *   - mainsGS1Data24, mainsGS2Data24, mainsGS3Data24, mainsGS4Data24 from 2024
+ * Merges both years for each GS paper, groups by `subject` field.
+ * ─────────────────────────────────────────────────────────────────────────────
+ */
 
 import { useState, useCallback, useMemo } from "react";
 import MatchTable from "../components/ui/MatchTable";
-import QuestionRenderer from "../components/ui/QuestionRenderer";
 import ExplanationBox from "../components/ui/ExplanationBox";
+import MainsQuestionCard from "../components/ui/MainsQuestionCard";
 import { useRevisionQueue } from "../hooks/useRevisionQueue";
-import { MAINS_PAPERS, getMainsPaperLink } from "../data/Mains_papers";
+import { getMainsPaperLink } from "../data/Mains_papers";
 import { useQuestionAttempts } from "../hooks/useQuestionAttempts";
-// ─── DATA IMPORTS ────────────────────────────────────────────────────────────
+
+// ─── PRELIMS DATA IMPORTS ─────────────────────────────────────────────────────
 import reasoningCSATData from "../data/Subjectwise/pre/CSAT/reasoningCSATData";
 import ComprehensionPYQData from "../data/Subjectwise/pre/CSAT/ComprehensionPYQData";
 import MathsData from "../data/Subjectwise/pre/CSAT/Maths";
@@ -21,8 +31,84 @@ import ArtCultureData from "../data/Subjectwise/pre/GS/artCulturePYQData";
 import SocialIssuesData from "../data/Subjectwise/pre/GS/Socialissues";
 import IRYData from "../data/Subjectwise/pre/GS/irypyq";
 
+// ─── MAINS DATA IMPORTS (2025) ────────────────────────────────────────────────
+import mainsGS1Data from "../data/Subjectwise/mains/2025/GS1";
+import mainsGS2Data from "../data/Subjectwise/mains/2025/GS2";
+import mainsGS3Data from "../data/Subjectwise/mains/2025/GS3";
+// import mainsGS4Data from "../data/Subjectwise/mains/2025/GS4"; // uncomment when available
 
-// ─── SUBJECT REGISTRY ─────────────────────────────────────────────────────────
+// ─── MAINS DATA IMPORTS (2024) ────────────────────────────────────────────────
+import mainsGS1Data24 from "../data/Subjectwise/mains/2024/GS1";
+import mainsGS2Data24 from "../data/Subjectwise/mains/2024/GS2";
+import mainsGS3Data24 from "../data/Subjectwise/mains/2024/GS3";
+import mainsGS4Data24 from "../data/Subjectwise/mains/2024/GS4";
+
+// ─── UTILITY: COMBINE MULTIPLE YEAR ARRAYS ────────────────────────────────────
+const combineData = (...arrays) => arrays.flat().filter(Boolean);
+
+// ─── COMBINED MAINS DATA (2025 + 2024) ────────────────────────────────────────
+const allGS1 = combineData(mainsGS1Data, mainsGS1Data24);
+const allGS2 = combineData(mainsGS2Data, mainsGS2Data24);
+const allGS3 = combineData(mainsGS3Data, mainsGS3Data24);
+const allGS4 = combineData(mainsGS4Data24 /*, mainsGS4Data */);
+
+// ─── SUBJECT COLOR MAPS FOR EACH GS PAPER ─────────────────────────────────────
+const GS1_SUBJECT_COLORS = {
+  History: "#c084fc",
+  Culture: "#f472b6",
+  Society: "#34d399",
+  Geography: "#60a5fa",
+  "Indian Society": "#34d399",
+  "Art & Culture": "#fcd34d",
+  "Post-independence consolidation": "#f97316",
+};
+
+const GS2_SUBJECT_COLORS = {
+  "Indian Polity": "#4F8EF7",
+  "International Relations": "#a78bfa",
+  Governance: "#34d399",
+  "Social Justice": "#f472b6",
+  Constitution: "#4F8EF7",
+  "Pressure Groups": "#f97316",
+};
+
+const GS3_SUBJECT_COLORS = {
+  Economy: "#4F8EF7",
+  Agriculture: "#fcd34d",
+  "Science & Technology": "#a78bfa",
+  Environment: "#6ee7b7",
+  "Internal Security": "#f97316",
+  "Disaster Management": "#fb923c",
+  "Economic Development": "#34d399",
+};
+
+const GS4_SUBJECT_COLORS = {
+  Ethics: "#f472b6",
+  Integrity: "#c084fc",
+  Aptitude: "#34d399",
+  "Case Studies": "#f97316",
+  "Emotional Intelligence": "#60a5fa",
+};
+
+// ─── GROUPING FUNCTION (preserves colors via map argument) ────────────────────
+function groupMainsDataBySubject(data, colorMap = {}) {
+  const map = {};
+  (data || []).forEach((q) => {
+    const subj = q.subject || "General";
+    if (!map[subj]) {
+      map[subj] = {
+        label: subj,
+        color: colorMap[subj] || "#a1a1aa",
+        data: [],
+        isMains: true,
+      };
+    }
+    map[subj].data.push(q);
+  });
+  return map;
+}
+
+// ─── SUBJECT REGISTRY (full Prelims + Mains) ──────────────────────────────────
 const SUBJECT_REGISTRY = {
   prelims: {
     label: "Prelims",
@@ -57,14 +143,35 @@ const SUBJECT_REGISTRY = {
   mains: {
     label: "Mains",
     papers: {
-      GS1: { label: "GS Paper I", color: "#4F8EF7", subjects: {} },
-      GS2: { label: "GS Paper II", color: "#34d399", subjects: {} },
-      GS3: { label: "GS Paper III", color: "#f97316", subjects: {} },
-      GS4: { label: "GS Paper IV", color: "#a78bfa", subjects: {} },
+      GS1: {
+        label: "GS Paper I",
+        color: "#4F8EF7",
+        isMains: true,
+        subjects: groupMainsDataBySubject(allGS1, GS1_SUBJECT_COLORS),
+      },
+      GS2: {
+        label: "GS Paper II",
+        color: "#34d399",
+        isMains: true,
+        subjects: groupMainsDataBySubject(allGS2, GS2_SUBJECT_COLORS),
+      },
+      GS3: {
+        label: "GS Paper III",
+        color: "#f97316",
+        isMains: true,
+        subjects: groupMainsDataBySubject(allGS3, GS3_SUBJECT_COLORS),
+      },
+      GS4: {
+        label: "GS Paper IV",
+        color: "#a78bfa",
+        isMains: true,
+        subjects: groupMainsDataBySubject(allGS4, GS4_SUBJECT_COLORS),
+      },
     },
   },
 };
 
+// ─── STYLE / DIFF META (unchanged) ────────────────────────────────────────────
 const STYLE_META = {
   analytical_reasoning: { label: "Analytical", bg: "rgba(79,142,247,0.12)", text: "#93c5fd", border: "rgba(79,142,247,0.3)" },
   syllogism_logic: { label: "Syllogism", bg: "rgba(167,139,250,0.12)", text: "#c4b5fd", border: "rgba(167,139,250,0.3)" },
@@ -77,25 +184,72 @@ const DIFF_META = {
   Hard: { bg: "rgba(248,113,113,0.12)", text: "#fca5a5", border: "rgba(248,113,113,0.3)" },
 };
 
-// ─── UTILITIES ────────────────────────────────────────────────────────────────
+// ─── UTILITIES (extract metadata) ─────────────────────────────────────────────
 const getYears = (d) => [...new Set((d || []).map((q) => q.year))].sort((a, b) => b - a);
 const getTopics = (d) => [...new Set((d || []).map((q) => q.topic).filter(Boolean))].sort();
 const getStyleTags = (d) => [...new Set((d || []).map((q) => q.styleTag).filter(Boolean))];
 const getDifficulties = (d) => [...new Set((d || []).map((q) => q.difficulty).filter(Boolean))];
+const getMarksOptions = (d) => [...new Set((d || []).map((q) => q.marks).filter(Boolean))].sort((a, b) => b - a);
+const getDirectives = (d) => [...new Set((d || []).map((q) => q.directive).filter(Boolean))].sort();
 
-// ─── MICRO COMPONENTS ────────────────────────────────────────────────────────
+// ─── GLOBAL RESPONSIVE STYLES (injected once) ─────────────────────────────────
+const GLOBAL_STYLES = `
+  .tw-root { box-sizing: border-box; }
+  .tw-root *, .tw-root *::before, .tw-root *::after { box-sizing: inherit; }
+  .tw-scroll-row { display: flex; gap: 6px; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; padding-bottom: 2px; }
+  .tw-scroll-row::-webkit-scrollbar { display: none; }
+  .tw-tab-bar { display: flex; width: 100%; border: 0.5px solid var(--bg-border); border-radius: 10px; overflow: hidden; }
+  .tw-tab-bar button { flex: 1; min-height: 44px; border: none; cursor: pointer; transition: background 0.15s, color 0.15s; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; }
+  .tw-stage-bar { display: flex; width: 100%; border: 0.5px solid var(--bg-border); border-radius: 10px; overflow: hidden; margin-bottom: 16px; }
+  .tw-stage-bar button { flex: 1; min-height: 48px; border: none; cursor: pointer; transition: background 0.15s, color 0.15s; font-family: 'DM Sans', sans-serif; font-size: 16px; font-weight: 500; text-transform: capitalize; }
+  .tw-stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 20px; }
+  @media (min-width: 480px) { .tw-stats-grid { grid-template-columns: repeat(4, 1fr); } }
+  .tw-top-bar { display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px; }
+  @media (min-width: 560px) { .tw-top-bar { flex-direction: row; justify-content: space-between; align-items: flex-start; margin-bottom: 32px; } }
+  .tw-top-count { display: flex; align-items: baseline; gap: 8px; }
+  @media (min-width: 560px) { .tw-top-count { flex-direction: column; align-items: flex-end; gap: 2px; } }
+  .tw-card-pad { padding: 12px; }
+  .tw-card-padx { padding-left: 12px; padding-right: 12px; }
+  @media (min-width: 480px) { .tw-card-pad { padding: 16px 20px; } .tw-card-padx { padding-left: 20px; padding-right: 20px; } }
+  .tw-page { padding: 16px 12px 40px; }
+  @media (min-width: 480px) { .tw-page { padding: 24px 16px 48px; } }
+  @media (min-width: 768px) { .tw-page { padding: 32px 24px 64px; } }
+  .tw-option { display: flex; gap: 12px; align-items: flex-start; padding: 12px; border-radius: 8px; cursor: pointer; transition: background 0.15s, border-color 0.15s; margin-bottom: 6px; min-height: 48px; font-family: 'DM Sans', sans-serif; -webkit-tap-highlight-color: transparent; user-select: none; }
+  @media (min-width: 480px) { .tw-option { padding: 10px 14px; } }
+  .tw-filter-row { display: flex; align-items: center; gap: 6px; }
+  .tw-filter-label { font-size: 10px; color: var(--text-muted); font-family: 'DM Mono', monospace; flex-shrink: 0; width: 40px; }
+  .tw-filter-chips { display: flex; gap: 5px; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; flex: 1; padding-bottom: 2px; }
+  .tw-filter-chips::-webkit-scrollbar { display: none; }
+  .tw-paper-header { display: flex; align-items: center; gap: 12px; padding: 14px 12px; cursor: pointer; user-select: none; min-height: 60px; -webkit-tap-highlight-color: transparent; }
+  @media (min-width: 480px) { .tw-paper-header { padding: 18px 20px; } }
+  .tw-subject-tabs { display: flex; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; border-bottom: 0.5px solid var(--bg-border); padding: 0 4px; }
+  .tw-subject-tabs::-webkit-scrollbar { display: none; }
+  .tw-subject-tabs button { padding: 10px 14px; flex-shrink: 0; background: transparent; border: none; cursor: pointer; white-space: nowrap; transition: color 0.15s; font-family: 'DM Sans', sans-serif; font-size: 13px; min-height: 44px; }
+  .tw-qtext { font-size: 14px; font-weight: 500; color: var(--text-primary); line-height: 1.7; word-break: break-word; overflow-wrap: anywhere; }
+`;
+
+function GlobalStyles() { return <style>{GLOBAL_STYLES}</style>; }
+
+// ─── MICRO COMPONENTS (Chip, Tag, YearBadge, StatCard, PinButton) ─────────────
 function Chip({ label, active, color, onClick }) {
   return (
-    <button onClick={onClick} style={{
-      fontSize: 11, padding: "4px 12px", borderRadius: 20,
-      border: active ? `0.5px solid ${color}` : "0.5px solid var(--bg-border)",
-      background: active ? `${color}22` : "transparent",
-      color: active ? color : "var(--text-muted)",
-      cursor: "pointer", fontWeight: active ? 600 : 400, whiteSpace: "nowrap",
-      transition: "all .15s", fontFamily: "'DM Mono', monospace", letterSpacing: "0.03em",
-    }}>{label}</button>
+    <button
+      onClick={onClick}
+      style={{
+        fontSize: 11, padding: "5px 12px", borderRadius: 20, flexShrink: 0,
+        border: active ? `0.5px solid ${color}` : "0.5px solid var(--bg-border)",
+        background: active ? `${color}22` : "transparent",
+        color: active ? color : "var(--text-muted)",
+        cursor: "pointer", fontWeight: active ? 600 : 400, whiteSpace: "nowrap",
+        transition: "all .15s", fontFamily: "'DM Mono', monospace",
+        minHeight: 30, WebkitTapHighlightColor: "transparent",
+      }}
+    >
+      {label}
+    </button>
   );
 }
+
 function Tag({ label, meta }) {
   if (!meta) return null;
   return (
@@ -103,45 +257,62 @@ function Tag({ label, meta }) {
       fontSize: 10, padding: "2px 8px", borderRadius: 20,
       border: `0.5px solid ${meta.border}`, background: meta.bg, color: meta.text,
       fontWeight: 500, whiteSpace: "nowrap", fontFamily: "'DM Mono', monospace",
-    }}>{meta.label || label}</span>
+      flexShrink: 0,
+    }}>
+      {meta.label || label}
+    </span>
   );
 }
+
 function YearBadge({ year }) {
+  if (!year) return null;
   return (
     <span style={{
       fontSize: 10, padding: "2px 8px", borderRadius: 4,
       border: "0.5px solid var(--bg-border)", background: "var(--bg-muted)",
       color: "var(--text-muted)", fontFamily: "'DM Mono', monospace",
-      letterSpacing: "0.04em", fontWeight: 600,
-    }}>{year}</span>
+      letterSpacing: "0.04em", fontWeight: 600, flexShrink: 0,
+    }}>
+      {year}
+    </span>
   );
 }
-function StatPill({ value, label, color }) {
+
+function StatCard({ value, label, color }) {
   return (
     <div style={{
-      display: "flex", flexDirection: "column", alignItems: "center", gap: 2,
-      padding: "10px 18px", background: "var(--bg-surface)",
-      border: "0.5px solid var(--bg-border)", borderTop: `2px solid ${color}`,
-      borderRadius: 10, minWidth: 64, boxShadow: "var(--shadow-sm)",
+      display: "flex", flexDirection: "column", alignItems: "center",
+      justifyContent: "center", gap: 3,
+      padding: "12px 8px",
+      background: "var(--bg-surface)",
+      border: "0.5px solid var(--bg-border)",
+      borderTop: `3px solid ${color}`,
+      borderRadius: 10,
+      boxShadow: "var(--shadow-sm)",
     }}>
-      <span style={{ fontSize: 22, fontWeight: 700, color: "var(--text-primary)", lineHeight: 1, fontFamily: "'Playfair Display', Georgia, serif" }}>{value}</span>
-      <span style={{ fontSize: 10, color: "var(--text-muted)", fontFamily: "'DM Mono', monospace" }}>{label}</span>
+      <span style={{ fontSize: 24, fontWeight: 700, color: "var(--text-primary)", lineHeight: 1, fontFamily: "'Playfair Display', Georgia, serif" }}>
+        {value}
+      </span>
+      <span style={{ fontSize: 10, color: "var(--text-muted)", fontFamily: "'DM Mono', monospace", textAlign: "center" }}>
+        {label}
+      </span>
     </div>
   );
 }
 
-// ─── PIN BUTTON ───────────────────────────────────────────────────────────────
 function PinButton({ pinned, onClick }) {
   return (
     <button
-      onClick={onClick}
-      title={pinned ? "Remove from Revision Queue" : "Pin to Revision Queue"}
+      onClick={e => { e.stopPropagation(); onClick(); }}
+      title={pinned ? "Unpin" : "Pin to revision"}
       style={{
-        fontSize: 14, padding: "5px 8px", borderRadius: 8,
+        fontSize: 16, width: 36, height: 36, borderRadius: 8, flexShrink: 0,
         border: pinned ? "0.5px solid #fbbf24" : "0.5px solid var(--bg-border)",
         background: pinned ? "rgba(251,191,36,0.15)" : "transparent",
         color: pinned ? "#fbbf24" : "var(--text-muted)",
         cursor: "pointer", transition: "all .15s", lineHeight: 1,
+        display: "flex", alignItems: "center", justifyContent: "center",
+        WebkitTapHighlightColor: "transparent",
       }}
     >
       {pinned ? "📌" : "📍"}
@@ -149,436 +320,327 @@ function PinButton({ pinned, onClick }) {
   );
 }
 
-// ─── QUESTION CARD ────────────────────────────────────────────────────────────
-function QuestionCard({ q, index, accentColor, revQueue, subjectMeta, onCorrect, recordAttempt,
-  attemptedIds }) {
+// ─── FILTER PANEL (collapsible on mobile) ─────────────────────────────────────
+function FilterPanel({ children, accentColor }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div style={{ marginBottom: 14 }}>
+      <button
+        onClick={() => setOpen(v => !v)}
+        style={{
+          display: "flex", alignItems: "center", gap: 8,
+          width: "100%", padding: "9px 12px",
+          background: "var(--bg-surface)", border: "0.5px solid var(--bg-border)",
+          borderRadius: open ? "8px 8px 0 0" : 8,
+          color: "var(--text-muted)", cursor: "pointer",
+          fontFamily: "'DM Mono', monospace", fontSize: 11,
+          fontWeight: 600, letterSpacing: "0.06em",
+          WebkitTapHighlightColor: "transparent",
+        }}
+      >
+        <span style={{ color: accentColor }}>⊞</span>
+        <span>FILTERS</span>
+        <span style={{ marginLeft: "auto", transition: "transform 0.2s", display: "inline-block", transform: open ? "rotate(180deg)" : "rotate(0deg)" }}>▾</span>
+      </button>
+      {open && (
+        <div style={{
+          border: "0.5px solid var(--bg-border)", borderTop: "none",
+          borderRadius: "0 0 8px 8px",
+          padding: "10px 12px",
+          background: "var(--bg-muted)",
+          display: "flex", flexDirection: "column", gap: 10,
+        }}>
+          {children}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── PRELIMS QUESTION CARD ────────────────────────────────────────────────────
+function QuestionCard({ q, index, accentColor, revQueue, subjectMeta, onCorrect, recordAttempt, attemptedIds }) {
   const [showAnswer, setShowAnswer] = useState(false);
   const [selected, setSelected] = useState(null);
-  const [hovered, setHovered] = useState(false);
-
   const qId = q._id || q.id || `q-${index}`;
   const solved = attemptedIds?.has(qId);
   const pinned = revQueue.isPinned(qId);
-
   const styleMeta = STYLE_META[q.styleTag];
   const diffMeta = DIFF_META[q.difficulty];
   const isCorrect = selected === q.correctOption;
   const isRevealed = showAnswer || selected !== null;
 
   function getOptionStyle(id) {
-    const base = {
-      display: "flex", gap: 12, alignItems: "flex-start",
-      padding: "10px 14px", borderRadius: 8,
-      border: "0.5px solid var(--bg-border)", background: "var(--bg-muted)",
-      cursor: "pointer", transition: "all .15s", marginBottom: 6,
-      fontFamily: "'DM Sans', sans-serif",
-    };
-    if (!isRevealed) return { ...base, ...(selected === id ? { border: `0.5px solid ${accentColor}`, background: `${accentColor}18` } : {}) };
-    if (id === q.correctOption) return { ...base, border: "0.5px solid rgba(52,211,153,0.5)", background: "rgba(52,211,153,0.08)", color: "#6ee7b7" };
-    if (selected === id && id !== q.correctOption) return { ...base, border: "0.5px solid rgba(248,113,113,0.5)", background: "rgba(248,113,113,0.08)", color: "#fca5a5" };
-    return { ...base, opacity: 0.5 };
+    const base = { border: "0.5px solid var(--bg-border)", background: "var(--bg-muted)", color: "var(--text-primary)" };
+    if (!isRevealed) return selected === id ? { border: `0.5px solid ${accentColor}`, background: `${accentColor}18`, color: "var(--text-primary)" } : base;
+    if (id === q.correctOption) return { border: "0.5px solid rgba(52,211,153,0.5)", background: "rgba(52,211,153,0.08)", color: "#6ee7b7" };
+    if (selected === id) return { border: "0.5px solid rgba(248,113,113,0.5)", background: "rgba(248,113,113,0.08)", color: "#fca5a5" };
+    return { ...base, opacity: 0.45 };
   }
-  function getOptionMarker(id) {
+  function getMarker(id) {
     if (!isRevealed) return { text: id, color: "var(--text-muted)" };
     if (id === q.correctOption) return { text: "✓", color: "#6ee7b7" };
     if (selected === id) return { text: "✗", color: "#fca5a5" };
     return { text: id, color: "var(--text-muted)" };
   }
-  const getQuestionId = (q, index) =>
-    q._id || q.id || `q-${index}`;
-  return (
-    <div
-      style={{
-        background: solved
-          ? "rgba(52,211,153,0.03)"
-          : "var(--bg-surface)",
 
-        opacity: solved ? 0.82 : 1, border: "0.5px solid var(--bg-border)",
-        borderRadius: 14, overflow: "hidden",
-        boxShadow: hovered ? "var(--shadow-md)" : "var(--shadow-sm)",
-        transition: "box-shadow .2s", borderLeft: `3px solid ${accentColor}`,
-        outline: pinned ? "1px solid rgba(251,191,36,0.4)" : "none",
-      }}
-      onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}
-    >
-      {/* Card Header */}
-      <div style={{ padding: "16px 20px 12px", borderBottom: "0.5px solid var(--bg-border)", display: "flex", alignItems: "flex-start", gap: 12 }}>
-        <div style={{
-          display: "flex",
-          alignItems: "center",
-          gap: 6, fontSize: 12, fontWeight: 700, color: accentColor, fontFamily: "'DM Mono', monospace", minWidth: 28, paddingTop: 2
-        }}>
+  return (
+    <div style={{
+      background: solved ? "rgba(52,211,153,0.03)" : "var(--bg-surface)",
+      border: "0.5px solid var(--bg-border)", borderLeft: `3px solid ${accentColor}`,
+      borderRadius: 14, overflow: "hidden", boxShadow: "var(--shadow-sm)",
+      ...(pinned ? { outline: "1px solid rgba(251,191,36,0.4)" } : {}),
+    }}>
+      <div className="tw-card-pad" style={{ borderBottom: "0.5px solid var(--bg-border)", display: "flex", alignItems: "flex-start", gap: 10 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 11, fontWeight: 700, color: accentColor, fontFamily: "'DM Mono', monospace", flexShrink: 0, paddingTop: 2 }}>
           Q{index + 1}
-          {solved && (
-            <span
-              style={{
-                width: 8,
-                height: 8,
-                borderRadius: "50%",
-                background: "#6ee7b7",
-                display: "inline-block",
-                marginLeft: 6,
-              }}
-            />
-          )}
+          {solved && <span style={{ width: 7, height: 7, borderRadius: "50%", background: "#6ee7b7", display: "inline-block" }} />}
         </div>
-        <div style={{ flex: 1 }}>
+        <div className="tw-qtext" style={{ flex: 1 }}>
           {(() => {
             const text = q.questionText || "";
-            if (typeof text === "string" && text.includes("|")) {
-              const parts = text.split("\n");
-              const normalBefore = [], tableLines = [], normalAfter = [];
-              let reachedTable = false;
-              parts.forEach(line => {
-                if (line.trim().startsWith("|")) { reachedTable = true; tableLines.push(line); }
-                else if (reachedTable) normalAfter.push(line);
-                else normalBefore.push(line);
+            if (text.includes("|")) {
+              const lines = text.split("\n");
+              const before = [], table = [], after = [];
+              let inTable = false;
+              lines.forEach(l => {
+                if (l.trim().startsWith("|")) { inTable = true; table.push(l); }
+                else if (inTable) after.push(l);
+                else before.push(l);
               });
               return (
-                <div style={{ fontSize: 14, fontWeight: 500, color: "var(--text-primary)", lineHeight: 1.65 }}>
-                  <div style={{ whiteSpace: "pre-wrap", marginBottom: 6 }}>{normalBefore.join("\n")}</div>
-                  <MatchTable dataString={tableLines.join("\n")} />
-                  <div style={{ whiteSpace: "pre-wrap", marginTop: 6 }}>{normalAfter.join("\n")}</div>
-                </div>
+                <>
+                  {before.join("\n").trim() && <div style={{ marginBottom: 6, wordBreak: "break-word" }}>{before.join("\n").trim()}</div>}
+                  <div style={{ overflowX: "auto", WebkitOverflowScrolling: "touch" }}><MatchTable dataString={table.join("\n")} /></div>
+                  {after.join("\n").trim() && <div style={{ marginTop: 6 }}>{after.join("\n").trim()}</div>}
+                </>
               );
             }
-            return <div style={{ fontSize: 14, fontWeight: 500, color: "var(--text-primary)", lineHeight: 1.65, whiteSpace: "pre-wrap" }}>{text}</div>;
+            return <span>{text}</span>;
           })()}
         </div>
-        {/* Pin button */}
         <PinButton pinned={pinned} onClick={() => revQueue.toggle({ ...q, _id: qId }, subjectMeta)} />
       </div>
-
-      {/* Tags Row */}
-      <div style={{ padding: "10px 20px", display: "flex", gap: 6, flexWrap: "wrap", alignItems: "center", borderBottom: "0.5px solid var(--bg-border)" }}>
+      <div className="tw-card-padx" style={{ paddingTop: 8, paddingBottom: 8, display: "flex", gap: 5, flexWrap: "wrap", alignItems: "center", borderBottom: "0.5px solid var(--bg-border)" }}>
         <YearBadge year={q.year} />
         {styleMeta && <Tag label={q.styleTag} meta={styleMeta} />}
         {diffMeta && <Tag label={q.difficulty} meta={diffMeta} />}
-        {q.subTopic && (
-          <span style={{ fontSize: 10, padding: "2px 8px", borderRadius: 20, border: "0.5px solid var(--bg-border)", background: "var(--bg-muted)", color: "var(--text-muted)", fontFamily: "'DM Mono', monospace" }}>
-            {q.subTopic}
-          </span>
-        )}
-        {pinned && <span style={{ fontSize: 10, padding: "2px 8px", borderRadius: 20, background: "rgba(251,191,36,0.12)", color: "#fbbf24", border: "0.5px solid rgba(251,191,36,0.3)", fontFamily: "'DM Mono', monospace" }}>pinned</span>}
+        {q.subTopic && <span style={{ fontSize: 10, padding: "2px 8px", borderRadius: 20, border: "0.5px solid var(--bg-border)", background: "var(--bg-muted)", color: "var(--text-muted)", fontFamily: "'DM Mono', monospace", maxWidth: 160, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={q.subTopic}>{q.subTopic}</span>}
       </div>
-
-      {/* Options */}
-      <div style={{ padding: "14px 20px" }}>
+      <div className="tw-card-padx" style={{ paddingTop: 12, paddingBottom: 4 }}>
         {(q.options || []).map(opt => {
-          const marker = getOptionMarker(opt.id);
+          const marker = getMarker(opt.id);
           return (
-            <div key={opt.id} style={getOptionStyle(opt.id)} onClick={() => {
-              if (!isRevealed) {
-                setSelected(opt.id);
-
-                const result =
-                  opt.id === q.correctOption
-                    ? "correct"
-                    : "wrong";
-
-                recordAttempt?.(
-                  {
-                    id: qId,
-                    questionText: q.questionText,
-                    topic: q.topic,
-                    subTopic: q.subTopic,
-                    difficulty: q.difficulty,
-                    year: q.year,
-                  },
-                  result,
-                  {
-                    subject: subjectMeta?.subject,
-                    paper: subjectMeta?.paper,
-                  }
-                );
-
-                if (result === "correct" && onCorrect) {
-                  onCorrect(q.topic, q.subTopic);
-                }
-              }
-            }}>              <span style={{ fontSize: 11, fontWeight: 700, color: marker.color, minWidth: 18, fontFamily: "'DM Mono', monospace", paddingTop: 1, transition: "color .15s" }}>{marker.text}</span>
-              <span style={{ fontSize: 13, color: "var(--text-primary)", lineHeight: 1.55 }}>{opt.text}</span>
+            <div key={opt.id} className="tw-option" style={getOptionStyle(opt.id)} onClick={() => {
+              if (isRevealed) return;
+              setSelected(opt.id);
+              const result = opt.id === q.correctOption ? "correct" : "wrong";
+              recordAttempt?.({ id: qId, questionText: q.questionText, topic: q.topic, subTopic: q.subTopic, difficulty: q.difficulty, year: q.year }, result, { subject: subjectMeta?.subject, paper: subjectMeta?.paper });
+              if (result === "correct" && onCorrect) onCorrect(q.topic, q.subTopic);
+            }}>
+              <span style={{ fontSize: 11, fontWeight: 700, color: marker.color, minWidth: 18, fontFamily: "'DM Mono', monospace", paddingTop: 1, flexShrink: 0 }}>{marker.text}</span>
+              <span style={{ fontSize: 13, lineHeight: 1.6, wordBreak: "break-word", flex: 1 }}>{opt.text}</span>
             </div>
           );
         })}
       </div>
-
-      {/* Action Row */}
-      <div style={{ padding: "10px 20px 16px", display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
-        <button onClick={() => setShowAnswer(v => !v)} style={{ fontSize: 12, padding: "6px 16px", borderRadius: 8, border: `0.5px solid ${accentColor}`, background: showAnswer ? `${accentColor}22` : "transparent", color: accentColor, cursor: "pointer", fontWeight: 500, transition: "all .15s", fontFamily: "'DM Sans', sans-serif" }}>
-          {showAnswer ? "Hide Explanation" : "Show Explanation"}
-        </button>
-        {selected !== null && (
-          <button onClick={() => { setSelected(null); setShowAnswer(false); }} style={{ fontSize: 12, padding: "6px 14px", borderRadius: 8, border: "0.5px solid var(--bg-border)", background: "transparent", color: "var(--text-muted)", cursor: "pointer", fontFamily: "'DM Sans', sans-serif" }}>
-            Reset
-          </button>
-        )}
-        {selected !== null && (
-          <span style={{ fontSize: 11, color: isCorrect ? "#6ee7b7" : "#fca5a5", fontWeight: 600, fontFamily: "'DM Mono', monospace" }}>
-            {isCorrect ? "✓ Correct" : `✗ Answer: ${q.correctOption}`}
-          </span>
-        )}
+      <div className="tw-card-padx" style={{ paddingTop: 10, paddingBottom: 14, display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+        <button onClick={() => setShowAnswer(v => !v)} style={{ fontSize: 12, padding: "8px 16px", borderRadius: 8, minHeight: 36, border: `0.5px solid ${accentColor}`, background: showAnswer ? `${accentColor}22` : "transparent", color: accentColor, cursor: "pointer", fontWeight: 500, fontFamily: "'DM Sans', sans-serif" }}>{showAnswer ? "Hide Explanation" : "Show Explanation"}</button>
+        {selected !== null && <button onClick={() => { setSelected(null); setShowAnswer(false); }} style={{ fontSize: 12, padding: "8px 12px", borderRadius: 8, minHeight: 36, border: "0.5px solid var(--bg-border)", background: "transparent", color: "var(--text-muted)", cursor: "pointer", fontFamily: "'DM Sans', sans-serif" }}>Reset</button>}
+        {selected !== null && <span style={{ fontSize: 11, color: isCorrect ? "#6ee7b7" : "#fca5a5", fontWeight: 600, fontFamily: "'DM Mono', monospace" }}>{isCorrect ? "✓ Correct" : `✗ Ans: ${q.correctOption}`}</span>}
       </div>
-
       {showAnswer && q.explanation && <ExplanationBox text={q.explanation} accentColor={accentColor} sources={q.sources} />}
     </div>
   );
 }
 
-// ─── SUBJECT PANEL ────────────────────────────────────────────────────────────
-function SubjectPanel({ subject, subjectKey, accentColor, revQueue, onTopicComplete, paperLabel ,  recordAttempt,
-  attemptedIds,}) {
+// ─── MAINS SUBJECT PANEL ──────────────────────────────────────────────────────
+function MainsSubjectPanel({ subject, accentColor }) {
+  const rawData = subject.data || [];
+  const [yearFilter, setYearFilter] = useState("All");
+  const [topicFilter, setTopicFilter] = useState("All");
+  const [marksFilter, setMarksFilter] = useState("All");
+  const [directiveFilter, setDirectiveFilter] = useState("All");
+  const [search, setSearch] = useState("");
+
+  const years = useMemo(() => getYears(rawData), [rawData]);
+  const topics = useMemo(() => getTopics(rawData), [rawData]);
+  const marksOpts = useMemo(() => getMarksOptions(rawData), [rawData]);
+  const directives = useMemo(() => getDirectives(rawData), [rawData]);
+
+  const filtered = useMemo(() => rawData.filter(q => {
+    if (yearFilter !== "All" && String(q.year) !== String(yearFilter)) return false;
+    if (topicFilter !== "All" && q.topic !== topicFilter) return false;
+    if (marksFilter !== "All" && String(q.marks) !== String(marksFilter)) return false;
+    if (directiveFilter !== "All" && q.directive !== directiveFilter) return false;
+    if (search.trim()) {
+      const s = search.toLowerCase();
+      if (!q.questionText?.toLowerCase().includes(s) && !q.topic?.toLowerCase().includes(s) && !q.subTopic?.toLowerCase().includes(s) && !q.idealAnswer?.toLowerCase().includes(s)) return false;
+    }
+    return true;
+  }), [rawData, yearFilter, topicFilter, marksFilter, directiveFilter, search]);
+
+  const clearFilters = () => { setYearFilter("All"); setTopicFilter("All"); setMarksFilter("All"); setDirectiveFilter("All"); setSearch(""); };
+
+  return (
+    <div>
+      <div className="tw-stats-grid">
+        <StatCard value={rawData.length} label="Questions" color={accentColor} />
+        <StatCard value={topics.length} label="Topics" color="var(--accent-gold)" />
+        <StatCard value={rawData.filter(q => q.marks === 15).length} label="15-Mark" color="#fcd34d" />
+        <StatCard value={rawData.filter(q => q.marks === 10).length} label="10-Mark" color="#93c5fd" />
+      </div>
+      <div style={{ position: "relative", marginBottom: 10 }}>
+        <input type="search" value={search} onChange={e => setSearch(e.target.value)} placeholder="Search questions, topics…" style={{ width: "100%", padding: "10px 14px 10px 36px", fontSize: 13, background: "var(--bg-surface)", border: "0.5px solid var(--bg-border)", borderRadius: 10, color: "var(--text-primary)", outline: "none", fontFamily: "'DM Sans', sans-serif", boxSizing: "border-box" }} onFocus={e => e.target.style.borderColor = accentColor} onBlur={e => e.target.style.borderColor = "var(--bg-border)"} />
+        <span style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: "var(--text-muted)", fontSize: 14, pointerEvents: "none" }}>⌕</span>
+      </div>
+      <FilterPanel accentColor={accentColor}>
+        {years.length > 1 && <div className="tw-filter-row"><span className="tw-filter-label">YEAR</span><div className="tw-filter-chips"><Chip label="All" active={yearFilter === "All"} color={accentColor} onClick={() => setYearFilter("All")} />{years.map(y => <Chip key={y} label={String(y)} active={yearFilter === String(y)} color={accentColor} onClick={() => setYearFilter(String(y))} />)}</div></div>}
+        {topics.length > 1 && <div className="tw-filter-row"><span className="tw-filter-label">TOPIC</span><div className="tw-filter-chips"><Chip label="All" active={topicFilter === "All"} color={accentColor} onClick={() => setTopicFilter("All")} />{topics.map(t => <Chip key={t} label={t} active={topicFilter === t} color={accentColor} onClick={() => setTopicFilter(t)} />)}</div></div>}
+        {marksOpts.length > 1 && <div className="tw-filter-row"><span className="tw-filter-label">MARKS</span><div className="tw-filter-chips"><Chip label="All" active={marksFilter === "All"} color={accentColor} onClick={() => setMarksFilter("All")} />{marksOpts.map(m => <Chip key={m} label={`${m}M`} active={marksFilter === String(m)} color={accentColor} onClick={() => setMarksFilter(String(m))} />)}</div></div>}
+        {directives.length > 1 && <div className="tw-filter-row"><span className="tw-filter-label">STYLE</span><div className="tw-filter-chips"><Chip label="All" active={directiveFilter === "All"} color={accentColor} onClick={() => setDirectiveFilter("All")} />{directives.map(d => <Chip key={d} label={d} active={directiveFilter === d} color={accentColor} onClick={() => setDirectiveFilter(d)} />)}</div></div>}
+      </FilterPanel>
+      <div style={{ fontSize: 11, color: "var(--text-muted)", marginBottom: 12, fontFamily: "'DM Mono', monospace", display: "flex", alignItems: "center", gap: 10, paddingBottom: 12, borderBottom: "0.5px solid var(--bg-border)" }}>
+        <span>{filtered.length} of {rawData.length}</span>
+        {filtered.length !== rawData.length && <button onClick={clearFilters} style={{ fontSize: 10, padding: "3px 10px", borderRadius: 20, border: "0.5px solid var(--bg-border)", background: "transparent", color: "var(--text-muted)", cursor: "pointer", fontFamily: "'DM Mono', monospace" }}>Clear</button>}
+      </div>
+      <div style={{ marginBottom: 14, padding: "9px 12px", borderRadius: 8, background: `${accentColor}0a`, border: `0.5px solid ${accentColor}25`, fontSize: 12, color: "var(--text-muted)", fontFamily: "'DM Mono', monospace", lineHeight: 1.5 }}>💡 <strong style={{ color: accentColor }}>Hints</strong> → plan &nbsp;·&nbsp; <strong style={{ color: accentColor }}>Practice</strong> → draft &nbsp;·&nbsp; <strong style={{ color: accentColor }}>Model Answer</strong> → compare</div>
+      {filtered.length === 0 ? (
+        <div style={{ padding: "40px 16px", textAlign: "center", color: "var(--text-muted)", fontSize: 13, fontFamily: "'DM Mono', monospace", background: "var(--bg-surface)", border: "0.5px solid var(--bg-border)", borderRadius: 12 }}>No questions match the filters.</div>
+      ) : (
+        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>{filtered.map((q, i) => <MainsQuestionCard key={q._id || i} q={q} index={i} accentColor={subject.color || accentColor} />)}</div>
+      )}
+    </div>
+  );
+}
+
+// ─── PRELIMS SUBJECT PANEL ────────────────────────────────────────────────────
+function SubjectPanel({ subject, subjectKey, accentColor, revQueue, onTopicComplete, paperLabel, recordAttempt, attemptedIds }) {
   const rawData = subject.data || [];
   const [yearFilter, setYearFilter] = useState("All");
   const [topicFilter, setTopicFilter] = useState("All");
   const [styleFilter, setStyleFilter] = useState("All");
   const [diffFilter, setDiffFilter] = useState("All");
   const [search, setSearch] = useState("");
-  const [showOnlyPinned, setShowOnlyPinned] = useState(false);
+  const [pinnedOnly, setPinnedOnly] = useState(false);
 
   const years = useMemo(() => getYears(rawData), [rawData]);
   const topics = useMemo(() => getTopics(rawData), [rawData]);
   const styles = useMemo(() => getStyleTags(rawData), [rawData]);
   const diffs = useMemo(() => getDifficulties(rawData), [rawData]);
 
-  const filtered = useMemo(() => {
-    return rawData.filter(q => {
-      if (yearFilter !== "All" && String(q.year) !== String(yearFilter)) return false;
-      if (topicFilter !== "All" && q.topic !== topicFilter) return false;
-      if (styleFilter !== "All" && q.styleTag !== styleFilter) return false;
-      if (diffFilter !== "All" && q.difficulty !== diffFilter) return false;
-      if (showOnlyPinned && !revQueue.isPinned(q._id || q.id || `q-${i}`)) return false;
-      if (search.trim()) {
-        const s = search.toLowerCase();
-        if (!q.questionText?.toLowerCase().includes(s) && !q.topic?.toLowerCase().includes(s) && !q.subTopic?.toLowerCase().includes(s)) return false;
-      }
-      return true;
-    });
-  }, [rawData, yearFilter, topicFilter, styleFilter, diffFilter, search, showOnlyPinned, revQueue]);
+  const filtered = useMemo(() => rawData.filter((q, i) => {
+    if (yearFilter !== "All" && String(q.year) !== String(yearFilter)) return false;
+    if (topicFilter !== "All" && q.topic !== topicFilter) return false;
+    if (styleFilter !== "All" && q.styleTag !== styleFilter) return false;
+    if (diffFilter !== "All" && q.difficulty !== diffFilter) return false;
+    if (pinnedOnly && !revQueue.isPinned(q._id || q.id || `q-${i}`)) return false;
+    if (search.trim()) { const s = search.toLowerCase(); if (!q.questionText?.toLowerCase().includes(s) && !q.topic?.toLowerCase().includes(s) && !q.subTopic?.toLowerCase().includes(s)) return false; }
+    return true;
+  }), [rawData, yearFilter, topicFilter, styleFilter, diffFilter, search, pinnedOnly, revQueue]);
 
   const totalQ = rawData.length;
-  const easyCount = rawData.filter(q => q.difficulty === "Easy").length;
-  const hardCount = rawData.filter(q => q.difficulty === "Hard").length;
-  const yearCount = years.length;
-  const pinnedCount = rawData.filter(q => revQueue.isPinned(q._id || q.id || `q-${i}`)).length;
-
   const subjectMeta = { subject: subject.label, paper: paperLabel };
-
-  // Feature 1: topic completion → syllabus update notifier
-  const completedTopics = useMemo(() => {
-    const done = new Set();
-    rawData.forEach(q => { if (revQueue.isPinned(q._id || q.id || `q-${i}`) || q.difficulty === "Easy") done.add(q.topic); });
-    return done;
-  }, [rawData, revQueue]);
+  const pinnedCount = rawData.filter((q, i) => revQueue.isPinned(q._id || q.id || `q-${i}`)).length;
+  const clearFilters = () => { setYearFilter("All"); setTopicFilter("All"); setStyleFilter("All"); setDiffFilter("All"); setSearch(""); setPinnedOnly(false); };
 
   return (
     <div>
-      {/* Stats */}
-      <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 20 }}>
-        <StatPill value={totalQ} label="Questions" color={accentColor} />
-        <StatPill value={yearCount} label="Years" color="var(--accent-blue)" />
-        <StatPill value={easyCount} label="Easy" color="var(--accent-green)" />
-        <StatPill value={hardCount} label="Hard" color="#f87171" />
-        <StatPill value={topics.length} label="Topics" color="var(--accent-gold)" />
-        {pinnedCount > 0 && <StatPill value={pinnedCount} label="Pinned" color="#fbbf24" />}
+      <div className="tw-stats-grid">
+        <StatCard value={totalQ} label="Questions" color={accentColor} />
+        <StatCard value={years.length} label="Years" color="var(--accent-blue)" />
+        <StatCard value={rawData.filter(q => q.difficulty === "Easy").length} label="Easy" color="var(--accent-green)" />
+        <StatCard value={rawData.filter(q => q.difficulty === "Hard").length} label="Hard" color="#f87171" />
       </div>
-
-      {/* Search + Pin Filter */}
-      <div style={{ display: "flex", gap: 8, marginBottom: 16, alignItems: "center" }}>
+      <div style={{ display: "flex", gap: 8, marginBottom: 10, alignItems: "stretch" }}>
         <div style={{ position: "relative", flex: 1 }}>
-          <input type="text" value={search} onChange={e => setSearch(e.target.value)}
-            placeholder="Search questions, topics…"
-            style={{ width: "100%", padding: "9px 14px 9px 36px", fontSize: 13, background: "var(--bg-surface)", border: "0.5px solid var(--bg-border)", borderRadius: 10, color: "var(--text-primary)", outline: "none", fontFamily: "'DM Sans', sans-serif", boxSizing: "border-box" }}
-            onFocus={e => (e.target.style.borderColor = accentColor)}
-            onBlur={e => (e.target.style.borderColor = "var(--bg-border)")}
-          />
+          <input type="search" value={search} onChange={e => setSearch(e.target.value)} placeholder="Search questions…" style={{ width: "100%", padding: "10px 14px 10px 36px", fontSize: 13, background: "var(--bg-surface)", border: "0.5px solid var(--bg-border)", borderRadius: 10, color: "var(--text-primary)", outline: "none", fontFamily: "'DM Sans', sans-serif", boxSizing: "border-box", height: "100%" }} onFocus={e => e.target.style.borderColor = accentColor} onBlur={e => e.target.style.borderColor = "var(--bg-border)"} />
           <span style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: "var(--text-muted)", fontSize: 14, pointerEvents: "none" }}>⌕</span>
         </div>
-        <button onClick={() => setShowOnlyPinned(v => !v)} style={{
-          fontSize: 12, padding: "8px 14px", borderRadius: 10, whiteSpace: "nowrap",
-          border: showOnlyPinned ? "0.5px solid #fbbf24" : "0.5px solid var(--bg-border)",
-          background: showOnlyPinned ? "rgba(251,191,36,0.15)" : "transparent",
-          color: showOnlyPinned ? "#fbbf24" : "var(--text-muted)",
-          cursor: "pointer", fontFamily: "'DM Mono', monospace",
-        }}>
-          📌 {showOnlyPinned ? "Show All" : "Pinned Only"}
-        </button>
+        <button onClick={() => setPinnedOnly(v => !v)} style={{ fontSize: 11, padding: "0 12px", borderRadius: 10, flexShrink: 0, border: pinnedOnly ? "0.5px solid #fbbf24" : "0.5px solid var(--bg-border)", background: pinnedOnly ? "rgba(251,191,36,0.15)" : "transparent", color: pinnedOnly ? "#fbbf24" : "var(--text-muted)", cursor: "pointer", fontFamily: "'DM Mono', monospace", minHeight: 42 }}>📌{pinnedCount > 0 ? ` ${pinnedCount}` : ""}</button>
       </div>
-
-      {/* Filter Chips */}
-      <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 20 }}>
-        {years.length > 1 && (
-          <div style={{ display: "flex", gap: 6, flexWrap: "wrap", alignItems: "center" }}>
-            <span style={{ fontSize: 10, color: "var(--text-muted)", fontFamily: "'DM Mono', monospace", minWidth: 38 }}>YEAR</span>
-            <Chip label="All" active={yearFilter === "All"} color={accentColor} onClick={() => setYearFilter("All")} />
-            {years.map(y => <Chip key={y} label={String(y)} active={yearFilter === String(y)} color={accentColor} onClick={() => setYearFilter(String(y))} />)}
-          </div>
-        )}
-        {topics.length > 1 && (
-          <div style={{ display: "flex", gap: 6, flexWrap: "wrap", alignItems: "center" }}>
-            <span style={{ fontSize: 10, color: "var(--text-muted)", fontFamily: "'DM Mono', monospace", minWidth: 38 }}>TOPIC</span>
-            <Chip label="All" active={topicFilter === "All"} color={accentColor} onClick={() => setTopicFilter("All")} />
-            {topics.map(t => <Chip key={t} label={t} active={topicFilter === t} color={accentColor} onClick={() => setTopicFilter(t)} />)}
-          </div>
-        )}
-        {styles.length > 1 && (
-          <div style={{ display: "flex", gap: 6, flexWrap: "wrap", alignItems: "center" }}>
-            <span style={{ fontSize: 10, color: "var(--text-muted)", fontFamily: "'DM Mono', monospace", minWidth: 38 }}>TYPE</span>
-            <Chip label="All" active={styleFilter === "All"} color={accentColor} onClick={() => setStyleFilter("All")} />
-            {styles.map(s => <Chip key={s} label={STYLE_META[s]?.label || s} active={styleFilter === s} color={accentColor} onClick={() => setStyleFilter(s)} />)}
-          </div>
-        )}
-        {diffs.length > 1 && (
-          <div style={{ display: "flex", gap: 6, flexWrap: "wrap", alignItems: "center" }}>
-            <span style={{ fontSize: 10, color: "var(--text-muted)", fontFamily: "'DM Mono', monospace", minWidth: 38 }}>DIFF</span>
-            <Chip label="All" active={diffFilter === "All"} color={accentColor} onClick={() => setDiffFilter("All")} />
-            {["Easy", "Medium", "Hard"].filter(d => diffs.includes(d)).map(d => <Chip key={d} label={d} active={diffFilter === d} color={accentColor} onClick={() => setDiffFilter(d)} />)}
-          </div>
-        )}
+      <FilterPanel accentColor={accentColor}>
+        {years.length > 1 && <div className="tw-filter-row"><span className="tw-filter-label">YEAR</span><div className="tw-filter-chips"><Chip label="All" active={yearFilter === "All"} color={accentColor} onClick={() => setYearFilter("All")} />{years.map(y => <Chip key={y} label={String(y)} active={yearFilter === String(y)} color={accentColor} onClick={() => setYearFilter(String(y))} />)}</div></div>}
+        {topics.length > 1 && <div className="tw-filter-row"><span className="tw-filter-label">TOPIC</span><div className="tw-filter-chips"><Chip label="All" active={topicFilter === "All"} color={accentColor} onClick={() => setTopicFilter("All")} />{topics.map(t => <Chip key={t} label={t} active={topicFilter === t} color={accentColor} onClick={() => setTopicFilter(t)} />)}</div></div>}
+        {styles.length > 1 && <div className="tw-filter-row"><span className="tw-filter-label">TYPE</span><div className="tw-filter-chips"><Chip label="All" active={styleFilter === "All"} color={accentColor} onClick={() => setStyleFilter("All")} />{styles.map(s => <Chip key={s} label={STYLE_META[s]?.label || s} active={styleFilter === s} color={accentColor} onClick={() => setStyleFilter(s)} />)}</div></div>}
+        {diffs.length > 1 && <div className="tw-filter-row"><span className="tw-filter-label">DIFF</span><div className="tw-filter-chips"><Chip label="All" active={diffFilter === "All"} color={accentColor} onClick={() => setDiffFilter("All")} />{["Easy","Medium","Hard"].filter(d => diffs.includes(d)).map(d => <Chip key={d} label={d} active={diffFilter === d} color={accentColor} onClick={() => setDiffFilter(d)} />)}</div></div>}
+      </FilterPanel>
+      <div style={{ fontSize: 11, color: "var(--text-muted)", marginBottom: 12, fontFamily: "'DM Mono', monospace", display: "flex", alignItems: "center", gap: 10, paddingBottom: 12, borderBottom: "0.5px solid var(--bg-border)" }}>
+        <span>{filtered.length} of {totalQ}</span>
+        {filtered.length !== totalQ && <button onClick={clearFilters} style={{ fontSize: 10, padding: "3px 10px", borderRadius: 20, border: "0.5px solid var(--bg-border)", background: "transparent", color: "var(--text-muted)", cursor: "pointer", fontFamily: "'DM Mono', monospace" }}>Clear</button>}
       </div>
-
-      {/* Result count */}
-      <div style={{ fontSize: 11, color: "var(--text-muted)", marginBottom: 14, fontFamily: "'DM Mono', monospace", paddingBottom: 12, borderBottom: "0.5px solid var(--bg-border)" }}>
-        {filtered.length} of {totalQ} questions
-        {filtered.length !== totalQ && (
-          <button onClick={() => { setYearFilter("All"); setTopicFilter("All"); setStyleFilter("All"); setDiffFilter("All"); setSearch(""); setShowOnlyPinned(false); }}
-            style={{ marginLeft: 12, fontSize: 10, padding: "2px 8px", borderRadius: 20, border: "0.5px solid var(--bg-border)", background: "transparent", color: "var(--text-muted)", cursor: "pointer", fontFamily: "'DM Mono', monospace" }}>
-            Clear filters
-          </button>
-        )}
-      </div>
-
-      {/* Feature 1: Syllabus topic coverage hint */}
-      {topics.length > 0 && onTopicComplete && (
-        <div style={{ marginBottom: 16, padding: "10px 14px", borderRadius: 10, background: "rgba(79,142,247,0.07)", border: "0.5px solid rgba(79,142,247,0.2)", fontSize: 12, color: "var(--text-muted)", fontFamily: "'DM Mono', monospace" }}>
-          💡 Tip: marking questions correct auto-syncs topic coverage to your Syllabus Tracker.
-        </div>
-      )}
-      {/* Questions */}
       {filtered.length === 0 ? (
-        <div style={{ padding: "48px 24px", textAlign: "center", color: "var(--text-muted)", fontSize: 14, fontFamily: "'DM Mono', monospace", background: "var(--bg-surface)", border: "0.5px solid var(--bg-border)", borderRadius: 14 }}>
-          {showOnlyPinned ? "No pinned questions in this subject yet." : "No questions match the current filters."}
-        </div>
+        <div style={{ padding: "40px 16px", textAlign: "center", color: "var(--text-muted)", fontSize: 13, fontFamily: "'DM Mono', monospace", background: "var(--bg-surface)", border: "0.5px solid var(--bg-border)", borderRadius: 12 }}>{pinnedOnly ? "No pinned questions here yet." : "No questions match the filters."}</div>
       ) : (
-        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-          {filtered.map((q, i) => (
-            <QuestionCard key={q._id || i} q={q} index={i} accentColor={accentColor} revQueue={revQueue} subjectMeta={subjectMeta} recordAttempt={recordAttempt}
-              attemptedIds={attemptedIds}
-              onCorrect={onTopicComplete ? (topic) => onTopicComplete(topic, paperLabel) : undefined}
-            />
-          ))}
-        </div>
+        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>{filtered.map((q, i) => <QuestionCard key={q._id || i} q={q} index={i} accentColor={accentColor} revQueue={revQueue} subjectMeta={subjectMeta} recordAttempt={recordAttempt} attemptedIds={attemptedIds} onCorrect={onTopicComplete ? topic => onTopicComplete(topic, paperLabel) : undefined} />)}</div>
       )}
     </div>
   );
 }
 
-// ─── MAINS PAPER LINKS ───────────────────────────────────────────────────────
-// Feature 4: For Mains papers without subject data, show official PYQ PDF links
-const MAINS_YEARS = [2024, 2023, 2022, 2021, 2020, 2019, 2018, 2017, 2016, 2015, 2014, 2013, 2012, 2011];
-const PAPER_ID_MAP = { GS1: "gs1", GS2: "gs2", GS3: "gs3", GS4: "gs4", Essay: "essay" };
+// ─── MAINS PAPER LINKS ────────────────────────────────────────────────────────
+const MAINS_YEARS = [2024,2023,2022,2021,2020,2019,2018,2017,2016,2015,2014,2013,2012,2011];
+const PAPER_ID_MAP = { GS1:"gs1", GS2:"gs2", GS3:"gs3", GS4:"gs4", Essay:"essay" };
 
 function MainsPaperLinks({ paperId }) {
   const pid = PAPER_ID_MAP[paperId] || paperId.toLowerCase();
-  const color = { GS1: "#4F8EF7", GS2: "#34d399", GS3: "#f97316", GS4: "#a78bfa", Essay: "#f472b6" }[paperId] || "#a78bfa";
-
+  const color = { GS1:"#4F8EF7", GS2:"#34d399", GS3:"#f97316", GS4:"#a78bfa", Essay:"#f472b6" }[paperId] || "#a78bfa";
   return (
-    <div style={{ padding: "20px" }}>
-      <div style={{ marginBottom: 14 }}>
-        <div style={{ fontSize: 13, fontWeight: 600, color: "var(--text-primary)", marginBottom: 4 }}>Official PYQ Papers</div>
-        <div style={{ fontSize: 12, color: "var(--text-muted)", fontFamily: "'DM Mono', monospace" }}>
-          Subject-wise questions coming soon · Download official papers below
-        </div>
-      </div>
-      <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+    <div style={{ padding: "16px 12px" }}>
+      <div style={{ fontSize: 12, color: "var(--text-muted)", fontFamily: "'DM Mono', monospace", marginBottom: 12 }}>Subject-wise questions coming soon · Official papers below</div>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 7 }}>
         {MAINS_YEARS.map(year => {
           const url = getMainsPaperLink(year, pid);
-          return (
-            <a key={year} href={url || "https://www.upsc.gov.in/examinations/previous-question-papers"} target="_blank" rel="noopener noreferrer"
-              style={{
-                fontSize: 12, padding: "6px 14px", borderRadius: 8,
-                border: url ? `0.5px solid ${color}` : "0.5px solid var(--bg-border)",
-                background: url ? `${color}12` : "transparent",
-                color: url ? color : "var(--text-muted)",
-                textDecoration: "none", fontFamily: "'DM Mono', monospace",
-                display: "inline-flex", alignItems: "center", gap: 4,
-              }}>
-              {year} {url ? "↗" : "—"}
-            </a>
-          );
+          return <a key={year} href={url || "https://www.upsc.gov.in"} target="_blank" rel="noopener noreferrer" style={{ fontSize: 12, padding: "7px 13px", borderRadius: 8, border: url ? `0.5px solid ${color}` : "0.5px solid var(--bg-border)", background: url ? `${color}12` : "transparent", color: url ? color : "var(--text-muted)", textDecoration: "none", fontFamily: "'DM Mono', monospace", display: "inline-flex", alignItems: "center", gap: 3, minHeight: 36 }}>{year} {url ? "↗" : "—"}</a>;
         })}
-      </div>
-      <div style={{ marginTop: 14, padding: "10px 14px", borderRadius: 8, background: "rgba(79,142,247,0.06)", border: "0.5px solid rgba(79,142,247,0.15)", fontSize: 12, color: "var(--text-muted)", fontFamily: "'DM Mono', monospace" }}>
-        💡 Want to practice {paperId} questions inline? You can add them to <code>src/data/Subjectwise/</code>
       </div>
     </div>
   );
 }
 
-// ─── PAPER ACCORDION ─────────────────────────────────────────────────────────
-function PaperSection({ paperId, paper, isOpen, onToggle, revQueue, onTopicComplete,  recordAttempt,
-  attemptedIds,}) {
+// ─── PAPER ACCORDION ──────────────────────────────────────────────────────────
+function PaperSection({ paperId, paper, isOpen, onToggle, revQueue, onTopicComplete, recordAttempt, attemptedIds }) {
   const [activeSubject, setActiveSubject] = useState(null);
   const subjectEntries = Object.entries(paper.subjects || {});
+  const isMains = !!paper.isMains;
 
   const handleToggle = useCallback(() => {
     onToggle();
     if (!isOpen && subjectEntries.length > 0 && !activeSubject) setActiveSubject(subjectEntries[0][0]);
   }, [isOpen, onToggle, subjectEntries, activeSubject]);
 
-  const totalQuestions = useMemo(() => subjectEntries.reduce((sum, [, s]) => sum + (s.data?.length || 0), 0), [subjectEntries]);
-  const [headerHovered, setHeaderHovered] = useState(false);
+  const totalQuestions = useMemo(() => subjectEntries.reduce((s, [,sub]) => s + (sub.data?.length || 0), 0), [subjectEntries]);
 
   return (
-    <div style={{ background: "var(--bg-surface)", border: "0.5px solid var(--bg-border)", borderRadius: 14, overflow: "hidden", boxShadow: isOpen ? "var(--shadow-md)" : "var(--shadow-sm)", transition: "box-shadow .2s" }}>
-      <div onClick={handleToggle} style={{ display: "flex", alignItems: "center", gap: 14, padding: "18px 20px", cursor: "pointer", userSelect: "none", background: headerHovered ? "var(--bg-muted)" : "transparent", transition: "background .12s" }}
-        onMouseEnter={() => setHeaderHovered(true)} onMouseLeave={() => setHeaderHovered(false)}>
-        <div style={{ width: 12, height: 12, borderRadius: "50%", background: paper.color, flexShrink: 0, boxShadow: `0 0 8px ${paper.color}60` }} />
+    <div style={{ background: "var(--bg-surface)", border: "0.5px solid var(--bg-border)", borderRadius: 14, overflow: "hidden", boxShadow: isOpen ? "var(--shadow-md)" : "var(--shadow-sm)" }}>
+      <div className="tw-paper-header" onClick={handleToggle}>
+        <div style={{ width: 11, height: 11, borderRadius: "50%", background: paper.color, flexShrink: 0, boxShadow: `0 0 6px ${paper.color}60` }} />
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: 15, fontWeight: 600, color: "var(--text-primary)" }}>{paper.label}</div>
-          <div style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 2, fontFamily: "'DM Mono', monospace" }}>{subjectEntries.length} subjects · {totalQuestions} questions</div>
-        </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 16, flexShrink: 0 }}>
-          <div style={{ display: "flex", gap: 6, flexWrap: "wrap", justifyContent: "flex-end" }}>
-            {subjectEntries.slice(0, 4).map(([, s]) => (
-              <div key={s.label} style={{ width: 8, height: 8, borderRadius: "50%", background: s.color, opacity: 0.8 }} />
-            ))}
-            {subjectEntries.length > 4 && <span style={{ fontSize: 10, color: "var(--text-muted)", fontFamily: "'DM Mono', monospace" }}>+{subjectEntries.length - 4}</span>}
+          <div style={{ fontSize: 15, fontWeight: 600, color: "var(--text-primary)", display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
+            {paper.label}
+            {isMains && totalQuestions > 0 && <span style={{ fontSize: 9, padding: "1px 6px", borderRadius: 4, background: `${paper.color}15`, color: paper.color, border: `0.5px solid ${paper.color}40`, fontFamily: "'DM Mono', monospace" }}>LIVE</span>}
           </div>
-          <span style={{ fontSize: 16, color: "var(--text-muted)", transform: isOpen ? "rotate(90deg)" : "rotate(0deg)", transition: "transform .2s", display: "inline-block" }}>›</span>
+          <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 2, fontFamily: "'DM Mono', monospace" }}>{subjectEntries.length} subjects · {totalQuestions} questions</div>
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
+          <div style={{ display: "flex", gap: 4 }}>{subjectEntries.slice(0,4).map(([,s]) => <div key={s.label} style={{ width: 7, height: 7, borderRadius: "50%", background: s.color, opacity: 0.8 }} />)}</div>
+          <span style={{ fontSize: 18, color: "var(--text-muted)", transform: isOpen ? "rotate(90deg)" : "rotate(0deg)", transition: "transform .2s", display: "inline-block", lineHeight: 1 }}>›</span>
         </div>
       </div>
-
       {isOpen && (
         <div style={{ borderTop: "0.5px solid var(--bg-border)" }}>
           {subjectEntries.length === 0 ? (
             <MainsPaperLinks paperId={paperId} />
           ) : (
             <>
-              <div style={{ display: "flex", gap: 0, overflowX: "auto", borderBottom: "0.5px solid var(--bg-border)", padding: "0 8px" }}>
+              <div className="tw-subject-tabs">
                 {subjectEntries.map(([key, s]) => {
                   const isActive = activeSubject === key;
-                  return (
-                    <button key={key} onClick={() => setActiveSubject(key)} style={{ padding: "12px 18px", fontSize: 13, fontWeight: isActive ? 600 : 400, color: isActive ? s.color : "var(--text-muted)", background: "transparent", border: "none", borderBottom: isActive ? `2px solid ${s.color}` : "2px solid transparent", cursor: "pointer", whiteSpace: "nowrap", transition: "all .15s", fontFamily: "'DM Sans', sans-serif", marginBottom: -1 }}>
-                      {s.label}
-                      <span style={{ marginLeft: 6, fontSize: 10, color: isActive ? s.color : "var(--text-muted)", fontFamily: "'DM Mono', monospace", opacity: 0.75 }}>({s.data?.length || 0})</span>
-                    </button>
-                  );
+                  return <button key={key} onClick={() => setActiveSubject(key)} style={{ fontSize: 13, fontWeight: isActive ? 600 : 400, color: isActive ? s.color : "var(--text-muted)", borderBottom: isActive ? `2px solid ${s.color}` : "2px solid transparent", marginBottom: -1 }}>{s.label}<span style={{ marginLeft: 5, fontSize: 10, fontFamily: "'DM Mono', monospace", opacity: 0.7 }}>({s.data?.length || 0})</span></button>;
                 })}
               </div>
               {activeSubject && paper.subjects[activeSubject] && (
-                <div style={{ padding: "20px 20px 24px" }}>
-                  <SubjectPanel
-                    key={activeSubject}
-                    subjectKey={activeSubject}
-                    subject={paper.subjects[activeSubject]}
-                    accentColor={paper.subjects[activeSubject].color || paper.color}
-                    revQueue={revQueue}
-                    onTopicComplete={onTopicComplete}
-                    paperLabel={paper.label}
-                    recordAttempt={recordAttempt}
-                    attemptedIds={attemptedIds}
-                  />
+                <div style={{ padding: "16px 12px 24px" }}>
+                  {isMains ? <MainsSubjectPanel subject={paper.subjects[activeSubject]} accentColor={paper.subjects[activeSubject].color || paper.color} paperLabel={paper.label} /> : <SubjectPanel subject={paper.subjects[activeSubject]} subjectKey={activeSubject} accentColor={paper.subjects[activeSubject].color || paper.color} revQueue={revQueue} onTopicComplete={onTopicComplete} paperLabel={paper.label} recordAttempt={recordAttempt} attemptedIds={attemptedIds} />}
                 </div>
               )}
             </>
@@ -589,68 +651,18 @@ function PaperSection({ paperId, paper, isOpen, onToggle, revQueue, onTopicCompl
   );
 }
 
-// ─── REVISION QUEUE PANEL ────────────────────────────────────────────────────
+// ─── REVISION QUEUE PANEL ─────────────────────────────────────────────────────
 function RevisionQueuePanel({ revQueue }) {
   const { queue, unpin, clearQueue } = revQueue;
   const [filter, setFilter] = useState("All");
-
   const subjects = useMemo(() => ["All", ...new Set(queue.map(q => q.subject).filter(Boolean))], [queue]);
   const filtered = filter === "All" ? queue : queue.filter(q => q.subject === filter);
-
-  if (queue.length === 0) return (
-    <div style={{ padding: "60px 24px", textAlign: "center" }}>
-      <div style={{ fontSize: 32, marginBottom: 12 }}>📌</div>
-      <div style={{ fontSize: 15, fontWeight: 600, color: "var(--text-primary)", fontFamily: "'Playfair Display', Georgia, serif", marginBottom: 6 }}>No questions pinned yet</div>
-      <div style={{ fontSize: 13, color: "var(--text-muted)", fontFamily: "'DM Mono', monospace" }}>Pin important questions from Topic-wise to add them here.</div>
-    </div>
-  );
-
+  if (queue.length === 0) return <div style={{ padding: "60px 16px", textAlign: "center" }}><div style={{ fontSize: 32, marginBottom: 12 }}>📌</div><div style={{ fontSize: 15, fontWeight: 600, color: "var(--text-primary)", fontFamily: "'Playfair Display', Georgia, serif", marginBottom: 6 }}>No pinned questions</div><div style={{ fontSize: 12, color: "var(--text-muted)", fontFamily: "'DM Mono', monospace" }}>Pin important questions to add them here.</div></div>;
   return (
     <div>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16, flexWrap: "wrap", gap: 8 }}>
-        <div style={{ fontSize: 13, color: "var(--text-muted)", fontFamily: "'DM Mono', monospace" }}>{queue.length} question{queue.length !== 1 ? "s" : ""} in queue</div>
-        <button onClick={() => { if (confirm("Clear all pinned questions?")) clearQueue(); }} style={{ fontSize: 11, padding: "4px 12px", borderRadius: 8, border: "0.5px solid rgba(248,113,113,0.4)", background: "transparent", color: "#fca5a5", cursor: "pointer", fontFamily: "'DM Mono', monospace" }}>
-          Clear All
-        </button>
-      </div>
-
-      {subjects.length > 2 && (
-        <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 16 }}>
-          {subjects.map(s => (
-            <Chip key={s} label={s} active={filter === s} color="#fbbf24" onClick={() => setFilter(s)} />
-          ))}
-        </div>
-      )}
-
-      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-        {filtered.map((q, i) => (
-          <div key={q._id || i} style={{ background: "var(--bg-surface)", border: "0.5px solid rgba(251,191,36,0.3)", borderRadius: 12, padding: "14px 16px", position: "relative" }}>
-            <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12 }}>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 13, fontWeight: 500, color: "var(--text-primary)", lineHeight: 1.6, marginBottom: 8 }}>
-                  {q.questionText?.slice(0, 200)}{q.questionText?.length > 200 ? "…" : ""}
-                </div>
-                <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-                  {q.year && <YearBadge year={q.year} />}
-                  {q.subject && <span style={{ fontSize: 10, padding: "2px 8px", borderRadius: 20, background: "rgba(251,191,36,0.1)", color: "#fbbf24", border: "0.5px solid rgba(251,191,36,0.3)", fontFamily: "'DM Mono', monospace" }}>{q.subject}</span>}
-                  {q.topic && <span style={{ fontSize: 10, padding: "2px 8px", borderRadius: 20, background: "var(--bg-muted)", color: "var(--text-muted)", border: "0.5px solid var(--bg-border)", fontFamily: "'DM Mono', monospace" }}>{q.topic}</span>}
-                  {DIFF_META[q.difficulty] && <Tag label={q.difficulty} meta={DIFF_META[q.difficulty]} />}
-                </div>
-              </div>
-              <button onClick={() => unpin(q._id || q.id)} title="Remove from queue"
-                style={{ fontSize: 12, padding: "4px 8px", borderRadius: 6, border: "0.5px solid var(--bg-border)", background: "transparent", color: "var(--text-muted)", cursor: "pointer", flexShrink: 0 }}>
-                ✕
-              </button>
-            </div>
-            {q.correctOption && (
-              <div style={{ marginTop: 8, fontSize: 11, color: "#6ee7b7", fontFamily: "'DM Mono', monospace" }}>
-                Answer: {q.correctOption}
-                {q.explanation && <span style={{ color: "var(--text-muted)", marginLeft: 12 }}>{q.explanation?.slice(0, 80)}…</span>}
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14, flexWrap: "wrap", gap: 8 }}><div style={{ fontSize: 12, color: "var(--text-muted)", fontFamily: "'DM Mono', monospace" }}>{queue.length} question{queue.length !== 1 ? "s" : ""} pinned</div><button onClick={() => { if (confirm("Clear all pinned questions?")) clearQueue(); }} style={{ fontSize: 11, padding: "5px 12px", borderRadius: 8, border: "0.5px solid rgba(248,113,113,0.4)", background: "transparent", color: "#fca5a5", cursor: "pointer", fontFamily: "'DM Mono', monospace" }}>Clear All</button></div>
+      {subjects.length > 2 && <div className="tw-scroll-row" style={{ marginBottom: 14 }}>{subjects.map(s => <Chip key={s} label={s} active={filter === s} color="#fbbf24" onClick={() => setFilter(s)} />)}</div>}
+      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>{filtered.map((q, i) => <div key={q._id || i} style={{ background: "var(--bg-surface)", border: "0.5px solid rgba(251,191,36,0.3)", borderRadius: 12, padding: "12px 14px" }}><div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 10 }}><div style={{ flex: 1 }}><div style={{ fontSize: 13, fontWeight: 500, color: "var(--text-primary)", lineHeight: 1.6, marginBottom: 8, wordBreak: "break-word" }}>{q.questionText?.slice(0, 200)}{q.questionText?.length > 200 ? "…" : ""}</div><div style={{ display: "flex", gap: 5, flexWrap: "wrap" }}><YearBadge year={q.year} />{q.subject && <span style={{ fontSize: 10, padding: "2px 8px", borderRadius: 20, background: "rgba(251,191,36,0.1)", color: "#fbbf24", border: "0.5px solid rgba(251,191,36,0.3)", fontFamily: "'DM Mono', monospace" }}>{q.subject}</span>}{q.topic && <span style={{ fontSize: 10, padding: "2px 8px", borderRadius: 20, background: "var(--bg-muted)", color: "var(--text-muted)", border: "0.5px solid var(--bg-border)", fontFamily: "'DM Mono', monospace" }}>{q.topic}</span>}{DIFF_META[q.difficulty] && <Tag label={q.difficulty} meta={DIFF_META[q.difficulty]} />}</div></div><button onClick={() => unpin(q._id || q.id)} style={{ fontSize: 13, width: 32, height: 32, borderRadius: 6, border: "0.5px solid var(--bg-border)", background: "transparent", color: "var(--text-muted)", cursor: "pointer", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>✕</button></div>{q.correctOption && <div style={{ marginTop: 8, fontSize: 11, color: "#6ee7b7", fontFamily: "'DM Mono', monospace" }}>Ans: {q.correctOption}</div>}</div>)}</div>
     </div>
   );
 }
@@ -659,128 +671,43 @@ function RevisionQueuePanel({ revQueue }) {
 export default function Topicwise({ onSyllabusUpdate }) {
   const [stage, setStage] = useState("prelims");
   const [openPapers, setOpenPapers] = useState({ GS: true });
-  const [activeTab, setActiveTab] = useState("browse"); // "browse" | "revision"
-  const {
-    recordAttempt,
-    attemptedIds,
-  } = useQuestionAttempts({
-    onSyllabusUpdate,
-  });
+  const [activeTab, setActiveTab] = useState("browse");
+  const { recordAttempt, attemptedIds } = useQuestionAttempts({ onSyllabusUpdate });
   const revQueue = useRevisionQueue();
 
-  const togglePaper = useCallback((id) => {
-    setOpenPapers(prev => ({ ...prev, [id]: !prev[id] }));
-  }, []);
-
-  // Feature 1: When questions are practiced, offer to sync syllabus tracker
-  // onSyllabusUpdate = updateProgress(stage, paper, moduleName, progress, status)
-  // We don't know the exact module name from topic, so we pass a hint only
-  const handleTopicComplete = useCallback((topic, paper) => {
-    // updateProgress is optional — only available when logged in
-    if (onSyllabusUpdate && topic) {
-      // We can't auto-map topic→moduleName precisely without the full syllabus,
-      // so just notify; actual sync happens via SyllabusTracker UI
-    }
-  }, [onSyllabusUpdate]);
-
-  const currentStage = SUBJECT_REGISTRY[stage];
-  const currentPapers = currentStage?.papers || {};
+  const togglePaper = useCallback(id => setOpenPapers(prev => ({ ...prev, [id]: !prev[id] })), []);
+  const currentPapers = SUBJECT_REGISTRY[stage]?.papers || {};
   const paperOrder = Object.keys(currentPapers);
 
   const allData = useMemo(() => {
     const entries = [];
-    Object.values(currentPapers).forEach(paper => {
-      Object.values(paper.subjects || {}).forEach(subj => {
-        (subj.data || []).forEach(q => entries.push(q));
-      });
-    });
+    Object.values(currentPapers).forEach(paper => Object.values(paper.subjects || {}).forEach(subj => (subj.data || []).forEach(q => entries.push(q))));
     return entries;
   }, [currentPapers]);
 
   const totalQ = allData.length;
-  const easyCount = allData.filter(q => q.difficulty === "Easy").length;
-  const medCount = allData.filter(q => q.difficulty === "Medium").length;
-  const hardCount = allData.filter(q => q.difficulty === "Hard").length;
   const yearCount = useMemo(() => new Set(allData.map(q => q.year)).size, [allData]);
+  const isMains = stage === "mains";
+  const statsData = isMains
+    ? [["Total", totalQ, "var(--accent-blue)"], ["15-Mark", allData.filter(q => q.marks === 15).length, "#fcd34d"], ["10-Mark", allData.filter(q => q.marks === 10).length, "#93c5fd"], ["Years", yearCount, "var(--accent-gold)"]]
+    : [["Total", totalQ, "var(--accent-blue)"], ["Easy", allData.filter(q => q.difficulty === "Easy").length, "var(--accent-green)"], ["Medium", allData.filter(q => q.difficulty === "Medium").length, "var(--accent-gold)"], ["Hard", allData.filter(q => q.difficulty === "Hard").length, "#f87171"]];
 
   return (
-    <div style={{ fontFamily: "'DM Sans', 'Segoe UI', system-ui, sans-serif", maxWidth: 1152, width: "100%", margin: "0 auto", padding: "32px 24px", color: "var(--text-primary)" }}>
-
-      {/* ── Top Bar ── */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 32, gap: 24 }}>
-        <div>
-          <div style={{ fontSize: 28, fontWeight: 600, color: "var(--text-primary)", lineHeight: 1.15, fontFamily: "'Playfair Display', Georgia, serif" }}>Topic-wise PYQs</div>
-          <div style={{ fontSize: 14, color: "var(--text-muted)", marginTop: 4, fontFamily: "'DM Mono', monospace" }}>Previous Year Questions · Subject-wise</div>
-          <div style={{ display: "flex", gap: 8, marginTop: 12, flexWrap: "wrap" }}>
-            <span style={{ fontSize: 11, padding: "3px 10px", borderRadius: 20, background: "var(--status-prog-bg)", color: "var(--status-prog-text)", border: "0.5px solid var(--status-prog-border)", fontWeight: 500, fontFamily: "'DM Mono', monospace" }}>UPSC CSE · Prelims + Mains</span>
-            <span style={{ fontSize: 11, padding: "3px 10px", borderRadius: 20, background: "var(--status-done-bg)", color: "var(--status-done-text)", border: "0.5px solid var(--status-done-border)", fontWeight: 500, fontFamily: "'DM Mono', monospace" }}>2011 – 2026</span>
-            {revQueue.queue.length > 0 && (
-              <span onClick={() => setActiveTab("revision")} style={{ fontSize: 11, padding: "3px 10px", borderRadius: 20, background: "rgba(251,191,36,0.12)", color: "#fbbf24", border: "0.5px solid rgba(251,191,36,0.3)", fontWeight: 500, fontFamily: "'DM Mono', monospace", cursor: "pointer" }}>
-                📌 {revQueue.queue.length} pinned
-              </span>
-            )}
-          </div>
-        </div>
-        <div style={{ textAlign: "right", flexShrink: 0 }}>
-          <div style={{ fontSize: 52, fontWeight: 900, color: "var(--text-primary)", lineHeight: 1, fontFamily: "'Playfair Display', Georgia, serif" }}>{totalQ}</div>
-          <div style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 4, fontFamily: "'DM Mono', monospace" }}>total questions</div>
-          <div style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 2, fontFamily: "'DM Mono', monospace" }}>across {yearCount} year{yearCount !== 1 ? "s" : ""}</div>
-        </div>
+    <div className="tw-root tw-page" style={{ maxWidth: 1152, margin: "0 auto", fontFamily: "'DM Sans', system-ui, sans-serif", color: "var(--text-primary)" }}>
+      <GlobalStyles />
+      <div className="tw-top-bar">
+        <div><div style={{ fontSize: "clamp(20px, 5vw, 28px)", fontWeight: 600, color: "var(--text-primary)", lineHeight: 1.2, fontFamily: "'Playfair Display', Georgia, serif" }}>Topic-wise PYQs</div><div style={{ fontSize: 13, color: "var(--text-muted)", marginTop: 4, fontFamily: "'DM Mono', monospace" }}>Previous Year Questions · Subject-wise</div><div className="tw-scroll-row" style={{ marginTop: 10 }}><span style={{ fontSize: 10, padding: "3px 10px", borderRadius: 20, background: "var(--status-prog-bg)", color: "var(--status-prog-text)", border: "0.5px solid var(--status-prog-border)", fontWeight: 500, fontFamily: "'DM Mono', monospace", flexShrink: 0 }}>UPSC CSE · Prelims + Mains</span><span style={{ fontSize: 10, padding: "3px 10px", borderRadius: 20, background: "var(--status-done-bg)", color: "var(--status-done-text)", border: "0.5px solid var(--status-done-border)", fontWeight: 500, fontFamily: "'DM Mono', monospace", flexShrink: 0 }}>2011 – 2026</span>{revQueue.queue.length > 0 && <span onClick={() => setActiveTab("revision")} style={{ fontSize: 10, padding: "3px 10px", borderRadius: 20, background: "rgba(251,191,36,0.12)", color: "#fbbf24", border: "0.5px solid rgba(251,191,36,0.3)", fontWeight: 500, fontFamily: "'DM Mono', monospace", cursor: "pointer", flexShrink: 0 }}>📌 {revQueue.queue.length} pinned</span>}</div></div>
+        <div className="tw-top-count"><div style={{ fontSize: "clamp(36px, 9vw, 52px)", fontWeight: 900, color: "var(--text-primary)", lineHeight: 1, fontFamily: "'Playfair Display', Georgia, serif" }}>{totalQ}</div><div><div style={{ fontSize: 11, color: "var(--text-muted)", fontFamily: "'DM Mono', monospace" }}>questions</div><div style={{ fontSize: 11, color: "var(--text-muted)", fontFamily: "'DM Mono', monospace" }}>{yearCount} years</div></div></div>
       </div>
-
-      {/* ── Mini Stats ── */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 10, marginBottom: 24 }}>
-        {[["Total PYQs", totalQ, "var(--accent-blue)"], ["Easy", easyCount, "var(--accent-green)"], ["Medium", medCount, "var(--accent-gold)"], ["Hard", hardCount, "#f87171"]].map(([l, v, c]) => (
-          <div key={l} style={{ background: "var(--bg-surface)", border: "0.5px solid var(--bg-border)", borderRadius: 12, padding: "16px 12px", textAlign: "center", borderTop: `3px solid ${c}`, boxShadow: "var(--shadow-sm)" }}>
-            <div style={{ fontSize: 28, fontWeight: 700, color: "var(--text-primary)", lineHeight: 1, fontFamily: "'Playfair Display', Georgia, serif" }}>{v}</div>
-            <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 5, fontFamily: "'DM Mono', monospace" }}>{l}</div>
-          </div>
-        ))}
-      </div>
-
-      {/* ── Tab Bar: Browse / Revision Queue ── */}
-      <div style={{ display: "flex", border: "0.5px solid var(--bg-border)", borderRadius: 10, overflow: "hidden", width: "fit-content", marginBottom: 20, boxShadow: "var(--shadow-sm)" }}>
-        {[["browse", "Browse PYQs"], ["revision", `Revision Queue${revQueue.queue.length > 0 ? ` (${revQueue.queue.length})` : ""}`]].map(([id, label]) => (
-          <button key={id} onClick={() => setActiveTab(id)} style={{ padding: "9px 22px", fontSize: 14, fontWeight: activeTab === id ? 600 : 400, background: activeTab === id ? "var(--text-primary)" : "transparent", color: activeTab === id ? "var(--bg-base)" : "var(--text-secondary)", border: "none", cursor: "pointer", transition: "all .15s", fontFamily: "'DM Sans', sans-serif", letterSpacing: "0.02em" }}>
-            {label}
-          </button>
-        ))}
-      </div>
-
-      {activeTab === "revision" ? (
-        <RevisionQueuePanel revQueue={revQueue} />
-      ) : (
+      <div className="tw-stats-grid">{statsData.map(([l, v, c]) => <StatCard key={l} value={v} label={l} color={c} />)}</div>
+      <div className="tw-tab-bar" style={{ marginBottom: 16, boxShadow: "var(--shadow-sm)" }}>{[["browse", "Browse PYQs"], ["revision", `Revision${revQueue.queue.length > 0 ? ` (${revQueue.queue.length})` : ""}`]].map(([id, label]) => <button key={id} onClick={() => setActiveTab(id)} style={{ fontWeight: activeTab === id ? 600 : 400, background: activeTab === id ? "var(--text-primary)" : "transparent", color: activeTab === id ? "var(--bg-base)" : "var(--text-secondary)" }}>{label}</button>)}</div>
+      {activeTab === "revision" ? <RevisionQueuePanel revQueue={revQueue} /> : (
         <>
-          {/* ── Stage Tabs ── */}
-          <div style={{ display: "flex", border: "0.5px solid var(--bg-border)", borderRadius: 10, overflow: "hidden", width: "fit-content", marginBottom: 20, boxShadow: "var(--shadow-sm)" }}>
-            {["prelims", "mains"].map(s => (
-              <button key={s} onClick={() => { setStage(s); setOpenPapers({}); }} style={{ padding: "9px 28px", fontSize: 18, fontWeight: stage === s ? 600 : 400, background: stage === s ? "var(--text-primary)" : "transparent", color: stage === s ? "var(--bg-base)" : "var(--text-secondary)", border: "none", cursor: "pointer", transition: "all .15s", textTransform: "capitalize", fontFamily: "'DM Sans', sans-serif", letterSpacing: "0.02em" }}>
-                {s}
-              </button>
-            ))}
-          </div>
-
-          {/* ── Paper Sections ── */}
-          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-            {paperOrder.map(paperId => {
-              const paper = currentPapers[paperId];
-              if (!paper) return null;
-              return (
-                <PaperSection key={paperId} paperId={paperId} paper={paper} recordAttempt={recordAttempt}
-  attemptedIds={attemptedIds}
-                  isOpen={!!openPapers[paperId]} onToggle={() => togglePaper(paperId)}
-                  revQueue={revQueue} onTopicComplete={handleTopicComplete}
-                />
-              );
-            })}
-          </div>
+          <div className="tw-stage-bar" style={{ boxShadow: "var(--shadow-sm)" }}>{["prelims", "mains"].map(s => <button key={s} onClick={() => { setStage(s); setOpenPapers({}); }} style={{ fontWeight: stage === s ? 600 : 400, background: stage === s ? "var(--text-primary)" : "transparent", color: stage === s ? "var(--bg-base)" : "var(--text-secondary)" }}>{s}</button>)}</div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>{paperOrder.map(paperId => { const paper = currentPapers[paperId]; if (!paper) return null; return <PaperSection key={paperId} paperId={paperId} paper={paper} recordAttempt={recordAttempt} attemptedIds={attemptedIds} isOpen={!!openPapers[paperId]} onToggle={() => togglePaper(paperId)} revQueue={revQueue} onTopicComplete={() => {}} />; })}</div>
         </>
       )}
-
-      {/* ── Footer ── */}
-      <div style={{ marginTop: 32, paddingTop: 20, borderTop: "0.5px solid var(--bg-border)", textAlign: "center" }}>
-        <div style={{ fontSize: 11, color: "var(--text-muted)", fontFamily: "'DM Mono', monospace" }}>Examination Notice No. 05/2026-CSE · Union Public Service Commission</div>
-      </div>
+      <div style={{ marginTop: 32, paddingTop: 16, borderTop: "0.5px solid var(--bg-border)", textAlign: "center" }}><div style={{ fontSize: 10, color: "var(--text-muted)", fontFamily: "'DM Mono', monospace" }}>Examination Notice No. 05/2026-CSE · Union Public Service Commission</div></div>
     </div>
   );
 }

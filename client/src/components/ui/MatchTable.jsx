@@ -1,31 +1,54 @@
-import React from "react";
+// import React from "react";
 
 export default function MatchTable({ dataString }) {
   if (!dataString) return null;
 
-  // Split lines and filter out empty or markdown separator rows (e.g., |---|---|)
   const lines = dataString
     .split("\n")
-    .map((line) => line.trim())
-    .filter((line) => line.startsWith("|") && !line.includes("---"));
+    .map(l => l.trim())
+    .filter(l => l.startsWith("|") && !l.includes("---"));
 
-  if (lines.length < 1) return null;
+  if (lines.length === 0) return null;
 
-  // Helper to extract clean cells from a pipeline row
-  const extractCells = (line) =>
-    line
-      .split("|")
-      .map((cell) => cell.trim())
-      .filter((_, idx, arr) => idx > 0 && idx < arr.length - 1);
+  const rows = lines.map(line => {
+    const cells = line.split("|").map(cell => cell.trim());
+    if (cells[0] === "") cells.shift();
+    if (cells[cells.length - 1] === "") cells.pop();
+    return cells;
+  });
 
-  const headers = extractCells(lines[0]);
-  const rows = lines.slice(1).map((line) => extractCells(line));
+  if (rows.length === 0) return null;
+
+  const header = rows[0];
+  const columnCount = header.length;
+
+  const normalizedRows = rows.map(row => {
+    if (row.length === columnCount) return row;
+    if (row.length < columnCount) return [...row, ...Array(columnCount - row.length).fill("")];
+    return row.slice(0, columnCount);
+  });
+
+  const bodyRows = normalizedRows.slice(1);
+
+  const cellStyle = (isHeader = false) => ({
+    padding: "clamp(6px, 2.5vw, 10px) clamp(8px, 3vw, 12px)",
+    fontSize: isHeader ? "clamp(9px, 3vw, 11px)" : "clamp(11px, 3.5vw, 13px)",
+    fontFamily: isHeader ? "'DM Mono', monospace" : "'DM Sans', sans-serif",
+    fontWeight: isHeader ? 700 : 400,
+    color: isHeader ? "var(--text-muted)" : "var(--text-primary)",
+    letterSpacing: isHeader ? "0.05em" : 0,
+    textAlign: "left",
+    borderBottom: "0.5px solid var(--bg-border)",
+    verticalAlign: "top",
+    lineHeight: 1.5,
+  });
 
   return (
     <div
       style={{
         width: "100%",
         overflowX: "auto",
+        WebkitOverflowScrolling: "touch",
         marginTop: 12,
         marginBottom: 16,
         border: "0.5px solid var(--bg-border)",
@@ -33,59 +56,27 @@ export default function MatchTable({ dataString }) {
         background: "var(--bg-muted)",
       }}
     >
-      <table
-        style={{
-          width: "100%",
-          borderCollapse: "collapse",
-          textAlign: "left",
-          fontSize: 13,
-          fontFamily: "'DM Sans', sans-serif",
-        }}
-      >
+      <table style={{ width: "100%", borderCollapse: "collapse" }}>
         <thead>
-          <tr style={{ borderBottom: "0.5px solid var(--bg-border)" }}>
-            {headers.map((header, idx) => (
-              <th
-                key={idx}
-                style={{
-                  padding: "10px 14px",
-                  fontWeight: 600,
-                  color: "var(--text-muted)",
-                  fontSize: 11,
-                  fontFamily: "'DM Mono', monospace",
-                  textTransform: "uppercase",
-                  letterSpacing: "0.03em",
-                }}
-              >
-                {header}
+          <tr style={{ background: "var(--bg-muted)" }}>
+            {header.map((cell, i) => (
+              <th key={i} style={cellStyle(true)}>
+                {cell || " "}
               </th>
             ))}
           </tr>
         </thead>
         <tbody>
-          {rows.map((row, rowIdx) => (
+          {bodyRows.map((row, ri) => (
             <tr
-              key={rowIdx}
+              key={ri}
               style={{
-                borderBottom:
-                  rowIdx !== rows.length - 1
-                    ? "0.5px solid var(--bg-border)"
-                    : "none",
+                background: ri % 2 === 0 ? "transparent" : "var(--bg-muted)",
               }}
             >
-              {row.map((cell, cellIdx) => (
-                <td
-                  key={cellIdx}
-                  style={{
-                    padding: "10px 14px",
-                    color:
-                      cellIdx === 0
-                        ? "var(--text-muted)"
-                        : "var(--text-primary)",
-                    fontWeight: cellIdx === 0 ? 600 : 400,
-                  }}
-                >
-                  {cell}
+              {row.map((cell, ci) => (
+                <td key={ci} style={cellStyle(false)}>
+                  {cell || "—"}
                 </td>
               ))}
             </tr>

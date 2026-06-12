@@ -1,60 +1,66 @@
 /**
  * QuestionRenderer.jsx
  * ─────────────────────────────────────────────────────────────────────────────
- * UPSC PYQ — Central Question Rendering Component
+ * UPSC PYQ — Central Question Rendering Component (MCQ + match tables)
  *
- * Handles all question formats found in the data corpus:
- *   • Single-correct MCQ          (most GS questions)
- *   • Multi-statement choice      ("Which of the following is/are correct?")
- *   • Matrix / Match-the-List     (questionText contains "|" table markdown)
- *   • Comprehension passage       (passage + sub-question)
- *   • Numeric / Quantitative      (CSAT Maths)
- *
- * Props:
- *   q           {object}  — full question object from data arrays
- *   index       {number}  — display index (0-based → rendered as Q1, Q2…)
- *   accentColor {string}  — hex color for left border + interactive highlights
- *
- * Dependencies:
- *   ExplanationBox  — ./ExplanationBox
- *   MatchTable      — ../components/MatchTable  (existing component)
+ * Improved:
+ *   • Responsive fonts (clamp / rem)
+ *   • Better text contrast (softer secondary text, clear headings)
+ *   • Mobile-friendly padding & touch targets (min‑height buttons)
+ *   • Table overflow handling
+ *   • Inherited color for badges & markers
  * ─────────────────────────────────────────────────────────────────────────────
  */
 
 import { useState } from "react";
 import ExplanationBox from "./ExplanationBox";
-
-// ── INLINE MATCHTABLE ─────────────────────────────────────────────────────────
-// A self-contained fallback if MatchTable isn't available, plus the real import.
-// In production, replace this with: import MatchTable from "../components/MatchTable";
-
-function FallbackMatchTable({ dataString }) {
+// ── ROBUST MATCHTABLE (handles malformed pipe tables) ─────────────────────────
+function MatchTable({ dataString }) {
   if (!dataString) return null;
 
   const lines = dataString
     .split("\n")
-    .map((l) => l.trim())
-    .filter((l) => l.startsWith("|"));
+    .map(l => l.trim())
+    .filter(l => l.startsWith("|") && !l.includes("---")); // skip separator rows
 
   if (lines.length === 0) return null;
 
-  const parseRow = (line) =>
-    line
-      .split("|")
-      .map((cell) => cell.trim())
-      .filter((_, i, arr) => i > 0 && i < arr.length - 1);
+  // Parse each line into cells (ignore leading/trailing empty cells from outer pipes)
+  const rows = lines.map(line => {
+    const cells = line.split("|").map(cell => cell.trim());
+    // Remove first and last if they are empty (due to leading/trailing |)
+    if (cells[0] === "") cells.shift();
+    if (cells[cells.length - 1] === "") cells.pop();
+    return cells;
+  });
 
-  const rows = lines.filter((l) => !l.match(/^\|[-\s|]+\|$/));
-  const header = rows[0] ? parseRow(rows[0]) : [];
-  const body = rows.slice(1).map(parseRow);
+  if (rows.length === 0) return null;
+
+  // Determine max column count (use header row length as reference)
+  const header = rows[0];
+  const columnCount = header.length;
+
+  // Normalize all rows to have exactly `columnCount` cells
+  const normalizedRows = rows.map(row => {
+    if (row.length === columnCount) return row;
+    if (row.length < columnCount) {
+      // Pad with empty strings
+      return [...row, ...Array(columnCount - row.length).fill("")];
+    }
+    // Truncate extra cells
+    return row.slice(0, columnCount);
+  });
+
+  // Separate header (first row) and body rows
+  const bodyRows = normalizedRows.slice(1);
 
   const cellStyle = (isHeader = false) => ({
-    padding: "7px 12px",
-    fontSize: isHeader ? 10 : 12,
+    padding: "clamp(6px, 2.5vw, 10px) clamp(8px, 3vw, 12px)",
+    fontSize: isHeader ? "clamp(9px, 3vw, 11px)" : "clamp(11px, 3.5vw, 13px)",
     fontFamily: isHeader ? "'DM Mono', monospace" : "'DM Sans', sans-serif",
     fontWeight: isHeader ? 700 : 400,
     color: isHeader ? "var(--text-muted)" : "var(--text-primary)",
-    letterSpacing: isHeader ? "0.06em" : 0,
+    letterSpacing: isHeader ? "0.05em" : 0,
     textAlign: "left",
     borderBottom: "0.5px solid var(--bg-border)",
     verticalAlign: "top",
@@ -65,25 +71,24 @@ function FallbackMatchTable({ dataString }) {
     <div
       style={{
         overflowX: "auto",
-        borderRadius: 8,
+        WebkitOverflowScrolling: "touch",
+        borderRadius: 10,
         border: "0.5px solid var(--bg-border)",
-        margin: "10px 0",
+        margin: "12px 0",
       }}
     >
       <table style={{ width: "100%", borderCollapse: "collapse" }}>
-        {header.length > 0 && (
-          <thead>
-            <tr style={{ background: "var(--bg-muted)" }}>
-              {header.map((h, i) => (
-                <th key={i} style={cellStyle(true)}>
-                  {h}
-                </th>
-              ))}
-            </tr>
-          </thead>
-        )}
+        <thead>
+          <tr style={{ background: "var(--bg-muted)" }}>
+            {header.map((cell, i) => (
+              <th key={i} style={cellStyle(true)}>
+                {cell || " "}
+              </th>
+            ))}
+          </tr>
+        </thead>
         <tbody>
-          {body.map((row, ri) => (
+          {bodyRows.map((row, ri) => (
             <tr
               key={ri}
               style={{
@@ -92,7 +97,7 @@ function FallbackMatchTable({ dataString }) {
             >
               {row.map((cell, ci) => (
                 <td key={ci} style={cellStyle(false)}>
-                  {cell}
+                  {cell || "—"}
                 </td>
               ))}
             </tr>
@@ -102,11 +107,7 @@ function FallbackMatchTable({ dataString }) {
     </div>
   );
 }
-
-// ── QUESTION TEXT RENDERER ────────────────────────────────────────────────────
-// Detects markdown tables in questionText and routes to MatchTable.
-// Also handles numbered statement lists (renders them as distinct items).
-
+// ── QUESTION TEXT RENDERER (responsive, better readability) ──────────────────
 function QuestionTextRenderer({ text, accentColor }) {
   if (!text || typeof text !== "string") return null;
 
@@ -136,10 +137,10 @@ function QuestionTextRenderer({ text, accentColor }) {
     return (
       <div
         style={{
-          fontSize: 14,
+          fontSize: "clamp(14px, 4.5vw, 16px)",
           fontWeight: 500,
           color: "var(--text-primary)",
-          lineHeight: 1.65,
+          lineHeight: 1.7,
         }}
       >
         {before.join("\n").trim() && (
@@ -147,7 +148,7 @@ function QuestionTextRenderer({ text, accentColor }) {
             {before.join("\n").trim()}
           </div>
         )}
-        <FallbackMatchTable dataString={tableLines.join("\n")} />
+        <MatchTable dataString={tableLines.join("\n")} />
         {after.join("\n").trim() && (
           <div style={{ whiteSpace: "pre-wrap", marginTop: 8 }}>
             {after.join("\n").trim()}
@@ -157,7 +158,7 @@ function QuestionTextRenderer({ text, accentColor }) {
     );
   }
 
-  // Detect numbered statement list format: lines starting with "1." / "I." / "A."
+  // Detect numbered statement list format
   const stmtLineRe = /^([IVX]+\.|[1-9]\.|[A-D]\.)\s+/;
   const lines = text.split("\n");
   const hasStatements = lines.some((l) => stmtLineRe.test(l.trim()));
@@ -185,14 +186,14 @@ function QuestionTextRenderer({ text, accentColor }) {
     return (
       <div
         style={{
-          fontSize: 14,
+          fontSize: "clamp(14px, 4.5vw, 16px)",
           fontWeight: 500,
           color: "var(--text-primary)",
-          lineHeight: 1.65,
+          lineHeight: 1.7,
         }}
       >
         {intro.join("\n").trim() && (
-          <div style={{ whiteSpace: "pre-wrap", marginBottom: 10 }}>
+          <div style={{ whiteSpace: "pre-wrap", marginBottom: 12 }}>
             {intro.join("\n").trim()}
           </div>
         )}
@@ -201,8 +202,8 @@ function QuestionTextRenderer({ text, accentColor }) {
             style={{
               display: "flex",
               flexDirection: "column",
-              gap: 6,
-              margin: "6px 0",
+              gap: 8,
+              margin: "8px 0",
             }}
           >
             {parts.map((stmt, i) => {
@@ -214,22 +215,22 @@ function QuestionTextRenderer({ text, accentColor }) {
                   key={i}
                   style={{
                     display: "flex",
-                    gap: 10,
-                    padding: "7px 12px",
+                    gap: 12,
+                    padding: "clamp(8px, 3vw, 12px) clamp(10px, 3.5vw, 14px)",
                     background: "var(--bg-muted)",
-                    borderRadius: 6,
+                    borderRadius: 10,
                     border: "0.5px solid var(--bg-border)",
-                    borderLeft: `2px solid ${accentColor}44`,
+                    borderLeft: `2px solid ${accentColor}66`,
                   }}
                 >
                   <span
                     style={{
                       fontFamily: "'DM Mono', monospace",
-                      fontSize: 11,
+                      fontSize: "clamp(11px, 3.5vw, 12px)",
                       fontWeight: 700,
                       color: accentColor,
                       flexShrink: 0,
-                      minWidth: 20,
+                      minWidth: 24,
                       paddingTop: 1,
                     }}
                   >
@@ -237,9 +238,9 @@ function QuestionTextRenderer({ text, accentColor }) {
                   </span>
                   <span
                     style={{
-                      fontSize: 13,
+                      fontSize: "clamp(13px, 4vw, 14px)",
                       color: "var(--text-primary)",
-                      lineHeight: 1.6,
+                      lineHeight: 1.65,
                     }}
                   >
                     {body}
@@ -262,10 +263,10 @@ function QuestionTextRenderer({ text, accentColor }) {
   return (
     <div
       style={{
-        fontSize: 14,
+        fontSize: "clamp(14px, 4.5vw, 16px)",
         fontWeight: 500,
         color: "var(--text-primary)",
-        lineHeight: 1.65,
+        lineHeight: 1.7,
         whiteSpace: "pre-wrap",
       }}
     >
@@ -274,10 +275,8 @@ function QuestionTextRenderer({ text, accentColor }) {
   );
 }
 
-// ── OPTION ITEM ───────────────────────────────────────────────────────────────
-
+// ── OPTION ITEM (larger touch target, better contrast) ───────────────────────
 function OptionItem({ opt, state, accentColor, onClick }) {
-  // state: "idle" | "selected" | "correct" | "wrong" | "dimmed"
   const styles = {
     idle: {
       border: "0.5px solid var(--bg-border)",
@@ -323,42 +322,50 @@ function OptionItem({ opt, state, accentColor, onClick }) {
       onClick={onClick}
       style={{
         display: "flex",
-        gap: 12,
+        gap: 14,
         alignItems: "flex-start",
-        padding: "10px 14px",
-        borderRadius: 8,
+        padding: "clamp(10px, 3.5vw, 14px) clamp(12px, 4vw, 16px)",
+        borderRadius: 10,
         cursor: onClick ? "pointer" : "default",
-        transition: "all .15s",
-        marginBottom: 6,
+        transition: "all 0.15s",
+        marginBottom: 8,
         fontFamily: "'DM Sans', sans-serif",
+        minHeight: 48,
         ...current,
       }}
     >
       <span
         style={{
-          fontSize: 11,
+          fontSize: "clamp(12px, 4vw, 13px)",
           fontWeight: 700,
           fontFamily: "'DM Mono', monospace",
           color: marker.color,
-          minWidth: 18,
-          paddingTop: 1,
+          minWidth: 22,
+          paddingTop: 2,
           flexShrink: 0,
-          transition: "color .15s",
+          transition: "color 0.15s",
         }}
       >
         {marker.text}
       </span>
-      <span style={{ fontSize: 13, lineHeight: 1.55 }}>{opt.text}</span>
+      <span
+        style={{
+          fontSize: "clamp(13px, 4.5vw, 14px)",
+          lineHeight: 1.6,
+          color: "inherit",
+        }}
+      >
+        {opt.text}
+      </span>
     </div>
   );
 }
 
-// ── DIFF / TAG BADGE ──────────────────────────────────────────────────────────
-
+// ── BADGES (responsive fonts, subtle colors) ─────────────────────────────────
 const DIFF_COLORS = {
-  Easy: { bg: "rgba(52,211,153,0.1)", text: "#6ee7b7", border: "rgba(52,211,153,0.3)" },
-  Medium: { bg: "rgba(251,191,36,0.1)", text: "#fcd34d", border: "rgba(251,191,36,0.3)" },
-  Hard: { bg: "rgba(248,113,113,0.1)", text: "#fca5a5", border: "rgba(248,113,113,0.3)" },
+  Easy: { bg: "rgba(52,211,153,0.12)", text: "#34d399", border: "rgba(52,211,153,0.3)" },
+  Medium: { bg: "rgba(251,191,36,0.12)", text: "#eab308", border: "rgba(251,191,36,0.3)" },
+  Hard: { bg: "rgba(248,113,113,0.12)", text: "#f87171", border: "rgba(248,113,113,0.3)" },
 };
 
 function DiffBadge({ difficulty }) {
@@ -367,15 +374,15 @@ function DiffBadge({ difficulty }) {
   return (
     <span
       style={{
-        fontSize: 9,
-        padding: "2px 7px",
-        borderRadius: 4,
+        fontSize: "clamp(9px, 3vw, 10px)",
+        padding: "2px 10px",
+        borderRadius: 20,
         background: d.bg,
         color: d.text,
         border: `0.5px solid ${d.border}`,
         fontFamily: "'DM Mono', monospace",
         fontWeight: 600,
-        letterSpacing: "0.06em",
+        letterSpacing: "0.05em",
         textTransform: "uppercase",
       }}
     >
@@ -389,15 +396,14 @@ function YearBadge({ year }) {
   return (
     <span
       style={{
-        fontSize: 9,
-        padding: "2px 7px",
-        borderRadius: 4,
+        fontSize: "clamp(9px, 3vw, 10px)",
+        padding: "2px 10px",
+        borderRadius: 20,
         background: "var(--bg-muted)",
         color: "var(--text-muted)",
         border: "0.5px solid var(--bg-border)",
         fontFamily: "'DM Mono', monospace",
-        fontWeight: 600,
-        letterSpacing: "0.06em",
+        fontWeight: 500,
       }}
     >
       {year}
@@ -410,18 +416,17 @@ function SubtopicBadge({ text }) {
   return (
     <span
       style={{
-        fontSize: 9,
-        padding: "2px 8px",
-        borderRadius: 4,
+        fontSize: "clamp(9px, 3vw, 10px)",
+        padding: "2px 10px",
+        borderRadius: 20,
         background: "var(--bg-muted)",
         color: "var(--text-muted)",
         border: "0.5px solid var(--bg-border)",
         fontFamily: "'DM Mono', monospace",
-        maxWidth: 200,
+        maxWidth: 220,
         overflow: "hidden",
         textOverflow: "ellipsis",
         whiteSpace: "nowrap",
-        display: "inline-block",
       }}
       title={text}
     >
@@ -430,8 +435,7 @@ function SubtopicBadge({ text }) {
   );
 }
 
-// ── CORRECT ANSWER BANNER ─────────────────────────────────────────────────────
-
+// ── CORRECT ANSWER BANNER (soft, readable) ───────────────────────────────────
 function CorrectBanner({ correctOption, options }) {
   const opt = (options || []).find((o) => o.id === correctOption);
   if (!opt) return null;
@@ -439,18 +443,19 @@ function CorrectBanner({ correctOption, options }) {
     <div
       style={{
         display: "flex",
-        gap: 8,
+        gap: 10,
         alignItems: "center",
-        padding: "8px 14px",
-        background: "rgba(52,211,153,0.07)",
+        flexWrap: "wrap",
+        padding: "clamp(8px, 3vw, 10px) clamp(12px, 4vw, 16px)",
+        background: "rgba(52,211,153,0.06)",
         border: "0.5px solid rgba(52,211,153,0.25)",
-        borderRadius: 6,
-        marginBottom: 6,
+        borderRadius: 10,
+        marginBottom: 8,
       }}
     >
       <span
         style={{
-          fontSize: 10,
+          fontSize: "clamp(10px, 3.5vw, 11px)",
           fontFamily: "'DM Mono', monospace",
           color: "#6ee7b7",
           fontWeight: 700,
@@ -461,21 +466,21 @@ function CorrectBanner({ correctOption, options }) {
       </span>
       <span
         style={{
-          fontSize: 11,
+          fontSize: "clamp(11px, 3.5vw, 12px)",
           fontFamily: "'DM Mono', monospace",
           color: "#6ee7b7",
           fontWeight: 700,
           flexShrink: 0,
-          marginRight: 6,
         }}
       >
         {correctOption}
       </span>
       <span
         style={{
-          fontSize: 12,
+          fontSize: "clamp(12px, 4vw, 13px)",
           color: "var(--text-secondary)",
           fontFamily: "'DM Sans', sans-serif",
+          flex: 1,
         }}
       >
         {opt.text}
@@ -485,18 +490,16 @@ function CorrectBanner({ correctOption, options }) {
 }
 
 // ── QUESTION INDEX BADGE ──────────────────────────────────────────────────────
-
 function QBadge({ index, accentColor }) {
   return (
     <div
       style={{
-        fontSize: 11,
+        fontSize: "clamp(12px, 4vw, 14px)",
         fontWeight: 700,
         color: accentColor,
         fontFamily: "'DM Mono', monospace",
-        minWidth: 28,
+        minWidth: 32,
         paddingTop: 2,
-        letterSpacing: "0.04em",
         flexShrink: 0,
       }}
     >
@@ -505,8 +508,7 @@ function QBadge({ index, accentColor }) {
   );
 }
 
-// ── ACTION ROW ────────────────────────────────────────────────────────────────
-
+// ── ACTION ROW (responsive buttons, larger touch area) ───────────────────────
 function ActionRow({
   showAnswer,
   onToggleAnswer,
@@ -519,9 +521,9 @@ function ActionRow({
   return (
     <div
       style={{
-        padding: "10px 20px 14px",
+        padding: "clamp(8px, 3vw, 12px) clamp(14px, 4vw, 20px) clamp(12px, 4vw, 16px)",
         display: "flex",
-        gap: 8,
+        gap: 10,
         alignItems: "center",
         flexWrap: "wrap",
       }}
@@ -529,15 +531,16 @@ function ActionRow({
       <button
         onClick={onToggleAnswer}
         style={{
-          fontSize: 11,
-          padding: "6px 16px",
-          borderRadius: 8,
+          fontSize: "clamp(11px, 4vw, 12px)",
+          padding: "8px 18px",
+          minHeight: 40,
+          borderRadius: 30,
           border: `0.5px solid ${accentColor}`,
           background: showAnswer ? `${accentColor}22` : "transparent",
           color: accentColor,
           cursor: "pointer",
           fontWeight: 600,
-          transition: "all .15s",
+          transition: "all 0.15s",
           fontFamily: "'DM Sans', sans-serif",
           letterSpacing: "0.02em",
         }}
@@ -549,9 +552,10 @@ function ActionRow({
         <button
           onClick={onReset}
           style={{
-            fontSize: 11,
-            padding: "6px 14px",
-            borderRadius: 8,
+            fontSize: "clamp(11px, 4vw, 12px)",
+            padding: "8px 14px",
+            minHeight: 40,
+            borderRadius: 30,
             border: "0.5px solid var(--bg-border)",
             background: "transparent",
             color: "var(--text-muted)",
@@ -566,14 +570,13 @@ function ActionRow({
       {selected !== null && (
         <span
           style={{
-            fontSize: 11,
+            fontSize: "clamp(11px, 3.5vw, 12px)",
             color: isCorrect ? "#6ee7b7" : "#fca5a5",
             fontWeight: 700,
             fontFamily: "'DM Mono', monospace",
-            letterSpacing: "0.04em",
           }}
         >
-          {isCorrect ? "✓ Correct" : `✗ Correct answer: ${correctOption}`}
+          {isCorrect ? "✓ Correct" : `✗ Answer: ${correctOption}`}
         </span>
       )}
     </div>
@@ -581,14 +584,6 @@ function ActionRow({
 }
 
 // ── MAIN EXPORT ───────────────────────────────────────────────────────────────
-
-/**
- * QuestionRenderer
- *
- * @param {object} q            — full question object
- * @param {number} index        — 0-based question index
- * @param {string} accentColor  — subject accent color
- */
 export default function QuestionRenderer({ q, index, accentColor = "#4F8EF7" }) {
   const [showAnswer, setShowAnswer] = useState(false);
   const [selected, setSelected] = useState(null);
@@ -599,18 +594,15 @@ export default function QuestionRenderer({ q, index, accentColor = "#4F8EF7" }) 
   const isRevealed = showAnswer || selected !== null;
   const isCorrect = selected === q.correctOption;
 
-  // Determine option state for rendering
   function getOptionState(optId) {
-    if (!isRevealed) {
-      return selected === optId ? "selected" : "idle";
-    }
+    if (!isRevealed) return selected === optId ? "selected" : "idle";
     if (optId === q.correctOption) return "correct";
     if (selected === optId) return "wrong";
     return "dimmed";
   }
 
   function handleOptionClick(optId) {
-    if (isRevealed) return; // locked once revealed
+    if (isRevealed) return;
     setSelected(optId);
   }
 
@@ -627,32 +619,32 @@ export default function QuestionRenderer({ q, index, accentColor = "#4F8EF7" }) 
         background: "var(--bg-surface)",
         border: "0.5px solid var(--bg-border)",
         borderLeft: `3px solid ${accentColor}`,
-        borderRadius: 14,
+        borderRadius: 16,
         overflow: "hidden",
         boxShadow: hovered ? "var(--shadow-md)" : "var(--shadow-sm)",
-        transition: "box-shadow .2s",
+        transition: "box-shadow 0.2s",
       }}
     >
-      {/* ── Question Header ── */}
+      {/* Header */}
       <div
         style={{
-          padding: "16px 20px 12px",
+          padding: "clamp(14px, 4vw, 18px) clamp(14px, 4vw, 20px) 12px",
           borderBottom: "0.5px solid var(--bg-border)",
           display: "flex",
           alignItems: "flex-start",
-          gap: 12,
+          gap: 14,
         }}
       >
         <QBadge index={index} accentColor={accentColor} />
         <QuestionTextRenderer text={q.questionText} accentColor={accentColor} />
       </div>
 
-      {/* ── Metadata Row ── */}
+      {/* Metadata row */}
       <div
         style={{
-          padding: "8px 20px",
+          padding: "6px clamp(14px, 4vw, 20px)",
           display: "flex",
-          gap: 6,
+          gap: 8,
           flexWrap: "wrap",
           alignItems: "center",
           borderBottom: "0.5px solid var(--bg-border)",
@@ -663,8 +655,8 @@ export default function QuestionRenderer({ q, index, accentColor = "#4F8EF7" }) 
         <SubtopicBadge text={q.subTopic} />
       </div>
 
-      {/* ── Options ── */}
-      <div style={{ padding: "14px 20px 4px" }}>
+      {/* Options */}
+      <div style={{ padding: "12px clamp(14px, 4vw, 20px) 4px" }}>
         {(q.options || []).map((opt) => (
           <OptionItem
             key={opt.id}
@@ -676,14 +668,14 @@ export default function QuestionRenderer({ q, index, accentColor = "#4F8EF7" }) 
         ))}
       </div>
 
-      {/* ── Answer reveal (if selected before explanation) ── */}
+      {/* Answer banner (if revealed without explanation) */}
       {isRevealed && !showAnswer && (
-        <div style={{ padding: "0 20px 2px" }}>
+        <div style={{ padding: "0 clamp(14px, 4vw, 20px) 6px" }}>
           <CorrectBanner correctOption={q.correctOption} options={q.options} />
         </div>
       )}
 
-      {/* ── Action Row ── */}
+      {/* Action row */}
       <ActionRow
         showAnswer={showAnswer}
         onToggleAnswer={() => setShowAnswer((v) => !v)}
@@ -694,7 +686,7 @@ export default function QuestionRenderer({ q, index, accentColor = "#4F8EF7" }) 
         accentColor={accentColor}
       />
 
-      {/* ── Explanation Panel ── */}
+      {/* Explanation (uses existing ExplanationBox, already responsive) */}
       {showAnswer && q.explanation && (
         <ExplanationBox
           text={q.explanation}
