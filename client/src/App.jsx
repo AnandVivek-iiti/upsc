@@ -214,7 +214,7 @@ export default function App() {
       {/* ── Mobile topbar ── */}
       <div className="lg:hidden fixed top-0 left-0 right-0 z-30 flex items-center justify-between px-4 py-3 bg-bg-surface/95 backdrop-blur border-b border-bg-border">
         <div
-          className="w-8 h-8 flex items-center justify-center overflow-hidden shrink-0"
+          className="w-12 h-12 flex items-center justify-center overflow-hidden shrink-0"
           style={{
             borderRadius: "10px",
             border: "1px solid rgba(245,158,11,0.2)",
@@ -225,9 +225,7 @@ export default function App() {
         </div>
 
         <div className="flex items-center gap-2">
-          {user && token && userName && (
-            <AvatarCircle name={userName} size="sm" onClick={handleNavigateProfile} />
-          )}
+
           <button
             onClick={() => setSidebarOpen((v) => !v)}
             className="w-9 h-9 flex items-center justify-center rounded-lg bg-bg-muted border border-bg-border text-text-secondary hover:text-text-primary transition-colors"
@@ -274,13 +272,7 @@ export default function App() {
             <HeroBanner
               examDate={userData?.profile?.examDate || null}
               customQuote={userData?.profile?.quote || null}
-              achievements={userData?.profile?.achievements || [
-                { label: "JEE Advanced", done: true },
-                { label: "NDA Written", done: true },
-                { label: "IAS → In Progress", done: false },
-              ]}
-              onAchievementsChange={user ? (list) => updateProfile({ achievements: list }) : undefined}
-            />
+                     />
 
             <ErrorBanner error={error} />
 

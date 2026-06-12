@@ -1,6 +1,14 @@
 
 import { useState } from "react";
-
+const HERO_IMAGES = [
+  "/assets/slider1.png",
+  "/assets/slider2.png",
+ "/assets/slider3.png",
+ "/assets/slider4.png",
+ "/assets/slider5.png",
+ "/assets/slider6.png",
+ "/assets/slider7.png"
+];
 const DEFAULT_QUOTES = [
   { text: "Dreams are not those that come while sleeping, but dreams are those when you don't sleep before fulfilling them.", src: "Dr. A.P.J. Abdul Kalam" },
   { text: "All success in any line of work is the result of the power of concentration. Control of the mind should be taught first.", src: "Swami Vivekananda" },
@@ -41,7 +49,7 @@ export default function HeroBanner({
           : "Over";
 
   return (
-    <section className="relative overflow-hidden  sm:rounded-lg mx-0 sm:mx-0 mt-0 sm:mt-0 shadow-xl">
+    <section className="relative overflow-hidden rounded-xl  sm:rounded-2xl mx-3 sm:mx-6 mt-3 sm:mt-6 shadow-xl">
       {/* Background - Same size as before */}
       <div className="absolute inset-0 z-0">
         <img

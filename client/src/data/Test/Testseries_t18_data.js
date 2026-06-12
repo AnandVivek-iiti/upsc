@@ -3,7 +3,8 @@
 // Total Questions: 50 | Max Marks: 100 | Time: 60 min
 // Marking: +2 correct, -0.66 wrong (1/3 negative marking)
 
-export const TEST_T18 = {
+export const TEST_T18 = [
+  {
   id: "sfg2026-t18",
   title: "SFG 2026 — Level 1 · Test 18",
   testCode: "321116",
@@ -919,6 +920,6 @@ export const TEST_T18 = {
       pyqYear: null,
     },
   ],
-};
-
+}
+];
 export default TEST_T18;
