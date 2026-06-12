@@ -16,7 +16,7 @@ function QuotePanel({ customQuote }) {
   const quote = customQuote ?? DEFAULT_QUOTES[dayOfYear % DEFAULT_QUOTES.length];
 
   return (
-    <div className="mt-4 sm:mt-5 rounded-xl border border-white/10 px-4 py-4 sm:py-5">
+    <div className="mt-4 sm:mt-5 rounded-xl px-4 py-4 sm:py-5">
       <p className="font-mono text-[8px] sm:text-[9px] tracking-[.15em] text-accent-gold uppercase mb-2 sm:mb-3">Today's Focus</p>
       <p className="text-[12px] sm:text-sm md:text-base italic text-white/95 leading-relaxed">"{quote.text}"</p>
       <p className="text-[10px] sm:text-[11px] font-mono text-white/45 mt-3 sm:mt-4">— {quote.src}</p>
@@ -41,7 +41,7 @@ export default function HeroBanner({
           : "Over";
 
   return (
-    <section className="relative overflow-hidden rounded-xl sm:rounded-3xl mx-3 sm:mx-6 mt-3 sm:mt-6 shadow-2xl">
+    <section className="relative overflow-hidden rounded-xl sm:rounded-3xl mx-1 sm:mx-2 mt-1 sm:mt-2 shadow-xl">
       {/* Background - Same size as before */}
       <div className="absolute inset-0 z-0">
         <img
