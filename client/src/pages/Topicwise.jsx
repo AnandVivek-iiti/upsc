@@ -1161,12 +1161,12 @@ function RevisionQueuePanel({ revQueue }) {
 }
 
 // ─── MAIN TOPICWISE ───────────────────────────────────────────────────────────
-export default function Topicwise({ onSyllabusUpdate }) {
+export default function Topicwise({ onSyllabusUpdate, onBulkSyllabusUpdate = null, serverAttempts = [] }) {
   const [stage,      setStage]      = useState("prelims");
   const [openPapers, setOpenPapers] = useState({ GS: true });
   const [activeTab,  setActiveTab]  = useState("browse");
 
-  const { recordAttempt, attemptedIds } = useQuestionAttempts({ onSyllabusUpdate });
+  const { recordAttempt, attemptedIds } = useQuestionAttempts({ onSyllabusUpdate: onBulkSyllabusUpdate || onSyllabusUpdate, serverAttempts });
   const revQueue = useRevisionQueue();
 
   const togglePaper         = useCallback(id => setOpenPapers(prev => ({ ...prev, [id]: !prev[id] })), []);

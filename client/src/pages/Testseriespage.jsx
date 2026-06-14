@@ -93,7 +93,7 @@ function calcScore(answers, questions, markPerQ, negFrac) {
     else wrong++;
   });
   const raw = correct * markPerQ - wrong * markPerQ * negFrac;
-  const score = Math.max(0, raw);
+  const score = raw; // allow negative scores (real UPSC marking)
   const attempted = correct + wrong;
   const accuracy = attempted > 0 ? ((correct / attempted) * 100).toFixed(1) : "0.0";
   return { correct, wrong, skipped, score, accuracy, attempted };
@@ -334,7 +334,7 @@ function QuestionCard({ question, selectedAnswer, onAnswer, showResult, qIndex, 
 function ResultsScreen({ test, answers, onRetry, onReview, recordAttempt, isMobile }) {
   const stats = calcScore(answers, test.questions, test.markPerQuestion, test.negativeFraction);
   const maxScore = test.totalQuestions * test.markPerQuestion;
-  const scorePct = ((stats.score / maxScore) * 100).toFixed(1);
+  const scorePct = maxScore > 0 ? Math.max(0, (stats.score / maxScore) * 100).toFixed(1) : "0.0";
 
   useEffect(() => {
     if (recordAttempt && test) {
@@ -367,10 +367,11 @@ function ResultsScreen({ test, answers, onRetry, onReview, recordAttempt, isMobi
   }, []);
 
   const grade =
-    scorePct >= 80 ? { label: "Excellent", color: "var(--accent-green)" } :
-    scorePct >= 60 ? { label: "Good",      color: "var(--accent-blue)"  } :
-    scorePct >= 40 ? { label: "Average",   color: "var(--accent-gold)"  } :
-                    { label: "Needs Work", color: "var(--accent-red)"   };
+    stats.score < 0 ? { label: "Negative Score", color: "var(--accent-red)"   } :
+    scorePct >= 80   ? { label: "Excellent",      color: "var(--accent-green)" } :
+    scorePct >= 60   ? { label: "Good",           color: "var(--accent-blue)"  } :
+    scorePct >= 40   ? { label: "Average",        color: "var(--accent-gold)"  } :
+                       { label: "Needs Work",     color: "var(--accent-red)"   };
 
   const topicMap = {};
   test.questions.forEach((q) => {
@@ -399,7 +400,7 @@ function ResultsScreen({ test, answers, onRetry, onReview, recordAttempt, isMobi
           fontSize: isMobile ? 42 : 54, fontWeight: 800, color: grade.color,
           fontFamily: "'Playfair Display', Georgia, serif", lineHeight: 1,
         }}>
-          {stats.score.toFixed(2)}
+          {stats.score < 0 ? "−" : ""}{Math.abs(stats.score).toFixed(2)}
         </div>
         <div style={{ fontSize: 14, color: "var(--text-muted)", marginTop: 4 }}>
           out of {maxScore} marks
@@ -411,7 +412,7 @@ function ResultsScreen({ test, answers, onRetry, onReview, recordAttempt, isMobi
           border: `0.5px solid ${grade.color}44`,
           fontFamily: "'DM Mono', monospace",
         }}>
-          {grade.label} · {scorePct}%
+          {grade.label}{stats.score >= 0 ? ` · ${scorePct}%` : ` · ${stats.score.toFixed(2)} marks`}
         </div>
       </div>
 
@@ -425,7 +426,7 @@ function ResultsScreen({ test, answers, onRetry, onReview, recordAttempt, isMobi
         <StatPill icon={XCircle}      label="Wrong"    value={stats.wrong}     color="var(--accent-red)" compact={isMobile} />
         <StatPill icon={CircleDot}    label="Skipped"  value={stats.skipped}   color="var(--text-muted)" compact={isMobile} />
         <StatPill icon={Target}       label="Accuracy" value={`${stats.accuracy}%`} color="var(--accent-blue)" compact={isMobile} />
-        <StatPill icon={TrendingUp}   label="Score"    value={`${stats.score.toFixed(1)}`} color="var(--accent-gold)" compact={isMobile} />
+        <StatPill icon={TrendingUp}   label="Score"    value={`${stats.score < 0 ? "−" : ""}${Math.abs(stats.score).toFixed(1)}`} color={stats.score < 0 ? "var(--accent-red)" : "var(--accent-gold)"} compact={isMobile} />
         <StatPill icon={ListChecks}   label="Attempted" value={`${stats.attempted}/${test.totalQuestions}`} color="var(--accent-purple)" compact={isMobile} />
       </div>
 
@@ -871,7 +872,7 @@ function TestCard({ test, onStart, isMobile }) {
 }
 
 // ─── Main Page ─────────────────────────────────────────────────────────────────
-export default function TestSeriesPage() {
+export default function TestSeriesPage({ user = null, onSyllabusUpdate = null, onBulkSyllabusUpdate = null, serverAttempts = [] }) {
   const [mode,         setMode]         = useState("list");
   const [activeTest,   setActiveTest]   = useState(null);
   const [finalAnswers, setFinalAnswers] = useState({});
@@ -879,7 +880,7 @@ export default function TestSeriesPage() {
 
   const isMobile = useIsMobile();
 
-  const { recordAttempt } = useQuestionAttempts();
+  const { recordAttempt } = useQuestionAttempts({ onSyllabusUpdate: onBulkSyllabusUpdate || onSyllabusUpdate, serverAttempts });
 
   const subjects = useMemo(() => {
     const set = new Set(ALL_TESTS.map((t) => t.subject));

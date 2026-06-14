@@ -52,6 +52,11 @@ const UserData = sequelize.define(
       type: DataTypes.JSONB,
       defaultValue: { queue: [] },
     },
+    // ── Question attempts — server-synced for cross-device and profile stats ──
+    question_attempts: {
+      type: DataTypes.JSONB,
+      defaultValue: [],
+    },
   },
   { timestamps: true, underscored: true }
 );

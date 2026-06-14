@@ -1,11 +1,11 @@
 /**
- * timerStore.js
- * ─────────────
- * Module-level singleton for the study timer.
- * Lives outside React so it survives any page/view change.
- * Components subscribe via setInterval or a custom event.
+ * timerStore.js — USER-SPECIFIC study timer singleton
+ * ─────────────────────────────────────────────────────
+ * Stores timer data per-user so study hours are never shared between accounts.
+ * Key format: `upsc-timer-<userId>-<YYYY-MM-DD>`
  *
  * API:
+ *   timerStore.setUser(userId)          ← MUST call after login / on init
  *   timerStore.elapsed   → number (seconds)
  *   timerStore.running   → boolean
  *   timerStore.start()
@@ -18,16 +18,40 @@ function todayKey() {
   return new Date().toISOString().split("T")[0];
 }
 
+// userId is set via setUser(); null = unauthenticated (no data persisted)
+let _userId = null;
+
+function storageKey() {
+  if (!_userId) return null;
+  return `upsc-timer-${_userId}-${todayKey()}`;
+}
+
 function load() {
+  const key = storageKey();
+  if (!key) return 0;
   try {
-    return JSON.parse(localStorage.getItem(`upsc-timer-${todayKey()}`) || "{}").elapsed || 0;
+    return JSON.parse(localStorage.getItem(key) || "{}").elapsed || 0;
   } catch {
     return 0;
   }
 }
 
 function persist(secs) {
-  localStorage.setItem(`upsc-timer-${todayKey()}`, JSON.stringify({ elapsed: secs }));
+  const key = storageKey();
+  if (!key) return;
+  localStorage.setItem(key, JSON.stringify({ elapsed: secs }));
+}
+
+// Read stored hours for a given user+date (used by StudyChart)
+export function getUserTimerHours(userId, dateStr) {
+  if (!userId) return 0;
+  try {
+    const key = `upsc-timer-${userId}-${dateStr}`;
+    const t = JSON.parse(localStorage.getItem(key) || "{}");
+    return parseFloat(((t.elapsed || 0) / 3600).toFixed(2));
+  } catch {
+    return 0;
+  }
 }
 
 const _listeners = new Set();
@@ -39,10 +63,25 @@ function notify() {
 let _interval = null;
 
 const store = {
-  elapsed: load(),
+  elapsed: 0,
   running: false,
 
-  /** Seed from server hours (called once after data fetch) */
+  /** Must be called after auth resolves so the correct user's data is loaded */
+  setUser(userId) {
+    if (_userId === userId) return;
+    // Pause any running timer before switching user
+    if (store.running) {
+      store.running = false;
+      clearInterval(_interval);
+      _interval = null;
+    }
+    _userId = userId || null;
+    // Load this user's stored elapsed time
+    store.elapsed = load();
+    notify();
+  },
+
+  /** Seed from server hours (called once after data fetch, only if local has nothing) */
   seedFromServer(serverHours) {
     if (serverHours > 0 && load() === 0 && !store.running) {
       const secs = Math.round(serverHours * 3600);
@@ -69,6 +108,7 @@ const store = {
     store.running = false;
     clearInterval(_interval);
     _interval = null;
+    persist(store.elapsed);
     notify();
   },
 
@@ -87,10 +127,10 @@ const store = {
   },
 };
 
-// Sync on page hide (tab switch, close)
+// Persist on page hide
 if (typeof document !== "undefined") {
   document.addEventListener("visibilitychange", () => {
-    if (document.hidden) persist(store.elapsed);
+    if (document.hidden && store.running) persist(store.elapsed);
   });
 }
 

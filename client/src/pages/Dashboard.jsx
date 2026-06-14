@@ -24,7 +24,7 @@ import {
 import { useState, useEffect, useCallback } from "react";
 import { SYLLABUS, PAPER_ORDER, getPct } from "../data/syllabusData";
 import AuthGate from "../components/ui/AuthGate";
-import timerStore from "../hooks/timerStore";
+import timerStore, { getUserTimerHours } from "../hooks/timerStore";
 import QuestionStatsPanel from "../components/QuestionStats";
 import { AvatarCircle } from "./ProfilePage";
 
@@ -319,7 +319,7 @@ function StudyTimer({ onLogHours, onSynced, targetHours = 8, serverHours = 0 }) 
 }
 
 // ─── StudyChart ────────────────────────────────────────────────────────────────
-function StudyChart({ logs = [], targetHours = 8 }) {
+function StudyChart({ logs = [], targetHours = 8, userId = null }) {
   const [view, setView] = useState("weekly");
   const [isMobile, setIsMobile] = useState(false);
 
@@ -332,15 +332,14 @@ function StudyChart({ logs = [], targetHours = 8 }) {
 
   const getHoursForDate = (dateStr) => {
     const serverHours = logs.find((l) => l.date === dateStr)?.hours || 0;
-    if (dateStr !== todayKey()) return serverHours;
-    try {
-      const t = JSON.parse(
-        localStorage.getItem(`upsc-timer-${dateStr}`) || "{}",
-      );
-      return Math.max(serverHours, secsToHours(t.elapsed || 0));
-    } catch {
-      return serverHours;
+    // For today, prefer live store value over saved localStorage (most accurate)
+    if (dateStr === todayKey()) {
+      const liveHours = parseFloat((timerStore.elapsed / 3600).toFixed(2));
+      const savedHours = getUserTimerHours(userId, dateStr);
+      return Math.max(serverHours, liveHours, savedHours);
     }
+    const localHours = getUserTimerHours(userId, dateStr);
+    return Math.max(serverHours, localHours);
   };
 
   const weeklyData = (() => {
@@ -978,17 +977,12 @@ export default function Dashboard({
   onNavigateAuth,
   onNavigateProfile,
 }) {
+  // Derive stable user ID for scoping timer data
+  const userId = user?.id || user?._id || null;
   if (!user) return <AuthGate feature="Dashboard" onNavigateAuth={onNavigateAuth} />;
 
   const [timerHours, setTimerHours] = useState(() => {
-    try {
-      const t = JSON.parse(
-        localStorage.getItem(`upsc-timer-${todayKey()}`) || "{}",
-      );
-      return secsToHours(t.elapsed || 0);
-    } catch {
-      return 0;
-    }
+    return getUserTimerHours(userId, todayKey());
   });
 
   const [isMobile, setIsMobile] = useState(false);
@@ -1164,7 +1158,7 @@ export default function Dashboard({
         {isMobile ? (
           <>
             <CollapsibleSection title="Study Chart" icon={TrendingUp} defaultOpen={false}>
-              <StudyChart logs={dailyLogs} targetHours={targetHours} />
+              <StudyChart logs={dailyLogs} targetHours={targetHours} userId={userId} />
             </CollapsibleSection>
             <CollapsibleSection title="Paper Coverage" icon={BarChart2} defaultOpen={false}>
               <PaperProgress syllabusData={syllabusData} />
@@ -1172,7 +1166,7 @@ export default function Dashboard({
           </>
         ) : (
           <>
-            <StudyChart logs={dailyLogs} targetHours={targetHours} />
+            <StudyChart logs={dailyLogs} targetHours={targetHours} userId={userId} />
             <PaperProgress syllabusData={syllabusData} />
           </>
         )}

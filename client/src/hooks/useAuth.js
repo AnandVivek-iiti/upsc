@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { setAuthToken, clearAuthToken } from "../utils/api";
+import timerStore from "./timerStore";
 
 /**
  * useAuth — reads/writes JWT session from localStorage.
@@ -60,6 +61,7 @@ export function useAuth() {
     localStorage.removeItem("upsc_token");
     localStorage.removeItem("upsc_user");
     clearAuthToken();         // ← clear from api module
+    timerStore.setUser(null); // ← clear user-specific timer
     setToken(null);
     setUser(null);
   }, []);

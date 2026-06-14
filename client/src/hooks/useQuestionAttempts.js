@@ -10,8 +10,8 @@
 //   const { recordAttempt } = useQuestionAttempts({ onSyllabusUpdate });
 //   recordAttempt(question, "correct" | "wrong" | "skipped", { subject, paper });
 
-import { useState, useCallback, useMemo } from "react";
-import { useEffect } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
+import { syncQuestionAttempts } from "../utils/api";
 
 const STORAGE_KEY = "upsc-question-attempts";
 const THRESHOLD   = 0.70; // 70% correct in a topic → auto-mark progress
@@ -44,23 +44,42 @@ const TOPIC_TO_SYLLABUS = {
   "Quantitative Aptitude":      { stage: "prelims", paper: "CSAT", module: "Mathematics" },
 };
 
-export function useQuestionAttempts({ onSyllabusUpdate } = {}) {
-  const [attempts, setAttempts] = useState(load);
-useEffect(() => {
-  const sync = () => setAttempts(load());
+export function useQuestionAttempts({ onSyllabusUpdate, serverAttempts = null } = {}) {
+  const [attempts, setAttempts] = useState(() => {
+    const local = load();
+    // If serverAttempts provided on initial load, merge them in
+    // (server wins for same id — more recent attempt counts)
+    if (serverAttempts && serverAttempts.length > 0) {
+      const byId = {};
+      for (const a of serverAttempts) byId[a.id] = a;
+      for (const a of local) if (!byId[a.id]) byId[a.id] = a;
+      const merged = Object.values(byId);
+      save(merged);
+      return merged;
+    }
+    return local;
+  });
 
-  window.addEventListener(
-    "question-attempt-updated",
-    sync
-  );
+  // Listen for cross-tab updates
+  useEffect(() => {
+    const sync = () => setAttempts(load());
+    window.addEventListener("question-attempt-updated", sync);
+    return () => window.removeEventListener("question-attempt-updated", sync);
+  }, []);
 
-  return () => {
-    window.removeEventListener(
-      "question-attempt-updated",
-      sync
-    );
-  };
-}, []);
+  // Debounced server sync — batch up attempts and push every 10 seconds
+  // when there are unsaved changes, rather than one request per question
+  useEffect(() => {
+    if (attempts.length === 0) return;
+    const timer = setTimeout(async () => {
+      try {
+        await syncQuestionAttempts(attempts);
+      } catch {
+        // Silently fail — local storage is the fallback, server sync is best-effort
+      }
+    }, 10_000); // 10s debounce
+    return () => clearTimeout(timer);
+  }, [attempts]);
   // Set of IDs already attempted — O(1) dedup
   const attemptedIds = useMemo(() => new Set(attempts.map(a => a.id)), [attempts]);
 
@@ -95,13 +114,18 @@ window.dispatchEvent(
   new Event("question-attempt-updated")
 );
       // ── Auto-sync to syllabus when topic crosses threshold ──────────────
-      if (result === "correct" && onSyllabusUpdate && record.subject) {
-        const map = TOPIC_TO_SYLLABUS[record.subject];
+      if (result !== "skipped" && onSyllabusUpdate) {
+        // Try topic first (PYQ/Topicwise), then subject (Test series)
+        const lookupKey = record.topic || record.subject || "";
+        const map = lookupKey ? TOPIC_TO_SYLLABUS[lookupKey] : null;
         if (map) {
-          const subjectAttempts = next.filter(a => a.subject === record.subject);
-          const subjectCorrect  = subjectAttempts.filter(a => a.result === "correct").length;
-          const ratio           = subjectAttempts.length > 0
-            ? subjectCorrect / subjectAttempts.length : 0;
+          // Count attempts for this topic/subject from all attempts
+          const topicAttempts = next.filter(
+            a => (a.topic || a.subject) === lookupKey
+          );
+          const topicCorrect = topicAttempts.filter(a => a.result === "correct").length;
+          const ratio = topicAttempts.length > 0
+            ? topicCorrect / topicAttempts.length : 0;
 
           // Progress value: proportional 0-100, capped at 90 via auto-sync
           // (leave the last 10% for the user to manually confirm mastery)

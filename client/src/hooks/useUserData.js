@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { getUserData, updateSyllabusProgress, logDailyHours } from "../utils/api";
+import { getUserData, updateSyllabusProgress, logDailyHours, bulkUpdateSyllabus } from "../utils/api";
 import { SYLLABUS, deepClone } from "../data/syllabusData";
 
 
@@ -18,11 +18,12 @@ export function useUserData({ enabled = true, token = null } = {}) {
 
       if (res?.success) {
         setData({
-          profile:           res.profile,
-          syllabus:          mergeProgressIntoSyllabus(res.syllabus_progress || {}),
-          answers:           res.answers           || [],
-          daily_logs:        res.daily_logs        || [],
-          spaced_repetition: res.spaced_repetition || { queue: [] },
+          profile:            res.profile,
+          syllabus:           mergeProgressIntoSyllabus(res.syllabus_progress || {}),
+          answers:            res.answers            || [],
+          daily_logs:         res.daily_logs         || [],
+          spaced_repetition:  res.spaced_repetition  || { queue: [] },
+          question_attempts:  res.question_attempts  || [],
         });
       } else {
         setData(buildFallback());
@@ -73,10 +74,11 @@ export function useUserData({ enabled = true, token = null } = {}) {
         daily_target_hours: 8,
         examDate: null,
       },
-      syllabus:          deepClone(SYLLABUS),
-      answers:           [],
-      daily_logs:        [],
-      spaced_repetition: { queue: [] },
+      syllabus:           deepClone(SYLLABUS),
+      answers:            [],
+      daily_logs:         [],
+      spaced_repetition:  { queue: [] },
+      question_attempts:  [],
     };
   }
 
@@ -111,6 +113,44 @@ export function useUserData({ enabled = true, token = null } = {}) {
       await updateSyllabusProgress(stage, paper, moduleName, progress, statusOrState);
     } catch (e) {
       setError(`Sync failed: ${e.message}`);
+      fetchData(token);
+    }
+  }, [fetchData, token]);
+
+  // ─── Bulk syllabus update — single request for multiple modules ─────────────
+  // Used by useQuestionAttempts when several topics cross the threshold at once.
+  const bulkUpdateProgress = useCallback(async (updates) => {
+    // Optimistic local update
+    setData((prev) => {
+      if (!prev) return prev;
+      let syllabus = prev.syllabus;
+      for (const { stage, paper, module: moduleName, progress, state: statusOrState } of updates) {
+        const mod = syllabus?.[stage]?.[paper]?.modules?.[moduleName];
+        if (!mod) continue;
+        syllabus = {
+          ...syllabus,
+          [stage]: {
+            ...syllabus[stage],
+            [paper]: {
+              ...syllabus[stage][paper],
+              modules: {
+                ...syllabus[stage][paper].modules,
+                [moduleName]: {
+                  ...mod,
+                  progress,
+                  ...(statusOrState ? { status: statusOrState, state: statusOrState } : {}),
+                },
+              },
+            },
+          },
+        };
+      }
+      return { ...prev, syllabus };
+    });
+    try {
+      await bulkUpdateSyllabus(updates);
+    } catch (e) {
+      setError(`Bulk sync failed: ${e.message}`);
       fetchData(token);
     }
   }, [fetchData, token]);
@@ -179,6 +219,7 @@ export function useUserData({ enabled = true, token = null } = {}) {
     error,
     refetch: fetchData,
     updateProgress,
+    bulkUpdateProgress,
     updateProfile,
     logHours,
     overallProgress,

@@ -116,6 +116,24 @@ export async function evaluateAnswer({ question, answer, paper }, onChunk, onDon
   if (onDone) onDone(data);
 }
 
+// ─── Bulk Syllabus Update ────────────────────────────────────────────────────
+// Single call to update multiple modules — avoids race conditions from parallel PATCHes
+export async function bulkUpdateSyllabus(updates) {
+  return apiFetch("/dashboard/syllabus/bulk", {
+    method: "POST",
+    body: JSON.stringify({ updates }),
+  });
+}
+
+// ─── Question Attempts Sync ───────────────────────────────────────────────────
+// Pushes locally tracked attempts to the server for cross-device sync + profile stats
+export async function syncQuestionAttempts(attempts) {
+  return apiFetch("/dashboard/question-attempts", {
+    method: "POST",
+    body: JSON.stringify({ attempts }),
+  });
+}
+
 // ─── Spaced Repetition ────────────────────────────────────────────────────────
 export async function addToSpacedRepetition(topic, paper, difficulty) {
   return apiFetch("/dashboard/spaced-repetition", {

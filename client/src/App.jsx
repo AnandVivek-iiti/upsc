@@ -16,6 +16,7 @@ import Adminpannel from "./pages/AdminPanel";
 import ResourceLibrary from "./pages/ResourceLibrary";
 import ProfilePage, { AvatarCircle } from "./pages/ProfilePage";
 import PWAInstallPrompt from "./components/PWAInstallPrompt";
+import timerStore from "./hooks/timerStore";
 
 // ─── Animated Splash — exact AuthPage header style, no static logo img ───────
 function SplashScreen() {
@@ -170,6 +171,7 @@ export default function App() {
     error,
     refetch,
     updateProgress,
+    bulkUpdateProgress,
     updateProfile,
     logHours,
     overallProgress,
@@ -181,6 +183,12 @@ export default function App() {
     document.documentElement.setAttribute("data-theme", theme);
     localStorage.setItem("upsc-theme", theme);
   }, [theme]);
+
+  // ── Sync authenticated user to timerStore so hours are user-specific ───────
+  useEffect(() => {
+    const userId = user?.id || user?._id || null;
+    timerStore.setUser(userId);
+  }, [user]);
 
   // ── Navigation helpers ─────────────────────────────────────────────────────
   const handleViewChange = (view) => {
@@ -292,13 +300,14 @@ export default function App() {
             {activeView === "mains"       && <MainsGrind workspaceQuestion={workspaceQuestion} />}
             {activeView === "pre"         && <PrelimsGrind />}
             {activeView === "ai-workplace"&& <AIWorkplace user={user} onNavigateAuth={() => setActiveView("auth")} />}
-            {activeView === "topic-wise"  && <Topicwise onSyllabusUpdate={updateProgress} />}
+            {activeView === "topic-wise"  && <Topicwise onSyllabusUpdate={updateProgress} onBulkSyllabusUpdate={bulkUpdateProgress} serverAttempts={userData?.question_attempts || []} />}
             {activeView === "admin"       && <Adminpannel />}
-            {activeView === "resources"   && <ResourceLibrary />}
+            {activeView === "resources"   && <ResourceLibrary user={user} updateProgress={updateProgress} bulkUpdateProgress={bulkUpdateProgress} serverAttempts={userData?.question_attempts || []} />}
             {activeView === "profile"     && (
               <ProfilePage
                 user={user}
                 token={token}
+                userData={userData}
                 onProfileUpdate={handleProfileUpdate}
                 onBack={() => handleViewChange(previousView)}
               />

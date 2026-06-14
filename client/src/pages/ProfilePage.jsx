@@ -142,7 +142,7 @@ function Toast({ msg }) {
 }
 
 // ─── ProfilePage ──────────────────────────────────────────────────────────────
-export default function ProfilePage({ token, onBack, onProfileUpdate }) {
+export default function ProfilePage({ token, onBack, onProfileUpdate, userData = null }) {
   const [profile, setProfile] = useState(null);
   const [fetching, setFetching] = useState(true);
   const [fetchErr, setFetchErr] = useState("");
@@ -155,6 +155,36 @@ export default function ProfilePage({ token, onBack, onProfileUpdate }) {
     name: "", target_year: 2026, daily_target_hours: 8, examDate: "",
   });
   const [passForm, setPassForm] = useState({ current: "", next: "", confirm: "" });
+
+  // ── Progress values derived from synced userData ────────────────────────────
+  const overallCoverage = userData
+    ? (() => {
+        let total = 0, count = 0;
+        for (const stage of Object.values(userData.syllabus || {})) {
+          for (const paper of Object.values(stage)) {
+            for (const mod of Object.values(paper.modules || {})) {
+              total += mod.progress || 0;
+              count++;
+            }
+          }
+        }
+        return count > 0 ? Math.round(total / count) : 0;
+      })()
+    : 0;
+  // question_attempts = all MCQ/PYQ attempts (synced from server)
+  // answers = written mains answers
+  const totalAnswered = (userData?.question_attempts?.length || 0) + (userData?.answers?.length || 0);
+  const totalMCQCorrect = (userData?.question_attempts || []).filter(a => a.result === "correct").length;
+  const mcqAccuracy = totalAnswered > 0
+    ? Math.round((totalMCQCorrect / Math.max(userData?.question_attempts?.length || 1, 1)) * 100)
+    : 0;
+  const todayStudyHours = userData
+    ? (() => {
+        const today = new Date().toISOString().split("T")[0];
+        const log = (userData.daily_logs || []).find(l => l.date === today);
+        return parseFloat((log?.hours || 0).toFixed(1));
+      })()
+    : 0;
 
   // ── Fetch profile from /auth/me ───────────────────────────────────────────
   const fetchProfile = useCallback(() => {
@@ -377,10 +407,13 @@ export default function ProfilePage({ token, onBack, onProfileUpdate }) {
           <div className="space-y-6 sm:space-y-7">
 
             {/* Stat pills — larger touch targets */}
-            <div className="grid grid-cols-3 lg:grid-cols-1 gap-3 sm:gap-4">
+            <div className="grid grid-cols-3 lg:grid-cols-2 gap-3 sm:gap-4">
               <StatPill icon={Flame} label="Streak" value={`${p.streak || 0}d`} color="#fb923c" />
               <StatPill icon={Trophy} label="Best" value={`${p.longest_streak || 0}d`} color="#fbbf24" />
               <StatPill icon={Clock} label="Target" value={`${p.daily_target_hours || 8}h/d`} color="#60a5fa" />
+              <StatPill icon={TrendingUp} label="Coverage" value={`${overallCoverage}%`} color="#4ade80" />
+              <StatPill icon={BookOpen} label="Answered" value={`${totalAnswered}`} color="#a78bfa" />
+              <StatPill icon={Zap} label="Today" value={`${todayStudyHours}h`} color="#f59e0b" />
             </div>
 
             {/* Study stats card — bigger padding, larger text */}
@@ -399,6 +432,7 @@ export default function ProfilePage({ token, onBack, onProfileUpdate }) {
                     color: daysLeft != null && daysLeft <= 90 ? "#f87171" : "#4ade80"
                   },
                   { label: "Daily goal", value: `${p.daily_target_hours || 8}h`, color: "#60a5fa" },
+                  { label: "MCQ Accuracy", value: `${mcqAccuracy}%`, color: "#4ade80" },
                   { label: "Role", value: profile?.role === "admin" ? "Admin" : "Student", color: "#a78bfa" },
                 ].map(({ label, value, color }) => (
                   <div key={label} className="flex justify-between items-center py-3 border-b border-bg-border last:border-0">

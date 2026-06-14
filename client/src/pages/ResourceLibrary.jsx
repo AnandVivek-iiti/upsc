@@ -1,4 +1,4 @@
-// ─── Resource Library ─────────────────────────────────────────────────────────
+// // ─── Resource Library ─────────────────────────────────────────────────────────
 // Four sections: NCERT Books · My Notes · Reference Books · YouTube Classes
 // ClassCard now shows YouTube video thumbnail via thumbnailVideoId field.
 // classes.js has been cleaned — only verified channels/playlists remain.
@@ -568,7 +568,7 @@ function ClassCard({ cls }) {
 }
 
 // ─── MAIN COMPONENT ───────────────────────────────────────────────────────────
-export default function ResourceLibrary() {
+export default function ResourceLibrary({ user = null, updateProgress = null, bulkUpdateProgress = null, serverAttempts = [] }) {
   const [activeTab, setActiveTab] = useState("ncert");
   const [search, setSearch]       = useState("");
 
@@ -931,7 +931,7 @@ export default function ResourceLibrary() {
       )}
 
       {/* ── TAB: TEST SERIES ──────────────────────────────────────────────── */}
-      {activeTab === "test-series" && <TestSeriesPage />}
+      {activeTab === "test-series" && <TestSeriesPage user={user} onSyllabusUpdate={updateProgress} onBulkSyllabusUpdate={bulkUpdateProgress} serverAttempts={serverAttempts} />}
 
       {/* ── Footer ─────────────────────────────────────────────────────────── */}
       <div style={{ marginTop: 32, paddingTop: 20, borderTop: "0.5px solid var(--bg-border)", display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 8 }}>
