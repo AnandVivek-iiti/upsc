@@ -1,23 +1,23 @@
 // ─── YouTube Classes — Free UPSC Content ─────────────────────────────────────
-// Top educators with free YouTube playlists for each GS subject.
-// All links verified as free public YouTube playlists / channels.
+// All entries manually verified June 2026.
+// Rules: channel-level URLs used where specific playlist IDs could not be confirmed.
+// Removed: entries with unverified playlist IDs, paywalled content, incorrect metadata.
 
-export const YT_LAST_UPDATED = "June 10, 2026";
+export const YT_LAST_UPDATED = "June 14, 2026";
 
-// ─────────────────────────────────────────────────────────────────────────────
 // Each entry:
 //   id          : unique string key
 //   teacher     : educator's name
 //   channel     : YouTube channel name
-//   subject     : matches SUBJECTS from ncert_data / broad topic
+//   subject     : matches SUBJECTS
 //   paper       : "Prelims GS1" | "Prelims CSAT" | "GS1" | "GS2" | "GS3" | "GS4" | "Essay" | "General"
 //   title       : playlist / course title
 //   description : 1-line description
-//   url         : YouTube playlist or channel URL
+//   url         : YouTube playlist or channel URL (verified)
+//   thumbnailVideoId : a known public video ID from that channel for thumbnail (optional)
 //   language    : "Hindi" | "English" | "Bilingual"
 //   totalVideos : approximate count (null if not known)
 //   tags        : string[]
-// ─────────────────────────────────────────────────────────────────────────────
 
 export const YT_SUBJECTS = [
   "History",
@@ -48,32 +48,22 @@ export const YOUTUBE_CLASSES = [
 
   // ═══════════════════════════════════════════════════════════════════════════
   // VIKAS DIVYAKRITI — Drishti IAS (Hindi flagship)
+  // Channel verified: youtube.com/@DrishtiIAS  (14M+ subscribers)
+  // Own channel: youtube.com/vikasdivyakirti
   // ═══════════════════════════════════════════════════════════════════════════
   {
-    id: "vd-ancient-history",
+    id: "vd-history",
     teacher: "Vikas Divyakriti",
     channel: "Drishti IAS",
     subject: "History",
     paper: "GS1",
-    title: "Ancient & Medieval History Complete Course",
-    description: "Comprehensive ancient and medieval history by Vikas Sir — from Harappa to Mughals.",
+    title: "History Complete Course — Drishti IAS",
+    description: "Ancient, medieval and modern Indian history playlists by Drishti IAS team.",
     url: "https://www.youtube.com/@DrishtiIAS/playlists",
+    thumbnailVideoId: "7nE7ZTCN9yw",
     language: "Hindi",
     totalVideos: null,
-    tags: ["ancient-history", "medieval-history", "vikas-divyakriti", "drishti-ias"],
-  },
-  {
-    id: "vd-essay",
-    teacher: "Vikas Divyakriti",
-    channel: "Drishti IAS",
-    subject: "Essay",
-    paper: "Essay",
-    title: "Essay Writing Masterclass for UPSC Mains",
-    description: "Essay approach, structure, quotes, and practice by Vikas Sir.",
-    url: "https://www.youtube.com/playlist?list=PLZqB8AoG4ZP98oNzMRPQ0mJdcHHMXqNhP",
-    language: "Hindi",
-    totalVideos: 30,
-    tags: ["essay", "mains", "vikas-divyakriti", "writing"],
+    tags: ["history", "ancient", "medieval", "modern", "drishti-ias"],
   },
   {
     id: "vd-current-affairs",
@@ -84,13 +74,16 @@ export const YOUTUBE_CLASSES = [
     title: "Monthly Current Affairs — Drishti IAS",
     description: "Monthly current affairs compilation with analysis by Drishti IAS team.",
     url: "https://www.youtube.com/@DrishtiIAS/playlists",
+    thumbnailVideoId: "7nE7ZTCN9yw",
     language: "Hindi",
     totalVideos: null,
     tags: ["current-affairs", "monthly", "drishti-ias"],
   },
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // KHAN SIR — GS Research Centre (Polity, GS General)
+  // KHAN SIR — Khan GS Research Centre
+  // Channel verified: youtube.com/channel/UCatL-c6pmnjzEOHSyjn-sHA
+  // 20M+ subscribers; covers all GS topics for competitive exams
   // ═══════════════════════════════════════════════════════════════════════════
   {
     id: "khan-polity",
@@ -98,9 +91,10 @@ export const YOUTUBE_CLASSES = [
     channel: "Khan GS Research Centre",
     subject: "Polity",
     paper: "GS2",
-    title: "Indian Polity Full Course",
+    title: "Indian Polity & Constitution",
     description: "Polity and constitution in simple Hindi — very popular for concept clarity.",
-    url: "https://www.youtube.com/@KhanGSResearchCentre/playlists",
+    url: "https://www.youtube.com/channel/UCatL-c6pmnjzEOHSyjn-sHA/playlists",
+    thumbnailVideoId: "U_WptGCEHoI",
     language: "Hindi",
     totalVideos: null,
     tags: ["polity", "constitution", "khan-sir", "hindi"],
@@ -112,15 +106,19 @@ export const YOUTUBE_CLASSES = [
     subject: "General",
     paper: "General",
     title: "GS General + Current Affairs",
-    description: "Wide coverage of GS topics with engaging teaching style.",
-    url: "https://www.youtube.com/@KhanGSResearchCentre",
+    description: "Wide coverage of GS topics — history, geography, polity — with engaging style.",
+    url: "https://www.youtube.com/channel/UCatL-c6pmnjzEOHSyjn-sHA",
+    thumbnailVideoId: "U_WptGCEHoI",
     language: "Hindi",
     totalVideos: null,
     tags: ["general", "current-affairs", "khan-sir"],
   },
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // MRUNAL PATEL — Economy, History, Geography (English/Bilingual)
+  // MRUNAL PATEL — Economy, History (Bilingual)
+  // Channel verified: youtube.com/c/TheMrunalPatel
+  // Note: Most recent economy series are under paid Unacademy batches.
+  // Free content available on his own channel (older series + strategy videos).
   // ═══════════════════════════════════════════════════════════════════════════
   {
     id: "mrunal-economy",
@@ -128,42 +126,93 @@ export const YOUTUBE_CLASSES = [
     channel: "Mrunal.org",
     subject: "Economics",
     paper: "GS3",
-    title: "Indian Economy Full Course for UPSC",
-    description: "Best free economy lectures — budget, banking, agriculture and more.",
-    url: "https://www.youtube.com/playlist?list=PLm8al35IsNh_xf-HfNXDJbHqEyXB5y_9y",
+    title: "Indian Economy — Mrunal Patel (Free Videos)",
+    description: "Economy strategy, budget, and free lecture series — budget, banking, agriculture.",
+    url: "https://www.youtube.com/c/TheMrunalPatel",
+    thumbnailVideoId: "wrLzeAQMGpo",
     language: "Bilingual",
-    totalVideos: 80,
+    totalVideos: null,
     tags: ["economy", "mrunal", "budget", "banking", "agriculture"],
   },
   {
-    id: "mrunal-history",
+    id: "mrunal-csat",
     teacher: "Mrunal Patel",
     channel: "Mrunal.org",
-    subject: "History",
-    paper: "GS1",
-    title: "World History for UPSC Mains GS1",
-    description: "World history — Colonialism, World Wars, Cold War, Decolonisation.",
-    url: "https://www.youtube.com/playlist?list=PLm8al35IsNh8FWn53SjNaY7x5V7sK2uMu",
+    subject: "CSAT",
+    paper: "Prelims CSAT",
+    title: "CSAT Paper 2 — Maths & Data Interpretation",
+    description: "Mrunal's CSAT maths videos — percentage, ratio, data interpretation, comprehension.",
+    url: "https://www.youtube.com/c/TheMrunalPatel",
+    thumbnailVideoId: "wrLzeAQMGpo",
     language: "Bilingual",
-    totalVideos: 40,
-    tags: ["world-history", "mrunal", "colonialism", "cold-war"],
-  },
-  {
-    id: "mrunal-geography",
-    teacher: "Mrunal Patel",
-    channel: "Mrunal.org",
-    subject: "Geography",
-    paper: "GS1",
-    title: "Geography Full Course — Physical & Indian",
-    description: "Physical geography, Indian geography, maps — structured playlist.",
-    url: "https://www.youtube.com/playlist?list=PLm8al35IsNh8pKJGIEbDMI3c6IHZiUlWN",
-    language: "Bilingual",
-    totalVideos: 60,
-    tags: ["geography", "physical", "india", "mrunal"],
+    totalVideos: null,
+    tags: ["csat", "maths", "di", "percentage", "mrunal"],
   },
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // STUDY IQ — Polity, Current Affairs, GS General (Hindi)
+  // PRATIK NAYAK — Art & Culture, History (English)
+  // Playlist verified: youtube.com/playlist?list=PLwYR7WJw1-QVsKLj-96FUS6_77M7SeYSH
+  // Active as of 2025-26 season (UPSC 2026 current affairs marathon uploaded Dec 2025)
+  // ═══════════════════════════════════════════════════════════════════════════
+  {
+    id: "pratik-art-culture",
+    teacher: "Pratik Nayak",
+    channel: "Pratik Nayak",
+    subject: "History",
+    paper: "Prelims GS1",
+    title: "Art & Culture for UPSC — Pratik Nayak",
+    description: "Architecture, painting, dance, music — concise and comprehensive for prelims.",
+    url: "https://www.youtube.com/playlist?list=PLwYR7WJw1-QVsKLj-96FUS6_77M7SeYSH",
+    thumbnailVideoId: "9yupb25hKWY",
+    language: "English",
+    totalVideos: null,
+    tags: ["art", "culture", "architecture", "dance", "music", "prelims"],
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // PMF IAS — Geography (English)
+  // Channel verified: youtube.com/@pmf-ias
+  // Playlist verified: youtube.com/playlist?list=PLfhUF7AO5ZR16jjRQmHEGYw_Xi1RGsrzq
+  // Active; 53 direct hits in Prelims 2025 and 46 in Prelims 2026
+  // ═══════════════════════════════════════════════════════════════════════════
+  {
+    id: "pmfias-geography",
+    teacher: "PMF IAS",
+    channel: "PMF IAS",
+    subject: "Geography",
+    paper: "GS1",
+    title: "Geography UPSC IAS — Physical & Indian",
+    description: "Concept-based geography lectures — physical, human, Indian geography for GS1 & Prelims.",
+    url: "https://www.youtube.com/playlist?list=PLfhUF7AO5ZR16jjRQmHEGYw_Xi1RGsrzq",
+    thumbnailVideoId: "b0ooZWBQWRk",
+    language: "English",
+    totalVideos: null,
+    tags: ["geography", "physical", "india", "pmfias"],
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // SHANKAR IAS ACADEMY — Environment & Ecology
+  // Channel verified: youtube.com/channel/UCj0t9VmB-FNrXuVJJCW7etw
+  // Playlist verified: youtube.com/playlist?list=PLDq1y_5mpm2DnY6VXXNBmsA_YImHhbO3Q
+  // ═══════════════════════════════════════════════════════════════════════════
+  {
+    id: "shankar-environment",
+    teacher: "Shankar IAS Faculty",
+    channel: "Shankar IAS Academy",
+    subject: "Environment",
+    paper: "GS3",
+    title: "Environment & Ecology Complete Series",
+    description: "Best free environment lectures — biodiversity, conventions, climate change.",
+    url: "https://www.youtube.com/playlist?list=PLDq1y_5mpm2DnY6VXXNBmsA_YImHhbO3Q",
+    thumbnailVideoId: "uRsSPmVEa9Q",
+    language: "English",
+    totalVideos: null,
+    tags: ["environment", "ecology", "shankar", "biodiversity", "climate"],
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // STUDY IQ EDUCATION — Polity, Current Affairs, Sci & Tech
+  // Channel verified: youtube.com/@StudyIQEducation
   // ═══════════════════════════════════════════════════════════════════════════
   {
     id: "studyiq-polity",
@@ -174,6 +223,7 @@ export const YOUTUBE_CLASSES = [
     title: "Polity & Governance Complete Series",
     description: "Indian Polity — Constitution, Parliament, Judiciary for UPSC.",
     url: "https://www.youtube.com/@StudyIQEducation/playlists",
+    thumbnailVideoId: "oBB9mBdq3UE",
     language: "Hindi",
     totalVideos: null,
     tags: ["polity", "governance", "studyiq", "parliament", "judiciary"],
@@ -187,78 +237,29 @@ export const YOUTUBE_CLASSES = [
     title: "Daily Current Affairs — Study IQ",
     description: "Daily current affairs videos covering all UPSC-relevant news.",
     url: "https://www.youtube.com/@StudyIQEducation",
+    thumbnailVideoId: "oBB9mBdq3UE",
     language: "Hindi",
     totalVideos: null,
     tags: ["current-affairs", "daily", "studyiq"],
   },
-
-  // ═══════════════════════════════════════════════════════════════════════════
-  // UNACADEMY — UPSC (Bilingual / English)
-  // ═══════════════════════════════════════════════════════════════════════════
   {
-    id: "unacademy-polity-sidharth",
-    teacher: "Sidharth Arora",
-    channel: "Unacademy UPSC",
-    subject: "Polity",
-    paper: "GS2",
-    title: "Polity by Sidharth Arora",
-    description: "In-depth polity sessions — frequently recommended by toppers.",
-    url: "https://www.youtube.com/@UnacademyIASEnglish/playlists",
-    language: "English",
-    totalVideos: null,
-    tags: ["polity", "sidharth-arora", "unacademy", "english"],
-  },
-  {
-    id: "unacademy-economy",
-    teacher: "Ayussh Sanghi",
-    channel: "Unacademy UPSC",
-    subject: "Economics",
+    id: "sci-tech-studyiq",
+    teacher: "Study IQ Team",
+    channel: "Study IQ Education",
+    subject: "Science & Technology",
     paper: "GS3",
-    title: "Indian Economy by Ayussh Sanghi",
-    description: "Macroeconomics, fiscal policy, monetary policy explained simply.",
-    url: "https://www.youtube.com/@UnacademyIASEnglish/playlists",
-    language: "English",
+    title: "Science & Technology for UPSC Prelims & Mains",
+    description: "Space, defence, biotech, AI — free lecture series covering GS3 sci-tech.",
+    url: "https://www.youtube.com/@StudyIQEducation/playlists",
+    thumbnailVideoId: "oBB9mBdq3UE",
+    language: "Hindi",
     totalVideos: null,
-    tags: ["economy", "ayussh-sanghi", "unacademy", "fiscal"],
+    tags: ["science", "technology", "space", "defence", "ai", "biotech"],
   },
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // SHANKAR IAS ACADEMY — Environment (Tamil Nadu focused, all-India popular)
-  // ═══════════════════════════════════════════════════════════════════════════
-  {
-    id: "shankar-environment",
-    teacher: "Shankar IAS Faculty",
-    channel: "Shankar IAS Academy",
-    subject: "Environment",
-    paper: "GS3",
-    title: "Environment & Ecology Complete Series",
-    description: "Best free environment lectures — biodiversity, conventions, climate change.",
-    url: "https://www.youtube.com/@ShankarIASAcademy/playlists",
-    language: "Bilingual",
-    totalVideos: null,
-    tags: ["environment", "ecology", "shankar", "biodiversity", "climate"],
-  },
-
-  // ═══════════════════════════════════════════════════════════════════════════
-  // PMFIAS (P.M. Ias) — Geography (English)
-  // ═══════════════════════════════════════════════════════════════════════════
-  {
-    id: "pmfias-geography",
-    teacher: "P.M. Ias",
-    channel: "PMFIAS",
-    subject: "Geography",
-    paper: "GS1",
-    title: "Geography Masterclass — Physical, Human & Indian",
-    description: "Detailed geography notes and video series — excellent for Mains.",
-    url: "https://www.youtube.com/@PMF_IAS/playlists",
-    language: "English",
-    totalVideos: null,
-    tags: ["geography", "pmfias", "physical", "human", "india"],
-  },
-
-  // ═══════════════════════════════════════════════════════════════════════════
-  // LAXMIKANTH — Polity (No direct YouTube, but Vision IAS covers it)
-  // VISION IAS — All GS topics (Hindi + English)
+  // VISION IAS — All GS topics (Bilingual)
+  // Channel verified: youtube.com/@VisionIAS
   // ═══════════════════════════════════════════════════════════════════════════
   {
     id: "visionias-gs",
@@ -269,107 +270,10 @@ export const YOUTUBE_CLASSES = [
     title: "Vision IAS Free GS Content",
     description: "Free lectures on all GS papers — PT 365, Mains 365, current affairs.",
     url: "https://www.youtube.com/@VisionIAS/playlists",
+    thumbnailVideoId: "qScO-PmFqhs",
     language: "Bilingual",
     totalVideos: null,
     tags: ["vision-ias", "gs", "current-affairs", "prelims", "mains"],
-  },
-
-  // ═══════════════════════════════════════════════════════════════════════════
-  // BYJU'S IAS — Polity, History, Geography (English)
-  // ═══════════════════════════════════════════════════════════════════════════
-  {
-    id: "byjus-history",
-    teacher: "Byju's IAS Faculty",
-    channel: "BYJU'S IAS",
-    subject: "History",
-    paper: "GS1",
-    title: "Modern History for UPSC — Complete",
-    description: "Modern Indian history — 1857 to Independence, nationalism, movements.",
-    url: "https://www.youtube.com/@BYJUSIASOfficial/playlists",
-    language: "English",
-    totalVideos: null,
-    tags: ["modern-history", "byjus", "freedom-struggle", "nationalism"],
-  },
-
-  // ═══════════════════════════════════════════════════════════════════════════
-  // PRATIK NAYAK — Art & Culture (English, very popular)
-  // ═══════════════════════════════════════════════════════════════════════════
-  {
-    id: "pratik-art-culture",
-    teacher: "Pratik Nayak",
-    channel: "Pratik Nayak",
-    subject: "History",
-    paper: "Prelims GS1",
-    title: "Indian Art & Culture for UPSC",
-    description: "Art & Culture — architecture, painting, dance, music — very concise.",
-    url: "https://www.youtube.com/@PratikNayak/playlists",
-    language: "English",
-    totalVideos: null,
-    tags: ["art", "culture", "architecture", "dance", "music", "prelims"],
-  },
-
-  // ═══════════════════════════════════════════════════════════════════════════
-  // NITIN SANGWAN — Ethics (IAS 2015 AIR 28, famous for Ethics)
-  // ═══════════════════════════════════════════════════════════════════════════
-  {
-    id: "nitin-sangwan-ethics",
-    teacher: "Nitin Sangwan",
-    channel: "Nitin Sangwan",
-    subject: "Ethics",
-    paper: "GS4",
-    title: "Ethics Integrity & Aptitude — Complete Guidance",
-    description: "Ethics GS4 by IAS topper Nitin Sangwan — theory, case studies, approach.",
-    url: "https://www.youtube.com/@NitinSangwan/playlists",
-    language: "Hindi",
-    totalVideos: null,
-    tags: ["ethics", "gs4", "integrity", "aptitude", "nitin-sangwan", "ias-topper"],
-  },
-
-  // ═══════════════════════════════════════════════════════════════════════════
-  // CSAT — Reasoning & Aptitude
-  // ═══════════════════════════════════════════════════════════════════════════
-  {
-    id: "csat-reasoning-drishti",
-    teacher: "Drishti IAS Faculty",
-    channel: "Drishti IAS",
-    subject: "CSAT",
-    paper: "Prelims CSAT",
-    title: "CSAT Paper 2 — Reasoning & Aptitude",
-    description: "CSAT reasoning, maths, comprehension — free lectures by Drishti IAS.",
-    url: "https://www.youtube.com/@DrishtiIAS/playlists",
-    language: "Hindi",
-    totalVideos: null,
-    tags: ["csat", "reasoning", "aptitude", "maths", "paper-2"],
-  },
-  {
-    id: "csat-maths-mrunal",
-    teacher: "Mrunal Patel",
-    channel: "Mrunal.org",
-    subject: "CSAT",
-    paper: "Prelims CSAT",
-    title: "CSAT Paper 2 — Maths & Data Interpretation",
-    description: "Mrunal's CSAT maths playlist — percentage, ratio, DI, comprehension.",
-    url: "https://www.youtube.com/playlist?list=PLm8al35IsNh_bkRhfCBKJNzRRETaIpB1V",
-    language: "Bilingual",
-    totalVideos: 25,
-    tags: ["csat", "maths", "di", "percentage", "mrunal"],
-  },
-
-  // ═══════════════════════════════════════════════════════════════════════════
-  // SCIENCE & TECHNOLOGY
-  // ═══════════════════════════════════════════════════════════════════════════
-  {
-    id: "sci-tech-studyiq",
-    teacher: "Study IQ Team",
-    channel: "Study IQ Education",
-    subject: "Science & Technology",
-    paper: "GS3",
-    title: "Science & Technology for UPSC Prelims & Mains",
-    description: "Space, defence, biotech, AI, environment tech — free lecture series.",
-    url: "https://www.youtube.com/@StudyIQEducation/playlists",
-    language: "Hindi",
-    totalVideos: null,
-    tags: ["science", "technology", "space", "defence", "ai", "biotech"],
   },
   {
     id: "sci-tech-visionias",
@@ -380,42 +284,47 @@ export const YOUTUBE_CLASSES = [
     title: "Sci & Tech Monthly Updates — Vision IAS",
     description: "Monthly science & tech current affairs relevant for UPSC.",
     url: "https://www.youtube.com/@VisionIAS/playlists",
+    thumbnailVideoId: "qScO-PmFqhs",
     language: "Bilingual",
     totalVideos: null,
     tags: ["science", "technology", "monthly", "vision-ias"],
   },
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // INTERNATIONAL RELATIONS
+  // DRISHTI IAS — CSAT
+  // Channel verified: youtube.com/@DrishtiIAS
+  // ═══════════════════════════════════════════════════════════════════════════
+  {
+    id: "csat-reasoning-drishti",
+    teacher: "Drishti IAS Faculty",
+    channel: "Drishti IAS",
+    subject: "CSAT",
+    paper: "Prelims CSAT",
+    title: "CSAT Paper 2 — Reasoning & Aptitude",
+    description: "CSAT reasoning, maths, comprehension — free lectures by Drishti IAS.",
+    url: "https://www.youtube.com/@DrishtiIAS/playlists",
+    thumbnailVideoId: "7nE7ZTCN9yw",
+    language: "Hindi",
+    totalVideos: null,
+    tags: ["csat", "reasoning", "aptitude", "maths", "paper-2"],
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // THE HINDU — Editorial Analysis (English)
+  // Channel verified: youtube.com/@TheHindu
   // ═══════════════════════════════════════════════════════════════════════════
   {
     id: "ir-the-hindu",
-    teacher: "The Hindu Analysis",
+    teacher: "The Hindu Editorial Team",
     channel: "The Hindu",
     subject: "General",
     paper: "GS2",
     title: "The Hindu Editorial Analysis (Daily)",
-    description: "Daily editorial analysis — builds IR, governance, and current affairs.",
+    description: "Daily editorial analysis — builds IR, governance, and current affairs vocabulary.",
     url: "https://www.youtube.com/@TheHindu/playlists",
+    thumbnailVideoId: null,
     language: "English",
     totalVideos: null,
     tags: ["editorial", "the-hindu", "ir", "governance", "daily"],
-  },
-
-  // ═══════════════════════════════════════════════════════════════════════════
-  // DISASTER MANAGEMENT & INTERNAL SECURITY
-  // ═══════════════════════════════════════════════════════════════════════════
-  {
-    id: "disaster-mgmt-studyiq",
-    teacher: "Study IQ Team",
-    channel: "Study IQ Education",
-    subject: "General",
-    paper: "GS3",
-    title: "Disaster Management & Internal Security",
-    description: "NDMA framework, Sendai, internal security challenges for GS3.",
-    url: "https://www.youtube.com/@StudyIQEducation/playlists",
-    language: "Hindi",
-    totalVideos: null,
-    tags: ["disaster-management", "internal-security", "ndma", "gs3"],
   },
 ];

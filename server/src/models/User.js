@@ -32,12 +32,26 @@ const User = sequelize.define(
     },
     password: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true, // nullable for Google-only accounts
       validate: {
-        len: { args: [8, 255], msg: "Password must be at least 8 characters" },
-        notEmpty: { msg: "Password is required" },
+        passwordLength(value) {
+          if (value && value.length < 8 && !value.startsWith("$2")) {
+            throw new Error("Password must be at least 8 characters");
+          }
+        },
       },
     },
+    // ── Google OAuth ──────────────────────────────────────────────────────────
+    google_id: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      unique: true,
+    },
+    avatar: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    // ─────────────────────────────────────────────────────────────────────────
     role: {
       type: DataTypes.ENUM("user", "admin"),
       defaultValue: "user",
@@ -75,7 +89,7 @@ const User = sequelize.define(
     underscored: true,
     hooks: {
       beforeSave: async (user) => {
-        if (user.changed("password")) {
+        if (user.changed("password") && user.password) {
           const salt = await bcrypt.genSalt(12);
           user.password = await bcrypt.hash(user.password, salt);
         }
@@ -85,6 +99,7 @@ const User = sequelize.define(
 );
 
 User.prototype.matchPassword = async function (enteredPassword) {
+  if (!this.password) return false;
   return await bcrypt.compare(enteredPassword, this.password);
 };
 

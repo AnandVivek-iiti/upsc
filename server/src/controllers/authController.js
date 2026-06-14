@@ -13,6 +13,7 @@ const formatUser = (user) => ({
   name: user.name,
   email: user.email,
   role: user.role,
+  avatar: user.avatar || null,
   createdAt: user.createdAt,
   profile: {
     name: user.name,
@@ -131,6 +132,84 @@ const login = async (req, res, next) => {
   }
 };
 
+// ─── POST /api/auth/google ────────────────────────────────────────────────────
+// Accepts a Google id_token from the client (Google Identity Services).
+// Verifies it with Google's tokeninfo endpoint — no extra npm package needed.
+const googleAuth = async (req, res, next) => {
+  try {
+    const { id_token } = req.body;
+    if (!id_token) {
+      return res.status(400).json({ success: false, error: "Google id_token is required." });
+    }
+
+    // ── Verify token with Google ──────────────────────────────────────────────
+    const googleRes = await fetch(
+      `https://oauth2.googleapis.com/tokeninfo?id_token=${id_token}`
+    );
+    const payload = await googleRes.json();
+
+    if (!googleRes.ok || payload.error) {
+      return res.status(401).json({ success: false, error: "Invalid Google token." });
+    }
+
+    // Validate audience matches our client ID
+    const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
+    if (GOOGLE_CLIENT_ID && payload.aud !== GOOGLE_CLIENT_ID) {
+      return res.status(401).json({ success: false, error: "Token audience mismatch." });
+    }
+
+    if (!payload.email_verified || payload.email_verified === "false") {
+      return res.status(401).json({ success: false, error: "Google email not verified." });
+    }
+
+    const { sub: google_id, email, name, picture: avatar } = payload;
+
+    // ── Find or create user ───────────────────────────────────────────────────
+    let user = await User.findOne({ where: { google_id } });
+
+    if (!user) {
+      // Check if email already exists (user registered with email/password before)
+      user = await User.findOne({ where: { email: email.toLowerCase() } });
+
+      if (user) {
+        // Link Google account to existing user
+        user.google_id = google_id;
+        if (!user.avatar && avatar) user.avatar = avatar;
+        await user.save();
+      } else {
+        // Brand new user via Google — create with sensible defaults
+        user = await User.create({
+          name: name || email.split("@")[0],
+          email: email.toLowerCase(),
+          password: null, // Google-only account
+          google_id,
+          avatar: avatar || null,
+          target_year: new Date().getFullYear() + 1,
+          daily_target_hours: 8,
+          exam_date: (() => {
+            const d = new Date();
+            d.setFullYear(d.getFullYear() + 1);
+            d.setMonth(3);
+            d.setDate(1);
+            return d;
+          })(),
+        });
+        // Seed UserData for new Google user
+        await UserData.seedForUser(user.id);
+      }
+    } else if (!user.avatar && avatar) {
+      // Update avatar if missing
+      user.avatar = avatar;
+      await user.save();
+    }
+
+    const token = signToken(user.id);
+    res.json({ success: true, token, user: formatUser(user) });
+  } catch (err) {
+    next(err);
+  }
+};
+
 // ─── GET /api/auth/me ─────────────────────────────────────────────────────────
 const getProfile = async (req, res, next) => {
   try {
@@ -145,7 +224,6 @@ const getProfile = async (req, res, next) => {
 };
 
 // ─── PATCH /api/auth/profile ──────────────────────────────────────────────────
-// Update name, target_year, daily_target_hours, examDate
 const updateProfile = async (req, res, next) => {
   try {
     const { name, target_year, daily_target_hours, examDate } = req.body;
@@ -168,7 +246,6 @@ const updateProfile = async (req, res, next) => {
     if (examDate !== undefined && examDate !== null && examDate !== "") {
       const d = new Date(examDate);
       if (isNaN(d.getTime())) errors.examDate = "Invalid date format.";
-      // Allow past dates in case admin corrects history — no future-only restriction
     }
 
     if (Object.keys(errors).length) {
@@ -184,8 +261,6 @@ const updateProfile = async (req, res, next) => {
     if (examDate !== undefined)           user.exam_date          = examDate ? new Date(examDate) : null;
 
     await user.save();
-
-    // Also update localStorage-cached name via the response
     res.json({ success: true, user: formatUser(user) });
   } catch (err) {
     if (err.name === "SequelizeValidationError") {
@@ -232,4 +307,4 @@ const changePassword = async (req, res, next) => {
   }
 };
 
-module.exports = { register, login, getProfile, updateProfile, changePassword };
+module.exports = { register, login, googleAuth, getProfile, updateProfile, changePassword };

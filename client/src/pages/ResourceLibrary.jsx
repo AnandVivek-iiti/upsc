@@ -1,5 +1,7 @@
-// // ─── Resource Library ─────────────────────────────────────────────────────────
+// ─── Resource Library ─────────────────────────────────────────────────────────
 // Four sections: NCERT Books · My Notes · Reference Books · YouTube Classes
+// ClassCard now shows YouTube video thumbnail via thumbnailVideoId field.
+// classes.js has been cleaned — only verified channels/playlists remain.
 
 import { useState, useMemo } from "react";
 import TestSeriesPage from "./Testseriespage";
@@ -13,6 +15,23 @@ import {
 import {
   YOUTUBE_CLASSES, YT_SUBJECTS, YT_PAPERS, YT_LAST_UPDATED,
 } from "../data/classes";
+
+// ─── COVER IMAGE MAP ──────────────────────────────────────────────────────────
+const COVER_MAP = {};
+
+// ─── SUBJECT META ─────────────────────────────────────────────────────────────
+const SUBJECT_PALETTE = {
+  "Art And Culture": { bg: "#78350f", accent: "#fbbf24", emoji: "🏛️" },
+  Economics:         { bg: "#064e3b", accent: "#34d399", emoji: "📈" },
+  Geography:         { bg: "#1e3a5f", accent: "#60a5fa", emoji: "🌏" },
+  History:           { bg: "#3b1f5e", accent: "#c084fc", emoji: "📜" },
+  Polity:            { bg: "#7f1d1d", accent: "#f87171", emoji: "⚖️" },
+  Sociology:         { bg: "#1c3d2e", accent: "#6ee7b7", emoji: "🧭" },
+};
+
+function getSubjectMeta(subject) {
+  return SUBJECT_PALETTE[subject] || { bg: "#1e293b", accent: "#94a3b8", emoji: "📚" };
+}
 
 // ─── MINI COMPONENTS ──────────────────────────────────────────────────────────
 function FilterChip({ label, active, color = "#4F8EF7", onClick }) {
@@ -38,17 +57,20 @@ const TYPE_ICONS  = { pdf: "📄", docx: "📝", md: "📋", link: "🔗", txt: 
 const TYPE_COLORS = { pdf: "#f87171", docx: "#60a5fa", md: "#34d399", link: "#a78bfa", txt: "#fbbf24", image: "#f9a8d4" };
 
 const SUBJECT_COLORS = {
-  History: "#f472b6", Geography: "#60a5fa", Polity: "#4F8EF7",
-  Economics: "#34d399", Science: "#f9a8d4", Sociology: "#fb923c", Environment: "#6ee7b7",
+  History: "#c084fc", Geography: "#60a5fa", Polity: "#f87171",
+  Economics: "#34d399", "Science & Technology": "#f9a8d4", Sociology: "#6ee7b7",
+  "Art And Culture": "#fbbf24", Environment: "#6ee7b7", CSAT: "#fbbf24",
+  Essay: "#a78bfa", "Current Affairs": "#fb923c", General: "#94a3b8",
 };
 
 const LANG_COLORS = { Hindi: "#f97316", English: "#60a5fa", Bilingual: "#a78bfa" };
 
 // ─── NCERT BOOK CARD ──────────────────────────────────────────────────────────
-function NCERTCard({ book, onToggleDone, localDone }) {
-  const done   = localDone ?? book.done ?? false;
-  const papers = SUBJECT_PAPER_MAP[book.subject] || [];
-  const color  = SUBJECT_COLORS[book.subject] || "#a78bfa";
+function NCERTBookCard({ book, localDone, onToggleDone }) {
+  const [hovered, setHovered] = useState(false);
+  const isDone = localDone ?? book.done ?? false;
+  const meta = getSubjectMeta(book.subject);
+  const coverSrc = COVER_MAP[book.id] || null;
 
   const handleOpen = () => {
     const target = book.url || (book.filePath ? `/api/ncert/file?path=${encodeURIComponent(book.filePath)}` : null);
@@ -57,53 +79,179 @@ function NCERTCard({ book, onToggleDone, localDone }) {
   };
 
   return (
-    <div style={{
-      background: "var(--bg-surface)", border: "0.5px solid var(--bg-border)",
-      borderRadius: 12, overflow: "hidden",
-      borderLeft: `3px solid ${done ? "var(--accent-green)" : color}`,
-      opacity: done ? 0.8 : 1, transition: "opacity .2s",
-    }}>
-      <div style={{ padding: "14px 16px" }}>
-        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 8 }}>
-          <div style={{ flex: 1 }}>
-            <div style={{ display: "flex", gap: 6, alignItems: "center", marginBottom: 6, flexWrap: "wrap" }}>
-              <span style={{ fontSize: 10, padding: "2px 8px", borderRadius: 20, background: `${color}18`, color, border: `0.5px solid ${color}44`, fontFamily: "'DM Mono', monospace", fontWeight: 600 }}>
-                Class {book.class}
-              </span>
-              <span style={{ fontSize: 10, padding: "2px 8px", borderRadius: 20, background: "var(--bg-muted)", color: "var(--text-muted)", border: "0.5px solid var(--bg-border)", fontFamily: "'DM Mono', monospace" }}>
-                {book.subject}
-              </span>
+    <div
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        background: "var(--bg-surface)",
+        border: `0.5px solid ${hovered && !isDone ? meta.accent + "55" : "var(--bg-border)"}`,
+        borderRadius: 16,
+        overflow: "hidden",
+        display: "flex",
+        flexDirection: "column",
+        transition: "all 0.2s ease",
+        transform: hovered ? "translateY(-3px)" : "none",
+        boxShadow: hovered ? `0 12px 32px rgba(0,0,0,0.25), 0 0 0 1px ${meta.accent}20` : "0 2px 8px rgba(0,0,0,0.12)",
+        opacity: isDone ? 0.65 : 1,
+        position: "relative",
+      }}
+    >
+      <div style={{
+        height: 3,
+        background: isDone
+          ? "linear-gradient(90deg, #34d399, #6ee7b7)"
+          : `linear-gradient(90deg, ${meta.accent}, ${meta.accent}88)`,
+        flexShrink: 0,
+      }} />
+
+      <div
+        onClick={handleOpen}
+        style={{
+          position: "relative",
+          height: 180,
+          background: coverSrc ? "#000" : `linear-gradient(145deg, ${meta.bg} 0%, #0f0f1a 100%)`,
+          cursor: book.url || book.filePath ? "pointer" : "default",
+          flexShrink: 0,
+          overflow: "hidden",
+        }}
+      >
+        {coverSrc ? (
+          <img src={coverSrc} alt={book.title} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+        ) : (
+          <>
+            <div style={{
+              position: "absolute", top: -24, right: -24,
+              width: 250, height: 150, borderRadius: "50%",
+              background: `${meta.accent}15`, border: `1px solid ${meta.accent}20`,
+            }} />
+            <div style={{
+              position: "absolute", bottom: -16, left: -16,
+              width: 100, height: 70, borderRadius: "50%",
+              background: `${meta.accent}0a`,
+            }} />
+            <div style={{
+              position: "absolute", top: 14, left: 14,
+              fontSize: 9, fontWeight: 700, letterSpacing: 1.5,
+              color: meta.accent, fontFamily: "'DM Mono', monospace",
+              background: `${meta.accent}18`, border: `0.5px solid ${meta.accent}40`,
+              padding: "3px 8px", borderRadius: 5,
+            }}>
+              CLASS {book.class}
             </div>
-            <div style={{ fontSize: 14, fontWeight: 600, color: done ? "var(--text-muted)" : "var(--text-primary)", marginBottom: 4, textDecoration: done ? "line-through" : "none" }}>
-              {book.title}
+            <div style={{
+              position: "absolute", top: 14, right: 14,
+              fontSize: 9, fontWeight: 600, letterSpacing: 0.8,
+              color: meta.accent, fontFamily: "'DM Mono', monospace",
+              background: "rgba(0,0,0,0.4)",
+              padding: "3px 8px", borderRadius: 5,
+              border: `0.5px solid ${meta.accent}30`,
+            }}>
+              {book.subject.toUpperCase()}
             </div>
-            {papers.length > 0 && (
-              <div style={{ fontSize: 11, color: "var(--text-muted)", fontFamily: "'DM Mono', monospace" }}>
-                → {papers.join(" · ")}
-              </div>
-            )}
+            <div style={{
+              position: "absolute", bottom: 44, left: "50%",
+              transform: "translateX(-50%)",
+              fontSize: 42, lineHeight: 1,
+              filter: "drop-shadow(0 4px 12px rgba(0,0,0,0.4))",
+            }}>
+              {meta.emoji}
+            </div>
+            <div style={{
+              position: "absolute", bottom: 0, left: 0, right: 0,
+              padding: "8px 14px",
+              background: `linear-gradient(transparent, rgba(0,0,0,0.6))`,
+              fontSize: 8, fontWeight: 700, letterSpacing: 2,
+              color: `${meta.accent}cc`, fontFamily: "'DM Mono', monospace",
+              textTransform: "uppercase",
+            }}>
+              NCERT
+            </div>
+          </>
+        )}
+
+        {isDone && (
+          <div style={{
+            position: "absolute", inset: 0,
+            background: "rgba(0,0,0,0.45)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+          }}>
+            <div style={{
+              width: 48, height: 48, borderRadius: "50%",
+              background: "rgba(52,211,153,0.2)", border: "1.5px solid #34d399",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              fontSize: 22, color: "#34d399",
+            }}>✓</div>
           </div>
+        )}
+
+        {hovered && (book.url || book.filePath) && !isDone && (
+          <div style={{
+            position: "absolute", inset: 0,
+            background: "rgba(0,0,0,0.5)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            backdropFilter: "blur(2px)",
+          }}>
+            <div style={{
+              fontSize: 12, fontWeight: 700, color: "#fff",
+              background: meta.accent,
+              padding: "8px 18px", borderRadius: 8,
+              fontFamily: "'DM Mono', monospace",
+              letterSpacing: 0.8,
+              boxShadow: `0 4px 16px ${meta.accent}44`,
+            }}>
+              Open PDF ↗
+            </div>
+          </div>
+        )}
+      </div>
+
+      <div style={{ padding: "14px 16px 16px", flex: 1, display: "flex", flexDirection: "column", gap: 10 }}>
+        <div style={{
+          fontSize: 13, fontWeight: 700, color: "var(--text-primary)",
+          lineHeight: 1.45, fontFamily: "'DM Sans', sans-serif",
+          display: "-webkit-box", WebkitLineClamp: 2,
+          WebkitBoxOrient: "vertical", overflow: "hidden",
+          minHeight: 38,
+        }}>
+          {book.title}
+        </div>
+
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: "auto" }}>
           <button
-            onClick={() => onToggleDone(book.id)}
-            title={done ? "Mark as unread" : "Mark as done"}
+            onClick={handleOpen}
+            disabled={!book.url && !book.filePath}
             style={{
-              width: 28, height: 28, borderRadius: "50%", flexShrink: 0,
-              border: done ? "0.5px solid var(--accent-green)" : "0.5px solid var(--bg-border)",
-              background: done ? "rgba(52,211,153,0.12)" : "transparent",
-              color: done ? "#6ee7b7" : "var(--text-muted)",
-              cursor: "pointer", fontSize: 13, display: "flex", alignItems: "center", justifyContent: "center",
+              fontSize: 11, padding: "5px 12px", borderRadius: 8,
+              border: `0.5px solid ${book.url || book.filePath ? meta.accent + "66" : "var(--bg-border)"}`,
+              background: book.url || book.filePath ? `${meta.accent}12` : "transparent",
+              color: book.url || book.filePath ? meta.accent : "var(--text-muted)",
+              cursor: book.url || book.filePath ? "pointer" : "default",
+              fontFamily: "'DM Mono', monospace",
+              fontWeight: 600,
+              transition: "all .15s",
             }}
           >
-            {done ? "✓" : "○"}
+            {book.url || book.filePath ? "Open PDF ↗" : "Not configured"}
           </button>
-        </div>
-        <div style={{ marginTop: 10, display: "flex", gap: 6 }}>
-          <button onClick={handleOpen} style={{
-            fontSize: 12, padding: "5px 14px", borderRadius: 8,
-            border: `0.5px solid ${color}`, background: `${color}12`,
-            color, cursor: "pointer", fontFamily: "'DM Sans', sans-serif",
-          }}>
-            {book.url ? "Open PDF ↗" : book.filePath ? "Open File ↗" : "Not Configured"}
+
+          <button
+            onClick={() => onToggleDone(book.id)}
+            title={isDone ? "Mark as unread" : "Mark as done"}
+            style={{
+              display: "flex", alignItems: "center", gap: 5,
+              fontSize: 10, padding: "5px 10px", borderRadius: 8,
+              border: isDone
+                ? `0.5px solid ${meta.accent}66`
+                : "0.5px solid var(--bg-border)",
+              background: isDone ? `${meta.accent}15` : "transparent",
+              color: isDone ? meta.accent : "var(--text-muted)",
+              cursor: "pointer",
+              fontFamily: "'DM Mono', monospace",
+              fontWeight: isDone ? 600 : 400,
+              transition: "all .15s",
+            }}
+          >
+            {isDone ? "✓ Done" : "○ Read"}
           </button>
         </div>
       </div>
@@ -219,121 +367,220 @@ function RefBookCard({ book }) {
 }
 
 // ─── YOUTUBE CLASS CARD ───────────────────────────────────────────────────────
+// Shows a real YouTube thumbnail via thumbnailVideoId (maxresdefault or hqdefault).
+// Falls back to a styled placeholder if no thumbnailVideoId.
 function ClassCard({ cls }) {
-  const langColor = LANG_COLORS[cls.language] || "#a78bfa";
+  const [thumbError, setThumbError] = useState(false);
+  const langColor    = LANG_COLORS[cls.language] || "#a78bfa";
   const subjectColor = SUBJECT_COLORS[cls.subject] || "#a78bfa";
+
+  const thumbUrl = cls.thumbnailVideoId && !thumbError
+    ? `https://i.ytimg.com/vi/${cls.thumbnailVideoId}/hqdefault.jpg`
+    : null;
+
+  const handleWatch = () => window.open(cls.url, "_blank", "noopener,noreferrer");
 
   return (
     <div style={{
-      background: "var(--bg-surface)", border: "0.5px solid var(--bg-border)",
-      borderRadius: 12, padding: "14px 16px",
-      borderLeft: "3px solid #ff0000",
-      display: "flex", flexDirection: "column", gap: 8,
-    }}>
-      {/* Teacher + channel */}
-      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+      background: "var(--bg-surface)",
+      border: "0.5px solid var(--bg-border)",
+      borderRadius: 14,
+      overflow: "hidden",
+      display: "flex",
+      flexDirection: "column",
+      transition: "box-shadow 0.2s ease",
+    }}
+      onMouseEnter={e => e.currentTarget.style.boxShadow = "0 8px 24px rgba(0,0,0,0.25)"}
+      onMouseLeave={e => e.currentTarget.style.boxShadow = "none"}
+    >
+      {/* ── Thumbnail area ──────────────────────────────────────────── */}
+      <div
+        onClick={handleWatch}
+        style={{
+          position: "relative",
+          height: 168,
+          background: thumbUrl ? "#000" : "linear-gradient(135deg, #1a0a0a 0%, #0d0d1a 100%)",
+          cursor: "pointer",
+          flexShrink: 0,
+          overflow: "hidden",
+        }}
+      >
+        {thumbUrl ? (
+          <img
+            src={thumbUrl}
+            alt={cls.title}
+            onError={() => setThumbError(true)}
+            style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+          />
+        ) : (
+          /* Placeholder when no video ID */
+          <div style={{
+            width: "100%", height: "100%",
+            display: "flex", flexDirection: "column",
+            alignItems: "center", justifyContent: "center",
+            gap: 8,
+          }}>
+            <div style={{
+              width: 52, height: 52, borderRadius: "50%",
+              background: "rgba(255,0,0,0.12)", border: "1.5px solid rgba(255,0,0,0.3)",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              fontSize: 22, color: "#f87171",
+            }}>▶</div>
+            <div style={{
+              fontSize: 10, color: "rgba(255,255,255,0.35)",
+              fontFamily: "'DM Mono', monospace", letterSpacing: 1,
+            }}>
+              {cls.channel}
+            </div>
+          </div>
+        )}
+
+        {/* YouTube play button overlay */}
         <div style={{
-          width: 32, height: 32, borderRadius: "50%", flexShrink: 0,
-          background: "linear-gradient(135deg, #ff000022, #ff000044)",
-          border: "0.5px solid #ff000055",
+          position: "absolute", inset: 0,
           display: "flex", alignItems: "center", justifyContent: "center",
-          fontSize: 14,
-        }}>▶</div>
-        <div>
-          <div style={{ fontSize: 12, fontWeight: 700, color: "var(--text-primary)", lineHeight: 1.2 }}>{cls.teacher}</div>
-          <div style={{ fontSize: 10, color: "var(--text-muted)", fontFamily: "'DM Mono', monospace" }}>{cls.channel}</div>
+          background: "rgba(0,0,0,0)",
+          transition: "background 0.2s",
+        }}
+          onMouseEnter={e => e.currentTarget.style.background = "rgba(0,0,0,0.35)"}
+          onMouseLeave={e => e.currentTarget.style.background = "rgba(0,0,0,0)"}
+        >
+          <div style={{
+            width: 48, height: 34, borderRadius: 8,
+            background: "#ff0000",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            boxShadow: "0 2px 12px rgba(255,0,0,0.5)",
+            opacity: thumbUrl ? 0.9 : 0,
+            transition: "opacity 0.2s, transform 0.2s",
+          }}
+            onMouseEnter={e => { e.currentTarget.style.opacity = 1; e.currentTarget.style.transform = "scale(1.08)"; }}
+            onMouseLeave={e => { e.currentTarget.style.opacity = 0.9; e.currentTarget.style.transform = "scale(1)"; }}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
+              <path d="M8 5v14l11-7z"/>
+            </svg>
+          </div>
+        </div>
+
+        {/* Language badge */}
+        <div style={{
+          position: "absolute", top: 8, right: 8,
+          fontSize: 9, fontWeight: 700, letterSpacing: 0.8,
+          color: langColor, fontFamily: "'DM Mono', monospace",
+          background: "rgba(0,0,0,0.75)",
+          padding: "3px 7px", borderRadius: 5,
+          border: `0.5px solid ${langColor}55`,
+        }}>
+          {cls.language.toUpperCase()}
+        </div>
+
+        {/* Subject badge bottom-left */}
+        <div style={{
+          position: "absolute", bottom: 8, left: 8,
+          fontSize: 9, fontWeight: 700,
+          color: subjectColor, fontFamily: "'DM Mono', monospace",
+          background: "rgba(0,0,0,0.75)",
+          padding: "3px 8px", borderRadius: 5,
+          border: `0.5px solid ${subjectColor}55`,
+        }}>
+          {cls.subject.toUpperCase()}
         </div>
       </div>
 
-      {/* Title */}
-      <div style={{ fontSize: 13, fontWeight: 600, color: "var(--text-primary)", lineHeight: 1.35 }}>
-        {cls.title}
-      </div>
+      {/* ── Card body ────────────────────────────────────────────────── */}
+      <div style={{ padding: "12px 14px 14px", flex: 1, display: "flex", flexDirection: "column", gap: 8 }}>
 
-      {/* Description */}
-      <div style={{ fontSize: 12, color: "var(--text-secondary)", lineHeight: 1.5 }}>
-        {cls.description}
-      </div>
+        {/* Teacher row */}
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <div style={{
+            width: 28, height: 28, borderRadius: "50%", flexShrink: 0,
+            background: "linear-gradient(135deg, #ff000022, #ff000044)",
+            border: "0.5px solid #ff000055",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            fontSize: 12, color: "#f87171",
+          }}>▶</div>
+          <div>
+            <div style={{ fontSize: 11, fontWeight: 700, color: "var(--text-primary)", lineHeight: 1.2 }}>{cls.teacher}</div>
+            <div style={{ fontSize: 10, color: "var(--text-muted)", fontFamily: "'DM Mono', monospace" }}>{cls.channel}</div>
+          </div>
+        </div>
 
-      {/* Chips row */}
-      <div style={{ display: "flex", gap: 5, flexWrap: "wrap" }}>
-        <span style={{
-          fontSize: 10, padding: "2px 8px", borderRadius: 20,
-          background: `${subjectColor}18`, color: subjectColor,
-          border: `0.5px solid ${subjectColor}44`, fontFamily: "'DM Mono', monospace", fontWeight: 600,
-        }}>{cls.subject}</span>
-        <span style={{
-          fontSize: 10, padding: "2px 8px", borderRadius: 20,
-          background: `${langColor}18`, color: langColor,
-          border: `0.5px solid ${langColor}44`, fontFamily: "'DM Mono', monospace",
-        }}>{cls.language}</span>
-        {cls.totalVideos && (
-          <span style={{
-            fontSize: 10, padding: "2px 8px", borderRadius: 20,
-            background: "var(--bg-muted)", color: "var(--text-muted)",
-            border: "0.5px solid var(--bg-border)", fontFamily: "'DM Mono', monospace",
-          }}>{cls.totalVideos} videos</span>
-        )}
-        <span style={{
-          fontSize: 10, padding: "2px 8px", borderRadius: 20,
-          background: "var(--bg-muted)", color: "var(--text-muted)",
-          border: "0.5px solid var(--bg-border)", fontFamily: "'DM Mono', monospace",
-        }}>{cls.paper}</span>
-      </div>
+        {/* Title */}
+        <div style={{
+          fontSize: 13, fontWeight: 700, color: "var(--text-primary)",
+          lineHeight: 1.4,
+          display: "-webkit-box", WebkitLineClamp: 2,
+          WebkitBoxOrient: "vertical", overflow: "hidden",
+        }}>
+          {cls.title}
+        </div>
 
-      {/* Tags */}
-      <div style={{ display: "flex", gap: 5, flexWrap: "wrap" }}>
-        {(cls.tags || []).slice(0, 4).map(tag => (
-          <span key={tag} style={{
-            fontSize: 10, padding: "2px 6px", borderRadius: 20,
-            background: "var(--bg-muted)", color: "var(--text-muted)",
-            border: "0.5px solid var(--bg-border)", fontFamily: "'DM Mono', monospace",
-          }}>#{tag}</span>
-        ))}
-      </div>
+        {/* Description */}
+        <div style={{
+          fontSize: 11, color: "var(--text-secondary)", lineHeight: 1.55,
+          display: "-webkit-box", WebkitLineClamp: 2,
+          WebkitBoxOrient: "vertical", overflow: "hidden",
+        }}>
+          {cls.description}
+        </div>
 
-      {/* CTA */}
-      <a
-        href={cls.url}
-        target="_blank"
-        rel="noopener noreferrer"
-        style={{
-          display: "inline-flex", alignItems: "center", gap: 6,
-          fontSize: 12, padding: "6px 14px", borderRadius: 8,
-          border: "0.5px solid #ff000055", background: "#ff000012",
-          color: "#f87171", textDecoration: "none", fontFamily: "'DM Sans', sans-serif",
-          fontWeight: 600, marginTop: 2, transition: "background .15s",
-        }}
-      >
-        ▶ Watch on YouTube ↗
-      </a>
+        {/* Chips */}
+        <div style={{ display: "flex", gap: 5, flexWrap: "wrap" }}>
+          <span style={{ fontSize: 9, padding: "2px 7px", borderRadius: 20, background: `${langColor}18`, color: langColor, border: `0.5px solid ${langColor}44`, fontFamily: "'DM Mono', monospace" }}>{cls.language}</span>
+          {cls.totalVideos && (
+            <span style={{ fontSize: 9, padding: "2px 7px", borderRadius: 20, background: "var(--bg-muted)", color: "var(--text-muted)", border: "0.5px solid var(--bg-border)", fontFamily: "'DM Mono', monospace" }}>{cls.totalVideos} videos</span>
+          )}
+          <span style={{ fontSize: 9, padding: "2px 7px", borderRadius: 20, background: "var(--bg-muted)", color: "var(--text-muted)", border: "0.5px solid var(--bg-border)", fontFamily: "'DM Mono', monospace" }}>{cls.paper}</span>
+        </div>
+
+        {/* Tags */}
+        <div style={{ display: "flex", gap: 4, flexWrap: "wrap" }}>
+          {(cls.tags || []).slice(0, 4).map(tag => (
+            <span key={tag} style={{ fontSize: 9, padding: "2px 6px", borderRadius: 20, background: "var(--bg-muted)", color: "var(--text-muted)", border: "0.5px solid var(--bg-border)", fontFamily: "'DM Mono', monospace" }}>#{tag}</span>
+          ))}
+        </div>
+
+        {/* CTA */}
+        <button
+          onClick={handleWatch}
+          style={{
+            marginTop: 2,
+            display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 6,
+            fontSize: 12, padding: "7px 0", borderRadius: 8, width: "100%",
+            border: "none", background: "#ff0000",
+            color: "#fff", cursor: "pointer",
+            fontFamily: "'DM Sans', sans-serif", fontWeight: 700,
+            letterSpacing: 0.3,
+            boxShadow: "0 2px 8px rgba(255,0,0,0.3)",
+            transition: "background 0.15s, box-shadow 0.15s",
+          }}
+          onMouseEnter={e => { e.currentTarget.style.background = "#cc0000"; e.currentTarget.style.boxShadow = "0 4px 14px rgba(255,0,0,0.45)"; }}
+          onMouseLeave={e => { e.currentTarget.style.background = "#ff0000"; e.currentTarget.style.boxShadow = "0 2px 8px rgba(255,0,0,0.3)"; }}
+        >
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" style={{ flexShrink: 0 }}>
+            <path d="M8 5v14l11-7z"/>
+          </svg>
+          Watch on YouTube
+        </button>
+      </div>
     </div>
   );
 }
 
 // ─── MAIN COMPONENT ───────────────────────────────────────────────────────────
 export default function ResourceLibrary() {
-  // Active tab: "ncert" | "notes" | "refbooks" | "classes"
   const [activeTab, setActiveTab] = useState("ncert");
-  const [search, setSearch] = useState("");
+  const [search, setSearch]       = useState("");
 
-  // NCERT filters
   const [subjectFilter, setSubjectFilter] = useState("All");
   const [classFilter,   setClassFilter]   = useState("All");
-
-  // Notes filter
   const [paperFilter, setPaperFilter] = useState("All");
-
-  // Ref Books filter
   const [refPaperFilter, setRefPaperFilter] = useState("All");
   const [priorityFilter, setPriorityFilter] = useState("All");
-
-  // Classes filters
   const [ytSubjectFilter, setYtSubjectFilter] = useState("All");
   const [ytPaperFilter,   setYtPaperFilter]   = useState("All");
   const [ytLangFilter,    setYtLangFilter]     = useState("All");
 
-  // NCERT done-state stored in localStorage
   const [doneMap, setDoneMap] = useState(() => {
     try { return JSON.parse(localStorage.getItem("ncert-done-map") || "{}"); }
     catch { return {}; }
@@ -346,19 +593,30 @@ export default function ResourceLibrary() {
     });
   };
 
-  // ── NCERT filter helpers ───────────────────────────────────────────────────
-  const classes = useMemo(() =>
-    ["All", ...[...new Set(NCERT_BOOKS.map(b => b.class))].sort((a, b) => a - b).map(String)],
-    []
-  );
+  const availableClasses = useMemo(() => {
+    const cls = [...new Set(NCERT_BOOKS.map(b => b.class))].sort((a, b) => a - b);
+    return cls;
+  }, []);
+
   const filteredNCERT = useMemo(() => NCERT_BOOKS.filter(b => {
     if (subjectFilter !== "All" && b.subject !== subjectFilter) return false;
-    if (classFilter   !== "All" && String(b.class) !== classFilter) return false;
-    if (search.trim() && !b.title.toLowerCase().includes(search.toLowerCase()) && !b.subject.toLowerCase().includes(search.toLowerCase())) return false;
+    if (classFilter   !== "All" && String(b.class) !== String(classFilter)) return false;
+    if (search.trim()) {
+      const s = search.toLowerCase();
+      if (!b.title.toLowerCase().includes(s) && !b.subject.toLowerCase().includes(s)) return false;
+    }
     return true;
   }), [subjectFilter, classFilter, search]);
 
-  // ── Notes filter helper ────────────────────────────────────────────────────
+  const booksByClass = useMemo(() => {
+    const map = {};
+    filteredNCERT.forEach(b => {
+      if (!map[b.class]) map[b.class] = [];
+      map[b.class].push(b);
+    });
+    return Object.entries(map).sort(([a], [b]) => Number(a) - Number(b));
+  }, [filteredNCERT]);
+
   const filteredNotes = useMemo(() => NOTES.filter(n => {
     if (paperFilter !== "All" && n.paper !== paperFilter) return false;
     if (search.trim()) {
@@ -368,7 +626,6 @@ export default function ResourceLibrary() {
     return true;
   }), [paperFilter, search]);
 
-  // ── Ref Books filter helper ────────────────────────────────────────────────
   const filteredRefBooks = useMemo(() => REFERENCE_BOOKS.filter(b => {
     if (refPaperFilter !== "All" && b.paper !== refPaperFilter) return false;
     if (priorityFilter !== "All" && b.priority !== priorityFilter) return false;
@@ -379,28 +636,20 @@ export default function ResourceLibrary() {
     return true;
   }), [refPaperFilter, priorityFilter, search]);
 
-  // ── Classes filter helper ──────────────────────────────────────────────────
   const filteredClasses = useMemo(() => YOUTUBE_CLASSES.filter(c => {
     if (ytSubjectFilter !== "All" && c.subject !== ytSubjectFilter) return false;
     if (ytPaperFilter   !== "All" && c.paper   !== ytPaperFilter)   return false;
     if (ytLangFilter    !== "All" && c.language !== ytLangFilter)    return false;
     if (search.trim()) {
       const s = search.toLowerCase();
-      if (
-        !c.title.toLowerCase().includes(s) &&
-        !c.teacher.toLowerCase().includes(s) &&
-        !c.channel.toLowerCase().includes(s) &&
-        !(c.tags || []).some(t => t.includes(s))
-      ) return false;
+      if (!c.title.toLowerCase().includes(s) && !c.teacher.toLowerCase().includes(s) && !c.channel.toLowerCase().includes(s) && !(c.tags || []).some(t => t.includes(s))) return false;
     }
     return true;
   }), [ytSubjectFilter, ytPaperFilter, ytLangFilter, search]);
 
-  // ── Stats ──────────────────────────────────────────────────────────────────
-  const doneCount  = NCERT_BOOKS.filter(b => doneMap[b.id] ?? b.done).length;
-  const totalNCERT = NCERT_BOOKS.length;
-  const totalNotes = NOTES.length;
-  const mustReads  = REFERENCE_BOOKS.filter(b => b.priority === "must-read").length;
+  const doneCount    = NCERT_BOOKS.filter(b => doneMap[b.id] ?? b.done).length;
+  const totalNCERT   = NCERT_BOOKS.length;
+  const mustReads    = REFERENCE_BOOKS.filter(b => b.priority === "must-read").length;
   const totalClasses = YOUTUBE_CLASSES.length;
 
   const lastUpdated = activeTab === "ncert"    ? NCERT_LAST_UPDATED
@@ -408,14 +657,14 @@ export default function ResourceLibrary() {
                     : activeTab === "classes"  ? YT_LAST_UPDATED
                     : REF_BOOKS_LAST_UPDATED;
 
-  // Unique language options from data
-  const ytLanguages = useMemo(() =>
-    ["All", ...new Set(YOUTUBE_CLASSES.map(c => c.language))],
-    []
-  );
+  const ytLanguages = useMemo(() => ["All", ...new Set(YOUTUBE_CLASSES.map(c => c.language))], []);
 
   return (
-    <div style={{ fontFamily: "'DM Sans', 'Segoe UI', system-ui, sans-serif", maxWidth: 1152, width: "100%", margin: "0 auto", padding: "32px 24px", color: "var(--text-primary)" }}>
+    <div style={{
+      fontFamily: "'DM Sans', 'Segoe UI', system-ui, sans-serif",
+      maxWidth: 1252, width: "100%", margin: "0 auto",
+      padding: "32px 24px", color: "var(--text-primary)",
+    }}>
 
       {/* ── Header ─────────────────────────────────────────────────────────── */}
       <div style={{ marginBottom: 28 }}>
@@ -430,11 +679,11 @@ export default function ResourceLibrary() {
       {/* ── Stats Bar ──────────────────────────────────────────────────────── */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(120px, 1fr))", gap: 10, marginBottom: 24 }}>
         {[
-          ["NCERT Books",    totalNCERT,              "#60a5fa"],
-          ["Read Done",      doneCount,               "var(--accent-green)"],
-          ["My Notes",       totalNotes,              "#c084fc"],
-          ["Ref Books",      REFERENCE_BOOKS.length,  "#f97316"],
-          ["YT Classes",     totalClasses,            "#ff0000"],
+          ["NCERT Books",   totalNCERT,              "#60a5fa"],
+          ["Read Done",     doneCount,               "var(--accent-green)"],
+          ["My Notes",      NOTES.length,            "#c084fc"],
+          ["Ref Books",     REFERENCE_BOOKS.length,  "#f97316"],
+          ["YT Classes",    totalClasses,            "#ff0000"],
         ].map(([l, v, c]) => (
           <div key={l} style={{
             background: "var(--bg-surface)", border: "0.5px solid var(--bg-border)",
@@ -459,8 +708,12 @@ export default function ResourceLibrary() {
           <button key={id} onClick={() => { setActiveTab(id); setSearch(""); }} style={{
             padding: "9px 22px", fontSize: 13, fontWeight: activeTab === id ? 600 : 400,
             borderRadius: 10,
-            background: activeTab === id ? (id === "classes" ? "#ff000015" : id === "test-series" ? "var(--accent-gold-dim)" : "var(--text-primary)") : "transparent",
-            color: activeTab === id ? (id === "classes" ? "#f87171" : id === "test-series" ? "var(--accent-gold)" : "var(--bg-base)") : "var(--text-secondary)",
+            background: activeTab === id
+              ? (id === "classes" ? "#ff000015" : id === "test-series" ? "var(--accent-gold-dim)" : "var(--text-primary)")
+              : "transparent",
+            color: activeTab === id
+              ? (id === "classes" ? "#f87171" : id === "test-series" ? "var(--accent-gold)" : "var(--bg-base)")
+              : "var(--text-secondary)",
             border: activeTab === id
               ? (id === "classes" ? "0.5px solid #ff000044" : id === "test-series" ? "0.5px solid var(--accent-gold)" : "none")
               : "0.5px solid var(--bg-border)",
@@ -475,61 +728,113 @@ export default function ResourceLibrary() {
         <input
           type="text" value={search} onChange={e => setSearch(e.target.value)}
           placeholder={
-            activeTab === "ncert"    ? "Search books…" :
-            activeTab === "notes"    ? "Search notes, tags…" :
-            activeTab === "classes"  ? "Search by teacher, subject, tags…" :
+            activeTab === "ncert"   ? "Search books, subjects…" :
+            activeTab === "notes"   ? "Search notes, tags…" :
+            activeTab === "classes" ? "Search by teacher, subject, tags…" :
             "Search by title, author, tags…"
           }
-          style={{ width: "100%", padding: "9px 14px 9px 36px", fontSize: 13, background: "var(--bg-surface)", border: "0.5px solid var(--bg-border)", borderRadius: 10, color: "var(--text-primary)", outline: "none", fontFamily: "'DM Sans', sans-serif", boxSizing: "border-box" }}
+          style={{
+            width: "100%", padding: "9px 14px 9px 36px", fontSize: 13,
+            background: "var(--bg-surface)", border: "0.5px solid var(--bg-border)",
+            borderRadius: 10, color: "var(--text-primary)", outline: "none",
+            fontFamily: "'DM Sans', sans-serif", boxSizing: "border-box",
+          }}
         />
         <span style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: "var(--text-muted)", fontSize: 14, pointerEvents: "none" }}>⌕</span>
       </div>
 
-      {/* ════════════════════════════════════════════════════════════════════ */}
-      {/* TAB: NCERT                                                          */}
-      {/* ════════════════════════════════════════════════════════════════════ */}
+      {/* ════════ TAB: NCERT ════════════════════════════════════════════════ */}
       {activeTab === "ncert" && (
         <>
-          <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 20 }}>
+          <div style={{
+            background: "var(--bg-surface)", border: "0.5px solid var(--bg-border)",
+            borderRadius: 14, padding: "16px 18px", marginBottom: 20,
+            display: "flex", flexDirection: "column", gap: 12,
+          }}>
             <div style={{ display: "flex", gap: 6, flexWrap: "wrap", alignItems: "center" }}>
-              <span style={{ fontSize: 10, color: "var(--text-muted)", fontFamily: "'DM Mono', monospace", minWidth: 52 }}>SUBJECT</span>
-              <FilterChip label="All" active={subjectFilter === "All"} onClick={() => setSubjectFilter("All")} />
-              {SUBJECTS.map(s => <FilterChip key={s} label={s} active={subjectFilter === s} onClick={() => setSubjectFilter(s)} />)}
+              <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: 1.5, color: "var(--text-muted)", fontFamily: "'DM Mono', monospace", minWidth: 52, textTransform: "uppercase" }}>Subject</span>
+              <FilterChip label="All" active={subjectFilter === "All"} color="#94a3b8" onClick={() => setSubjectFilter("All")} />
+              {SUBJECTS.map(s => (
+                <FilterChip key={s} label={s} active={subjectFilter === s} color={getSubjectMeta(s).accent} onClick={() => setSubjectFilter(s)} />
+              ))}
             </div>
-            {classes.length > 2 && (
-              <div style={{ display: "flex", gap: 6, flexWrap: "wrap", alignItems: "center" }}>
-                <span style={{ fontSize: 10, color: "var(--text-muted)", fontFamily: "'DM Mono', monospace", minWidth: 52 }}>CLASS</span>
-                {classes.map(c => <FilterChip key={c} label={c === "All" ? "All" : `Class ${c}`} active={classFilter === c} onClick={() => setClassFilter(c)} />)}
+            <div style={{ height: "0.5px", background: "var(--bg-border)" }} />
+            <div style={{ display: "flex", gap: 6, flexWrap: "wrap", alignItems: "center" }}>
+              <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: 1.5, color: "var(--text-muted)", fontFamily: "'DM Mono', monospace", minWidth: 52, textTransform: "uppercase" }}>Class</span>
+              <FilterChip label="All" active={classFilter === "All"} color="#94a3b8" onClick={() => setClassFilter("All")} />
+              {availableClasses.map(c => (
+                <FilterChip key={c} label={`Class ${c}`} active={String(classFilter) === String(c)} color="#60a5fa" onClick={() => setClassFilter(String(c))} />
+              ))}
+            </div>
+          </div>
+
+          <div style={{
+            marginBottom: 28, padding: "14px 18px",
+            background: "var(--bg-surface)", border: "0.5px solid var(--bg-border)",
+            borderRadius: 12, display: "flex", alignItems: "center", gap: 14,
+          }}>
+            <div style={{ fontSize: 22, fontWeight: 700, color: "var(--text-primary)", fontFamily: "'Playfair Display', serif", minWidth: 36 }}>{doneCount}</div>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: 11, color: "var(--text-muted)", fontFamily: "'DM Mono', monospace", marginBottom: 6 }}>
+                of {totalNCERT} NCERT books read · showing {filteredNCERT.length}
               </div>
-            )}
+              <div style={{ height: 5, borderRadius: 3, background: "var(--bg-border)", overflow: "hidden" }}>
+                <div style={{
+                  height: "100%", borderRadius: 3,
+                  width: `${totalNCERT ? (doneCount / totalNCERT) * 100 : 0}%`,
+                  background: "linear-gradient(90deg, #34d399, #60a5fa)",
+                  transition: "width 0.5s ease",
+                }} />
+              </div>
+            </div>
+            <div style={{ fontSize: 13, fontWeight: 700, color: "var(--text-muted)", fontFamily: "'DM Mono', monospace" }}>
+              {totalNCERT ? Math.round((doneCount / totalNCERT) * 100) : 0}%
+            </div>
           </div>
 
           {NCERT_BOOKS.length === 0 ? (
-            <EmptyState icon="📚" title="No books added yet" body={<>Open <code>src/data/ncert_data.js</code> and fill in<br />your NCERT PDF paths or URLs to get started.</>} />
-          ) : filteredNCERT.length === 0 ? (
+            <EmptyState icon="📚" title="No books added yet" body={<>Open <code>src/data/ncert_data.js</code> and fill in your NCERT PDF paths or URLs.</>} />
+          ) : booksByClass.length === 0 ? (
             <NoMatch />
           ) : (
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 12 }}>
-              {filteredNCERT.map(book => (
-                <NCERTCard key={book.id} book={book} onToggleDone={toggleDone} localDone={doneMap[book.id] ?? book.done} />
-              ))}
-            </div>
+            booksByClass.map(([classNum, books]) => (
+              <div key={classNum} style={{ marginBottom: 40 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 18 }}>
+                  <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 2, color: "var(--text-muted)", fontFamily: "'DM Mono', monospace", textTransform: "uppercase" }}>
+                    Class {classNum}
+                  </div>
+                  <div style={{ flex: 1, height: "0.5px", background: "var(--bg-border)" }} />
+                  <div style={{ fontSize: 10, color: "var(--text-muted)", fontFamily: "'DM Mono', monospace" }}>
+                    {books.filter(b => doneMap[b.id] ?? b.done).length}/{books.length} read
+                  </div>
+                  <div style={{ width: 44, height: 3, borderRadius: 2, background: "var(--bg-border)", overflow: "hidden" }}>
+                    <div style={{
+                      height: "100%", borderRadius: 2,
+                      width: `${books.length ? (books.filter(b => doneMap[b.id] ?? b.done).length / books.length) * 100 : 0}%`,
+                      background: "#34d399", transition: "width 0.4s ease",
+                    }} />
+                  </div>
+                </div>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: "20px 16px" }}>
+                  {books.map(book => (
+                    <NCERTBookCard key={book.id} book={book} localDone={doneMap[book.id] ?? book.done} onToggleDone={toggleDone} />
+                  ))}
+                </div>
+              </div>
+            ))
           )}
         </>
       )}
 
-      {/* ════════════════════════════════════════════════════════════════════ */}
-      {/* TAB: MY NOTES                                                       */}
-      {/* ════════════════════════════════════════════════════════════════════ */}
+      {/* ════════ TAB: MY NOTES ═════════════════════════════════════════════ */}
       {activeTab === "notes" && (
         <>
           <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 20 }}>
             <FilterChip label="All" active={paperFilter === "All"} color="#c084fc" onClick={() => setPaperFilter("All")} />
             {NOTE_PAPERS.map(p => <FilterChip key={p} label={p} active={paperFilter === p} color="#c084fc" onClick={() => setPaperFilter(p)} />)}
           </div>
-
           {NOTES.length === 0 ? (
-            <EmptyState icon="📝" title="No notes added yet" body={<>Open <code>src/data/notes_data.js</code> and add your<br />notes with file paths or Google Drive URLs.</>} />
+            <EmptyState icon="📝" title="No notes added yet" body={<>Open <code>src/data/notes_data.js</code> and add your notes.</>} />
           ) : filteredNotes.length === 0 ? (
             <NoMatch />
           ) : (
@@ -540,9 +845,7 @@ export default function ResourceLibrary() {
         </>
       )}
 
-      {/* ════════════════════════════════════════════════════════════════════ */}
-      {/* TAB: REFERENCE BOOKS                                                */}
-      {/* ════════════════════════════════════════════════════════════════════ */}
+      {/* ════════ TAB: REFERENCE BOOKS ══════════════════════════════════════ */}
       {activeTab === "refbooks" && (
         <>
           <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 20 }}>
@@ -553,12 +856,11 @@ export default function ResourceLibrary() {
             </div>
             <div style={{ display: "flex", gap: 6, flexWrap: "wrap", alignItems: "center" }}>
               <span style={{ fontSize: 10, color: "var(--text-muted)", fontFamily: "'DM Mono', monospace", minWidth: 52 }}>PRIORITY</span>
-              {[["All", "#a78bfa"], ["must-read", "#f87171"], ["recommended", "#60a5fa"], ["optional", "#a78bfa"]].map(([id, c]) => (
-                <FilterChip key={id} label={id === "All" ? "All" : id.charAt(0).toUpperCase() + id.slice(1).replace("-", " ")} active={priorityFilter === id} color={c} onClick={() => setPriorityFilter(id)} />
+              {[["All","#a78bfa"],["must-read","#f87171"],["recommended","#60a5fa"],["optional","#a78bfa"]].map(([id, c]) => (
+                <FilterChip key={id} label={id === "All" ? "All" : id.charAt(0).toUpperCase() + id.slice(1).replace("-"," ")} active={priorityFilter === id} color={c} onClick={() => setPriorityFilter(id)} />
               ))}
             </div>
           </div>
-
           {priorityFilter === "All" && (
             <div style={{ marginBottom: 16, padding: "10px 16px", borderRadius: 10, background: "rgba(248,113,113,0.08)", border: "0.5px solid rgba(248,113,113,0.25)", display: "flex", alignItems: "center", gap: 10 }}>
               <span style={{ fontSize: 18 }}>🔴</span>
@@ -567,10 +869,7 @@ export default function ResourceLibrary() {
               </span>
             </div>
           )}
-
-          {filteredRefBooks.length === 0 ? (
-            <NoMatch />
-          ) : (
+          {filteredRefBooks.length === 0 ? <NoMatch /> : (
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: 12 }}>
               {filteredRefBooks.map(book => <RefBookCard key={book.id} book={book} />)}
             </div>
@@ -578,18 +877,10 @@ export default function ResourceLibrary() {
         </>
       )}
 
-      {/* ════════════════════════════════════════════════════════════════════ */}
-      {/* TAB: YOUTUBE CLASSES                                                */}
-      {/* ════════════════════════════════════════════════════════════════════ */}
+      {/* ════════ TAB: YOUTUBE CLASSES ══════════════════════════════════════ */}
       {activeTab === "classes" && (
         <>
-          {/* Teacher group headers banner */}
-          <div style={{ marginBottom: 16, padding: "10px 16px", borderRadius: 10, background: "rgba(255,0,0,0.06)", border: "0.5px solid rgba(255,0,0,0.2)", display: "flex", alignItems: "center", gap: 10 }}>
-            <span style={{ fontSize: 18 }}>▶</span>
-            <span style={{ fontSize: 12, color: "#f87171", fontFamily: "'DM Mono', monospace" }}>
-              <strong>{totalClasses}</strong> free playlists — Vikas Divyakriti, Mrunal, Khan Sir, PMFIAS & more.
-            </span>
-          </div>
+
 
           {/* Filters */}
           <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 20 }}>
@@ -609,46 +900,38 @@ export default function ResourceLibrary() {
             </div>
           </div>
 
-          {filteredClasses.length === 0 ? (
-            <NoMatch />
-          ) : (
-            <>
-              {/* Group by teacher */}
-              {Object.entries(
-                filteredClasses.reduce((acc, cls) => {
-                  if (!acc[cls.teacher]) acc[cls.teacher] = { channel: cls.channel, items: [] };
-                  acc[cls.teacher].items.push(cls);
-                  return acc;
-                }, {})
-              ).map(([teacher, { channel, items }]) => (
-                <div key={teacher} style={{ marginBottom: 28 }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
-                    <div style={{
-                      width: 36, height: 36, borderRadius: "50%", flexShrink: 0,
-                      background: "linear-gradient(135deg, #ff000020, #ff000040)",
-                      border: "0.5px solid #ff000055",
-                      display: "flex", alignItems: "center", justifyContent: "center",
-                      fontSize: 16,
-                    }}>▶</div>
-                    <div>
-                      <div style={{ fontSize: 15, fontWeight: 700, color: "var(--text-primary)" }}>{teacher}</div>
-                      <div style={{ fontSize: 11, color: "var(--text-muted)", fontFamily: "'DM Mono', monospace" }}>{channel} · {items.length} playlist{items.length > 1 ? "s" : ""}</div>
-                    </div>
-                  </div>
-                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: 12 }}>
-                    {items.map(cls => <ClassCard key={cls.id} cls={cls} />)}
+          {filteredClasses.length === 0 ? <NoMatch /> : (
+            Object.entries(
+              filteredClasses.reduce((acc, cls) => {
+                if (!acc[cls.teacher]) acc[cls.teacher] = { channel: cls.channel, items: [] };
+                acc[cls.teacher].items.push(cls);
+                return acc;
+              }, {})
+            ).map(([teacher, { channel, items }]) => (
+              <div key={teacher} style={{ marginBottom: 32 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+                  <div style={{
+                    width: 36, height: 36, borderRadius: "50%", flexShrink: 0,
+                    background: "linear-gradient(135deg, #ff000020, #ff000040)",
+                    border: "0.5px solid #ff000055",
+                    display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16,
+                  }}>▶</div>
+                  <div>
+                    <div style={{ fontSize: 15, fontWeight: 700, color: "var(--text-primary)" }}>{teacher}</div>
+                    <div style={{ fontSize: 11, color: "var(--text-muted)", fontFamily: "'DM Mono', monospace" }}>{channel} · {items.length} playlist{items.length > 1 ? "s" : ""}</div>
                   </div>
                 </div>
-              ))}
-            </>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 16 }}>
+                  {items.map(cls => <ClassCard key={cls.id} cls={cls} />)}
+                </div>
+              </div>
+            ))
           )}
         </>
       )}
 
       {/* ── TAB: TEST SERIES ──────────────────────────────────────────────── */}
-      {activeTab === "test-series" && (
-        <TestSeriesPage />
-      )}
+      {activeTab === "test-series" && <TestSeriesPage />}
 
       {/* ── Footer ─────────────────────────────────────────────────────────── */}
       <div style={{ marginTop: 32, paddingTop: 20, borderTop: "0.5px solid var(--bg-border)", display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 8 }}>
