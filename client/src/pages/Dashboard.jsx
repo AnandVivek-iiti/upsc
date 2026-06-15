@@ -41,6 +41,13 @@ function fmtTime(secs) {
   const s = secs % 60;
   return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
 }
+// Formats seconds as "1h 28m" (or "28m" if under an hour) for display cards
+function fmtHM(secs) {
+  const h = Math.floor(secs / 3600);
+  const m = Math.floor((secs % 3600) / 60);
+  if (h === 0) return `${m}m`;
+  return m === 0 ? `${h}h` : `${h}h ${m}m`;
+}
 
 // ─── Collapsible Section Wrapper ───────────────────────────────────────────────
 function CollapsibleSection({ title, icon: Icon, children, defaultOpen = true }) {
@@ -232,7 +239,7 @@ function StudyTimer({ onLogHours, onSynced, targetHours = 8, serverHours = 0 }) 
               {fmtTime(elapsed)}
             </span>
             <span className="text-[10px] font-mono text-text-muted mt-0.5">
-              {secsToHours(elapsed)}h studied
+              {fmtHM(elapsed)} studied
             </span>
           </div>
         </div>
@@ -241,9 +248,9 @@ function StudyTimer({ onLogHours, onSynced, targetHours = 8, serverHours = 0 }) 
           {/* Mini stats */}
           <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
             {[
-              { label: "Today",  val: `${secsToHours(elapsed)}h` },
+              { label: "Today",  val: fmtHM(elapsed) },
               { label: "Target", val: `${targetHours}h` },
-              { label: "Left",   val: `${secsToHours(leftSecs)}h` },
+              { label: "Left",   val: fmtHM(leftSecs) },
             ].map(({ label, val }) => (
               <div key={label} className="bg-bg-muted rounded-lg p-1.5 sm:p-2 text-center">
                 <p className="text-[9px] sm:text-[10px] font-mono text-text-muted uppercase">{label}</p>
@@ -1042,7 +1049,7 @@ export default function Dashboard({
         <StatCard
           icon={Clock}
           label="Today"
-          value={`${todayHours}h`}
+          value={fmtHM(Math.round(todayHours * 3600))}
           sub={`Target: ${targetHours}h`}
           accent={todayHours >= targetHours}
         />
