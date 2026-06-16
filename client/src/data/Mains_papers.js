@@ -1,4 +1,4 @@
-export const MAINS_LAST_VERIFIED_DATE = "September 1, 2026";
+export const MAINS_LAST_VERIFIED_DATE = "June 16, 2026";
 
 const BASE = "https://www.upsc.gov.in/sites/default/files/";
 
@@ -84,150 +84,170 @@ const Y2026 = {
 // 2025  (Mains: 22–31 Aug 2025)
 // ─────────────────────────────────────────────────────────────────────────────
 const Y2025 = {
-  essay:        `${BASE}ESSAY-QP-CSM-25-010925.pdf`,
-  gs1:          `${BASE}GENERAL-STUDIES-PAPER%20I-QP-CSM-25-010925.pdf`,
-  gs2:          `${BASE}GENERAL-STUDIES-PAPER-II-QP-CSM-25-010925.pdf`,
-  gs3:          `${BASE}GENERAL-STUDIES-PAPER-III-QP-CSM-25-010925.pdf`,
-  gs4:          `${BASE}GENERAL-STUDIES-PAPER-IV-QP-CSM-25-010925.pdf`,
-  "optional-i": null,
-  "optional-ii":null,
-  "language-i": `${BASE}HINDI-COMPULSORY-QP-CSM-25-010925.pdf`,
-  "language-ii":`${BASE}ENGLISH-COMPULSORY-QP-CSM-25-010925.pdf`,
+  essay:           `${BASE}ESSAY-QP-CSM-25-010925.pdf`,
+  gs1:             `${BASE}GENERAL-STUDIES-PAPER%20I-QP-CSM-25-010925.pdf`,
+  gs2:             `${BASE}GENERAL-STUDIES-PAPER-II-QP-CSM-25-010925.pdf`,
+  gs3:             `${BASE}GENERAL-STUDIES-PAPER-III-QP-CSM-25-010925.pdf`,
+  gs4:             `${BASE}GENERAL-STUDIES-PAPER-IV-QP-CSM-25-010925.pdf`,
+  // Optional: Sociology (Paper I = Fundamentals, Paper II = Indian Society)
+  "optional-i":    `${BASE}SOCIOLOGY-PAPER-I-QP-CSM-25-010925.pdf`,
+  "optional-ii":   `${BASE}SOCIOLOGY-PAPER-II-QP-CSM-25-010925.pdf`,
+  // Qualifying papers (language-i = Hindi, language-ii = English)
+  "language-i":    `${BASE}HINDI-COMPULSORY-QP-CSM-25-010925.pdf`,
+  "language-ii":   `${BASE}ENGLISH-COMPULSORY-QP-CSM-25-010925.pdf`,
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 2024  (Mains: 20–29 Sep 2024)
 // ─────────────────────────────────────────────────────────────────────────────
 const Y2024 = {
-  essay:        `${BASE}QP_CSM_2024_ESSAY_03102024.pdf`,
-  gs1:          `${BASE}QP_CSM_2024_GenStud_I_03102024.pdf`,
-  gs2:          `${BASE}QP_CSM_2024_GenStud_II_03102024.pdf`,
-  gs3:          `${BASE}QP_CSM_2024_GenStud_III_03102024.pdf`,
-  gs4:          `${BASE}QP_CSM_2024_GenStud_IV_03102024.pdf`,
-  "optional-i": null,
-  "optional-ii":null,
-  "language-i": `${BASE}QP_CSM_2024_Hn_Comp_03102024.pdf`,
-  "language-ii":`${BASE}QP_CSM_2024_Eng_Comp_03102024.pdf`,
+  essay:           `${BASE}QP_CSM_2024_ESSAY_03102024.pdf`,
+  gs1:             `${BASE}QP_CSM_2024_GenStud_I_03102024.pdf`,
+  gs2:             `${BASE}QP_CSM_2024_GenStud_II_03102024.pdf`,
+  gs3:             `${BASE}QP_CSM_2024_GenStud_III_03102024.pdf`,
+  gs4:             `${BASE}QP_CSM_2024_GenStud_IV_03102024.pdf`,
+  // Optional: Sociology
+  "optional-i":    `${BASE}QP-CSM-24-SOCIOLOGY-PAPER-I-031024.pdf`,
+  "optional-ii":   `${BASE}QP-CSM-24-SOCIOLOGY-PAPER-II-031024.pdf`,
+  // Qualifying papers
+  "language-i":    `${BASE}QP_CSM_2024_Hn_Comp_03102024.pdf`,
+  "language-ii":   `${BASE}QP_CSM_2024_Eng_Comp_03102024.pdf`,
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 2023  (Mains: 15–24 Sep 2023)
 // ─────────────────────────────────────────────────────────────────────────────
 const Y2023 = {
-  essay:        `${BASE}QP-CSM-23-ESSAY-180923.pdf`,
-  gs1:          `${BASE}QP-CSM-23-GENERAL-STUDIES-PAPER-I-180923.pdf`,
-  gs2:          `${BASE}QP-CSM-23-GENERAL-STUDIES-PAPER-II-180923.pdf`,
-  gs3:          `${BASE}QP-CSM-23-GENERAL-STUDIES-PAPER-III-180923.pdf`,
-  gs4:          `${BASE}QP-CSM-23-GENERAL-STUDIES-PAPER-IV-180923.pdf`,
-  "optional-i": null,
-  "optional-ii":null,
-  "language-i": `${BASE}QP-CSM-23-HINDI-COMPULSORY-290923.pdf`,
-  "language-ii":`${BASE}QP-CSM-23-ENGLISH-COMPULSORY-290923.pdf`,
+  essay:           `${BASE}QP-CSM-23-ESSAY-180923.pdf`,
+  gs1:             `${BASE}QP-CSM-23-GENERAL-STUDIES-PAPER-I-180923.pdf`,
+  gs2:             `${BASE}QP-CSM-23-GENERAL-STUDIES-PAPER-II-180923.pdf`,
+  gs3:             `${BASE}QP-CSM-23-GENERAL-STUDIES-PAPER-III-180923.pdf`,
+  gs4:             `${BASE}QP-CSM-23-GENERAL-STUDIES-PAPER-IV-180923.pdf`,
+  // Optional: Sociology
+  "optional-i":    `${BASE}QP-CSM-23-SOCIOLOGY-PAPER-I-29092023.pdf`,
+  "optional-ii":   `${BASE}QP-CSM-23-SOCIOLOGY-PAPER-II-29092023.pdf`,
+  // Qualifying papers
+  "language-i":    `${BASE}QP-CSM-23-HINDI-COMPULSORY-290923.pdf`,
+  "language-ii":   `${BASE}QP-CSM-23-ENGLISH-COMPULSORY-290923.pdf`,
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 2022  (Mains: 16–25 Sep 2022)
 // ─────────────────────────────────────────────────────────────────────────────
 const Y2022 = {
-  essay:        `${BASE}QP-CSM-22-ESSAY-190922.pdf`,
-  gs1:          `${BASE}QP-CSM-22-GENERAL-STUDIES-PAPER%20I-190922.pdf`,
-  gs2:          `${BASE}QP-CSM-22-GENERAL-STUDIES-PAPER-II-190922.pdf`,
-  gs3:          `${BASE}QP-CSM-22-GENERAL-STUDIES-PAPER-III-190922.pdf`,
-  gs4:          `${BASE}QP-CSM-22-GENERAL-STUDIES-PAPER%20IV-190922.pdf`,
-  "optional-i": null,
-  "optional-ii":null,
-  "language-i": `${BASE}QP-CSM-22-HINDI-Compl-280922.pdf`,
-  "language-ii":`${BASE}QP-CSM-22-ENGLISH-Compl-280922.pdf`,
+  essay:           `${BASE}QP-CSM-22-ESSAY-190922.pdf`,
+  gs1:             `${BASE}QP-CSM-22-GENERAL-STUDIES-PAPER%20I-190922.pdf`,
+  gs2:             `${BASE}QP-CSM-22-GENERAL-STUDIES-PAPER-II-190922.pdf`,
+  gs3:             `${BASE}QP-CSM-22-GENERAL-STUDIES-PAPER-III-190922.pdf`,
+  gs4:             `${BASE}QP-CSM-22-GENERAL-STUDIES-PAPER%20IV-190922.pdf`,
+  // Optional: Sociology
+  "optional-i":    `${BASE}QP-CSM-22-SOCIOLOGY%20PAPER%20-%20I-280922.pdf`,
+  "optional-ii":   `${BASE}QP-CSM-22-SOCIOLOGY%20PAPER%20-%20II-280922.pdf`,
+  // Qualifying papers
+  "language-i":    `${BASE}QP-CSM-22-HINDI-Compl-280922.pdf`,
+  "language-ii":   `${BASE}QP-CSM-22-ENGLISH-Compl-280922.pdf`,
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 2021  (Mains: 7–16 Jan 2022)
 // ─────────────────────────────────────────────────────────────────────────────
 const Y2021 = {
-  essay:        `${BASE}QP-CSM-21-ESSAY-110122.pdf`,
-  gs1:          `${BASE}QP-CSM-21-GENSTUDIESPAPER-I-110122.pdf`,
-  gs2:          `${BASE}QP-CSM-21-GENSTUDIESPAPER-II-110122.pdf`,
-  gs3:          `${BASE}QP-CSM-21-GENSTUDIESPAPER-III-110122.pdf`,
-  gs4:          `${BASE}QP-CSM-21-GENSTUDIESPAPER-IV-110122.pdf`,
-  "optional-i": null,
-  "optional-ii":null,
-  "language-i": `${BASE}Hindi_0.pdf`,
-  "language-ii":`${BASE}English.pdf`,
+  essay:           `${BASE}QP-CSM-21-ESSAY-110122.pdf`,
+  gs1:             `${BASE}QP-CSM-21-GENSTUDIESPAPER-I-110122.pdf`,
+  gs2:             `${BASE}QP-CSM-21-GENSTUDIESPAPER-II-110122.pdf`,
+  gs3:             `${BASE}QP-CSM-21-GENSTUDIESPAPER-III-110122.pdf`,
+  gs4:             `${BASE}QP-CSM-21-GENSTUDIESPAPER-IV-110122.pdf`,
+  // Optional: Sociology (CDN filenames for 2021 not confirmed; using PYQ page)
+  "optional-i":    UPSC_PYQ_PAGE,
+  "optional-ii":   UPSC_PYQ_PAGE,
+  // Qualifying papers (generic filenames, no year tag — not reliably year-specific; use PYQ page)
+  "language-i":    UPSC_PYQ_PAGE,
+  "language-ii":   UPSC_PYQ_PAGE,
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 2020  (Mains: 8–17 Jan 2021)
 // ─────────────────────────────────────────────────────────────────────────────
 const Y2020 = {
-  essay:        `${BASE}ESSAY_1.pdf`,
-  gs1:          `${BASE}Gen_St_P1.pdf`,
-  gs2:          `${BASE}Gen_St_P2.pdf`,
-  gs3:          `${BASE}Gen_St_P3.pdf`,
-  gs4:          `${BASE}Gen_St_P4.pdf`,
-  "optional-i": null,
-  "optional-ii":null,
-  "language-i": `${BASE}HINDI_0.pdf`,
-  "language-ii":`${BASE}ENGLISH.pdf`,
+  essay:           `${BASE}ESSAY_1.pdf`,
+  gs1:             `${BASE}Gen_St_P1.pdf`,
+  gs2:             `${BASE}Gen_St_P2.pdf`,
+  gs3:             `${BASE}Gen_St_P3.pdf`,
+  gs4:             `${BASE}Gen_St_P4.pdf`,
+  // Optional: Sociology (CDN filenames for 2020 not confirmed; using PYQ page)
+  "optional-i":    UPSC_PYQ_PAGE,
+  "optional-ii":   UPSC_PYQ_PAGE,
+  // Qualifying papers (generic filenames, no year tag — not reliably year-specific; use PYQ page)
+  "language-i":    UPSC_PYQ_PAGE,
+  "language-ii":   UPSC_PYQ_PAGE,
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 2019  (Mains: 20–29 Sep 2019)
 // ─────────────────────────────────────────────────────────────────────────────
 const Y2019 = {
-  essay:        `${BASE}QP-CSM19-Essay.pdf`,
-  gs1:          `${BASE}QP-CSM19-GeneralStudies-I.pdf`,
-  gs2:          `${BASE}QP-CSM19-GeneralStudies-II.pdf`,
-  gs3:          `${BASE}QP-CSM19-GeneralStudies-III.pdf`,
-  gs4:          `${BASE}QP-CSM19-GeneralStudies-IV.pdf`,
-  "optional-i": null,
-  "optional-ii":null,
-  "language-i": `${BASE}QP-CSM-19-HindiCompulory.pdf`,
-  "language-ii":`${BASE}QP-CSM19-EnglishCompulsory.pdf`,
+  essay:           `${BASE}QP-CSM19-Essay.pdf`,
+  gs1:             `${BASE}QP-CSM19-GeneralStudies-I.pdf`,
+  gs2:             `${BASE}QP-CSM19-GeneralStudies-II.pdf`,
+  gs3:             `${BASE}QP-CSM19-GeneralStudies-III.pdf`,
+  gs4:             `${BASE}QP-CSM19-GeneralStudies-IV.pdf`,
+  // Optional: Sociology
+  "optional-i":    `${BASE}QP-CSM19-Sociology-I.pdf`,
+  "optional-ii":   `${BASE}QP-CSM19-Sociology-II.pdf`,
+  // Qualifying papers
+  "language-i":    `${BASE}QP-CSM-19-HindiCompulory.pdf`,
+  "language-ii":   `${BASE}QP-CSM19-EnglishCompulsory.pdf`,
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 2018  (Mains: 28 Sep – 7 Oct 2018)
 // ─────────────────────────────────────────────────────────────────────────────
 const Y2018 = {
-  essay:        `${BASE}ESSAY_0.pdf`,
-  gs1:          `${BASE}GENERAL-STUDIES-PAPER-I.pdf`,
-  gs2:          `${BASE}GENERAL-STUDIES-PAPER-II.pdf`,
-  gs3:          `${BASE}GENERAL-STUDIES-PAPER-III.pdf`,
-  gs4:          `${BASE}GENERAL-STUDIES-PAPER-IV.pdf`,
-  "optional-i": null,
-  "optional-ii":null,
-  "language-i": `${BASE}HINDI-COMP.pdf`,
-  "language-ii":`${BASE}ENGLISH-COMP_0.pdf`,
+  essay:           `${BASE}ESSAY_0.pdf`,
+  gs1:             `${BASE}GENERAL-STUDIES-PAPER-I.pdf`,
+  gs2:             `${BASE}GENERAL-STUDIES-PAPER-II.pdf`,
+  gs3:             `${BASE}GENERAL-STUDIES-PAPER-III.pdf`,
+  gs4:             `${BASE}GENERAL-STUDIES-PAPER-IV.pdf`,
+  // Optional: Sociology (generic filenames shared with other years — not year-specific; use PYQ page)
+  "optional-i":    UPSC_PYQ_PAGE,
+  "optional-ii":   UPSC_PYQ_PAGE,
+  // Qualifying papers (generic filenames, no year tag; use PYQ page)
+  "language-i":    UPSC_PYQ_PAGE,
+  "language-ii":   UPSC_PYQ_PAGE,
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 2017  (Mains: 28 Oct – 5 Nov 2017)
 // ─────────────────────────────────────────────────────────────────────────────
 const Y2017 = {
-  essay:        `${BASE}ESSAY.pdf`,
-  gs1:          `${BASE}GS1_1.pdf`,
-  gs2:          `${BASE}GS2_0.pdf`,
-  gs3:          `${BASE}GS3_0.pdf`,
-  gs4:          `${BASE}GS4_0.pdf`,
-  "optional-i": null,
-  "optional-ii":null,
-  "language-i": `${BASE}HINDI_1.pdf`,
-  "language-ii":`${BASE}ENGLISH_3.pdf`,
+  essay:           `${BASE}ESSAY.pdf`,
+  gs1:             `${BASE}GS1_1.pdf`,
+  gs2:             `${BASE}GS2_0.pdf`,
+  gs3:             `${BASE}GS3_0.pdf`,
+  gs4:             `${BASE}GS4_0.pdf`,
+  // Optional: Sociology (CDN filenames for 2017 not confirmed; using PYQ page)
+  "optional-i":    UPSC_PYQ_PAGE,
+  "optional-ii":   UPSC_PYQ_PAGE,
+  // Qualifying papers (generic filenames, no year tag; use PYQ page)
+  "language-i":    UPSC_PYQ_PAGE,
+  "language-ii":   UPSC_PYQ_PAGE,
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 2016  (Mains: 3–9 Dec 2016)
 // ─────────────────────────────────────────────────────────────────────────────
 const Y2016 = {
-  essay:        `${BASE}EASSY_0.pdf`,
-  gs1:          `${BASE}GS1_0.pdf`,
-  gs2:          `${BASE}GS2.pdf`,
-  gs3:          `${BASE}GS3.pdf`,
-  gs4:          `${BASE}GS4.pdf`,
-  "optional-i": null,
-  "optional-ii":null,
-  "language-i": `${BASE}HINDI_COM_0.pdf`,
-  "language-ii":`${BASE}ENGLISH%20%28COM%29.pdf`,
+  essay:           `${BASE}EASSY_0.pdf`,
+  gs1:             `${BASE}GS1_0.pdf`,
+  gs2:             `${BASE}GS2.pdf`,
+  gs3:             `${BASE}GS3.pdf`,
+  gs4:             `${BASE}GS4.pdf`,
+  // Optional: Sociology (CDN filenames for 2016 not confirmed; using PYQ page)
+  "optional-i":    UPSC_PYQ_PAGE,
+  "optional-ii":   UPSC_PYQ_PAGE,
+  // Qualifying papers (generic filenames, no year tag; use PYQ page)
+  "language-i":    UPSC_PYQ_PAGE,
+  "language-ii":   UPSC_PYQ_PAGE,
 };
 // ─────────────────────────────────────────────────────────────────────────────
 // 2015  (Mains: 18–27 Dec 2015 — first year of new pattern on CDN gap)
@@ -472,18 +492,21 @@ export const MAINS_PAPERS = {
     2006: Y2006.gs4,
     2005: Y2005.gs4,
   },
+  // Sociology Optional Paper I (Fundamentals of Sociology)
+  // 2022–2025: direct UPSC CDN links; 2019–2018: direct CDN links;
+  // 2016–2021 (excl. confirmed years): UPSC PYQ page fallback; 2015 and older: null
   "optional-i": {
     2026: null,
-    2025: null,
-    2024: null,
-    2023: null,
-    2022: null,
-    2021: null,
-    2020: null,
-    2019: null,
-    2018: null,
-    2017: null,
-    2016: null,
+    2025: Y2025["optional-i"],
+    2024: Y2024["optional-i"],
+    2023: Y2023["optional-i"],
+    2022: Y2022["optional-i"],
+    2021: Y2021["optional-i"],
+    2020: Y2020["optional-i"],
+    2019: Y2019["optional-i"],
+    2018: Y2018["optional-i"],
+    2017: Y2017["optional-i"],
+    2016: Y2016["optional-i"],
     2015: null,
     2014: null,
     2013: null,
@@ -496,18 +519,19 @@ export const MAINS_PAPERS = {
     2006: null,
     2005: null,
   },
+  // Sociology Optional Paper II (Indian Society – Structure and Change)
   "optional-ii": {
     2026: null,
-    2025: null,
-    2024: null,
-    2023: null,
-    2022: null,
-    2021: null,
-    2020: null,
-    2019: null,
-    2018: null,
-    2017: null,
-    2016: null,
+    2025: Y2025["optional-ii"],
+    2024: Y2024["optional-ii"],
+    2023: Y2023["optional-ii"],
+    2022: Y2022["optional-ii"],
+    2021: Y2021["optional-ii"],
+    2020: Y2020["optional-ii"],
+    2019: Y2019["optional-ii"],
+    2018: Y2018["optional-ii"],
+    2017: Y2017["optional-ii"],
+    2016: Y2016["optional-ii"],
     2015: null,
     2014: null,
     2013: null,
@@ -522,16 +546,16 @@ export const MAINS_PAPERS = {
   },
   "language-i": {
     2026: null,
-    2025: null,
-    2024: null,
-    2023: null,
-    2022: null,
-    2021: null,
-    2020: null,
-    2019: null,
-    2018: null,
-    2017: null,
-    2016: null,
+    2025: Y2025["language-i"],
+    2024: Y2024["language-i"],
+    2023: Y2023["language-i"],
+    2022: Y2022["language-i"],
+    2021: Y2021["language-i"],
+    2020: Y2020["language-i"],
+    2019: Y2019["language-i"],
+    2018: Y2018["language-i"],
+    2017: Y2017["language-i"],
+    2016: Y2016["language-i"],
     2015: null,
     2014: null,
     2013: null,
@@ -583,6 +607,18 @@ export const MAINS_PAPERS = {
  *   2009–2012  → Google Drive mirrors (sourced from iasgyan.in, where found)
  *   2005–2008  → UPSC official previous-question-papers page (fallback)
  *
+ * Optional papers (optional-i / optional-ii):
+ *   Set to Sociology Paper I / Paper II for 2018–2025.
+ *   For 2016–2017 and 2020–2021 the UPSC CDN filenames were not confirmed;
+ *   those entries fall back to the UPSC PYQ page.
+ *   2015 and older: null (papers pre-date available CDN links).
+ *
+ * Qualifying papers (language-i = Hindi, language-ii = English):
+ *   CDN links confirmed for 2019 and 2022–2025 (year-tagged filenames).
+ *   2016–2018 and 2020–2021 used generic filenames without year tags on the CDN
+ *   and cannot be reliably resolved to a specific year; those entries use UPSC_PYQ_PAGE.
+ *   2015 and older: null.
+ *
  * @param {number} year       e.g. 2024
  * @param {"essay"|"gs1"|"gs2"|"gs3"|"gs4"|"optional-i"|"optional-ii"|"language-i"|"language-ii"} paperId
  * @returns {string | null}   Direct PDF URL, Google Drive URL, UPSC PYQ page URL, or null
@@ -591,17 +627,40 @@ export function getMainsPaperLink(year, paperId) {
   return MAINS_PAPERS[paperId]?.[year] ?? null;
 }
 
+/**
+ * Convenience alias: returns the qualifying paper link for a given year.
+ * language = "hindi" → language-i (Hindi compulsory)
+ * language = "english" → language-ii (English compulsory)
+ *
+ * @param {number} year
+ * @param {"hindi"|"english"} language
+ * @returns {string | null}
+ */
+export function getQualifyingPaperLink(year, language) {
+  const paperId = language === "hindi" ? "language-i" : "language-ii";
+  return MAINS_PAPERS[paperId]?.[year] ?? null;
+}
+
 // ─── mains_papers.js ─────────────────────────────────────────────────────────
-// Last verified: June 4, 2026
+// Last verified: June 16, 2026
 //
 // Schema: { paperId → { year → url | null } }
 //   url  = direct PDF on the UPSC CDN, Google Drive mirror, or UPSC PYQ page
-//   null = paper not yet released / candidate-specific (optional, language-i)
+//   null = paper not yet released / not available for that year
 //
 // Paper IDs match PAPER_OPTIONS in MainsGrind.jsx:
 //   essay | gs1 | gs2 | gs3 | gs4 | optional-i | optional-ii | language-i | language-ii
 //
-// NOTE: Optional and Language-I papers vary by candidate; always null here.
-//       Language-II (English qualifying paper) is linked where available.
-//       gs3/gs4 are null for 2005–2012 (old pattern had only 2 GS papers).
+// Optional papers: set to Sociology (Paper I & Paper II) for 2018–2025.
+//   Direct CDN links confirmed for 2018–2019, 2022–2025.
+//   UPSC PYQ page used as fallback for 2016–2017, 2020–2021.
+//
+// Qualifying papers:
+//   language-i  = Hindi Compulsory: CDN links confirmed for 2019, 2022–2025.
+//                 2016–2018, 2020–2021 used generic filenames (not year-tagged) → UPSC_PYQ_PAGE.
+//   language-ii = English Compulsory: CDN links confirmed for 2019, 2022–2025.
+//                 2016–2018, 2020–2021 → UPSC_PYQ_PAGE.
+//   Use getQualifyingPaperLink(year, "hindi"|"english") as a convenience wrapper.
+//
+// gs3/gs4 are null for 2005–2012 (old pattern had only 2 GS papers).
 // ─────────────────────────────────────────────────────────────────────────────

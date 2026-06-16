@@ -38,8 +38,8 @@ const PAPER_OPTIONS = [
   { id: "gs4",         label: "GS IV"       },
   { id: "optional-i",  label: "Optional I"  },
   { id: "optional-ii", label: "Optional II" },
-  { id: "language-i",  label: "Language I"  },
-  { id: "language-ii", label: "Language II" },
+  { id: "language-i",  label: "Hindi (Qualifying)"   },
+  { id: "language-ii", label: "English (Qualifying)" },
 ];
 
 const STORAGE_PREFIX = "upsc-mains-links:";
@@ -92,12 +92,20 @@ export default function MainsGrind() {
   }, []);
 
   const visibleCards = useMemo(() => {
-    if (yearFilter === "latest") return PYQ_CARDS.slice(0, 5);
-    if (yearFilter === "2015")   return PYQ_CARDS.filter((c) => c.year >= 2015 && c.year <= 2019);
-    if (yearFilter === "2010")   return PYQ_CARDS.filter((c) => c.year >= 2010 && c.year <= 2014);
-    if (yearFilter === "2005")   return PYQ_CARDS.filter((c) => c.year >= 2005 && c.year <= 2009);
-    return PYQ_CARDS;
-  }, [yearFilter]);
+    let cards = PYQ_CARDS;
+    if (yearFilter === "latest") cards = PYQ_CARDS.slice(0, 5);
+    else if (yearFilter === "2015") cards = PYQ_CARDS.filter((c) => c.year >= 2015 && c.year <= 2019);
+    else if (yearFilter === "2010") cards = PYQ_CARDS.filter((c) => c.year >= 2010 && c.year <= 2014);
+    else if (yearFilter === "2005") cards = PYQ_CARDS.filter((c) => c.year >= 2005 && c.year <= 2009);
+    // Hide cards where both official data AND saved link are null/absent
+    // (Only filter when a specific paper is selected; show all otherwise)
+    if (!activePaper) return cards;
+    return cards.filter((c) => {
+      const official = getMainsPaperLink(c.year, activePaper);
+      const saved = savedLinks[activePaper]?.[c.year];
+      return official !== null || Boolean(saved?.url);
+    });
+  }, [yearFilter, activePaper, savedLinks]);
 
   const selectedPaper   = PAPER_OPTIONS.find((p) => p.id === activePaper) || PAPER_OPTIONS[0];
   const getSavedLink    = (year) => savedLinks[activePaper]?.[year];
@@ -194,7 +202,11 @@ export default function MainsGrind() {
                 </div>
 
                 <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-                  {visibleCards.map((item) => {
+                  {visibleCards.length === 0 ? (
+                    <p className="col-span-full py-8 text-center text-sm text-text-muted">
+                      No papers found for this filter range.
+                    </p>
+                  ) : visibleCards.map((item) => {
                     const savedLink    = getSavedLink(item.year);
                     const officialLink = getOfficialLink(item.year);
                     const hasDirectLink = Boolean(savedLink?.url || officialLink);
@@ -281,6 +293,9 @@ export default function MainsGrind() {
                 <li>Use the "Mark done" feature in the Resources tab to track reading progress.</li>
                 <li>Focus on understanding concepts rather than just ticking boxes.</li>
               </ul>
+              <p className="mt-3 text-xs text-text-muted">
+                Links last verified: <span className="font-semibold text-text-secondary">{MAINS_LAST_VERIFIED_DATE}</span>
+              </p>
             </div>
           </div>
         </header>

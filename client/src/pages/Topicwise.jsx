@@ -631,7 +631,7 @@ function QuestionCard({ q, index, accentColor, revQueue, subjectMeta, onCorrect,
 }
 
 // ─── MAINS SUBJECT PANEL ──────────────────────────────────────────────────────
-function MainsSubjectPanel({ subject, accentColor }) {
+function MainsSubjectPanel({ subject, accentColor, paperLabel, recordAttempt, attemptedIds }) {
   const rawData = subject.data || [];
 
   const [yearFilter,      setYearFilter]      = useState("All");
@@ -748,6 +748,7 @@ function MainsSubjectPanel({ subject, accentColor }) {
       {/* Tip */}
       <div style={{ marginBottom: 12, padding: "9px 12px", borderRadius: 8, background: `${accentColor}0a`, border: `0.5px solid ${accentColor}25`, fontSize: 12, color: "var(--text-muted)", fontFamily: "'DM Mono', monospace", lineHeight: 1.55 }}>
         💡 <strong style={{ color: accentColor }}>Hints</strong> → plan &nbsp;·&nbsp; <strong style={{ color: accentColor }}>Practice</strong> → draft &nbsp;·&nbsp; <strong style={{ color: accentColor }}>Model Answer</strong> → compare
+        &nbsp;·&nbsp; <strong style={{ color: accentColor }}>✓ Mark</strong> → syncs to Syllabus Tracker
       </div>
 
       {/* Cards */}
@@ -757,9 +758,48 @@ function MainsSubjectPanel({ subject, accentColor }) {
         </div>
       ) : (
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-          {filtered.map((q, i) => (
-            <MainsQuestionCard key={q._id || i} q={q} index={i} accentColor={subject.color || accentColor} />
-          ))}
+          {filtered.map((q, i) => {
+            const qId      = q._id || q.id || `mq-${i}`;
+            const isDone   = attemptedIds?.has(qId);
+            const subMeta  = { subject: subject.label, paper: paperLabel };
+            return (
+              <div key={qId} style={{ position: "relative" }}>
+                <MainsQuestionCard q={q} index={i} accentColor={subject.color || accentColor} />
+                {/* ── Attempt tracker strip ── */}
+                {recordAttempt && (
+                  <div style={{
+                    display: "flex", alignItems: "center", justifyContent: "flex-end",
+                    gap: 8, padding: "6px 14px 10px",
+                    borderTop: "0.5px solid var(--bg-border)",
+                    marginTop: -1,
+                  }}>
+                    {isDone && (
+                      <span style={{ fontSize: 11, color: "var(--accent-green)", fontFamily: "'DM Mono', monospace" }}>
+                        ✓ Practiced
+                      </span>
+                    )}
+                    <button
+                      onClick={() => recordAttempt(
+                        { id: qId, questionText: q.questionText, topic: q.topic, subTopic: q.subTopic, difficulty: q.difficulty, year: q.year },
+                        isDone ? "skipped" : "attempted",
+                        subMeta
+                      )}
+                      style={{
+                        fontSize: 11, padding: "4px 12px", borderRadius: 20, cursor: "pointer",
+                        border: isDone ? "0.5px solid var(--bg-border)" : `0.5px solid ${accentColor}`,
+                        background: isDone ? "transparent" : `${accentColor}18`,
+                        color: isDone ? "var(--text-muted)" : accentColor,
+                        fontFamily: "'DM Mono', monospace", fontWeight: 500,
+                        transition: "all .15s",
+                      }}
+                    >
+                      {isDone ? "Undo" : "✓ Mark Practiced"}
+                    </button>
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
       )}
     </div>
@@ -1045,6 +1085,8 @@ function PaperSection({ paperId, paper, isOpen, onToggle, revQueue, onTopicCompl
                       subject={paper.subjects[activeSubject]}
                       accentColor={paper.subjects[activeSubject].color || paper.color}
                       paperLabel={paper.label}
+                      recordAttempt={recordAttempt}
+                      attemptedIds={attemptedIds}
                     />
                   ) : (
                     <SubjectPanel

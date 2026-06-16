@@ -8,11 +8,11 @@ import Footer from "./components/layout/Footer";
 import { useUserData } from "./hooks/useUserData";
 import { AlertCircle, Menu, X } from "lucide-react";
 import HeroBanner from "./pages/Hero";
-import AIWorkplace from "./pages/AIworkplace.jsx";
+import AIFeatures from "./pages/AIFeatures.jsx";
 import Topicwise from "./pages/Topicwise";
 import AuthPage from "./pages/AuthPage";
 import { useAuth } from "./hooks/useAuth";
-import Adminpannel from "./pages/AdminPanel";
+import Adminpannel from "./pages/Adminpannel.jsx";
 import ResourceLibrary from "./pages/ResourceLibrary";
 import ProfilePage, { AvatarCircle } from "./pages/ProfilePage";
 import PWAInstallPrompt from "./components/PWAInstallPrompt";
@@ -299,7 +299,7 @@ export default function App() {
             {activeView === "syllabus"    && <SyllabusTracker userData={userData} onUpdateProgress={updateProgress} />}
             {activeView === "mains"       && <MainsGrind workspaceQuestion={workspaceQuestion} />}
             {activeView === "pre"         && <PrelimsGrind />}
-            {activeView === "ai-workplace"&& <AIWorkplace user={user} onNavigateAuth={() => setActiveView("auth")} />}
+            {activeView === "ai-features" && <AIFeatures user={user} onNavigateAuth={() => setActiveView("auth")} />}
             {activeView === "topic-wise"  && <Topicwise onSyllabusUpdate={updateProgress} onBulkSyllabusUpdate={bulkUpdateProgress} serverAttempts={userData?.question_attempts || []} />}
             {activeView === "admin"       && <Adminpannel />}
             {activeView === "resources"   && <ResourceLibrary user={user} updateProgress={updateProgress} bulkUpdateProgress={bulkUpdateProgress} serverAttempts={userData?.question_attempts || []} />}

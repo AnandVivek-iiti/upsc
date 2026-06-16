@@ -19,7 +19,7 @@ const evaluateLimiter = rateLimit({
   max: 5,
   standardHeaders: true,
   legacyHeaders: false,
-  keyGenerator: (req) => `user_${req.user._id.toString()}`,
+  keyGenerator: (req) => `user_${req.user.id}`,
   skip: (req) => req.user?.role === "admin",
   message: {
     success: false,
