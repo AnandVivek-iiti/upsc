@@ -13,6 +13,7 @@
  */
 
 import { useState } from "react";
+import AIEvaluatorPanel from "./AIEvaluatorPanel";
 
 // ── DIRECTIVE BADGE (softer, readable colors) ────────────────────────────────
 
@@ -403,7 +404,7 @@ function WordCountProgress({ wordLimit, currentCount, accentColor }) {
 
 // ── PRACTICE TEXTAREA (larger font, responsive) ───────────────────────────────
 
-function PracticeBox({ wordLimit, accentColor }) {
+function PracticeBox({ wordLimit, accentColor, question, paper, isLoggedIn }) {
   const [value, setValue] = useState("");
   const wordCount = value.trim() === "" ? 0 : value.trim().split(/\s+/).length;
 
@@ -474,6 +475,12 @@ function PracticeBox({ wordLimit, accentColor }) {
         onFocus={e => (e.target.style.borderColor = accentColor)}
         onBlur={e => (e.target.style.borderColor = "var(--bg-border)")}
       />
+      <AIEvaluatorPanel
+        question={question || ""}
+        paper={paper || "GS2"}
+        answer={value}
+        isLoggedIn={isLoggedIn}
+      />
     </div>
   );
 }
@@ -483,7 +490,7 @@ function PracticeBox({ wordLimit, accentColor }) {
 /**
  * MainsQuestionCard – larger, responsive, readable
  */
-export default function MainsQuestionCard({ q, index, accentColor = "#34d399" }) {
+export default function MainsQuestionCard({ q, index, accentColor = "#34d399", paper, isLoggedIn }) {
   const [showIdealAnswer, setShowIdealAnswer] = useState(false);
   const [showPractice, setShowPractice] = useState(false);
   const [showKeyPoints, setShowKeyPoints] = useState(false);
@@ -581,7 +588,15 @@ export default function MainsQuestionCard({ q, index, accentColor = "#34d399" })
 
       {/* Expandable Panels */}
       {showKeyPoints && <KeyPointsPanel keyPoints={q.keyPoints} accentColor={accentColor} />}
-      {showPractice && <PracticeBox wordLimit={q.wordLimit} accentColor={accentColor} />}
+      {showPractice && (
+        <PracticeBox
+          wordLimit={q.wordLimit}
+          accentColor={accentColor}
+          question={q.questionText}
+          paper={paper}
+          isLoggedIn={isLoggedIn}
+        />
+      )}
       {showIdealAnswer && <IdealAnswerPanel idealAnswer={q.idealAnswer} accentColor={accentColor} />}
       {showIdealAnswer && <SourcesRow sources={q.sources} />}
 

@@ -8,6 +8,8 @@ import {
   getAllModules,
 } from "../data/syllabusData";
 import { useState, useCallback, useEffect } from "react";
+import AIMentorChat from "../components/ui/AIMentorChat";
+import AIRevisionPanel from "../components/ui/AIRevisionPanel";
 
 // ─── StatusBadge ─────────────────────────────────────────────────────────────
 
@@ -360,7 +362,7 @@ function StageCoverageBar({ label, papers, paperOrder }) {
 //   userData        — from useUserData; used to seed progress from backend on first load
 //   onUpdateProgress — callback to persist progress back to backend (optional if not logged in)
 
-export default function SyllabusTracker({ userData, onUpdateProgress }) {
+export default function SyllabusTracker({ userData, onUpdateProgress, isLoggedIn = false }) {
   // Always start from the static syllabus structure (syllabusData.js)
   const [data,       setData]       = useState(deepClone(SYLLABUS));
   const [stage,      setStage]      = useState("prelims");
@@ -558,6 +560,21 @@ export default function SyllabusTracker({ userData, onUpdateProgress }) {
             />
           );
         })}
+      </div>
+
+      {/* ── AI Revision + Mentor Chat ── */}
+      <div style={{
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+        gap: 16,
+        marginTop: 24,
+      }}>
+        <AIRevisionPanel isLoggedIn={isLoggedIn} compact={true} />
+        <AIMentorChat
+          contextHint="I'm reviewing my UPSC syllabus progress"
+          isLoggedIn={isLoggedIn}
+          compact={true}
+        />
       </div>
 
       {/* ── Footer ── */}

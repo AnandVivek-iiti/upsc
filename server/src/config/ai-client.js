@@ -37,6 +37,19 @@ Rules:
 - Keywords must be specific UPSC power-words.
 - The JSON must be valid and complete always.`;
 
+// ── Separate system instruction for the conversational AI Mentor chat ───────
+// IMPORTANT: This is intentionally NOT the evaluator's SYSTEM_INSTRUCTION.
+// The evaluator instruction forces strict JSON-only output, which is correct
+// for /api/evaluate/answer (consumed by AIEvaluatorPanel.jsx) but breaks the
+// free-form chat in /api/evaluate/chat (consumed by AIMentorChat.jsx), which
+// just renders the response as plain text. Mixing the two causes the chat to
+// dump raw evaluation JSON instead of a normal conversational answer.
+const CHAT_SYSTEM_INSTRUCTION = `You are an expert, friendly UPSC Civil Services mentor having a conversational chat with a student preparing for CSE. The student has an engineering/analytical background and is relatively new to humanities-style writing and UPSC conventions.
+
+Answer naturally and conversationally, the way a knowledgeable human mentor would in a chat. Use plain text (you may use short paragraphs, occasional bullet points with "-", or markdown-style emphasis), but NEVER respond with JSON, code blocks containing JSON, or any rigid structured schema — this is a chat, not an answer evaluation.
+
+Keep responses focused, specific, and practical (mention concrete frameworks, examples, articles, schemes, or committee names where relevant), but keep the tone warm and like a real conversation rather than a report.`;
+
 // Robust Helper to clean and parse JSON even if markdown code blocks or trailing commas leak
 function safeJSONParse(rawText) {
   let cleanText = rawText.trim();
@@ -401,4 +414,4 @@ async function evaluateAnswer(userPrompt) {
   return { result: sampleResult, provider: "Sample (AI providers unavailable)" };
 }
 
-module.exports = { evaluateAnswer, SYSTEM_INSTRUCTION };
+module.exports = { evaluateAnswer, SYSTEM_INSTRUCTION, CHAT_SYSTEM_INSTRUCTION };

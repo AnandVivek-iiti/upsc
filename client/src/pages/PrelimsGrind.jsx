@@ -15,6 +15,7 @@ import {
 } from "../data/Prelims_paper";
 import AddCustomQuestion from "../components/QuestionStats";
 import ResourceLibrary from "./ResourceLibrary";
+import AIMentorChat from "../components/ui/AIMentorChat";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 const TABS = [
@@ -64,7 +65,7 @@ const PYQ_CARDS = [
 ];
 
 // ─── Main Component ───────────────────────────────────────────────────────────
-export default function PrelimsGrind() {
+export default function PrelimsGrind({ isLoggedIn = false }) {
   const [savedLinks,  setSavedLinks]  = useState({});
   const [activePaper, setActivePaper] = useState(null);
   const [activeTab,   setActiveTab]   = useState("pyqs");
@@ -251,6 +252,13 @@ export default function PrelimsGrind() {
               </div>
             )}
           </section>
+
+          {/* ── AI Mentor Chat ── */}
+          <AIMentorChat
+            contextHint="I'm practising UPSC Prelims MCQs"
+            isLoggedIn={isLoggedIn}
+            compact={true}
+          />
         </div>
       </div>
     );
@@ -314,6 +322,13 @@ export default function PrelimsGrind() {
             })}
           </div>
         </section>
+
+        {/* ── AI Mentor Chat ── */}
+        <AIMentorChat
+          contextHint="I'm practising UPSC Prelims MCQs"
+          isLoggedIn={isLoggedIn}
+          compact={true}
+        />
       </div>
     </div>
   );

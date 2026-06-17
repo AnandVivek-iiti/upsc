@@ -11,6 +11,7 @@ import { useState, useCallback, useMemo } from "react";
 import MatchTable from "../components/ui/MatchTable";
 import ExplanationBox from "../components/ui/ExplanationBox";
 import MainsQuestionCard from "../components/ui/MainsQuestionCard";
+import AIMentorChat from "../components/ui/AIMentorChat";
 import { useRevisionQueue } from "../hooks/useRevisionQueue";
 import { getMainsPaperLink } from "../data/Mains_papers";
 import { useQuestionAttempts } from "../hooks/useQuestionAttempts";
@@ -631,7 +632,7 @@ function QuestionCard({ q, index, accentColor, revQueue, subjectMeta, onCorrect,
 }
 
 // ─── MAINS SUBJECT PANEL ──────────────────────────────────────────────────────
-function MainsSubjectPanel({ subject, accentColor, paperLabel, recordAttempt, attemptedIds }) {
+function MainsSubjectPanel({ subject, accentColor, paperLabel, recordAttempt, attemptedIds, isLoggedIn }) {
   const rawData = subject.data || [];
 
   const [yearFilter,      setYearFilter]      = useState("All");
@@ -764,7 +765,7 @@ function MainsSubjectPanel({ subject, accentColor, paperLabel, recordAttempt, at
             const subMeta  = { subject: subject.label, paper: paperLabel };
             return (
               <div key={qId} style={{ position: "relative" }}>
-                <MainsQuestionCard q={q} index={i} accentColor={subject.color || accentColor} />
+                <MainsQuestionCard q={q} index={i} accentColor={subject.color || accentColor} paper={paperLabel} isLoggedIn={isLoggedIn} />
                 {/* ── Attempt tracker strip ── */}
                 {recordAttempt && (
                   <div style={{
@@ -993,7 +994,7 @@ function MainsPaperLinks({ paperId }) {
 }
 
 // ─── PAPER ACCORDION ──────────────────────────────────────────────────────────
-function PaperSection({ paperId, paper, isOpen, onToggle, revQueue, onTopicComplete, recordAttempt, attemptedIds }) {
+function PaperSection({ paperId, paper, isOpen, onToggle, revQueue, onTopicComplete, recordAttempt, attemptedIds, isLoggedIn }) {
   const [activeSubject, setActiveSubject] = useState(null);
   const subjectEntries = Object.entries(paper.subjects || {});
   const isMains = !!paper.isMains;
@@ -1087,6 +1088,7 @@ function PaperSection({ paperId, paper, isOpen, onToggle, revQueue, onTopicCompl
                       paperLabel={paper.label}
                       recordAttempt={recordAttempt}
                       attemptedIds={attemptedIds}
+                      isLoggedIn={isLoggedIn}
                     />
                   ) : (
                     <SubjectPanel
@@ -1203,12 +1205,12 @@ function RevisionQueuePanel({ revQueue }) {
 }
 
 // ─── MAIN TOPICWISE ───────────────────────────────────────────────────────────
-export default function Topicwise({ onSyllabusUpdate, onBulkSyllabusUpdate = null, serverAttempts = [] }) {
+export default function Topicwise({ onSyllabusUpdate, onBulkSyllabusUpdate = null, serverAttempts = [], isLoggedIn = false }) {
   const [stage,      setStage]      = useState("prelims");
   const [openPapers, setOpenPapers] = useState({ GS: true });
   const [activeTab,  setActiveTab]  = useState("browse");
 
-  const { recordAttempt, attemptedIds } = useQuestionAttempts({ onSyllabusUpdate: onBulkSyllabusUpdate || onSyllabusUpdate, serverAttempts });
+  const { recordAttempt, attemptedIds } = useQuestionAttempts({ onSyllabusUpdate, serverAttempts });
   const revQueue = useRevisionQueue();
 
   const togglePaper         = useCallback(id => setOpenPapers(prev => ({ ...prev, [id]: !prev[id] })), []);
@@ -1348,12 +1350,21 @@ export default function Topicwise({ onSyllabusUpdate, onBulkSyllabusUpdate = nul
                   recordAttempt={recordAttempt} attemptedIds={attemptedIds}
                   isOpen={!!openPapers[paperId]} onToggle={() => togglePaper(paperId)}
                   revQueue={revQueue} onTopicComplete={handleTopicComplete}
+                  isLoggedIn={isLoggedIn}
                 />
               );
             })}
           </div>
         </>
       )}
+
+      {/* ── AI Mentor Chat ── */}
+      <div className="max-w-3xl mx-auto px-3 sm:px-6 py-6">
+        <AIMentorChat
+          contextHint="I'm practising topic-wise UPSC PYQs"
+          isLoggedIn={isLoggedIn}
+        />
+      </div>
 
       {/* ── Footer ── */}
       <div style={{ marginTop: 32, paddingTop: 14, borderTop: "0.5px solid var(--bg-border)", textAlign: "center" }}>

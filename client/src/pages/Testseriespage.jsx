@@ -880,7 +880,7 @@ export default function TestSeriesPage({ user = null, onSyllabusUpdate = null, o
 
   const isMobile = useIsMobile();
 
-  const { recordAttempt } = useQuestionAttempts({ onSyllabusUpdate: onBulkSyllabusUpdate || onSyllabusUpdate, serverAttempts });
+  const { recordAttempt } = useQuestionAttempts({ onSyllabusUpdate, serverAttempts });
 
   const subjects = useMemo(() => {
     const set = new Set(ALL_TESTS.map((t) => t.subject));

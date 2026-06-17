@@ -13,7 +13,7 @@ import {
   LogIn,
   Shield,
   Library,
- Sparkles
+  Sparkles
 } from "lucide-react";
 
 const NAV_ITEMS = [
@@ -21,7 +21,7 @@ const NAV_ITEMS = [
   { id: "syllabus", label: "Syllabus Tracker", icon: BookOpen },
   { id: "mains", label: "Mains Drill", icon: PenTool },
   { id: "pre", label: "Prelims Grind", icon: PenLine },
-  { id: "ai-features", label: "AI Features", icon: Sparkles},
+  // { id: "ai-features", label: "AI Features", icon: Sparkles},
   { id: "topic-wise", label: "Topic-wise", icon: Target },
   { id: "resources", label: "Resources", icon: Library },
 ];
@@ -129,8 +129,8 @@ function SidebarContent({
                 key={id}
                 onClick={() => handleNav(id)}
                 className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left transition-all duration-150 ${active
-                    ? "border border-accent-gold/20"
-                    : "text-text-secondary hover:text-text-primary hover:bg-bg-muted"
+                  ? "border border-accent-gold/20"
+                  : "text-text-secondary hover:text-text-primary hover:bg-bg-muted"
                   }`}
                 style={active ? { background: "var(--accent-gold-dim)", color: "var(--accent-gold)" } : {}}
               >

@@ -57,6 +57,12 @@ const UserData = sequelize.define(
       type: DataTypes.JSONB,
       defaultValue: [],
     },
+    // ── AI Mentor chat history — server-synced so the mentor "remembers" the
+    // conversation across devices/sessions instead of resetting on reload ────
+    mentor_chat: {
+      type: DataTypes.JSONB,
+      defaultValue: [],
+    },
   },
   { timestamps: true, underscored: true }
 );
@@ -259,6 +265,8 @@ UserData.seedForUser = async function (userId) {
     answers: [],
     daily_logs: [],
     spaced_repetition: { queue: [] },
+    question_attempts: [],
+    mentor_chat: [],
   });
 
   const modulesToInsert = DEFAULT_SYLLABUS_MODULES.map((m) => ({

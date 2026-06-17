@@ -14,31 +14,31 @@ import {
 } from "../data/Mains_papers";
 import AddCustomQuestion from "../components/QuestionStats";
 import ResourceLibrary from "./ResourceLibrary";
-
+import AIMentorChat from "../components/ui/AIMentorChat";
 // ─── Constants ────────────────────────────────────────────────────────────────
 const TABS = [
-  { id: "pyqs",      label: "PYQs",         icon: Archive   },
-  { id: "resources", label: "Resources",     icon: Library   },
-  { id: "myqs",      label: "My Questions",  icon: PenSquare },
+  { id: "pyqs", label: "PYQs", icon: Archive },
+  { id: "resources", label: "Resources", icon: Library },
+  { id: "myqs", label: "My Questions", icon: PenSquare },
 ];
 
 const YEAR_FILTERS = [
-  { id: "all",    label: "All Years"  },
-  { id: "latest", label: "Latest 5"  },
-  { id: "2015",   label: "2015-2019" },
-  { id: "2010",   label: "2010-2014" },
-  { id: "2005",   label: "2005-2009" },
+  { id: "all", label: "All Years" },
+  { id: "latest", label: "Latest 5" },
+  { id: "2015", label: "2015-2019" },
+  { id: "2010", label: "2010-2014" },
+  { id: "2005", label: "2005-2009" },
 ];
 
 const PAPER_OPTIONS = [
-  { id: "essay",       label: "Essay"       },
-  { id: "gs1",         label: "GS I"        },
-  { id: "gs2",         label: "GS II"       },
-  { id: "gs3",         label: "GS III"      },
-  { id: "gs4",         label: "GS IV"       },
-  { id: "optional-i",  label: "Optional I"  },
+  { id: "essay", label: "Essay" },
+  { id: "gs1", label: "GS I" },
+  { id: "gs2", label: "GS II" },
+  { id: "gs3", label: "GS III" },
+  { id: "gs4", label: "GS IV" },
+  { id: "optional-i", label: "Optional I" },
   { id: "optional-ii", label: "Optional II" },
-  { id: "language-i",  label: "Hindi (Qualifying)"   },
+  { id: "language-i", label: "Hindi (Qualifying)" },
   { id: "language-ii", label: "English (Qualifying)" },
 ];
 
@@ -47,36 +47,36 @@ const getPaperStorageKey = (paperId) => `${STORAGE_PREFIX}${paperId}`;
 
 const PYQ_CARDS = [
   { year: 2026, chip: "Current Cycle" },
-  { year: 2025, chip: "Latest"        },
-  { year: 2024, chip: "Latest"        },
-  { year: 2023, chip: "Recent"        },
-  { year: 2022, chip: "Recent"        },
-  { year: 2021, chip: "Archive"       },
-  { year: 2020, chip: "Archive"       },
-  { year: 2019, chip: "Classic"       },
-  { year: 2018, chip: "Classic"       },
-  { year: 2017, chip: "Classic"       },
-  { year: 2016, chip: "Classic"       },
-  { year: 2015, chip: "Classic"       },
-  { year: 2014, chip: "Old Set"       },
-  { year: 2013, chip: "Old Set"       },
-  { year: 2012, chip: "Old Set"       },
-  { year: 2011, chip: "Old Set"       },
-  { year: 2010, chip: "Old Set"       },
-  { year: 2009, chip: "Legacy"        },
-  { year: 2008, chip: "Legacy"        },
-  { year: 2007, chip: "Legacy"        },
-  { year: 2006, chip: "Legacy"        },
-  { year: 2005, chip: "Legacy"        },
+  { year: 2025, chip: "Latest" },
+  { year: 2024, chip: "Latest" },
+  { year: 2023, chip: "Recent" },
+  { year: 2022, chip: "Recent" },
+  { year: 2021, chip: "Archive" },
+  { year: 2020, chip: "Archive" },
+  { year: 2019, chip: "Classic" },
+  { year: 2018, chip: "Classic" },
+  { year: 2017, chip: "Classic" },
+  { year: 2016, chip: "Classic" },
+  { year: 2015, chip: "Classic" },
+  { year: 2014, chip: "Old Set" },
+  { year: 2013, chip: "Old Set" },
+  { year: 2012, chip: "Old Set" },
+  { year: 2011, chip: "Old Set" },
+  { year: 2010, chip: "Old Set" },
+  { year: 2009, chip: "Legacy" },
+  { year: 2008, chip: "Legacy" },
+  { year: 2007, chip: "Legacy" },
+  { year: 2006, chip: "Legacy" },
+  { year: 2005, chip: "Legacy" },
 ];
 
 // ─── Main Component ───────────────────────────────────────────────────────────
-export default function MainsGrind() {
-  const [savedLinks,  setSavedLinks]  = useState({});
+export default function MainsGrind({ isLoggedIn = false }) {
+  const [savedLinks, setSavedLinks] = useState({});
   const [activePaper, setActivePaper] = useState(null);
-  const [activeTab,   setActiveTab]   = useState("pyqs");
-  const [yearFilter,  setYearFilter]  = useState("all");
-  const [pageMode,    setPageMode]    = useState("grid"); // "grid" | "detail"
+  const [activeTab, setActiveTab] = useState("pyqs");
+  const [yearFilter, setYearFilter] = useState("all");
+  const [pageMode, setPageMode] = useState("grid"); // "grid" | "detail"
 
   useEffect(() => {
     try {
@@ -107,8 +107,8 @@ export default function MainsGrind() {
     });
   }, [yearFilter, activePaper, savedLinks]);
 
-  const selectedPaper   = PAPER_OPTIONS.find((p) => p.id === activePaper) || PAPER_OPTIONS[0];
-  const getSavedLink    = (year) => savedLinks[activePaper]?.[year];
+  const selectedPaper = PAPER_OPTIONS.find((p) => p.id === activePaper) || PAPER_OPTIONS[0];
+  const getSavedLink = (year) => savedLinks[activePaper]?.[year];
   const getOfficialLink = (year) => getMainsPaperLink(year, activePaper);
 
   const openPaperDetails = (paperId) => {
@@ -117,10 +117,10 @@ export default function MainsGrind() {
   };
 
   const handlePaperClick = (year) => {
-    const existing    = getSavedLink(year);
+    const existing = getSavedLink(year);
     const officialLink = getOfficialLink(year);
-    if (existing?.url)  { window.open(existing.url,   "_blank", "noopener,noreferrer"); return; }
-    if (officialLink)   { window.open(officialLink,   "_blank", "noopener,noreferrer"); return; }
+    if (existing?.url) { window.open(existing.url, "_blank", "noopener,noreferrer"); return; }
+    if (officialLink) { window.open(officialLink, "_blank", "noopener,noreferrer"); return; }
     window.alert(`UPSC has not published a mapped ${selectedPaper.label} link for ${year} yet.`);
   };
 
@@ -164,11 +164,10 @@ export default function MainsGrind() {
                   key={id}
                   type="button"
                   onClick={() => setActiveTab(id)}
-                  className={`flex items-center gap-2 rounded-2xl border px-4 py-2 text-sm font-semibold transition ${
-                    activeTab === id
+                  className={`flex items-center gap-2 rounded-2xl border px-4 py-2 text-sm font-semibold transition ${activeTab === id
                       ? "border-accent-gold/30 bg-accent-gold/10 text-accent-gold"
                       : "border-bg-border bg-bg-muted text-text-secondary hover:border-accent-gold/20 hover:text-text-primary"
-                  }`}
+                    }`}
                 >
                   <Icon size={14} />
                   {label}
@@ -189,11 +188,10 @@ export default function MainsGrind() {
                         key={item.id}
                         type="button"
                         onClick={() => setYearFilter(item.id)}
-                        className={`rounded-full border px-3 py-1.5 text-xs font-semibold transition ${
-                          yearFilter === item.id
+                        className={`rounded-full border px-3 py-1.5 text-xs font-semibold transition ${yearFilter === item.id
                             ? "border-accent-gold/30 bg-accent-gold/10 text-accent-gold"
                             : "border-bg-border bg-bg-surface text-text-secondary hover:border-accent-gold/20 hover:text-text-primary"
-                        }`}
+                          }`}
                       >
                         {item.label}
                       </button>
@@ -207,7 +205,7 @@ export default function MainsGrind() {
                       No papers found for this filter range.
                     </p>
                   ) : visibleCards.map((item) => {
-                    const savedLink    = getSavedLink(item.year);
+                    const savedLink = getSavedLink(item.year);
                     const officialLink = getOfficialLink(item.year);
                     const hasDirectLink = Boolean(savedLink?.url || officialLink);
                     return (
@@ -270,6 +268,13 @@ export default function MainsGrind() {
               </div>
             )}
           </section>
+
+          {/* ── AI Mentor Chat ── */}
+          <AIMentorChat
+            contextHint="I'm practising UPSC Mains long-answer questions"
+            isLoggedIn={isLoggedIn}
+            compact={true}
+          />
         </div>
       </div>
     );
@@ -332,6 +337,13 @@ export default function MainsGrind() {
             })}
           </div>
         </section>
+
+        {/* ── AI Mentor Chat ── */}
+        <AIMentorChat
+          contextHint="I'm practising UPSC Mains long-answer questions"
+          isLoggedIn={isLoggedIn}
+          compact={true}
+        />
       </div>
     </div>
   );

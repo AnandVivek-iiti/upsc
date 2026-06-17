@@ -27,6 +27,7 @@ import AuthGate from "../components/ui/AuthGate";
 import timerStore, { getUserTimerHours } from "../hooks/timerStore";
 import QuestionStatsPanel from "../components/QuestionStats";
 import { AvatarCircle } from "./ProfilePage";
+import AIRevisionPanel from "../components/ui/AIRevisionPanel";
 
 // ─── Tiny helpers ──────────────────────────────────────────────────────────────
 function todayKey() {
@@ -981,6 +982,7 @@ export default function Dashboard({
   overallProgress,
   onLogHours,
   user,
+  isLoggedIn = false,
   onNavigateAuth,
   onNavigateProfile,
 }) {
@@ -1178,6 +1180,15 @@ export default function Dashboard({
           </>
         )}
       </div>
+
+      {/* ── AI Spaced Repetition (real backend) ── */}
+      {isMobile ? (
+        <CollapsibleSection title="AI Revision Queue" icon={Brain} defaultOpen={false}>
+          <AIRevisionPanel isLoggedIn={isLoggedIn} compact={true} />
+        </CollapsibleSection>
+      ) : (
+        <AIRevisionPanel isLoggedIn={isLoggedIn} />
+      )}
 
     </div>
   );

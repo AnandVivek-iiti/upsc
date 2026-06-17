@@ -155,10 +155,10 @@ export default function App() {
   const { user, token, loading: authLoading, login, logout } = useAuth();
 
   // ── UI state ───────────────────────────────────────────────────────────────
-  const [activeView, setActiveView]               = useState("dashboard");
+  const [activeView, setActiveView] = useState("dashboard");
   const [workspaceQuestion, setWorkspaceQuestion] = useState(null);
-  const [sidebarOpen, setSidebarOpen]             = useState(false);
-  const [previousView, setPreviousView]           = useState("dashboard");
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [previousView, setPreviousView] = useState("dashboard");
   const [theme, setTheme] = useState(() => {
     if (typeof window === "undefined") return "light";
     return localStorage.getItem("upsc-theme") || "light";
@@ -205,7 +205,7 @@ export default function App() {
   };
 
   const handleNavigateProfile = () => handleViewChange("profile");
-  const handleProfileUpdate   = () => refetch?.();
+  const handleProfileUpdate = () => refetch?.();
 
   // ── Splash while auth token is being read from localStorage ───────────────
   if (authLoading) return <SplashScreen />;
@@ -280,7 +280,7 @@ export default function App() {
             <HeroBanner
               examDate={userData?.profile?.examDate || null}
               customQuote={userData?.profile?.quote || null}
-                     />
+            />
 
             <ErrorBanner error={error} />
 
@@ -292,18 +292,37 @@ export default function App() {
                 overallProgress={overallProgress}
                 onLogHours={logHours}
                 user={user}
+                isLoggedIn={!!user && !!token}
                 onNavigateAuth={() => setActiveView("auth")}
                 onNavigateProfile={handleNavigateProfile}
               />
             )}
-            {activeView === "syllabus"    && <SyllabusTracker userData={userData} onUpdateProgress={updateProgress} />}
-            {activeView === "mains"       && <MainsGrind workspaceQuestion={workspaceQuestion} />}
-            {activeView === "pre"         && <PrelimsGrind />}
+            {activeView === "syllabus" && (
+              <SyllabusTracker
+                userData={userData}
+                onUpdateProgress={updateProgress}
+                isLoggedIn={!!user && !!token}
+              />
+            )}
+            {activeView === "mains" && (
+              <MainsGrind
+                workspaceQuestion={workspaceQuestion}
+                user={user}
+                isLoggedIn={!!user && !!token}
+              />
+            )}        {activeView === "pre" && <PrelimsGrind isLoggedIn={!!user && !!token} />}
             {activeView === "ai-features" && <AIFeatures user={user} onNavigateAuth={() => setActiveView("auth")} />}
-            {activeView === "topic-wise"  && <Topicwise onSyllabusUpdate={updateProgress} onBulkSyllabusUpdate={bulkUpdateProgress} serverAttempts={userData?.question_attempts || []} />}
-            {activeView === "admin"       && <Adminpannel />}
-            {activeView === "resources"   && <ResourceLibrary user={user} updateProgress={updateProgress} bulkUpdateProgress={bulkUpdateProgress} serverAttempts={userData?.question_attempts || []} />}
-            {activeView === "profile"     && (
+            {activeView === "topic-wise" && (
+              <Topicwise
+                onSyllabusUpdate={updateProgress}
+                onBulkSyllabusUpdate={bulkUpdateProgress}
+                serverAttempts={userData?.question_attempts || []}
+                isLoggedIn={!!user && !!token}
+              />
+            )}
+            {activeView === "admin" && <Adminpannel />}
+            {activeView === "resources" && <ResourceLibrary user={user} updateProgress={updateProgress} bulkUpdateProgress={bulkUpdateProgress} serverAttempts={userData?.question_attempts || []} />}
+            {activeView === "profile" && (
               <ProfilePage
                 user={user}
                 token={token}
