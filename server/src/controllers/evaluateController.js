@@ -1,11 +1,21 @@
-const { evaluateAnswer: callAIClient, SYSTEM_INSTRUCTION, CHAT_SYSTEM_INSTRUCTION } = require("../config/ai-client");
+const { evaluateAnswer: callAIClient, SYSTEM_INSTRUCTION, CHAT_SYSTEM_INSTRUCTION, extractMemory } = require("../config/ai-client");
 const { UserData } = require("../models/UserData");
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 
-// ── Cap how many past messages we feed back into Gemini + store per user ────
+// ── Cap how many past messages we feed back into Gemini + store per thread ──
 // 60 entries ≈ 30 user/assistant turns — enough real memory without letting
-// the request payload or the JSONB column grow unbounded forever.
+// a single thread's JSONB payload grow unbounded forever.
 const MAX_HISTORY_MESSAGES = 60;
+
+// ── Cap how many saved chat threads a user can accumulate ───────────────────
+// Oldest (by last-updated) threads get dropped beyond this so the JSONB
+// column on UserData stays a sane size.
+const MAX_THREADS = 50;
+
+// ── Run background memory extraction every Nth user message in a thread ────
+// Keeps the extra Gemini call (and its cost/latency) infrequent rather than
+// firing on every single turn.
+const MEMORY_EXTRACTION_EVERY_N_TURNS = 3;
 
 /**
  * Builds a short "Student Context" block from the user's profile + saved
@@ -63,8 +73,57 @@ function buildStudentContext(user, userData) {
     }
   }
 
+  // ── Durable facts distilled from past chats (see extractMemory) ──────────
+  const memory = Array.isArray(userData?.mentor_memory) ? userData.mentor_memory : [];
+  if (memory.length > 0) {
+    lines.push(`Notable things to remember about this student: ${memory.slice(0, 15).join("; ")}`);
+  }
+
   if (lines.length === 0) return "";
   return `\n\n## Student Context (use this naturally where relevant — don't just list it back)\n${lines.map((l) => `- ${l}`).join("\n")}`;
+}
+
+/**
+ * Turns the first user message of a thread into a short title, ChatGPT-style.
+ */
+function deriveTitle(text) {
+  const clean = (text || "").trim().replace(/\s+/g, " ");
+  if (!clean) return "New chat";
+  const words = clean.split(" ").slice(0, 8).join(" ");
+  return words.length < clean.length ? `${words}…` : words;
+}
+
+/**
+ * One-time migration: older deployments stored a single flat conversation in
+ * UserData.mentor_chat. The first time a user with leftover data hits the
+ * threads system, wrap that old conversation into a real thread so nothing
+ * gets silently lost, then stop touching mentor_chat going forward.
+ * Mutates `userData` in place; caller is responsible for saving if
+ * `migrated` comes back true (or simply overwrites mentor_threads anyway).
+ */
+function migrateLegacyChat(userData) {
+  const existingThreads = Array.isArray(userData.mentor_threads) ? userData.mentor_threads : [];
+  const legacy = Array.isArray(userData.mentor_chat) ? userData.mentor_chat : [];
+
+  if (existingThreads.length > 0 || legacy.length === 0) {
+    return { threads: existingThreads, migrated: false };
+  }
+
+  const firstUserMsg = legacy.find((m) => m.role === "user")?.content || "Earlier conversation";
+  const migratedThread = {
+    id: `thr_legacy_${Date.now()}`,
+    title: deriveTitle(firstUserMsg),
+    messages: legacy,
+    createdAt: legacy[0]?.at || new Date().toISOString(),
+    updatedAt: legacy[legacy.length - 1]?.at || new Date().toISOString(),
+  };
+
+  userData.mentor_threads = [migratedThread];
+  userData.mentor_chat = [];
+  userData.changed("mentor_threads", true);
+  userData.changed("mentor_chat", true);
+
+  return { threads: [migratedThread], migrated: true };
 }
 
 /**
@@ -140,16 +199,17 @@ Please evaluate this answer according to your mentor framework. Be specific abou
 
 /**
  * POST /api/evaluate/chat
- * Conversational UPSC mentor chat via Gemini — now backed by persistent,
- * per-user history (UserData.mentor_chat) instead of trusting whatever the
- * browser happens to have in memory. The client may still send an optional
- * `context_hint` (e.g. "I'm practising UPSC Mains long-answer questions")
- * describing which part of the app the student is in — this is folded into
- * the system instruction for this turn only, not stored as a message.
+ * Conversational UPSC mentor chat via Gemini — backed by persistent, per-user
+ * chat THREADS (UserData.mentor_threads), ChatGPT/Gemini-style. Pass an
+ * existing `thread_id` to continue that conversation, or omit it to start a
+ * brand-new thread (created lazily on this first message, titled from it).
+ * The client may also send an optional `context_hint` describing which part
+ * of the app the student is in — folded into the system instruction for
+ * this turn only, never stored as a message.
  */
 const chat = async (req, res, next) => {
   try {
-    const { message, context_hint } = req.body;
+    const { message, context_hint, thread_id } = req.body;
 
     if (!message?.trim()) {
       return res.status(400).json({ success: false, error: "Message is required." });
@@ -166,7 +226,20 @@ const chat = async (req, res, next) => {
     let userData = await UserData.findOne({ where: { user_id: req.user.id } });
     if (!userData) userData = await UserData.seedForUser(req.user.id);
 
-    const persistedHistory = Array.isArray(userData.mentor_chat) ? userData.mentor_chat : [];
+    const { threads: migratedThreads } = migrateLegacyChat(userData);
+    let threads = migratedThreads;
+
+    let thread = thread_id ? threads.find((t) => t.id === thread_id) : null;
+    if (!thread) {
+      thread = {
+        id: `thr_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+        title: deriveTitle(message),
+        messages: [],
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+      threads = [thread, ...threads];
+    }
 
     const contextBlock = buildStudentContext(req.user, userData);
     const pageBlock     = context_hint ? `\n\nThe student is currently in this section of the app: "${context_hint}"` : "";
@@ -177,7 +250,7 @@ const chat = async (req, res, next) => {
       systemInstruction: CHAT_SYSTEM_INSTRUCTION + contextBlock + pageBlock,
     });
 
-    const geminiHistory = persistedHistory.map((msg) => ({
+    const geminiHistory = thread.messages.map((msg) => ({
       role: msg.role === "user" ? "user" : "model",
       parts: [{ text: msg.content }],
     }));
@@ -186,18 +259,48 @@ const chat = async (req, res, next) => {
     const result        = await chatSession.sendMessage(message.trim());
     const responseText  = result.response.text();
 
-    // ── Persist both turns, capped so the column doesn't grow forever ────────
-    const updatedHistory = [
-      ...persistedHistory,
-      { role: "user",      content: message.trim(), at: new Date().toISOString() },
-      { role: "assistant", content: responseText,    at: new Date().toISOString() },
+    // ── Persist both turns onto this thread, capped so it can't grow forever ─
+    const now = new Date().toISOString();
+    thread.messages = [
+      ...thread.messages,
+      { role: "user",      content: message.trim(), at: now },
+      { role: "assistant", content: responseText,    at: now },
     ].slice(-MAX_HISTORY_MESSAGES);
+    thread.updatedAt = now;
 
-    userData.mentor_chat = updatedHistory;
-    userData.changed("mentor_chat", true);
+    // Bump this thread to the front (most-recently-used) and cap thread count
+    threads = [thread, ...threads.filter((t) => t.id !== thread.id)]
+      .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt))
+      .slice(0, MAX_THREADS);
+
+    userData.mentor_threads = threads;
+    userData.changed("mentor_threads", true);
     await userData.save();
 
-    return res.status(200).json({ success: true, response: responseText, history: updatedHistory });
+    // ── Fire-and-forget background memory extraction ─────────────────────────
+    // Doesn't block the response; runs only every Nth user turn in a thread
+    // to keep the extra Gemini call infrequent. Any failure is swallowed —
+    // memory is a nice-to-have, never allowed to affect the chat itself.
+    const userTurnCount = thread.messages.filter((m) => m.role === "user").length;
+    if (userTurnCount % MEMORY_EXTRACTION_EVERY_N_TURNS === 0) {
+      const turnText = `Student: ${message.trim()}\nMentor: ${responseText}`;
+      extractMemory(Array.isArray(userData.mentor_memory) ? userData.mentor_memory : [], turnText)
+        .then(async (updatedMemory) => {
+          const fresh = await UserData.findOne({ where: { user_id: req.user.id } });
+          if (!fresh) return;
+          fresh.mentor_memory = updatedMemory;
+          fresh.changed("mentor_memory", true);
+          await fresh.save();
+        })
+        .catch((e) => console.warn("[Memory Extraction] background save failed:", e.message));
+    }
+
+    return res.status(200).json({
+      success: true,
+      response: responseText,
+      thread_id: thread.id,
+      title: thread.title,
+    });
   } catch (err) {
     console.error("Chat engine fault:", err);
     next(err);
@@ -205,29 +308,67 @@ const chat = async (req, res, next) => {
 };
 
 /**
- * GET /api/evaluate/chat-history
- * Returns the student's persisted mentor conversation so the frontend can
- * restore it on load instead of starting from a blank chat every time.
+ * GET /api/evaluate/chat-threads
+ * Lightweight list of the student's saved chats (id/title/updatedAt/count)
+ * for a ChatGPT-style history dropdown — full messages are fetched
+ * separately via GET /chat-threads/:id only when a thread is opened.
  */
-const getChatHistory = async (req, res, next) => {
+const listChatThreads = async (req, res, next) => {
   try {
     const userData = await UserData.findOne({ where: { user_id: req.user.id } });
-    return res.status(200).json({ success: true, history: userData?.mentor_chat || [] });
+    if (!userData) return res.status(200).json({ success: true, threads: [] });
+
+    const { threads, migrated } = migrateLegacyChat(userData);
+    if (migrated) await userData.save();
+
+    const summary = threads
+      .slice()
+      .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt))
+      .map((t) => ({
+        id: t.id,
+        title: t.title,
+        updatedAt: t.updatedAt,
+        message_count: t.messages.length,
+      }));
+
+    return res.status(200).json({ success: true, threads: summary });
   } catch (err) {
     next(err);
   }
 };
 
 /**
- * DELETE /api/evaluate/chat-history
- * Wipes the persisted mentor conversation (used by the "Clear" button).
+ * GET /api/evaluate/chat-threads/:id
+ * Full message list for one saved chat.
  */
-const clearChatHistory = async (req, res, next) => {
+const getChatThread = async (req, res, next) => {
   try {
+    const { id } = req.params;
+    const userData = await UserData.findOne({ where: { user_id: req.user.id } });
+    const threads = userData?.mentor_threads || [];
+    const thread = threads.find((t) => t.id === id);
+
+    if (!thread) {
+      return res.status(404).json({ success: false, error: "Chat not found." });
+    }
+
+    return res.status(200).json({ success: true, thread });
+  } catch (err) {
+    next(err);
+  }
+};
+
+/**
+ * DELETE /api/evaluate/chat-threads/:id
+ * Removes one saved chat permanently.
+ */
+const deleteChatThread = async (req, res, next) => {
+  try {
+    const { id } = req.params;
     const userData = await UserData.findOne({ where: { user_id: req.user.id } });
     if (userData) {
-      userData.mentor_chat = [];
-      userData.changed("mentor_chat", true);
+      userData.mentor_threads = (userData.mentor_threads || []).filter((t) => t.id !== id);
+      userData.changed("mentor_threads", true);
       await userData.save();
     }
     return res.status(200).json({ success: true });
@@ -236,4 +377,4 @@ const clearChatHistory = async (req, res, next) => {
   }
 };
 
-module.exports = { evaluateAnswer, chat, getChatHistory, clearChatHistory };
+module.exports = { evaluateAnswer, chat, listChatThreads, getChatThread, deleteChatThread };

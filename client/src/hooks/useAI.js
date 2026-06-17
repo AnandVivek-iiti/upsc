@@ -1,28 +1,26 @@
 /**
  * useAI.js
  * ─────────────────────────────────────────────────────────────────────────────
- * Thin wrapper around YOUR backend AI endpoints.
+ * Thin wrapper around the backend AI endpoints.
  *
- * Endpoints used (all already exist in your server):
- *   POST /api/evaluate/answer   — multi-provider AI evaluation (Gemini→GPT4→Claude→Groq)
- *   POST /api/evaluate/chat     — UPSC mentor conversational chat (Gemini)
- *   GET  /api/dashboard/spaced-repetition   — due items
- *   POST /api/dashboard/spaced-repetition   — add item
- *   POST /api/dashboard/question-attempts   — sync attempts
+ * Endpoints:
+ *   POST   /api/evaluate/answer              — AI evaluation (Gemini→GPT4→Claude→Groq)
+ *   POST   /api/evaluate/chat                — UPSC mentor chat (thread-aware)
+ *   GET    /api/evaluate/chat-threads        — list all threads (sidebar)
+ *   GET    /api/evaluate/chat-threads/:id    — full messages for one thread
+ *   DELETE /api/evaluate/chat-threads/:id    — delete one thread
+ *   GET    /api/dashboard/spaced-repetition  — due items
+ *   POST   /api/dashboard/spaced-repetition  — add item
+ *   POST   /api/dashboard/question-attempts  — sync attempts
  *
- * All calls send the JWT token from localStorage automatically.
- * Falls back gracefully when not logged in or rate-limited.
+ * JWT is sent automatically via Authorization header.
  * ─────────────────────────────────────────────────────────────────────────────
  */
 
 const BASE = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
 function getToken() {
-    try {
-        return localStorage.getItem("upsc_token") || "";
-    } catch {
-        return "";
-    }
+    try { return localStorage.getItem("upsc_token") || ""; } catch { return ""; }
 }
 
 function authHeaders() {
@@ -33,7 +31,6 @@ function authHeaders() {
 }
 
 // ─── POST /api/evaluate/answer ────────────────────────────────────────────────
-// Returns { success, data, provider_used, word_count } or throws with .message
 export async function evaluateAnswer({ question, answer, paper }) {
     const res = await fetch(`${BASE}/evaluate/answer`, {
         method: "POST",
@@ -42,44 +39,68 @@ export async function evaluateAnswer({ question, answer, paper }) {
     });
     const json = await res.json();
     if (!res.ok) throw new Error(json.error || "Evaluation failed");
-    return json; // { success, data, provider_used, word_count }
+    return json;
 }
 
 // ─── POST /api/evaluate/chat ──────────────────────────────────────────────────
-// History is now tracked server-side (UserData.mentor_chat), so we only send
-// the new message plus an optional contextHint describing which part of the
-// app the student is in. Use getChatHistory()/clearChatHistory() below to
-// read or wipe the persisted conversation.
-export async function chatWithMentor({ message, contextHint = "" }) {
+// Pass an existing thread_id to continue that thread, or omit to start a new one.
+// Returns { success, response, thread_id, title }
+export async function chatWithMentor({ message, contextHint = "", threadId = null }) {
     const res = await fetch(`${BASE}/evaluate/chat`, {
         method: "POST",
         headers: authHeaders(),
-        body: JSON.stringify({ message, context_hint: contextHint }),
+        body: JSON.stringify({
+            message,
+            context_hint: contextHint,
+            ...(threadId ? { thread_id: threadId } : {}),
+        }),
     });
     const json = await res.json();
     if (!res.ok) throw new Error(json.error || "Chat unavailable");
-    return json; // { success, response, history }
+    return json;
 }
 
-// ─── GET /api/evaluate/chat-history ──────────────────────────────────────────
-export async function getChatHistory() {
-    const res = await fetch(`${BASE}/evaluate/chat-history`, {
+// ─── GET /api/evaluate/chat-threads ──────────────────────────────────────────
+// Returns { success, threads: [{ id, title, updatedAt, message_count }] }
+export async function listChatThreads() {
+    const res = await fetch(`${BASE}/evaluate/chat-threads`, {
         headers: authHeaders(),
     });
     const json = await res.json();
-    if (!res.ok) throw new Error(json.error || "Could not load chat history");
-    return json; // { success, history }
+    if (!res.ok) throw new Error(json.error || "Could not load threads");
+    return json;
 }
 
-// ─── DELETE /api/evaluate/chat-history ───────────────────────────────────────
-export async function clearChatHistory() {
-    const res = await fetch(`${BASE}/evaluate/chat-history`, {
+// ─── GET /api/evaluate/chat-threads/:id ──────────────────────────────────────
+// Returns { success, thread: { id, title, messages: [{role, content}], ... } }
+export async function getChatThread(id) {
+    const res = await fetch(`${BASE}/evaluate/chat-threads/${id}`, {
+        headers: authHeaders(),
+    });
+    const json = await res.json();
+    if (!res.ok) throw new Error(json.error || "Thread not found");
+    return json;
+}
+
+// ─── DELETE /api/evaluate/chat-threads/:id ───────────────────────────────────
+export async function deleteChatThread(id) {
+    const res = await fetch(`${BASE}/evaluate/chat-threads/${id}`, {
         method: "DELETE",
         headers: authHeaders(),
     });
     const json = await res.json();
-    if (!res.ok) throw new Error(json.error || "Could not clear chat history");
-    return json; // { success }
+    if (!res.ok) throw new Error(json.error || "Could not delete thread");
+    return json;
+}
+
+// ─── Legacy aliases (still used by embedded widgets like AIMentorChat compact) ─
+export async function getChatHistory() {
+    // Redirect to thread list for backwards compat
+    return listChatThreads();
+}
+export async function clearChatHistory() {
+    // No-op in threads model — individual threads are deleted via deleteChatThread
+    return { success: true };
 }
 
 // ─── GET /api/dashboard/spaced-repetition ────────────────────────────────────
@@ -89,7 +110,7 @@ export async function getSpacedRepetition() {
     });
     const json = await res.json();
     if (!res.ok) throw new Error(json.error || "Could not fetch revision queue");
-    return json; // { success, due_count, items }
+    return json;
 }
 
 // ─── POST /api/dashboard/spaced-repetition ───────────────────────────────────
@@ -101,7 +122,7 @@ export async function addToRevisionQueue({ topic, paper, difficulty }) {
     });
     const json = await res.json();
     if (!res.ok) throw new Error(json.error || "Could not add to queue");
-    return json; // { success, item }
+    return json;
 }
 
 // ─── POST /api/dashboard/question-attempts ───────────────────────────────────

@@ -57,9 +57,23 @@ const UserData = sequelize.define(
       type: DataTypes.JSONB,
       defaultValue: [],
     },
-    // ── AI Mentor chat history — server-synced so the mentor "remembers" the
-    // conversation across devices/sessions instead of resetting on reload ────
+    // ── AI Mentor chat — legacy single-thread column, kept only so existing
+    // conversations can be migrated into mentor_threads below; no longer
+    // written to directly.
     mentor_chat: {
+      type: DataTypes.JSONB,
+      defaultValue: [],
+    },
+    // ── AI Mentor chat threads — ChatGPT/Gemini-style multiple saved chats.
+    // Shape: [{ id, title, messages: [{role, content, at}], createdAt, updatedAt }]
+    mentor_threads: {
+      type: DataTypes.JSONB,
+      defaultValue: [],
+    },
+    // ── AI Mentor durable memory — short distilled facts about the student
+    // (preferences, recurring weak spots, goals) that survive even after old
+    // raw messages get trimmed off a thread. Shape: string[]
+    mentor_memory: {
       type: DataTypes.JSONB,
       defaultValue: [],
     },
@@ -267,6 +281,8 @@ UserData.seedForUser = async function (userId) {
     spaced_repetition: { queue: [] },
     question_attempts: [],
     mentor_chat: [],
+    mentor_threads: [],
+    mentor_memory: [],
   });
 
   const modulesToInsert = DEFAULT_SYLLABUS_MODULES.map((m) => ({

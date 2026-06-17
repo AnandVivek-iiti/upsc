@@ -116,7 +116,36 @@ function EvalResult({ data, provider }) {
                     <p className="text-sm text-text-primary leading-relaxed">{data.score_rationale}</p>
                 </div>
             </div>
+            {data.examiner_verdict && (
+                <div className="glass-panel p-4 mt-3">
+                    <div className="flex items-center gap-2 mb-2">
+                        <Award size={13} className="text-accent-gold" />
+                        <h3 className="text-xs font-mono text-text-muted uppercase tracking-wider">
+                            Examiner Verdict
+                        </h3>
+                    </div>
 
+                    <div className="flex flex-wrap items-center gap-2 mb-2">
+                        <span
+                            className="text-[11px] font-mono px-2 py-0.5 rounded-full"
+                            style={{
+                                background: "var(--accent-gold-dim)",
+                                color: "var(--accent-gold)",
+                                border: "1px solid rgba(245,158,11,.25)"
+                            }}
+                        >
+                            {data.examiner_verdict.band}
+                        </span>
+                    </div>
+
+                    {data.examiner_verdict.why_not_higher && (
+                        <p className="text-sm text-text-secondary leading-relaxed">
+                            <strong>Why not higher?</strong>{" "}
+                            {data.examiner_verdict.why_not_higher}
+                        </p>
+                    )}
+                </div>
+            )}
             {/* Keywords */}
             {data.keywords && (
                 <div className="glass-panel p-4 space-y-2.5">
@@ -172,7 +201,7 @@ function EvalResult({ data, provider }) {
                             <h3 className="text-xs font-mono text-text-muted uppercase tracking-wider">Strengths</h3>
                         </div>
                         {data.strengths.map((s, i) => (
-                            <p key={i} className="text-xs text-text-primary leading-relaxed">{s.point}</p>
+                            <p key={i} className="text-xs text-text-primary leading-relaxed">{typeof s === "string" ? s : s.point}</p>
                         ))}
                     </div>
                 )}
@@ -184,8 +213,8 @@ function EvalResult({ data, provider }) {
                         </div>
                         {data.weaknesses.map((w, i) => (
                             <div key={i} className="space-y-1">
-                                <p className="text-xs text-text-primary leading-relaxed">{w.point}</p>
-                                {w.fix && (
+                                <p className="text-xs text-text-primary leading-relaxed"> {typeof w === "string" ? w : w.point}</p>
+                                {typeof w === "object" && w.fix && (
                                     <div className="flex items-start gap-1.5">
                                         <ArrowRight size={10} className="text-accent-gold shrink-0 mt-0.5" />
                                         <p className="text-[11px] font-mono" style={{ color: "var(--accent-gold)" }}>{w.fix}</p>
