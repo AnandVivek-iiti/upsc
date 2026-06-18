@@ -206,6 +206,11 @@ DailyLog.belongsTo(UserData, { foreignKey: "user_data_id" });
 UserData.hasMany(SpacedRepItem, { foreignKey: "user_data_id", as: "spacedRepRecords", onDelete: "CASCADE" });
 SpacedRepItem.belongsTo(UserData, { foreignKey: "user_data_id" });
 
+// ─── User ↔ TestAttempt association (MCQ Test Series results) ─────────────────
+const TestAttempt = require("./TestAttempt");
+User.hasMany(TestAttempt, { foreignKey: "user_id", as: "testAttempts", onDelete: "CASCADE" });
+TestAttempt.belongsTo(User, { foreignKey: "user_id" });
+
 // ─── Default Syllabus Seed ────────────────────────────────────────────────────
 
 const DEFAULT_SYLLABUS_MODULES = [
@@ -296,4 +301,4 @@ UserData.seedForUser = async function (userId) {
   return userData;
 };
 
-module.exports = { UserData, SyllabusModule, Answer, DailyLog, SpacedRepItem };
+module.exports = { UserData, SyllabusModule, Answer, DailyLog, SpacedRepItem, TestAttempt };

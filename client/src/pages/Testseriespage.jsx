@@ -8,6 +8,7 @@
 
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useQuestionAttempts } from "../hooks/useQuestionAttempts";
+import { submitTestResult } from "../hooks/useAI";
 
 import {
   Clock,
@@ -24,6 +25,11 @@ import {
   Zap,
   AlertCircle,
   TrendingUp,
+  Sparkles,
+  TrendingDown,
+  CalendarDays,
+  RefreshCw,
+  BookMarked,
 } from "lucide-react";
 
 // ─── Dynamic Test Loader ──────────────────────────────────────────────────────
@@ -330,11 +336,222 @@ function QuestionCard({ question, selectedAnswer, onAnswer, showResult, qIndex, 
   );
 }
 
+// ─── AI Analysis Section ──────────────────────────────────────────────────────
+// Renders the diagnostic report from POST /api/tests/submit's ai_analysis
+// field. Three states: loading (skeleton), ready (full report), error (quiet
+// fallback note — the stats above already told the user their score, so a
+// failed AI call is a soft miss, not a broken page).
+function AIAnalysisSection({ aiState, aiAnalysis, isMobile }) {
+  const priorityColor = { high: "var(--accent-red)", medium: "var(--accent-gold)", low: "var(--text-muted)" };
+
+  if (aiState === "loading") {
+    return (
+      <div style={{
+        background: "var(--bg-surface)", borderRadius: 14, border: "0.5px solid var(--bg-border)",
+        padding: isMobile ? "20px 16px" : "24px 22px", marginBottom: isMobile ? 18 : 24,
+        display: "flex", alignItems: "center", gap: 12,
+      }}>
+        <div style={{
+          width: 18, height: 18, borderRadius: "50%",
+          border: "2px solid var(--bg-border)", borderTopColor: "var(--accent-blue)",
+          animation: "spin 0.8s linear infinite", flexShrink: 0,
+        }} />
+        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+        <div>
+          <div style={{ fontSize: 13, fontWeight: 600, color: "var(--text-primary)", fontFamily: "'DM Sans', sans-serif" }}>
+            Analyzing your performance…
+          </div>
+          <div style={{ fontSize: 11.5, color: "var(--text-muted)", marginTop: 2 }}>
+            Identifying weak topics and building your study plan
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (aiState === "error" || !aiAnalysis) {
+    return (
+      <div style={{
+        background: "var(--bg-muted)", borderRadius: 14, border: "0.5px solid var(--bg-border)",
+        padding: isMobile ? "14px 16px" : "16px 20px", marginBottom: isMobile ? 18 : 24,
+        display: "flex", alignItems: "center", gap: 10,
+        fontSize: 12, color: "var(--text-muted)", fontFamily: "'DM Mono', monospace",
+      }}>
+        <AlertCircle size={14} />
+        AI analysis unavailable right now — your score and topic breakdown above are still accurate.
+      </div>
+    );
+  }
+
+  const { summary, key_insight, strong_topics = [], weak_topics = [], study_plan = [], pushed_to_revision } = aiAnalysis;
+
+  return (
+    <div style={{ marginBottom: isMobile ? 18 : 24, display: "flex", flexDirection: "column", gap: isMobile ? 12 : 14 }}>
+
+      {/* Summary + key insight */}
+      <div style={{
+        background: "var(--bg-surface)", borderRadius: 14, border: "0.5px solid var(--bg-border)",
+        padding: isMobile ? "16px 16px" : "20px 22px",
+      }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
+          <Sparkles size={15} color="var(--accent-gold)" />
+          <span style={{ fontSize: 12, fontWeight: 700, color: "var(--text-primary)", fontFamily: "'DM Mono', monospace", letterSpacing: "0.04em" }}>
+            AI PERFORMANCE ANALYSIS
+          </span>
+        </div>
+        <p style={{ fontSize: isMobile ? 13 : 13.5, color: "var(--text-secondary)", lineHeight: 1.65, margin: 0 }}>
+          {summary}
+        </p>
+        {key_insight && (
+          <div style={{
+            marginTop: 12, padding: isMobile ? "10px 12px" : "12px 14px", borderRadius: 10,
+            background: "var(--accent-blue-dim)", border: "0.5px solid var(--accent-blue)",
+            fontSize: isMobile ? 12.5 : 13, color: "var(--accent-blue)", lineHeight: 1.55,
+          }}>
+            <strong style={{ fontWeight: 700 }}>Key insight: </strong>{key_insight}
+          </div>
+        )}
+      </div>
+
+      {/* Strong / weak topics side by side */}
+      {(strong_topics.length > 0 || weak_topics.length > 0) && (
+        <div style={{
+          display: "grid",
+          gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
+          gap: isMobile ? 12 : 14,
+        }}>
+          {/* Strong topics */}
+          <div style={{
+            background: "var(--bg-surface)", borderRadius: 14, border: "0.5px solid var(--bg-border)",
+            overflow: "hidden",
+          }}>
+            <div style={{
+              padding: "12px 16px", borderBottom: "0.5px solid var(--bg-border)", background: "var(--accent-green-dim)",
+              display: "flex", alignItems: "center", gap: 6,
+            }}>
+              <TrendingUp size={13} color="var(--accent-green)" />
+              <span style={{ fontSize: 11.5, fontWeight: 700, color: "var(--accent-green)", fontFamily: "'DM Mono', monospace" }}>
+                STRONG TOPICS
+              </span>
+            </div>
+            <div style={{ padding: strong_topics.length ? "10px 16px" : "16px", display: "flex", flexDirection: "column", gap: 10 }}>
+              {strong_topics.length === 0 ? (
+                <p style={{ fontSize: 12, color: "var(--text-muted)", margin: 0 }}>None yet — every topic has room to grow.</p>
+              ) : strong_topics.map((t) => (
+                <div key={t.topic}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 2 }}>
+                    <span style={{ fontSize: 12.5, fontWeight: 600, color: "var(--text-primary)" }}>{t.topic}</span>
+                    <span style={{ fontSize: 11, fontWeight: 700, color: "var(--accent-green)", fontFamily: "'DM Mono', monospace" }}>{t.accuracy}%</span>
+                  </div>
+                  <p style={{ fontSize: 11.5, color: "var(--text-muted)", margin: 0, lineHeight: 1.5 }}>{t.note}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Weak topics */}
+          <div style={{
+            background: "var(--bg-surface)", borderRadius: 14, border: "0.5px solid var(--bg-border)",
+            overflow: "hidden",
+          }}>
+            <div style={{
+              padding: "12px 16px", borderBottom: "0.5px solid var(--bg-border)", background: "var(--accent-red-dim)",
+              display: "flex", alignItems: "center", gap: 6,
+            }}>
+              <TrendingDown size={13} color="var(--accent-red)" />
+              <span style={{ fontSize: 11.5, fontWeight: 700, color: "var(--accent-red)", fontFamily: "'DM Mono', monospace" }}>
+                WEAK TOPICS
+              </span>
+            </div>
+            <div style={{ padding: weak_topics.length ? "10px 16px" : "16px", display: "flex", flexDirection: "column", gap: 10 }}>
+              {weak_topics.length === 0 ? (
+                <p style={{ fontSize: 12, color: "var(--text-muted)", margin: 0 }}>No major weak spots detected.</p>
+              ) : weak_topics.map((t) => (
+                <div key={t.topic}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 2, gap: 8 }}>
+                    <span style={{ fontSize: 12.5, fontWeight: 600, color: "var(--text-primary)" }}>{t.topic}</span>
+                    <span style={{
+                      fontSize: 9.5, fontWeight: 700, padding: "1px 7px", borderRadius: 8,
+                      color: priorityColor[t.priority] || "var(--text-muted)",
+                      background: `${priorityColor[t.priority] || "var(--text-muted)"}18`,
+                      fontFamily: "'DM Mono', monospace", textTransform: "uppercase", whiteSpace: "nowrap",
+                    }}>{t.priority || "medium"}</span>
+                  </div>
+                  <p style={{ fontSize: 11.5, color: "var(--text-muted)", margin: 0, lineHeight: 1.5 }}>{t.note}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 7-day study plan */}
+      {study_plan.length > 0 && (
+        <div style={{
+          background: "var(--bg-surface)", borderRadius: 14, border: "0.5px solid var(--bg-border)",
+          overflow: "hidden",
+        }}>
+          <div style={{
+            padding: "12px 16px", borderBottom: "0.5px solid var(--bg-border)", background: "var(--bg-muted)",
+            display: "flex", alignItems: "center", gap: 6,
+          }}>
+            <CalendarDays size={13} color="var(--accent-gold)" />
+            <span style={{ fontSize: 11.5, fontWeight: 700, color: "var(--text-primary)", fontFamily: "'DM Mono', monospace" }}>
+              7-DAY STUDY PLAN
+            </span>
+          </div>
+          <div style={{ padding: isMobile ? "12px 14px" : "14px 18px", display: "flex", flexDirection: "column", gap: 14 }}>
+            {study_plan.map((phase, i) => (
+              <div key={i} style={{ display: "flex", gap: 12 }}>
+                <div style={{
+                  flexShrink: 0, minWidth: isMobile ? 60 : 72, fontSize: 10.5, fontWeight: 700,
+                  color: "var(--accent-gold)", fontFamily: "'DM Mono', monospace", paddingTop: 1,
+                }}>
+                  {phase.day}
+                </div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 12.5, fontWeight: 600, color: "var(--text-primary)", marginBottom: 4 }}>{phase.focus}</div>
+                  <ul style={{ margin: 0, paddingLeft: 16, display: "flex", flexDirection: "column", gap: 3 }}>
+                    {(phase.tasks || []).map((task, j) => (
+                      <li key={j} style={{ fontSize: 11.5, color: "var(--text-muted)", lineHeight: 1.5 }}>{task}</li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Revision queue confirmation */}
+      {pushed_to_revision && weak_topics.length > 0 && (
+        <div style={{
+          background: "var(--accent-gold-dim)", borderRadius: 12, border: "0.5px solid var(--accent-gold)",
+          padding: isMobile ? "10px 14px" : "12px 16px",
+          display: "flex", alignItems: "center", gap: 8,
+          fontSize: 12, color: "var(--accent-gold)", fontFamily: "'DM Mono', monospace",
+        }}>
+          <BookMarked size={14} />
+          {weak_topics.length} weak topic{weak_topics.length !== 1 ? "s" : ""} added to your Revision queue
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ─── Results Screen ───────────────────────────────────────────────────────────
 function ResultsScreen({ test, answers, onRetry, onReview, recordAttempt, isMobile }) {
   const stats = calcScore(answers, test.questions, test.markPerQuestion, test.negativeFraction);
   const maxScore = test.totalQuestions * test.markPerQuestion;
   const scorePct = maxScore > 0 ? Math.max(0, (stats.score / maxScore) * 100).toFixed(1) : "0.0";
+
+  // ── AI analysis state ────────────────────────────────────────────────────
+  // "idle" | "loading" | "ready" | "error". Stats above render instantly from
+  // local data regardless of this — the AI section is an enhancement layered
+  // on top, never a blocker for seeing your score.
+  const [aiState, setAiState] = useState("idle");
+  const [aiAnalysis, setAiAnalysis] = useState(null);
+  const submittedRef = useRef(false);
 
   useEffect(() => {
     if (recordAttempt && test) {
@@ -364,6 +581,52 @@ function ResultsScreen({ test, answers, onRetry, onReview, recordAttempt, isMobi
         }
       });
     }
+  }, []);
+
+  // ── Submit to backend for server-side scoring + AI diagnostic analysis ───
+  // Runs once per results view. Builds the topic_breakdown the backend needs
+  // for weak-topic detection, in the exact shape testController.js expects.
+  useEffect(() => {
+    if (submittedRef.current || !test) return;
+    submittedRef.current = true;
+
+    const topicMapForApi = {};
+    test.questions.forEach((q) => {
+      if (!topicMapForApi[q.topic]) topicMapForApi[q.topic] = { topic: q.topic, correct: 0, wrong: 0, skipped: 0 };
+      const ans = answers[q.id];
+      if (!ans) topicMapForApi[q.topic].skipped++;
+      else if (ans === q.correct) topicMapForApi[q.topic].correct++;
+      else topicMapForApi[q.topic].wrong++;
+    });
+
+    setAiState("loading");
+    submitTestResult({
+      test_series: test.series || "General",
+      test_title: test.title,
+      subject: test.subject,
+      total_questions: test.totalQuestions,
+      duration_minutes: test.timeMinutes,
+      marks_correct: test.markPerQuestion,
+      marks_wrong: -(test.markPerQuestion * test.negativeFraction),
+      marks_skipped: 0,
+      max_marks: maxScore,
+      correct_count: stats.correct,
+      wrong_count: stats.wrong,
+      skipped_count: stats.skipped,
+      topic_breakdown: Object.values(topicMapForApi),
+    })
+      .then((res) => {
+        if (res.ai_analysis && res.ai_analysis_status === "ready") {
+          setAiAnalysis(res.ai_analysis);
+          setAiState("ready");
+        } else {
+          setAiState("error");
+        }
+      })
+      .catch((err) => {
+        console.warn("[Test Series] AI analysis unavailable:", err.message);
+        setAiState("error");
+      });
   }, []);
 
   const grade =
@@ -441,6 +704,9 @@ function ResultsScreen({ test, answers, onRetry, onReview, recordAttempt, isMobi
         Marking: +{test.markPerQuestion} correct · −{(test.markPerQuestion * test.negativeFraction).toFixed(2)} wrong · 0 skipped
       </div>
 
+      {/* AI performance analysis: summary, strong/weak topics, study plan, revision push */}
+      <AIAnalysisSection aiState={aiState} aiAnalysis={aiAnalysis} isMobile={isMobile} />
+
       {/* Topic breakdown */}
       <div style={{
         background: "var(--bg-surface)", borderRadius: 14, border: "0.5px solid var(--bg-border)",
@@ -455,10 +721,12 @@ function ResultsScreen({ test, answers, onRetry, onReview, recordAttempt, isMobi
           {Object.entries(topicMap).map(([topic, t]) => {
             const total = t.correct + t.wrong + t.skipped;
             const acc = total > 0 ? ((t.correct / (t.correct + t.wrong || 1)) * 100).toFixed(0) : "—";
+            const isFlaggedWeak = aiAnalysis?.weak_topics?.some((w) => w.topic === topic);
             return (
               <div key={topic} style={{
                 display: "flex", alignItems: "center", gap: 10,
                 padding: isMobile ? "8px 14px" : "8px 18px", borderBottom: "0.5px solid var(--bg-border)",
+                borderLeft: isFlaggedWeak ? "2.5px solid var(--accent-red)" : "2.5px solid transparent",
               }}>
                 <div style={{ flex: 1, fontSize: isMobile ? 11.5 : 12, color: "var(--text-secondary)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{topic}</div>
                 <span style={{ fontSize: 11, color: "var(--accent-green)", fontFamily: "'DM Mono', monospace", minWidth: 28 }}>{t.correct}✓</span>

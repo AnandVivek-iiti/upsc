@@ -13,6 +13,11 @@
  *   POST   /api/dashboard/spaced-repetition  — add item
  *   POST   /api/dashboard/question-attempts  — sync attempts
  *
+ *   POST   /api/tests/submit                 — submit a completed test (scoring + AI analysis)
+ *   GET    /api/tests                        — list past attempts
+ *   GET    /api/tests/:id                    — get a single attempt
+ *   POST   /api/tests/:id/reanalyze          — re-run AI analysis on an existing attempt
+ *
  * JWT is sent automatically via Authorization header.
  * ─────────────────────────────────────────────────────────────────────────────
  */
@@ -134,5 +139,57 @@ export async function syncAttempts(attempts) {
     });
     const json = await res.json();
     if (!res.ok) throw new Error(json.error || "Sync failed");
+    return json;
+}
+
+// ─── POST /api/tests/submit ──────────────────────────────────────────────────
+// Submits a completed test; server computes score, saves attempt, and runs AI analysis.
+// Returns { success, attempt_id, score, max_marks, percentage, accuracy, performance_band,
+//           correct_count, wrong_count, skipped_count, attempted_count, total_questions,
+//           ai_analysis, ai_analysis_status, provider_used }
+export async function submitTestResult(payload) {
+    const res = await fetch(`${BASE}/tests/submit`, {
+        method: "POST",
+        headers: authHeaders(),
+        body: JSON.stringify(payload),
+    });
+    const json = await res.json();
+    if (!res.ok) throw new Error(json.error || "Test submission failed");
+    return json;
+}
+
+// ─── GET /api/tests ──────────────────────────────────────────────────────────
+// Lists past test attempts (lightweight, most recent first).
+// Optional query: ?limit=20 (default 20, max 100)
+export async function listTestAttempts(limit = 20) {
+    const res = await fetch(`${BASE}/tests?limit=${Math.min(limit, 100)}`, {
+        headers: authHeaders(),
+    });
+    const json = await res.json();
+    if (!res.ok) throw new Error(json.error || "Could not load test history");
+    return json;
+}
+
+// ─── GET /api/tests/:id ──────────────────────────────────────────────────────
+// Returns full details of a single attempt (includes the ai_analysis blob).
+export async function getTestAttempt(id) {
+    const res = await fetch(`${BASE}/tests/${id}`, {
+        headers: authHeaders(),
+    });
+    const json = await res.json();
+    if (!res.ok) throw new Error(json.error || "Test attempt not found");
+    return json;
+}
+
+// ─── POST /api/tests/:id/reanalyze ──────────────────────────────────────────
+// Re‑runs the AI analysis on an existing attempt (e.g. after a provider failure).
+// Returns { success, attempt_id, ai_analysis, provider_used }
+export async function reanalyzeTestAttempt(id) {
+    const res = await fetch(`${BASE}/tests/${id}/reanalyze`, {
+        method: "POST",
+        headers: authHeaders(),
+    });
+    const json = await res.json();
+    if (!res.ok) throw new Error(json.error || "Re‑analysis failed");
     return json;
 }

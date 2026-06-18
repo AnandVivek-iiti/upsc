@@ -306,6 +306,44 @@ Rules:
 - If nothing new or durable came up in this turn, return the list unchanged.
 - Respond ONLY with this exact JSON shape and nothing else: {"memory": ["fact one", "fact two"]}`;
 
+// ── System instruction for MCQ Test Series result analysis ──────────────────
+// Consumed by the testController's /api/tests/:id/analyze flow. Produces a
+// full performance report: strengths, weak topics (with priority for the
+// revision queue), and a short actionable study plan — NOT a conversational
+// reply, and NOT the Mains-essay SYSTEM_INSTRUCTION above.
+const TEST_ANALYSIS_SYSTEM_INSTRUCTION = `You are an elite UPSC Civil Services exam strategist who specializes in diagnostic analysis of Prelims-style MCQ test performance. You are given a student's test result — overall score, accuracy, and a topic-wise breakdown (correct/wrong/skipped per topic) — and you must produce a sharp, actionable diagnostic report.
+
+You MUST respond in this EXACT JSON structure. No markdown outside the JSON. No preamble. Just the JSON.
+
+{
+  "summary": "2-3 sentence honest, specific summary of how the student performed and why (e.g. low attempt rate vs low accuracy vs both)",
+  "performance_band": "Needs Work",
+  "key_insight": "The single most important diagnostic insight (e.g. 'Your accuracy on attempted questions is fine, but you attempted only 24% of the paper — speed/confidence is the real bottleneck, not knowledge.')",
+  "strong_topics": [
+    { "topic": "Topic name", "accuracy": 80, "note": "Why this is a strength, one sentence" }
+  ],
+  "weak_topics": [
+    { "topic": "Topic name", "accuracy": 20, "note": "Specific diagnosis of the gap, one sentence", "priority": "high" }
+  ],
+  "study_plan": [
+    { "day": "Day 1-2", "focus": "Topic or skill to target", "tasks": ["Specific task 1", "Specific task 2"] },
+    { "day": "Day 3-4", "focus": "Topic or skill to target", "tasks": ["Specific task 1", "Specific task 2"] },
+    { "day": "Day 5-7", "focus": "Topic or skill to target", "tasks": ["Specific task 1", "Specific task 2"] }
+  ],
+  "priority_actions": ["Action 1", "Action 2", "Action 3"],
+  "revision_recommendations": [
+    { "topic": "Topic name", "difficulty": "hard", "reason": "One sentence reason this should enter spaced repetition" }
+  ]
+}
+
+Rules:
+- "performance_band" must be exactly one of: "Needs Work", "Average", "Good", "Excellent" — match it to the provided percentage (the caller will tell you the band; just echo it back consistently with your narrative).
+- weak_topics: include topics with low accuracy (<50%) OR very low attempt rate even if no wrong answers (skipping a topic entirely is itself a weakness — flag it). Order by priority, worst first. priority must be "high", "medium", or "low".
+- strong_topics: only include topics with accuracy >= 70% AND at least 2 attempts. If none qualify, return an empty array — do not invent strengths.
+- revision_recommendations: should be a subset of weak_topics (the ones most worth spaced-repetition review), each with difficulty "hard" (for accuracy <30%), "medium" (30-50%), mapped consistently.
+- Be specific and honest, never generic filler like "practice more." Reference the actual numbers given.
+- The JSON must be valid and complete always.`;
+
 // Robust Helper to clean and parse JSON even if markdown code blocks or trailing commas leak
 function safeJSONParse(rawText) {
   let cleanText = rawText.trim();
@@ -639,16 +677,113 @@ Note: This is a structural framework. Your actual answer should weave these dime
   };
 }
 
+// ── SAMPLE TEST ANALYSIS GENERATOR (offline fallback) ───────────────────────
+// Called when all API providers are unavailable/failing for test analysis.
+// Builds a deterministic, still-genuinely-useful diagnostic report purely
+// from the topic_breakdown numbers — no AI required. Mirrors the spirit of
+// generateSampleEvaluation above, but for MCQ Test Series results.
+function generateSampleTestAnalysis(payload) {
+  const { percentage, performance_band, attempted_count, total_questions, topic_breakdown } = payload;
+
+  const attemptRate = total_questions > 0 ? (attempted_count / total_questions) * 100 : 0;
+
+  const topicsWithStats = (topic_breakdown || []).map((t) => {
+    const attempted = (t.correct || 0) + (t.wrong || 0);
+    const accuracy = attempted > 0 ? Math.round((t.correct / attempted) * 100) : 0;
+    return { ...t, attempted, accuracy };
+  });
+
+  const strong_topics = topicsWithStats
+    .filter((t) => t.accuracy >= 70 && t.attempted >= 2)
+    .sort((a, b) => b.accuracy - a.accuracy)
+    .slice(0, 5)
+    .map((t) => ({
+      topic: t.topic,
+      accuracy: t.accuracy,
+      note: `Solid grasp — ${t.correct}/${t.attempted} correct on attempted questions.`,
+    }));
+
+  const weak_topics = topicsWithStats
+    .filter((t) => t.accuracy < 50 || (t.attempted === 0 && (t.skipped || 0) > 0))
+    .sort((a, b) => a.accuracy - b.accuracy)
+    .slice(0, 8)
+    .map((t) => {
+      const priority = t.accuracy < 30 || t.attempted === 0 ? "high" : t.accuracy < 50 ? "medium" : "low";
+      const note = t.attempted === 0
+        ? `Skipped entirely (${t.skipped || t.total || 0} questions) — likely a knowledge gap, not a speed issue.`
+        : `Only ${t.correct}/${t.attempted} correct — needs targeted revision.`;
+      return { topic: t.topic, accuracy: t.accuracy, note, priority };
+    });
+
+  const key_insight = attemptRate < 40
+    ? `You attempted only ${Math.round(attemptRate)}% of the paper — low attempt rate is dragging your score down more than accuracy is. Build speed and exam-taking confidence, not just knowledge.`
+    : weak_topics.length > 0
+      ? `Your biggest score loss is concentrated in ${weak_topics.slice(0, 2).map(t => t.topic).join(" and ")} — fixing these would meaningfully move your score.`
+      : `Performance is fairly even across topics — focus on raising attempt rate and accuracy together.`;
+
+  const summary = `You scored ${payload.score} out of ${payload.max_marks} (${percentage.toFixed(1)}%), attempting ${attempted_count} of ${total_questions} questions with ${payload.accuracy.toFixed(1)}% accuracy on what you attempted. ${attemptRate < 40 ? "Attempt rate is the main constraint right now." : "Accuracy on weak topics is the main constraint right now."}`;
+
+  const studyPlan = [
+    {
+      day: "Day 1–2",
+      focus: weak_topics[0]?.topic || "Foundational revision",
+      tasks: [
+        `Revise NCERT/standard reference chapters for "${weak_topics[0]?.topic || "weak areas"}"`,
+        "Solve 20 previous-year questions on this topic and review every wrong answer",
+      ],
+    },
+    {
+      day: "Day 3–4",
+      focus: weak_topics[1]?.topic || "Second priority topic",
+      tasks: [
+        `Make a one-page summary note for "${weak_topics[1]?.topic || "next weak topic"}"`,
+        "Take a 25-question topic-wise quiz and target 70%+ accuracy",
+      ],
+    },
+    {
+      day: "Day 5–7",
+      focus: "Full-length mock + review",
+      tasks: [
+        "Attempt one full-length mock under timed conditions",
+        "Spend equal time reviewing wrong/skipped answers as you did taking the test",
+      ],
+    },
+  ];
+
+  const priority_actions = [
+    attemptRate < 50 ? "Increase attempt rate — practice timed sectional tests to build speed" : "Maintain attempt rate while pushing accuracy higher",
+    weak_topics[0] ? `Close the gap in ${weak_topics[0].topic} first — it's your lowest-scoring area` : "Consolidate strong topics with periodic revision",
+    "Review every wrong/skipped question from this test before the next attempt",
+  ];
+
+  const revision_recommendations = weak_topics.slice(0, 6).map((t) => ({
+    topic: t.topic,
+    difficulty: t.accuracy < 30 ? "hard" : t.accuracy < 50 ? "medium" : "easy",
+    reason: t.note,
+  }));
+
+  return {
+    summary,
+    performance_band,
+    key_insight,
+    strong_topics,
+    weak_topics,
+    study_plan: studyPlan,
+    priority_actions,
+    revision_recommendations,
+  };
+}
+
 const providers = [
   // ── PROVIDER 1: Gemini ──────────────
   {
     name: "Gemini",
     isAvailable: () => !!process.env.GEMINI_API_KEY,
-    call: async (userPrompt) => {
+    call: async (userPrompt, systemInstruction = SYSTEM_INSTRUCTION) => {
       const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
       const model = genAI.getGenerativeModel({
         model: "gemini-2.5-flash",
-        systemInstruction: SYSTEM_INSTRUCTION,
+        systemInstruction,
         generationConfig: {
           temperature: 0.3,
           maxOutputTokens: 8192,
@@ -665,7 +800,7 @@ const providers = [
   {
     name: "OpenAI",
     isAvailable: () => !!process.env.OPENAI_API_KEY,
-    call: async (userPrompt) => {
+    call: async (userPrompt, systemInstruction = SYSTEM_INSTRUCTION) => {
       const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
       const response = await openai.chat.completions.create({
         model: "gpt-4o",
@@ -673,7 +808,7 @@ const providers = [
         maxOutputTokens: 8192,
         response_format: { type: "json_object" },
         messages: [
-          { role: "system", content: SYSTEM_INSTRUCTION },
+          { role: "system", content: systemInstruction },
           { role: "user", content: userPrompt },
         ],
       });
@@ -685,12 +820,12 @@ const providers = [
   {
     name: "Claude",
     isAvailable: () => !!process.env.ANTHROPIC_API_KEY,
-    call: async (userPrompt) => {
+    call: async (userPrompt, systemInstruction = SYSTEM_INSTRUCTION) => {
       const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
       const response = await client.messages.create({
         model: "claude-sonnet-4-5",
         max_tokens: 8192,
-        system: SYSTEM_INSTRUCTION,
+        system: systemInstruction,
         messages: [{ role: "user", content: userPrompt }],
       });
       return safeJSONParse(response.content[0].text);
@@ -701,7 +836,7 @@ const providers = [
   {
     name: "Groq",
     isAvailable: () => !!process.env.GROQ_API_KEY,
-    call: async (userPrompt) => {
+    call: async (userPrompt, systemInstruction = SYSTEM_INSTRUCTION) => {
       const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
       try {
@@ -711,7 +846,7 @@ const providers = [
           temperature: 0.2,
           response_format: { type: "json_object" },
           messages: [
-            { role: "system", content: SYSTEM_INSTRUCTION },
+            { role: "system", content: systemInstruction },
             { role: "user", content: userPrompt },
           ],
         });
@@ -732,7 +867,7 @@ const providers = [
               {
                 role: "system",
                 content:
-                  SYSTEM_INSTRUCTION +
+                  systemInstruction +
                   "\nEnsure you do not put a square bracket instead of a curly brace when closing objects inside structure fields.",
               },
               { role: "user", content: userPrompt },
@@ -826,9 +961,83 @@ return { result: normalized, provider: provider.name };
   };
 }
 
+/**
+ * analyzeTestPerformance — runs the MCQ Test Series diagnostic AI.
+ * Separate from evaluateAnswer (which is for Mains essays) — same provider
+ * list and fallback philosophy, but its own system instruction and its own
+ * deterministic offline fallback (generateSampleTestAnalysis).
+ *
+ * @param {object} payload — see buildTestAnalysisPrompt() below for shape.
+ * @returns {{ result: object, provider: string }}
+ */
+async function analyzeTestPerformance(payload) {
+  const userPrompt = buildTestAnalysisPrompt(payload);
+  const availableProviders = providers.filter((p) => p.isAvailable());
+
+  if (availableProviders.length > 0) {
+    const errors = [];
+    for (const provider of availableProviders) {
+      try {
+        console.log(`[Test Analysis] Trying provider: ${provider.name}...`);
+        const result = await provider.call(userPrompt, TEST_ANALYSIS_SYSTEM_INSTRUCTION);
+        console.log(`[Test Analysis] Success with: ${provider.name}`);
+        return { result, provider: provider.name };
+      } catch (err) {
+        const message = `${provider.name} failed: ${err.message}`;
+        console.warn(`[Test Analysis] ${message}`);
+        errors.push(message);
+      }
+    }
+    console.warn("[Test Analysis] All providers failed. Falling back to offline analysis.");
+    console.warn("[Test Analysis] Provider errors:", errors.join(" | "));
+  } else {
+    console.warn("[Test Analysis] No API keys configured. Using offline analysis.");
+  }
+
+  // ── Fallback: deterministic offline test analysis ─────────────────────────
+  const sampleResult = generateSampleTestAnalysis(payload);
+  return { result: sampleResult, provider: "Sample (AI providers unavailable)" };
+}
+
+// Builds the user-facing prompt sent to the AI for test analysis, from the
+// structured payload assembled by testController.js.
+function buildTestAnalysisPrompt(payload) {
+  const {
+    test_series, test_title, subject, total_questions, duration_minutes,
+    correct_count, wrong_count, skipped_count, attempted_count,
+    score, max_marks, accuracy, percentage, performance_band, topic_breakdown,
+  } = payload;
+
+  const topicLines = (topic_breakdown || []).map((t) => {
+    const attempted = (t.correct || 0) + (t.wrong || 0);
+    const acc = attempted > 0 ? Math.round((t.correct / attempted) * 100) : 0;
+    return `- ${t.topic}: ${t.correct || 0} correct, ${t.wrong || 0} wrong, ${t.skipped || 0} skipped (accuracy on attempted: ${acc}%)`;
+  }).join("\n");
+
+  return `**TEST PERFORMANCE ANALYSIS REQUEST**
+
+Test Series: ${test_series}
+Test: ${test_title}
+Subject: ${subject}
+Total Questions: ${total_questions} | Duration: ${duration_minutes} min
+
+**Overall Result:**
+Score: ${score} / ${max_marks} (${percentage.toFixed(1)}%)
+Performance Band: ${performance_band}
+Correct: ${correct_count} | Wrong: ${wrong_count} | Skipped: ${skipped_count} | Attempted: ${attempted_count}/${total_questions}
+Accuracy on attempted questions: ${accuracy.toFixed(1)}%
+
+**Topic-wise Breakdown:**
+${topicLines || "(no topic breakdown provided)"}
+
+Analyze this performance. Identify genuine strengths, diagnose weak topics with priority for revision, and produce a realistic 7-day study plan targeting the weakest areas first. Be specific and reference the actual numbers above.`;
+}
+
 module.exports = {
   evaluateAnswer,
+  analyzeTestPerformance,
   SYSTEM_INSTRUCTION,
   CHAT_SYSTEM_INSTRUCTION,
+  TEST_ANALYSIS_SYSTEM_INSTRUCTION,
   extractMemory,
 };

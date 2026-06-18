@@ -260,107 +260,332 @@ function NCERTBookCard({ book, localDone, onToggleDone }) {
 }
 
 // ─── NOTE CARD ────────────────────────────────────────────────────────────────
+const NOTE_BG = { pdf: "#7f1d1d", docx: "#1e3a5f", md: "#064e3b", link: "#3b1f5e", txt: "#78350f", image: "#831843" };
+function getNoteMeta(type) {
+  return { bg: NOTE_BG[type] || "#1e293b", accent: TYPE_COLORS[type] || "#94a3b8", emoji: TYPE_ICONS[type] || "📄" };
+}
+
 function NoteCard({ note }) {
-  const color = TYPE_COLORS[note.type] || "#a78bfa";
-  const icon  = TYPE_ICONS[note.type]  || "📄";
+  const [hovered, setHovered] = useState(false);
+  const meta = getNoteMeta(note.type);
+  const hasFile = Boolean(note.url || note.filePath);
 
   const handleOpen = () => {
     const target = note.url || (note.filePath ? `/api/notes/file?path=${encodeURIComponent(note.filePath)}` : null);
     if (target) window.open(target, "_blank", "noopener,noreferrer");
-    else alert("No file path or URL configured for this note.\nEdit src/data/notes_data.js to add it.");
+    else alert("No file added for this note yet.\nEdit src/data/notes_data.js to add a filePath or url.");
   };
 
   return (
-    <div style={{
-      background: "var(--bg-surface)", border: "0.5px solid var(--bg-border)",
-      borderRadius: 12, padding: "14px 16px", borderLeft: `3px solid ${color}`,
-    }}>
-      <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
-        <span style={{ fontSize: 22, lineHeight: 1, flexShrink: 0 }}>{icon}</span>
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: 14, fontWeight: 600, color: "var(--text-primary)", marginBottom: 4 }}>{note.title}</div>
-          <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 8 }}>
-            <span style={{ fontSize: 10, padding: "2px 8px", borderRadius: 20, background: `${color}15`, color, border: `0.5px solid ${color}33`, fontFamily: "'DM Mono', monospace" }}>{note.paper}</span>
-            {note.module && (
-              <span style={{ fontSize: 10, padding: "2px 8px", borderRadius: 20, background: "var(--bg-muted)", color: "var(--text-muted)", border: "0.5px solid var(--bg-border)", fontFamily: "'DM Mono', monospace" }}>{note.module}</span>
-            )}
-            {(note.tags || []).map(tag => (
-              <span key={tag} style={{ fontSize: 10, padding: "2px 8px", borderRadius: 20, background: "var(--bg-muted)", color: "var(--text-muted)", border: "0.5px solid var(--bg-border)", fontFamily: "'DM Mono', monospace" }}>#{tag}</span>
-            ))}
-          </div>
-          <button onClick={handleOpen} style={{
-            fontSize: 12, padding: "5px 14px", borderRadius: 8,
-            border: `0.5px solid ${color}`, background: `${color}12`,
-            color, cursor: "pointer", fontFamily: "'DM Sans', sans-serif",
-          }}>
-            Open {note.type?.toUpperCase()} ↗
-          </button>
+    <div
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        background: "var(--bg-surface)",
+        border: `0.5px solid ${hovered && hasFile ? meta.accent + "55" : "var(--bg-border)"}`,
+        borderRadius: 16,
+        overflow: "hidden",
+        display: "flex",
+        flexDirection: "column",
+        transition: "all 0.2s ease",
+        transform: hovered ? "translateY(-3px)" : "none",
+        boxShadow: hovered ? `0 12px 32px rgba(0,0,0,0.25), 0 0 0 1px ${meta.accent}20` : "0 2px 8px rgba(0,0,0,0.12)",
+      }}
+    >
+      <div style={{ height: 3, background: `linear-gradient(90deg, ${meta.accent}, ${meta.accent}88)`, flexShrink: 0 }} />
+
+      <div
+        onClick={handleOpen}
+        style={{
+          position: "relative",
+          height: 116,
+          background: `linear-gradient(145deg, ${meta.bg} 0%, #0f0f1a 100%)`,
+          cursor: hasFile ? "pointer" : "default",
+          flexShrink: 0,
+          overflow: "hidden",
+        }}
+      >
+        <div style={{
+          position: "absolute", top: -20, right: -20,
+          width: 200, height: 120, borderRadius: "50%",
+          background: `${meta.accent}15`, border: `1px solid ${meta.accent}20`,
+        }} />
+        <div style={{
+          position: "absolute", top: 12, left: 12,
+          fontSize: 9, fontWeight: 700, letterSpacing: 1,
+          color: meta.accent, fontFamily: "'DM Mono', monospace",
+          background: `${meta.accent}18`, border: `0.5px solid ${meta.accent}40`,
+          padding: "3px 8px", borderRadius: 5,
+        }}>
+          {note.paper.toUpperCase()}
         </div>
-      </div>
-    </div>
-  );
-}
-
-// ─── REFERENCE BOOK CARD ──────────────────────────────────────────────────────
-function RefBookCard({ book }) {
-  const priorityColor = PRIORITY_COLORS[book.priority] || "#a78bfa";
-  const priorityLabel = { "must-read": "Must Read", "recommended": "Recommended", "optional": "Optional" };
-
-  const handleOpen = () => {
-    if (book.url) window.open(book.url, "_blank", "noopener,noreferrer");
-    else alert("No URL configured for this book.");
-  };
-
-  return (
-    <div style={{
-      background: "var(--bg-surface)", border: "0.5px solid var(--bg-border)",
-      borderRadius: 12, padding: "14px 16px",
-      borderLeft: `3px solid ${priorityColor}`,
-    }}>
-      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 8 }}>
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: 14, fontWeight: 600, color: "var(--text-primary)", marginBottom: 4, lineHeight: 1.35 }}>
-            {book.title}
+        <div style={{
+          position: "absolute", top: 12, right: 12,
+          fontSize: 9, fontWeight: 600, letterSpacing: 0.8,
+          color: meta.accent, fontFamily: "'DM Mono', monospace",
+          background: "rgba(0,0,0,0.4)",
+          padding: "3px 8px", borderRadius: 5,
+          border: `0.5px solid ${meta.accent}30`,
+        }}>
+          {note.type?.toUpperCase()}
+        </div>
+        <div style={{
+          position: "absolute", bottom: 30, left: "50%",
+          transform: "translateX(-50%)",
+          fontSize: 32, lineHeight: 1,
+          filter: "drop-shadow(0 4px 12px rgba(0,0,0,0.4))",
+        }}>
+          {meta.emoji}
+        </div>
+        {note.module && (
+          <div style={{
+            position: "absolute", bottom: 0, left: 0, right: 0,
+            padding: "6px 14px",
+            background: "linear-gradient(transparent, rgba(0,0,0,0.6))",
+            fontSize: 9, fontWeight: 600, color: "rgba(255,255,255,0.7)",
+            fontFamily: "'DM Mono', monospace",
+            whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
+          }}>
+            {note.module}
           </div>
-          <div style={{ fontSize: 12, color: "var(--text-muted)", fontFamily: "'DM Mono', monospace", marginBottom: 8 }}>
-            {book.author} · {book.edition}
-          </div>
-          <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 10 }}>
-            <span style={{
-              fontSize: 10, padding: "2px 8px", borderRadius: 20,
-              background: `${priorityColor}18`, color: priorityColor,
-              border: `0.5px solid ${priorityColor}44`,
-              fontFamily: "'DM Mono', monospace", fontWeight: 600,
-            }}>
-              {priorityLabel[book.priority] || book.priority}
-            </span>
-            <span style={{
-              fontSize: 10, padding: "2px 8px", borderRadius: 20,
-              background: "var(--bg-muted)", color: "var(--text-muted)",
-              border: "0.5px solid var(--bg-border)",
+        )}
+
+        {hovered && hasFile && (
+          <div style={{
+            position: "absolute", inset: 0,
+            background: "rgba(0,0,0,0.5)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            backdropFilter: "blur(2px)",
+          }}>
+            <div style={{
+              fontSize: 11, fontWeight: 700, color: "#fff",
+              background: meta.accent,
+              padding: "7px 16px", borderRadius: 8,
               fontFamily: "'DM Mono', monospace",
+              letterSpacing: 0.6,
+              boxShadow: `0 4px 16px ${meta.accent}44`,
             }}>
-              {book.module}
-            </span>
+              Open {note.type?.toUpperCase()} ↗
+            </div>
           </div>
-          <div style={{ display: "flex", gap: 5, flexWrap: "wrap", marginBottom: 10 }}>
-            {(book.tags || []).slice(0, 4).map(tag => (
+        )}
+      </div>
+
+      <div style={{ padding: "14px 16px 16px", flex: 1, display: "flex", flexDirection: "column", gap: 10 }}>
+        <div style={{
+          fontSize: 13, fontWeight: 700, color: "var(--text-primary)",
+          lineHeight: 1.45, fontFamily: "'DM Sans', sans-serif",
+          display: "-webkit-box", WebkitLineClamp: 2,
+          WebkitBoxOrient: "vertical", overflow: "hidden",
+          minHeight: 38,
+        }}>
+          {note.title}
+        </div>
+
+        {(note.tags || []).length > 0 && (
+          <div style={{ display: "flex", gap: 5, flexWrap: "wrap" }}>
+            {(note.tags || []).slice(0, 3).map(tag => (
               <span key={tag} style={{
-                fontSize: 10, padding: "2px 8px", borderRadius: 20,
+                fontSize: 9, padding: "2px 7px", borderRadius: 20,
                 background: "var(--bg-muted)", color: "var(--text-muted)",
                 border: "0.5px solid var(--bg-border)",
                 fontFamily: "'DM Mono', monospace",
               }}>#{tag}</span>
             ))}
           </div>
-          <button onClick={handleOpen} style={{
-            fontSize: 12, padding: "5px 14px", borderRadius: 8,
-            border: `0.5px solid ${priorityColor}`, background: `${priorityColor}12`,
-            color: priorityColor, cursor: "pointer", fontFamily: "'DM Sans', sans-serif",
-          }}>
-            {book.url ? "View / Buy ↗" : "Not Configured"}
-          </button>
+        )}
+
+        <button
+          onClick={handleOpen}
+          disabled={!hasFile}
+          style={{
+            fontSize: 11, padding: "5px 12px", borderRadius: 8, marginTop: "auto",
+            border: `0.5px solid ${hasFile ? meta.accent + "66" : "var(--bg-border)"}`,
+            background: hasFile ? `${meta.accent}12` : "transparent",
+            color: hasFile ? meta.accent : "var(--text-muted)",
+            cursor: hasFile ? "pointer" : "default",
+            fontFamily: "'DM Mono', monospace",
+            fontWeight: 600,
+            transition: "all .15s",
+          }}
+        >
+          {hasFile ? `Open ${note.type?.toUpperCase()} ↗` : "Add Your File"}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ─── REFERENCE BOOK CARD ──────────────────────────────────────────────────────
+const REF_BOOK_PALETTE = [
+  { match: ["history"], bg: "#3b1f5e", accent: "#c084fc", emoji: "📜" },
+  { match: ["art", "culture"], bg: "#78350f", accent: "#fbbf24", emoji: "🏛️" },
+  { match: ["geography"], bg: "#1e3a5f", accent: "#60a5fa", emoji: "🌏" },
+  { match: ["polity", "constitution", "governance"], bg: "#7f1d1d", accent: "#f87171", emoji: "⚖️" },
+  { match: ["international", "relations"], bg: "#0f3a3a", accent: "#5eead4", emoji: "🌐" },
+  { match: ["economy", "budget", "survey"], bg: "#064e3b", accent: "#34d399", emoji: "📈" },
+  { match: ["science", "technology"], bg: "#4a154b", accent: "#f9a8d4", emoji: "🔬" },
+  { match: ["environment"], bg: "#1c3d2e", accent: "#6ee7b7", emoji: "🌿" },
+  { match: ["security"], bg: "#5c1a1a", accent: "#fb923c", emoji: "🛡️" },
+  { match: ["ethics", "thinkers"], bg: "#2e1065", accent: "#a78bfa", emoji: "🧭" },
+  { match: ["essay"], bg: "#3b0764", accent: "#c4b5fd", emoji: "✍️" },
+  { match: ["aptitude", "csat", "mental ability", "quantitative", "reasoning"], bg: "#3f3500", accent: "#fde047", emoji: "🧮" },
+  { match: ["current affairs", "gs preparation", "general"], bg: "#431407", accent: "#fb923c", emoji: "📰" },
+];
+function getRefBookMeta(moduleStr = "") {
+  const lower = moduleStr.toLowerCase();
+  return REF_BOOK_PALETTE.find(p => p.match.some(k => lower.includes(k))) || { bg: "#1e293b", accent: "#94a3b8", emoji: "📚" };
+}
+
+function RefBookCard({ book }) {
+  const [hovered, setHovered] = useState(false);
+  const priorityColor = PRIORITY_COLORS[book.priority] || "#a78bfa";
+  const priorityLabel = { "must-read": "Must Read", "recommended": "Recommended", "optional": "Optional" };
+  const meta = getRefBookMeta(book.module);
+  const hasFile = Boolean(book.url || book.filePath);
+
+  const handleOpen = () => {
+    const target = book.url || (book.filePath ? `/api/refbooks/file?path=${encodeURIComponent(book.filePath)}` : null);
+    if (target) window.open(target, "_blank", "noopener,noreferrer");
+    else alert("No PDF added for this book yet.\nEdit src/data/reference_books_data.js to add your own filePath (a scan of your own copy), or a free official link if one exists.");
+  };
+
+  return (
+    <div
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        background: "var(--bg-surface)",
+        border: `0.5px solid ${hovered && hasFile ? meta.accent + "55" : "var(--bg-border)"}`,
+        borderRadius: 16,
+        overflow: "hidden",
+        display: "flex",
+        flexDirection: "column",
+        transition: "all 0.2s ease",
+        transform: hovered ? "translateY(-3px)" : "none",
+        boxShadow: hovered ? `0 12px 32px rgba(0,0,0,0.25), 0 0 0 1px ${meta.accent}20` : "0 2px 8px rgba(0,0,0,0.12)",
+      }}
+    >
+      <div style={{ height: 3, background: `linear-gradient(90deg, ${priorityColor}, ${priorityColor}88)`, flexShrink: 0 }} />
+
+      <div
+        onClick={handleOpen}
+        style={{
+          position: "relative",
+          height: 140,
+          background: `linear-gradient(145deg, ${meta.bg} 0%, #0f0f1a 100%)`,
+          cursor: hasFile ? "pointer" : "default",
+          flexShrink: 0,
+          overflow: "hidden",
+        }}
+      >
+        <div style={{
+          position: "absolute", top: -24, right: -24,
+          width: 220, height: 130, borderRadius: "50%",
+          background: `${meta.accent}15`, border: `1px solid ${meta.accent}20`,
+        }} />
+        <div style={{
+          position: "absolute", top: 12, left: 12,
+          fontSize: 9, fontWeight: 700, letterSpacing: 1,
+          color: priorityColor, fontFamily: "'DM Mono', monospace",
+          background: `${priorityColor}18`, border: `0.5px solid ${priorityColor}44`,
+          padding: "3px 8px", borderRadius: 5,
+        }}>
+          {priorityLabel[book.priority] || book.priority}
         </div>
+        <div style={{
+          position: "absolute", top: 12, right: 12,
+          fontSize: 9, fontWeight: 600, letterSpacing: 0.8,
+          color: meta.accent, fontFamily: "'DM Mono', monospace",
+          background: "rgba(0,0,0,0.4)",
+          padding: "3px 8px", borderRadius: 5,
+          border: `0.5px solid ${meta.accent}30`,
+        }}>
+          {book.paper.toUpperCase()}
+        </div>
+        <div style={{
+          position: "absolute", bottom: 34, left: "50%",
+          transform: "translateX(-50%)",
+          fontSize: 36, lineHeight: 1,
+          filter: "drop-shadow(0 4px 12px rgba(0,0,0,0.4))",
+        }}>
+          {meta.emoji}
+        </div>
+        <div style={{
+          position: "absolute", bottom: 0, left: 0, right: 0,
+          padding: "6px 14px",
+          background: "linear-gradient(transparent, rgba(0,0,0,0.6))",
+          fontSize: 9, fontWeight: 600, color: "rgba(255,255,255,0.7)",
+          fontFamily: "'DM Mono', monospace",
+          whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
+        }}>
+          {book.module}
+        </div>
+
+        {hovered && hasFile && (
+          <div style={{
+            position: "absolute", inset: 0,
+            background: "rgba(0,0,0,0.5)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            backdropFilter: "blur(2px)",
+          }}>
+            <div style={{
+              fontSize: 11, fontWeight: 700, color: "#fff",
+              background: meta.accent,
+              padding: "7px 16px", borderRadius: 8,
+              fontFamily: "'DM Mono', monospace",
+              letterSpacing: 0.6,
+              boxShadow: `0 4px 16px ${meta.accent}44`,
+            }}>
+              Open PDF ↗
+            </div>
+          </div>
+        )}
+      </div>
+
+      <div style={{ padding: "14px 16px 16px", flex: 1, display: "flex", flexDirection: "column", gap: 8 }}>
+        <div style={{
+          fontSize: 13, fontWeight: 700, color: "var(--text-primary)",
+          lineHeight: 1.4, fontFamily: "'DM Sans', sans-serif",
+          display: "-webkit-box", WebkitLineClamp: 2,
+          WebkitBoxOrient: "vertical", overflow: "hidden",
+          minHeight: 36,
+        }}>
+          {book.title}
+        </div>
+        <div style={{ fontSize: 11, color: "var(--text-muted)", fontFamily: "'DM Mono', monospace" }}>
+          {book.author} · {book.edition}
+        </div>
+
+        {(book.tags || []).length > 0 && (
+          <div style={{ display: "flex", gap: 5, flexWrap: "wrap" }}>
+            {(book.tags || []).slice(0, 3).map(tag => (
+              <span key={tag} style={{
+                fontSize: 9, padding: "2px 7px", borderRadius: 20,
+                background: "var(--bg-muted)", color: "var(--text-muted)",
+                border: "0.5px solid var(--bg-border)",
+                fontFamily: "'DM Mono', monospace",
+              }}>#{tag}</span>
+            ))}
+          </div>
+        )}
+
+        <button
+          onClick={handleOpen}
+          disabled={!hasFile}
+          style={{
+            fontSize: 11, padding: "5px 12px", borderRadius: 8, marginTop: "auto",
+            border: `0.5px solid ${hasFile ? meta.accent + "66" : "var(--bg-border)"}`,
+            background: hasFile ? `${meta.accent}12` : "transparent",
+            color: hasFile ? meta.accent : "var(--text-muted)",
+            cursor: hasFile ? "pointer" : "default",
+            fontFamily: "'DM Mono', monospace",
+            fontWeight: 600,
+            transition: "all .15s",
+          }}
+        >
+          {hasFile ? "Open PDF ↗" : "Add Your PDF"}
+        </button>
       </div>
     </div>
   );
@@ -838,7 +1063,7 @@ export default function ResourceLibrary({ user = null, updateProgress = null, bu
           ) : filteredNotes.length === 0 ? (
             <NoMatch />
           ) : (
-            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: "20px 16px" }}>
               {filteredNotes.map(note => <NoteCard key={note.id} note={note} />)}
             </div>
           )}
@@ -870,7 +1095,7 @@ export default function ResourceLibrary({ user = null, updateProgress = null, bu
             </div>
           )}
           {filteredRefBooks.length === 0 ? <NoMatch /> : (
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: 12 }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: "20px 16px" }}>
               {filteredRefBooks.map(book => <RefBookCard key={book.id} book={book} />)}
             </div>
           )}

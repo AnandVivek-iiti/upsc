@@ -37,4 +37,22 @@ const authLimiter = rateLimit({
   message: { success: false, error: "Too many auth attempts. Please wait 15 minutes." },
 });
 
-module.exports = { globalLimiter, evaluateLimiter, authLimiter };
+// ─── Test Analysis Limiter ────────────────────────────────────────────────────
+// Max 20 AI-analyzed test submissions per user per 24 hours.
+// More generous than evaluateLimiter (Mains essays are far more expensive to
+// grade than scoring+analyzing one MCQ test), but still capped to protect
+// AI API quotas from runaway/automated submissions.
+const testAnalysisLimiter = rateLimit({
+  windowMs: 24 * 60 * 60 * 1000, // 24 hours
+  max: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  keyGenerator: (req) => `user_${req.user.id}`,
+  skip: (req) => req.user?.role === "admin",
+  message: {
+    success: false,
+    error: "Daily test-analysis limit reached (20/day). Resets at midnight. This limit protects AI API quotas.",
+  },
+});
+
+module.exports = { globalLimiter, evaluateLimiter, authLimiter, testAnalysisLimiter };

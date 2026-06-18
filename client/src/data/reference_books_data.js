@@ -1,8 +1,21 @@
 // ─── Reference Books Stack ────────────────────────────────────────────────────
 // Standard UPSC reference books used across Prelims & Mains GS papers.
-// Links point to the publisher's site or Amazon India product pages.
+//
+// IMPORTANT — no "buy" links here anymore. Every book opens as a PDF, the same
+// way NCERT books and notes do. There are two ways a book gets a working
+// "Open PDF" button:
+//   1. filePath — point this at your own scanned/owned copy on disk, served
+//      via /api/refbooks/file (mirrors how ncert_data.js and notes_data.js work).
+//   2. url — ONLY used for resources that are genuinely free & official
+//      (government portals, official magazine archives). Commercial/copyrighted
+//      coaching books (Laxmikanth, Spectrum, Shankar IAS, etc.) intentionally
+//      have no url here — there's no legitimate free copy of those online, so
+//      add your own PDF via filePath instead.
+//
+// If both filePath and url are null, the card shows "Add Your PDF" and is
+// disabled until you fill one in.
 
-export const REF_BOOKS_LAST_UPDATED = "June 10, 2026";
+export const REF_BOOKS_LAST_UPDATED = "June 18, 2026";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Each entry:
@@ -12,7 +25,8 @@ export const REF_BOOKS_LAST_UPDATED = "June 10, 2026";
 //   title     : book title
 //   author    : author / publication
 //   edition   : latest edition year (update when new editions release)
-//   url       : buy/read link
+//   filePath  : absolute path to YOUR OWN pdf on disk — served via /api/refbooks/file
+//   url       : free + official link only (govt portal / official archive). null if none exists.
 //   priority  : "must-read" | "recommended" | "optional"
 //   tags      : array of string tags
 // ─────────────────────────────────────────────────────────────────────────────
@@ -46,7 +60,8 @@ export const REFERENCE_BOOKS = [
     title: "India's Struggle for Independence",
     author: "Bipan Chandra",
     edition: "2016",
-    url: "https://www.amazon.in/dp/0143424807",
+    filePath: null,  // e.g. "C:/UPSC/RefBooks/BipanChandra.pdf"
+    url: null,       // no legitimate free copy — add your own scanned PDF
     priority: "must-read",
     tags: ["modern-history", "freedom-struggle", "nationalism", "bipan-chandra"],
   },
@@ -57,7 +72,8 @@ export const REFERENCE_BOOKS = [
     title: "A Brief History of Modern India (Spectrum)",
     author: "Rajiv Ahir",
     edition: "2023",
-    url: "https://www.amazon.in/dp/9387383075",
+    filePath: null,
+    url: null,
     priority: "must-read",
     tags: ["modern-history", "spectrum", "upsc-standard", "brief"],
   },
@@ -68,7 +84,8 @@ export const REFERENCE_BOOKS = [
     title: "History of Medieval India",
     author: "Satish Chandra",
     edition: "2018",
-    url: "https://www.amazon.in/dp/8125031200",
+    filePath: null,
+    url: null,
     priority: "recommended",
     tags: ["medieval-history", "satish-chandra", "sultanate", "mughal"],
   },
@@ -76,10 +93,11 @@ export const REFERENCE_BOOKS = [
     id: "ref-hist-rs-sharma",
     paper: "GS1",
     module: "Ancient History",
-    title: "Ancient India (NCERT Replacement)",
+    title: "Ancient India (Old NCERT)",
     author: "R.S. Sharma",
-    edition: "2018",
-    url: "https://www.amazon.in/dp/8121505194",
+    edition: "1977",
+    filePath: null,  // withdrawn from NCERT's official catalogue, no authorized free copy online
+    url: null,
     priority: "recommended",
     tags: ["ancient-history", "rs-sharma", "vedic", "maurya", "gupta"],
   },
@@ -94,7 +112,8 @@ export const REFERENCE_BOOKS = [
     title: "Indian Art and Culture",
     author: "Nitin Singhania",
     edition: "2023",
-    url: "https://www.amazon.in/dp/9357055584",
+    filePath: null,
+    url: null,
     priority: "must-read",
     tags: ["art", "culture", "architecture", "music", "nitin-singhania"],
   },
@@ -109,7 +128,8 @@ export const REFERENCE_BOOKS = [
     title: "Certificate Physical and Human Geography",
     author: "Goh Cheng Leong",
     edition: "2019",
-    url: "https://www.amazon.in/dp/0195612299",
+    filePath: null,
+    url: null,
     priority: "must-read",
     tags: ["geography", "physical", "human", "goh-cheng-leong"],
   },
@@ -120,7 +140,8 @@ export const REFERENCE_BOOKS = [
     title: "Geography of India",
     author: "Majid Husain",
     edition: "2021",
-    url: "https://www.amazon.in/dp/9352839137",
+    filePath: null,
+    url: null,
     priority: "must-read",
     tags: ["geography", "india", "majid-husain", "upsc-mains"],
   },
@@ -131,7 +152,8 @@ export const REFERENCE_BOOKS = [
     title: "Oxford Student Atlas for India",
     author: "Oxford Press",
     edition: "2022",
-    url: "https://www.amazon.in/dp/0190121459",
+    filePath: null,
+    url: null,
     priority: "recommended",
     tags: ["atlas", "maps", "geography", "oxford"],
   },
@@ -146,7 +168,8 @@ export const REFERENCE_BOOKS = [
     title: "Indian Polity",
     author: "M. Laxmikanth",
     edition: "2023",
-    url: "https://www.amazon.in/dp/9355327501",
+    filePath: null,
+    url: null,
     priority: "must-read",
     tags: ["polity", "constitution", "laxmikanth", "upsc-bible"],
   },
@@ -157,7 +180,8 @@ export const REFERENCE_BOOKS = [
     title: "Introduction to the Constitution of India",
     author: "D.D. Basu",
     edition: "2022",
-    url: "https://www.amazon.in/dp/9389176026",
+    filePath: null,
+    url: null,
     priority: "recommended",
     tags: ["constitution", "dd-basu", "articles", "legal"],
   },
@@ -168,7 +192,8 @@ export const REFERENCE_BOOKS = [
     title: "Second Administrative Reforms Commission Reports",
     author: "Government of India",
     edition: "2009",
-    url: "https://arc.gov.in/",
+    filePath: null,
+    url: "https://darpg.gov.in/en/arc-reports",  // official, free — all 15 reports
     priority: "recommended",
     tags: ["governance", "arc", "administrative-reform", "e-governance"],
   },
@@ -183,7 +208,8 @@ export const REFERENCE_BOOKS = [
     title: "International Relations",
     author: "Pavneet Singh",
     edition: "2022",
-    url: "https://www.amazon.in/dp/9388144961",
+    filePath: null,
+    url: null,
     priority: "must-read",
     tags: ["international-relations", "foreign-policy", "pavneet-singh"],
   },
@@ -198,7 +224,8 @@ export const REFERENCE_BOOKS = [
     title: "Indian Economy",
     author: "Ramesh Singh",
     edition: "2023",
-    url: "https://www.amazon.in/dp/9356192936",
+    filePath: null,
+    url: null,
     priority: "must-read",
     tags: ["economy", "ramesh-singh", "indian-economy", "upsc"],
   },
@@ -209,7 +236,8 @@ export const REFERENCE_BOOKS = [
     title: "Economic Survey (Annual)",
     author: "Ministry of Finance, GoI",
     edition: "2024-25",
-    url: "https://www.indiabudget.gov.in/economicsurvey/",
+    filePath: null,
+    url: "https://www.indiabudget.gov.in/economicsurvey/",  // official, free PDF per chapter
     priority: "must-read",
     tags: ["economy", "economic-survey", "annual", "budget", "data"],
   },
@@ -220,7 +248,8 @@ export const REFERENCE_BOOKS = [
     title: "Union Budget Documents (Annual)",
     author: "Ministry of Finance, GoI",
     edition: "2025-26",
-    url: "https://www.indiabudget.gov.in/",
+    filePath: null,
+    url: "https://www.indiabudget.gov.in/",  // official, free
     priority: "must-read",
     tags: ["economy", "budget", "fiscal", "annual"],
   },
@@ -231,7 +260,8 @@ export const REFERENCE_BOOKS = [
     title: "Indian Economy Since Independence",
     author: "Uma Kapila",
     edition: "2022",
-    url: "https://www.amazon.in/dp/8177081136",
+    filePath: null,
+    url: null,
     priority: "optional",
     tags: ["economy", "uma-kapila", "post-independence", "development"],
   },
@@ -246,7 +276,8 @@ export const REFERENCE_BOOKS = [
     title: "Science & Technology for UPSC CSE",
     author: "Ravi P. Agrahari",
     edition: "2023",
-    url: "https://www.amazon.in/dp/9357055282",
+    filePath: null,
+    url: null,
     priority: "recommended",
     tags: ["science", "technology", "upsc", "space", "biotech"],
   },
@@ -261,7 +292,8 @@ export const REFERENCE_BOOKS = [
     title: "Environment (for Civil Services Examinations)",
     author: "Shankar IAS Academy",
     edition: "2024",
-    url: "https://www.amazon.in/dp/9390871360",
+    filePath: null,
+    url: null,
     priority: "must-read",
     tags: ["environment", "ecology", "biodiversity", "shankar", "conventions"],
   },
@@ -269,10 +301,11 @@ export const REFERENCE_BOOKS = [
     id: "ref-env-down-to-earth",
     paper: "GS3",
     module: "Environment",
-    title: "Down to Earth Magazine (Annual Compilation)",
+    title: "Down to Earth Magazine",
     author: "Centre for Science and Environment",
-    edition: "2024",
-    url: "https://www.downtoearth.org.in/",
+    edition: "2026",
+    filePath: null,
+    url: "https://www.downtoearth.org.in/",  // free articles on official site
     priority: "recommended",
     tags: ["environment", "current-affairs", "cse", "down-to-earth"],
   },
@@ -287,7 +320,8 @@ export const REFERENCE_BOOKS = [
     title: "Internal Security Challenges in India",
     author: "Ashok Kumar & Vipul Anekant",
     edition: "2022",
-    url: "https://www.amazon.in/dp/9352839439",
+    filePath: null,
+    url: null,
     priority: "recommended",
     tags: ["internal-security", "naxalism", "terrorism", "border"],
   },
@@ -302,7 +336,8 @@ export const REFERENCE_BOOKS = [
     title: "Lexicon for Ethics, Integrity & Aptitude",
     author: "Chronicle IAS",
     edition: "2023",
-    url: "https://www.amazon.in/dp/9388144856",
+    filePath: null,
+    url: null,
     priority: "must-read",
     tags: ["ethics", "integrity", "lexicon", "chronicle"],
   },
@@ -313,7 +348,8 @@ export const REFERENCE_BOOKS = [
     title: "Ethics, Integrity and Aptitude for Civil Services",
     author: "G. Subba Rao & P.N. Roy Chowdhury",
     edition: "2022",
-    url: "https://www.amazon.in/dp/9350950979",
+    filePath: null,
+    url: null,
     priority: "recommended",
     tags: ["ethics", "case-studies", "aptitude", "subba-rao"],
   },
@@ -324,7 +360,8 @@ export const REFERENCE_BOOKS = [
     title: "A New Approach to UPSC Civil Services Ethics",
     author: "Nanda Kishore Reddy",
     edition: "2022",
-    url: "https://www.amazon.in/dp/9390260949",
+    filePath: null,
+    url: null,
     priority: "optional",
     tags: ["ethics", "thinkers", "philosophers", "moral"],
   },
@@ -339,7 +376,8 @@ export const REFERENCE_BOOKS = [
     title: "151 Essays for UPSC Mains",
     author: "Disha Experts",
     edition: "2023",
-    url: "https://www.amazon.in/dp/9355792662",
+    filePath: null,
+    url: null,
     priority: "recommended",
     tags: ["essay", "mains", "upsc", "writing"],
   },
@@ -350,7 +388,8 @@ export const REFERENCE_BOOKS = [
     title: "Essays for Civil Services",
     author: "Arihant Experts",
     edition: "2023",
-    url: "https://www.amazon.in/dp/9325291193",
+    filePath: null,
+    url: null,
     priority: "optional",
     tags: ["essay", "civil-services", "arihant"],
   },
@@ -365,7 +404,8 @@ export const REFERENCE_BOOKS = [
     title: "CSAT Paper 2 Manual",
     author: "TMH Editorial Board",
     edition: "2023",
-    url: "https://www.amazon.in/dp/9355473273",
+    filePath: null,
+    url: null,
     priority: "must-read",
     tags: ["csat", "paper-2", "aptitude", "reasoning", "tmh"],
   },
@@ -376,7 +416,8 @@ export const REFERENCE_BOOKS = [
     title: "UPSC CSAT Compendium",
     author: "Arihant Experts",
     edition: "2023",
-    url: "https://www.amazon.in/dp/9325295016",
+    filePath: null,
+    url: null,
     priority: "recommended",
     tags: ["csat", "mental-ability", "upsc", "arihant"],
   },
@@ -391,7 +432,8 @@ export const REFERENCE_BOOKS = [
     title: "Vision IAS Monthly Current Affairs Magazine",
     author: "Vision IAS",
     edition: "2026",
-    url: "https://visionias.in/current-affairs/monthly-magazine",
+    filePath: null,
+    url: "https://visionias.in/current-affairs/monthly-magazine",  // official, needs free account login
     priority: "must-read",
     tags: ["current-affairs", "vision-ias", "monthly", "magazine"],
   },
@@ -402,7 +444,8 @@ export const REFERENCE_BOOKS = [
     title: "PIB (Press Information Bureau) Daily",
     author: "Government of India",
     edition: "2026",
-    url: "https://pib.gov.in/",
+    filePath: null,
+    url: "https://pib.gov.in/",  // official, fully free
     priority: "must-read",
     tags: ["current-affairs", "pib", "government", "daily"],
   },
@@ -413,6 +456,7 @@ export const REFERENCE_BOOKS = [
     title: "The Hindu Newspaper (Daily reading)",
     author: "The Hindu Group",
     edition: "2026",
+    filePath: null,
     url: "https://www.thehindu.com/",
     priority: "must-read",
     tags: ["current-affairs", "newspaper", "the-hindu", "daily"],
@@ -424,7 +468,8 @@ export const REFERENCE_BOOKS = [
     title: "Yojana Magazine (Monthly)",
     author: "Publications Division, GoI",
     edition: "2026",
-    url: "https://yojana.gov.in/",
+    filePath: null,
+    url: "https://www.publicationsdivision.nic.in/journals/index.php?route=page/archives",  // official, free PDF archive
     priority: "recommended",
     tags: ["current-affairs", "yojana", "government", "schemes", "magazine"],
   },
@@ -435,7 +480,8 @@ export const REFERENCE_BOOKS = [
     title: "Kurukshetra Magazine (Monthly — Rural Dev)",
     author: "Publications Division, GoI",
     edition: "2026",
-    url: "https://kurukshetra.nic.in/",
+    filePath: null,
+    url: "https://www.publicationsdivision.nic.in/journals/index.php?route=page/archives",  // official, free PDF archive
     priority: "recommended",
     tags: ["current-affairs", "kurukshetra", "rural-development", "agriculture"],
   },
@@ -450,7 +496,8 @@ export const REFERENCE_BOOKS = [
     title: "GS Score Integrated Study Materials",
     author: "GS Score",
     edition: "2024",
-    url: "https://www.gsscore.com/study-material",
+    filePath: null,
+    url: "https://www.gsscore.com/study-material",  // free downloadable notes
     priority: "optional",
     tags: ["gs", "integrated", "study-material", "gsscore"],
   },
