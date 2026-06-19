@@ -1,19 +1,12 @@
-/**
- * Topicwise.jsx — Mobile-first, fully integrated with all Mains PYQ data
- * ─────────────────────────────────────────────────────────────────────────────
- * Data layer  → File 2 (multi-year mains GS1–GS4, combineData, colorMaps)
- * UI / CSS    → File 1 (richer GLOBAL_CSS, FilterPanel with count/clear,
- *               QuestionCard pinned badge, detailed media-query tokens)
- * ─────────────────────────────────────────────────────────────────────────────
- */
+
 
 import { useState, useCallback, useMemo } from "react";
 import MatchTable from "../components/ui/MatchTable";
 import ExplanationBox from "../components/ui/ExplanationBox";
 import MainsQuestionCard from "../components/ui/MainsQuestionCard";
-import AIMentorChat from "../components/ui/AIMentorChat";
+import AIMentorChat from "./AI/AIMentorChat";
 import { useRevisionQueue } from "../hooks/useRevisionQueue";
-import { getMainsPaperLink } from "../data/Mains_papers";
+import { getMainsPaperLink } from "../data/PYQs/Mains_papers";
 import { useQuestionAttempts } from "../hooks/useQuestionAttempts";
 
 // ─── PRELIMS DATA IMPORTS ─────────────────────────────────────────────────────

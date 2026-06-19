@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { getUserData, updateSyllabusProgress, logDailyHours, bulkUpdateSyllabus } from "../utils/api";
-import { SYLLABUS, deepClone } from "../data/syllabusData";
+import { SYLLABUS, deepClone } from "../data/PYQs/syllabusData";
 import { connectSocket, disconnectSocket } from "../utils/socket";
 import { getISTDateString } from "../utils/dateUtils";
 import timerStore from "./timerStore";
@@ -50,10 +50,6 @@ export function useUserData({ enabled = true, token = null } = {}) {
     }
   }, [fetchData, enabled, token]);
 
-  // ─── Real-time dashboard sync — Socket.io ────────────────────────────────────
-  // Pushes daily-log / streak / syllabus updates from any other open tab or
-  // device for this same account, so the dashboard reflects them instantly
-  // instead of waiting for the next manual refetch.
   useEffect(() => {
     if (!enabled || !token) {
       disconnectSocket();

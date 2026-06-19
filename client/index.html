@@ -286,13 +286,6 @@
     <!-- ── React root ──────────────────────────────────────────────────────── -->
     <div id="root"></div>
 
-    <!-- ── Dismiss splash once React paints its first frame ───────────────── -->
-    <!--
-      We poll requestAnimationFrame until #root has a child element (meaning
-      React has rendered). Then we add the .done class which triggers the CSS
-      opacity:0 transition, and remove the node from the DOM 500 ms later.
-      This is ~20 bytes of vanilla JS — no framework needed.
-    -->
     <script>
       (function () {
         var splash = document.getElementById('splash');

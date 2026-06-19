@@ -11,10 +11,10 @@ import {
 import {
   getMainsPaperLink,
   MAINS_LAST_VERIFIED_DATE,
-} from "../data/Mains_papers";
+} from "../data/PYQs/Mains_papers";
 import AddCustomQuestion from "../components/QuestionStats";
 import ResourceLibrary from "./ResourceLibrary";
-import AIMentorChat from "../components/ui/AIMentorChat";
+import AIMentorChat from "./AI/AIMentorChat";
 // ─── Constants ────────────────────────────────────────────────────────────────
 const TABS = [
   { id: "pyqs", label: "PYQs", icon: Archive },

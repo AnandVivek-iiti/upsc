@@ -1,4 +1,3 @@
-// import React from "react";
 
 export default function MatchTable({ dataString }) {
   if (!dataString) return null;

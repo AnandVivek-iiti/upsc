@@ -13,7 +13,7 @@
  */
 
 import { useState } from "react";
-import AIEvaluatorPanel from "./AIEvaluatorPanel";
+import AIEvaluatorPanel from "../../pages/AI/AIEvaluatorPanel";
 
 // ── DIRECTIVE BADGE (softer, readable colors) ────────────────────────────────
 

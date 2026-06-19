@@ -6,10 +6,10 @@ import {
   getPct,
   deepClone,
   getAllModules,
-} from "../data/syllabusData";
+} from "../data/PYQs/syllabusData";
 import { useState, useCallback, useEffect } from "react";
-import AIMentorChat from "../components/ui/AIMentorChat";
-import AIRevisionPanel from "../components/ui/AIRevisionPanel";
+import AIMentorChat from "./AI/AIMentorChat";
+import AIRevisionPanel from "./AI/AIRevisionPanel";
 
 // ─── StatusBadge ─────────────────────────────────────────────────────────────
 

@@ -1,21 +1,19 @@
-// // ─── Resource Library ─────────────────────────────────────────────────────────
+// ─── Resource Library ─────────────────────────────────────────────────────────
 // Four sections: NCERT Books · My Notes · Reference Books · YouTube Classes
-// ClassCard now shows YouTube video thumbnail via thumbnailVideoId field.
-// classes.js has been cleaned — only verified channels/playlists remain.
 
 import { useState, useMemo } from "react";
 import TestSeriesPage from "./Testseriespage";
 
 import {
   NCERT_BOOKS, SUBJECTS, SUBJECT_PAPER_MAP, NCERT_LAST_UPDATED,
-} from "../data/ncert_data";
-import { NOTES, NOTE_PAPERS, NOTES_LAST_UPDATED } from "../data/notes_data";
+} from "../data/Resources/ncert_data";
+import { NOTES, NOTE_PAPERS, NOTES_LAST_UPDATED } from "../data/Resources/notes_data";
 import {
   REFERENCE_BOOKS, REF_BOOK_PAPERS, PRIORITY_COLORS, REF_BOOKS_LAST_UPDATED,
-} from "../data/reference_books_data";
+} from "../data/Resources/reference_books_data";
 import {
   YOUTUBE_CLASSES, YT_SUBJECTS, YT_PAPERS, YT_LAST_UPDATED,
-} from "../data/classes";
+} from "../data/Resources/classes";
 
 // ─── COVER IMAGE MAP ──────────────────────────────────────────────────────────
 const COVER_MAP = {};
@@ -592,8 +590,7 @@ function RefBookCard({ book }) {
 }
 
 // ─── YOUTUBE CLASS CARD ───────────────────────────────────────────────────────
-// Shows a real YouTube thumbnail via thumbnailVideoId (maxresdefault or hqdefault).
-// Falls back to a styled placeholder if no thumbnailVideoId.
+// Shows a real YouTube thumbnail via thumbnailVideoId, falls back to a placeholder
 function ClassCard({ cls }) {
   const [thumbError, setThumbError] = useState(false);
   const langColor    = LANG_COLORS[cls.language] || "#a78bfa";
@@ -888,7 +885,7 @@ export default function ResourceLibrary({ user = null, updateProgress = null, bu
     <div style={{
       fontFamily: "'DM Sans', 'Segoe UI', system-ui, sans-serif",
       maxWidth: 1252, width: "100%", margin: "0 auto",
-      padding: "32px 24px", color: "var(--text-primary)",
+      padding: "16px 12px", color: "var(--text-primary)",
     }}>
 
       {/* ── Header ─────────────────────────────────────────────────────────── */}

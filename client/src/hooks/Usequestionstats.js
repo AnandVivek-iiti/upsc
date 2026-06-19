@@ -1,35 +1,3 @@
-// hooks/useQuestionStats.js
-// ─── Question Statistics Hook ─────────────────────────────────────────────────
-// Persists every question attempt to localStorage.
-// Reads are O(1) via a derived index map.
-//
-// Schema stored at "upsc-question-stats":
-// {
-//   attempts: [
-//     {
-//       id:         string,   // question _id or generated id
-//       questionText: string, // first 80 chars (for display)
-//       result:     "correct" | "wrong",
-//       difficulty: "Easy" | "Medium" | "Hard",
-//       year:       number | null,
-//       topic:      string | null,
-//       subject:    string | null,
-//       paper:      string | null,
-//       stage:      "prelims" | "mains",
-//       attemptedAt: ISO string,
-//     }
-//   ]
-// }
-//
-// API:
-//   stats.record(question, result, meta)    — log an attempt
-//   stats.getAttemptedIds()                 — Set of all attempted question IDs
-//   stats.summary                           — computed summary object (see below)
-//   stats.yearBreakdown                     — { year: { correct, wrong, total } }
-//   stats.diffBreakdown                     — { Easy/Medium/Hard: { correct, wrong, total } }
-//   stats.subjectBreakdown                  — { subjectName: { correct, wrong, total } }
-//   stats.recentAttempts(n)                 — last n attempts (newest first)
-//   stats.clearAll()                        — wipe everything
 
 import { useState, useCallback, useMemo } from "react";
 
@@ -66,7 +34,6 @@ export function useQuestionStats() {
       attemptedAt:  new Date().toISOString(),
     };
     setAttempts(prev => {
-      // Only keep the latest attempt per question (overwrite earlier)
       const without = prev.filter(a => a.id !== entry.id);
       const next = [entry, ...without];
       saveRaw({ attempts: next });

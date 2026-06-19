@@ -1,24 +1,4 @@
-/**
- * mainsGS2Data.js
- * UPSC Mains GS Paper 2 — 2024
- *
- * Schema (descriptive / Mains variant):
- * {
- *   _id          : string   — unique identifier
- *   year         : number
- *   paper        : string   — "GS Paper 2"
- *   subject      : string   — broad subject tag
- *   topic        : string   — more specific topic for filter chips
- *   subTopic     : string   — shown as small badge on card
- *   marks        : number   — 10 or 15
- *   questionText : string   — full question as printed
- *   directive    : string   — "Discuss" | "Examine" | "Explain" | etc.
- *   wordLimit    : number   — suggested word limit (marks × 10 as UPSC norm)
- *   idealAnswer  : string   — structured model answer (shown only after user reveals)
- *   keyPoints    : string[] — bullet checklist of must-cover points
- *   sources      : { name, chapter }[]
- * }
- */
+
 
 const mainsGS2Data = [
   // ─── INTERNATIONAL RELATIONS ─────────────────────────────────────────────

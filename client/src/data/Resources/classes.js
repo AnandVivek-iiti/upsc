@@ -1,23 +1,6 @@
-// ─── YouTube Classes — Free UPSC Content ─────────────────────────────────────
-// All entries manually verified June 2026.
-// Rules: channel-level URLs used where specific playlist IDs could not be confirmed.
-// Removed: entries with unverified playlist IDs, paywalled content, incorrect metadata.
 
 export const YT_LAST_UPDATED = "June 14, 2026";
 
-// Each entry:
-//   id          : unique string key
-//   teacher     : educator's name
-//   channel     : YouTube channel name
-//   subject     : matches SUBJECTS
-//   paper       : "Prelims GS1" | "Prelims CSAT" | "GS1" | "GS2" | "GS3" | "GS4" | "Essay" | "General"
-//   title       : playlist / course title
-//   description : 1-line description
-//   url         : YouTube playlist or channel URL (verified)
-//   thumbnailVideoId : a known public video ID from that channel for thumbnail (optional)
-//   language    : "Hindi" | "English" | "Bilingual"
-//   totalVideos : approximate count (null if not known)
-//   tags        : string[]
 
 export const YT_SUBJECTS = [
   "History",

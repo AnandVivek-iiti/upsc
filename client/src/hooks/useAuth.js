@@ -2,11 +2,6 @@ import { useState, useEffect, useCallback } from "react";
 import { setAuthToken, clearAuthToken } from "../utils/api";
 import timerStore from "./timerStore";
 
-/**
- * useAuth — reads/writes JWT session from localStorage.
- * Also syncs the token into the api.js module so every apiFetch
- * automatically includes Authorization: Bearer <token>.
- */
 export function useAuth() {
   const [user,    setUser]    = useState(null);
   const [token,   setToken]   = useState(null);

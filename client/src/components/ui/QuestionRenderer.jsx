@@ -1,16 +1,3 @@
-/**
- * QuestionRenderer.jsx
- * ─────────────────────────────────────────────────────────────────────────────
- * UPSC PYQ — Central Question Rendering Component (MCQ + match tables)
- *
- * Improved:
- *   • Responsive fonts (clamp / rem)
- *   • Better text contrast (softer secondary text, clear headings)
- *   • Mobile-friendly padding & touch targets (min‑height buttons)
- *   • Table overflow handling
- *   • Inherited color for badges & markers
- * ─────────────────────────────────────────────────────────────────────────────
- */
 
 import { useState } from "react";
 import ExplanationBox from "./ExplanationBox";
@@ -25,33 +12,24 @@ function MatchTable({ dataString }) {
 
   if (lines.length === 0) return null;
 
-  // Parse each line into cells (ignore leading/trailing empty cells from outer pipes)
   const rows = lines.map(line => {
     const cells = line.split("|").map(cell => cell.trim());
-    // Remove first and last if they are empty (due to leading/trailing |)
     if (cells[0] === "") cells.shift();
     if (cells[cells.length - 1] === "") cells.pop();
     return cells;
   });
 
   if (rows.length === 0) return null;
-
-  // Determine max column count (use header row length as reference)
   const header = rows[0];
   const columnCount = header.length;
-
-  // Normalize all rows to have exactly `columnCount` cells
   const normalizedRows = rows.map(row => {
     if (row.length === columnCount) return row;
     if (row.length < columnCount) {
-      // Pad with empty strings
       return [...row, ...Array(columnCount - row.length).fill("")];
     }
-    // Truncate extra cells
     return row.slice(0, columnCount);
   });
 
-  // Separate header (first row) and body rows
   const bodyRows = normalizedRows.slice(1);
 
   const cellStyle = (isHeader = false) => ({

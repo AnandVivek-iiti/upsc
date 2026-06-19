@@ -4,26 +4,26 @@ const http = require("http");
 const express = require("express");
 const cors = require("cors");
 
-const { connectDB } = require("./src/config/db");
-const VisitorLog = require("./src/models/VisitorLog");
+const { connectDB } = require("./config/db");
+const VisitorLog = require("./models/VisitorLog");
 
 // ── Import all models so Sequelize registers them before sync ─────────────────
-require("./src/models/User");
-require("./src/models/Feature");
-require("./src/models/UserData"); // registers UserData, SyllabusModule, Answer, DailyLog, SpacedRepItem
-require("./src/models/TestAttempt"); // registers TestAttempt (MCQ Test Series results) so its table gets created on sync
+require(".//models/User");
+require(".//models/Feature");
+require(".//models/UserData"); // registers UserData, SyllabusModule, Answer, DailyLog, SpacedRepItem
+require(".//models/TestAttempt"); // registers TestAttempt (MCQ Test Series results) so its table gets created on sync
 
-const { globalLimiter } = require("./src/middleware/rateLimiter");
-const { errorHandler, notFound } = require("./src/middleware/errorMiddleware");
+const { globalLimiter } = require(".//middleware/rateLimiter");
+const { errorHandler, notFound } = require(".//middleware/errorMiddleware");
 
-const authRoutes = require("./src/routes/authRoutes");
-const dashboardRoutes = require("./src/routes/dashboardRoutes");
-const evaluateRoutes = require("./src/routes/evaluateRoutes");
-const adminRoutes = require("./src/routes/adminRoutes");
-const testRoutes = require("./src/routes/testRoutes");
+const authRoutes = require(".//routes/authRoutes");
+const dashboardRoutes = require(".//routes/dashboardRoutes");
+const evaluateRoutes = require(".//routes/evaluateRoutes");
+const adminRoutes = require(".//routes/adminRoutes");
+const testRoutes = require(".//routes/testRoutes");
 
 // ── Socket.io — real-time dashboard sync (timer/progress across tabs+devices) ─
-const { initSocket } = require("./src/socket/socketManager");
+const { initSocket } = require(".//socket/socketManager");
 
 // ─── Connect Database ─────────────────────────────────────────────────────────
 connectDB(); // connects + syncs all Sequelize models → creates tables
@@ -90,6 +90,10 @@ app.use("/api/tests", testRoutes);
 app.use(notFound);
 app.use(errorHandler);
 
+// ─── HTTP Server + Socket.io ──────────────────────────────────────────────────
+// Socket.io needs to attach to the raw http.Server, not the Express app
+// directly — that's why we wrap app in http.createServer() and pass THAT to
+// both initSocket() and .listen(), instead of calling app.listen() like before.
 const httpServer = http.createServer(app);
 initSocket(httpServer);
 

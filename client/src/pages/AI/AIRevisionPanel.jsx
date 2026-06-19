@@ -1,16 +1,4 @@
-/**
- * AIRevisionPanel.jsx
- * ─────────────────────────────────────────────────────────────────────────────
- * Reads spaced repetition queue from GET /api/dashboard/spaced-repetition.
- * Lets user add topics via POST /api/dashboard/spaced-repetition.
- * Shows due count, overdue items, and upcoming reviews.
- * Drop this into SyllabusTracker, Dashboard, or Topicwise.
- *
- * Props:
- *   isLoggedIn  {bool}
- *   compact     {bool}  — single-column compact mode
- * ─────────────────────────────────────────────────────────────────────────────
- */
+
 import { useState, useEffect, useCallback } from "react";
 import {
     Brain, Clock, CheckCircle2, Plus, RefreshCw, LogIn,

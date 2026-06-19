@@ -270,13 +270,7 @@ export function useQuestionAttempts({ onSyllabusUpdate, serverAttempts = null } 
           const progress = isEssay
             ? Math.min(Math.round((bucket.length / 10) * 100), 90)   // 10 essays = 90%
             : Math.min(Math.round(ratio * 100), 90);
-
-          // Status ladder:
-          //   any attempt  → "progress"
-          //   ≥50% correct → "revision"  (close, needs more drilling)
-          //   ≥70% correct → "progress"  (solid, keep going)
-          //   (we don't auto-set "done" — user confirms mastery manually)
-          const status =
+   const status =
             ratio >= THRESHOLD ? "progress" :
             ratio >= 0.50      ? "revision" :
             attemptedCount > 0 ? "progress" : "pending";

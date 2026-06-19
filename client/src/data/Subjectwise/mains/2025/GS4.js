@@ -1,24 +1,3 @@
-/**
- * mainsGS4Data.js
- * UPSC Mains GS Paper 4 (Ethics, Integrity and Aptitude) — 2025
- *
- * Schema (descriptive / Mains variant):
- * {
- *   _id          : string   — unique identifier
- *   year         : number
- *   paper        : string   — "GS Paper 4"
- *   subject      : string   — broad subject tag
- *   topic        : string   — more specific topic for filter chips
- *   subTopic     : string   — shown as small badge on card
- *   marks        : number   — 10 or 20
- *   questionText : string   — full question as printed
- *   directive    : string   — "Discuss" | "Examine" | "Analyse" | "Case Study" | etc.
- *   wordLimit    : number   — suggested word limit
- *   idealAnswer  : string   — structured model answer (shown only after user reveals)
- *   keyPoints    : string[] — bullet checklist of must-cover points
- *   sources      : { name, chapter }[]
- * }
- */
 
 const mainsGS4Data = [
   // ─── CASE STUDIES ────────────────────────────────────────────────────────

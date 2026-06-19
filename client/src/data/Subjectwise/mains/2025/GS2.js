@@ -1,8 +1,4 @@
-/**
- * mainsGS2Data.js
- * UPSC Mains GS Paper 2 — 2025
- * Subjects: Indian Polity, Governance, Social Justice, International Relations
- */
+
 
 const mainsGS2Data = [
   // ─── INTERNATIONAL RELATIONS ─────────────────────────────────────────────

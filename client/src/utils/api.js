@@ -5,13 +5,6 @@ const BASE =
 let _token = null;
 export function setAuthToken(token) { _token = token; }
 export function clearAuthToken()    { _token = null; }
-
-// ─── Generic fetch wrapper ────────────────────────────────────────────────────
-// `explicitToken` lets callers bypass the module-level _token.
-// This is critical for the first post-login fetch: React state updates are
-// async, so useUserData may fire before setAuthToken() has been called by
-// the useAuth hook's setState callback. Passing the token explicitly
-// from App.jsx eliminates that race entirely.
 async function apiFetch(path, options = {}, explicitToken = null) {
   const controller = new AbortController();
   const timeout    = setTimeout(() => controller.abort(), 8000);

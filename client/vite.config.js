@@ -20,7 +20,7 @@ export default defineConfig({
         "logo-maskable-192.png",
         "logo-512.png",
         "logo-maskable-512.png",
-           "logo-upsc.png",
+        "logo-upsc.png",
         "index.html",
         "Motivation.png",
       ],
@@ -39,30 +39,65 @@ export default defineConfig({
         scope: "/",
         start_url: "/",
 
-        // ── Icons ────────────────────────────────────────────────────────────
-        // Logo has solid dark square bg (corners: rgba 9,10,12,255) →
-        // maskable = same PNG, Android keeps it square (no circular crop).
-        // purpose "any maskable" on one entry also works but two entries
-        // gives explicit control — keep them separate.
         icons: [
-          // Small — browser tab, Windows taskbar
-          { src: "/favicon-16x16.png",  sizes: "16x16",  type: "image/png", purpose: "any" },
-          { src: "/favicon-32x32.png",  sizes: "32x32",  type: "image/png", purpose: "any" },
-          { src: "/favicon-48x48.png",  sizes: "48x48",  type: "image/png", purpose: "any" },
+          {
+            src: "/favicon-16x16.png",
+            sizes: "16x16",
+            type: "image/png",
+            purpose: "any",
+          },
+          {
+            src: "/favicon-32x32.png",
+            sizes: "32x32",
+            type: "image/png",
+            purpose: "any",
+          },
+          {
+            src: "/favicon-48x48.png",
+            sizes: "48x48",
+            type: "image/png",
+            purpose: "any",
+          },
 
-          // Medium — Chrome new tab shortcut, Android launcher
-          { src: "/favicon-96x96.png",  sizes: "96x96",  type: "image/png", purpose: "any" },
+          {
+            src: "/favicon-96x96.png",
+            sizes: "96x96",
+            type: "image/png",
+            purpose: "any",
+          },
 
-          // iOS home screen (Apple ignores manifest icons; needs apple-touch-icon in <head>)
-          { src: "/apple-touch-icon.png", sizes: "180x180", type: "image/png", purpose: "any" },
+          {
+            src: "/apple-touch-icon.png",
+            sizes: "180x180",
+            type: "image/png",
+            purpose: "any",
+          },
 
-          // Standard PWA install — home screen
-          { src: "/logo-192.png",         sizes: "192x192", type: "image/png", purpose: "any"      },
-          { src: "/logo-maskable-192.png", sizes: "192x192", type: "image/png", purpose: "maskable" },
+          {
+            src: "/logo-192.png",
+            sizes: "192x192",
+            type: "image/png",
+            purpose: "any",
+          },
+          {
+            src: "/logo-maskable-192.png",
+            sizes: "192x192",
+            type: "image/png",
+            purpose: "maskable",
+          },
 
-          // Large — splash screen, Play Store, install dialog
-          { src: "/logo-512.png",         sizes: "512x512", type: "image/png", purpose: "any"      },
-          { src: "/logo-maskable-512.png", sizes: "512x512", type: "image/png", purpose: "maskable" },
+          {
+            src: "/logo-512.png",
+            sizes: "512x512",
+            type: "image/png",
+            purpose: "any",
+          },
+          {
+            src: "/logo-maskable-512.png",
+            sizes: "512x512",
+            type: "image/png",
+            purpose: "maskable",
+          },
         ],
 
         shortcuts: [
@@ -87,11 +122,9 @@ export default defineConfig({
         categories: ["education", "productivity"],
       },
 
-      // ── Workbox (service worker) ──────────────────────────────────────────
       workbox: {
         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5 MB
 
-        // Precache: code + fonts + small icons only; heavy images → runtimeCaching
         globPatterns: [
           "**/*.{js,css,html,ico,woff2,woff}",
           "favicon-16x16.png",
@@ -100,7 +133,6 @@ export default defineConfig({
           "logo-192.png",
           "logo-maskable-192.png",
           "logo-512.png",
-       
         ],
 
         navigateFallback: "/index.html",
@@ -108,7 +140,6 @@ export default defineConfig({
 
         runtimeCaching: [
           {
-            // Large local images (Motivation, slider, footer, etc.)
             urlPattern: /\/assets\/.+\.(png|jpg|jpeg|webp|svg)$/i,
             handler: "CacheFirst",
             options: {
@@ -149,7 +180,7 @@ export default defineConfig({
       },
 
       devOptions: {
-        enabled: false, // flip true to test SW in dev
+        enabled: false,
       },
     }),
   ],

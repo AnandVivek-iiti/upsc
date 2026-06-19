@@ -1,15 +1,3 @@
-// hooks/useRevisionQueue.js
-// ─── Revision Queue Hook ──────────────────────────────────────────────────────
-// Stores pinned questions in localStorage so they survive page refreshes.
-// Each pinned item = the full question object + subject/paper metadata.
-//
-// Usage in Topicwise:
-//   const revQueue = useRevisionQueue();
-//   revQueue.isPinned(qId)           → boolean
-//   revQueue.toggle(questionObj, { subject, paper }) → pin / unpin
-//   revQueue.unpin(qId)              → remove one
-//   revQueue.clearQueue()            → remove all
-//   revQueue.queue                   → array of pinned question objects
 
 import { useState, useCallback, useMemo } from "react";
 

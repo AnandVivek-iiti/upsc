@@ -1,19 +1,4 @@
-/**
- * AIEvaluatorPanel.jsx
- * ─────────────────────────────────────────────────────────────────────────────
- * Drop this inside MainsGrind right below the answer textarea.
- * Calls POST /api/evaluate/answer on YOUR backend (Gemini → GPT4 → Claude → Groq).
- * Shows the full structured evaluation: score ring, keywords, structure,
- * strengths/weaknesses, topper comparison, model answer, priority actions.
- *
- * Props:
- *   question   {string}  — the question text (required)
- *   paper      {string}  — GS1/GS2/GS3/GS4/Essay
- *   answer     {string}  — the typed answer (controlled from parent)
- *   token      {string}  — JWT (pass from useAuth)
- *   isLoggedIn {bool}
- * ─────────────────────────────────────────────────────────────────────────────
- */
+
 import { useState, useCallback } from "react";
 import {
     Sparkles, Cpu, AlertTriangle, CheckCircle2, XCircle, Minus,

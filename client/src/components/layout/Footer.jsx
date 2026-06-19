@@ -23,7 +23,7 @@ function LinkItem({ href, label, tag, tagColor = "gold" }) {
       href={href}
       target="_blank"
       rel="noreferrer"
-      className="group flex items-center gap-2 rounded-lg px-2.5 py-2 text-sm text-text-secondary transition hover:bg-bg-muted hover:text-text-primary cursor-pointer"
+      className="group flex items-center gap-2 rounded-lg px-2.5 py-2 text-base text-text-secondary transition hover:bg-bg-muted hover:text-text-primary cursor-pointer"
     >
       <span className="flex-1 leading-snug pointer-events-none">{label}</span>
 
@@ -115,7 +115,7 @@ export default function Footer() {
                 href={item.url}
                 target="_blank"
                 rel="noreferrer"
-                className="group inline-flex items-center gap-1.5 rounded-full border border-bg-border bg-bg-muted px-3 py-1.5 text-sm font-semibold text-text-secondary transition hover:border-accent-gold/30 hover:text-text-primary"
+                className="group inline-flex items-center gap-1.5 rounded-full border border-bg-border bg-bg-muted px-3 py-1.5 text-base font-semibold text-text-secondary transition hover:border-accent-gold/30 hover:text-text-primary"
               >
                 <span className="pointer-events-none">{item.label}</span>
                 <ArrowUpRight

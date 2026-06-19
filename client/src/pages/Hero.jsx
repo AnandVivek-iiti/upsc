@@ -1,33 +1,100 @@
+import { useState, useEffect } from "react";
+import { ExternalLink, Sparkles, ChevronRight } from "lucide-react";
+import { getHourlyQuote } from "../data/quotes_data";
 
-import { useState } from "react";
-const HERO_IMAGES = [
-  "/assets/slider1.png",
-  "/assets/slider2.png",
- "/assets/slider3.png",
- "/assets/slider4.png",
- "/assets/slider5.png",
- "/assets/slider6.png",
- "/assets/slider7.png"
-];
-const DEFAULT_QUOTES = [
-  { text: "Dreams are not those that come while sleeping, but dreams are those when you don't sleep before fulfilling them.", src: "Dr. A.P.J. Abdul Kalam" },
-  { text: "All success in any line of work is the result of the power of concentration. Control of the mind should be taught first.", src: "Swami Vivekananda" },
-  { text: "My final words of advice to you are: educate, agitate, and organize; have faith in yourselves and never lose hope.", src: "Dr. B.R. Ambedkar" },
-  { text: "Learning gives creativity, creativity leads to thinking, thinking provides knowledge, and knowledge makes you great.", src: "Dr. A.P.J. Abdul Kalam" },
-  { text: "Arise! Awake! And stop not until the goal is reached.", src: "Swami Vivekananda" },
-  { text: "The battle for me is a matter full of joy... It is a battle for freedom, for the reclamation of the human personality.", src: "Dr. B.R. Ambedkar" },
-  { text: "Man needs difficulties because difficulties are necessary to enjoy success. Give wings to the divine fire within you.", src: "Dr. A.P.J. Abdul Kalam" }
-];
+// ─── Category → Google search URL ────────────────────────────────────────────
+function getSearchUrl(quote) {
+  const q = encodeURIComponent(`${quote.src} "${quote.text.slice(0, 60)}"`);
+  return `https://www.google.com/search?q=${q}`;
+}
 
-function QuotePanel({ customQuote }) {
-  const dayOfYear = Math.floor((new Date() - new Date(new Date().getFullYear(), 0, 0)) / 86400000);
-  const quote = customQuote ?? DEFAULT_QUOTES[dayOfYear % DEFAULT_QUOTES.length];
+// ─── Category badge colours ───────────────────────────────────────────────────
+const CATEGORY_COLOURS = {
+  Indian: { bg: "rgba(245,158,11,.18)", color: "var(--accent-gold)", border: "rgba(245,158,11,.35)" },
+  Sufi: { bg: "rgba(168,85,247,.15)", color: "#c084fc", border: "rgba(168,85,247,.3)" },
+  Philosophy: { bg: "rgba(59,130,246,.15)", color: "#93c5fd", border: "rgba(59,130,246,.3)" },
+  Sociology: { bg: "rgba(16,185,129,.15)", color: "#6ee7b7", border: "rgba(16,185,129,.3)" },
+  Poetry: { bg: "rgba(244,63,94,.15)", color: "#fb7185", border: "rgba(244,63,94,.3)" },
+  Literature: { bg: "rgba(251,146,60,.15)", color: "#fdba74", border: "rgba(251,146,60,.3)" },
+  Ethics: { bg: "rgba(99,102,241,.15)", color: "#a5b4fc", border: "rgba(99,102,241,.3)" },
+  UPSC: { bg: "rgba(245,158,11,.22)", color: "var(--accent-gold)", border: "rgba(245,158,11,.4)" },
+  Environment: { bg: "rgba(34,197,94,.15)", color: "#86efac", border: "rgba(34,197,94,.3)" },
+  Women: { bg: "rgba(236,72,153,.15)", color: "#f9a8d4", border: "rgba(236,72,153,.3)" },
+  Governance: { bg: "rgba(148,163,184,.15)", color: "#cbd5e1", border: "rgba(148,163,184,.3)" },
+  Economy: { bg: "rgba(251,191,36,.15)", color: "#fde68a", border: "rgba(251,191,36,.3)" },
+  Science: { bg: "rgba(6,182,212,.15)", color: "#67e8f9", border: "rgba(6,182,212,.3)" },
+  Wisdom: { bg: "rgba(245,158,11,.12)", color: "#fcd34d", border: "rgba(245,158,11,.25)" },
+  Politics: { bg: "rgba(239,68,68,.15)", color: "#fca5a5", border: "rgba(239,68,68,.3)" },
+};
+
+// ─── QuotePanel — 365-quote logic, original compact card styling ─────────────
+function QuotePanel({ customQuote, onQuoteClick }) {
+  const [quote, setQuote] = useState(customQuote ?? getHourlyQuote());
+  const [fade, setFade] = useState(true);
+
+  // Refresh at the top of each new hour
+  useEffect(() => {
+    if (customQuote) return;
+    const tick = () => {
+      const fresh = getHourlyQuote();
+      if (fresh.text !== quote.text) {
+        setFade(false);
+        setTimeout(() => { setQuote(fresh); setFade(true); }, 350);
+      }
+    };
+    const id = setInterval(tick, 60_000);
+    return () => clearInterval(id);
+  }, [quote, customQuote]);
+
+  const colours = CATEGORY_COLOURS[quote.category] || CATEGORY_COLOURS.Wisdom;
 
   return (
-    <div className="mt-4 sm:mt-5 rounded-xl px-4 py-4 sm:py-5">
-      <p className="font-mono text-[8px] sm:text-[9px] tracking-[.15em] text-accent-gold uppercase mb-2 sm:mb-3">Today's Focus</p>
-      <p className="text-[12px] sm:text-sm md:text-base italic text-white/95 leading-relaxed">"{quote.text}"</p>
-      <p className="text-[10px] sm:text-[11px] font-mono text-white/45 mt-3 sm:mt-4">— {quote.src}</p>
+    <div
+      className="mt-4 sm:mt-5 rounded-xl px-4 py-4 sm:py-5 cursor-pointer group"
+      onClick={() => onQuoteClick && onQuoteClick(quote)}
+    >
+      {/* Top row: label + category badge + external link */}
+      <div className="flex items-center justify-between mb-2 sm:mb-3">
+        <p className="font-mono text-[8px] sm:text-[9px] tracking-[.15em] text-accent-gold uppercase">
+          Today's Focus
+        </p>
+        <div className="flex items-center gap-1.5">
+          <span
+            className="font-mono text-[8px] px-1.5 py-0.5 rounded-full"
+            style={{ background: colours.bg, color: colours.color, border: `1px solid ${colours.border}` }}
+          >
+            {quote.category}
+          </span>
+          <button
+            onClick={e => {
+              e.stopPropagation();
+              window.open(getSearchUrl(quote), "_blank", "noopener,noreferrer");
+            }}
+            className="p-0.5 rounded opacity-50 hover:opacity-100 transition-opacity"
+            title="Search online"
+          >
+            <ExternalLink size={9} className="text-white/60" />
+          </button>
+        </div>
+      </div>
+
+      {/* Quote text */}
+      <p
+        className="text-[12px] sm:text-sm md:text-base italic text-white/95 leading-relaxed transition-opacity duration-300"
+        style={{ opacity: fade ? 1 : 0 }}
+      >
+        "{quote.text}"
+      </p>
+
+      {/* Author + AI hint */}
+      <div className="flex items-center justify-between mt-3 sm:mt-4">
+        <p className="text-[10px] sm:text-[11px] font-mono text-white/45">— {quote.src}</p>
+        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+          <Sparkles size={9} className="text-accent-gold" />
+          <span className="text-[9px] font-mono text-accent-gold">Ask AI Mentor</span>
+          <ChevronRight size={9} className="text-accent-gold" />
+        </div>
+      </div>
     </div>
   );
 }
@@ -35,6 +102,7 @@ function QuotePanel({ customQuote }) {
 export default function HeroBanner({
   examDate = null,
   customQuote = null,
+  onQuoteClick = null,
 }) {
   // Days-to-exam counter
   const daysLeft = (() => {
@@ -49,8 +117,8 @@ export default function HeroBanner({
           : "Over";
 
   return (
-    <section className="relative overflow-hidden rounded-xl  sm:rounded-2xl mx-3 sm:mx-6 mt-3 sm:mt-6 shadow-xl">
-      {/* Background - Same size as before */}
+    <section className="relative overflow-hidden rounded-xl sm:rounded-2xl mx-3 sm:mx-6 mt-3 sm:mt-6 shadow-xl">
+      {/* Background */}
       <div className="absolute inset-0 z-0">
         <img
           src="/Motivation.png"
@@ -86,8 +154,8 @@ export default function HeroBanner({
           Every answer matters.
         </h1>
 
-        {/* Quote - Now with more space */}
-        <QuotePanel customQuote={customQuote} />
+        {/* Quote - 365-quote engine, original compact panel look */}
+        <QuotePanel customQuote={customQuote} onQuoteClick={onQuoteClick} />
       </div>
     </section>
   );

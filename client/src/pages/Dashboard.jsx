@@ -24,12 +24,12 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { useState, useEffect, useCallback } from "react";
-import { SYLLABUS, PAPER_ORDER, getPct } from "../data/syllabusData";
+import { SYLLABUS, PAPER_ORDER, getPct } from "../data/PYQs/syllabusData";
 import AuthGate from "../components/ui/AuthGate";
 import timerStore, { getUserTimerHours } from "../hooks/timerStore";
 import QuestionStatsPanel from "../components/QuestionStats";
 import { AvatarCircle } from "./ProfilePage";
-import AIRevisionPanel from "../components/ui/AIRevisionPanel";
+import AIRevisionPanel from "./AI/AIRevisionPanel";
 import { getISTDateString, getISTDay } from "../utils/dateUtils";
 
 // ─── Tiny helpers ──────────────────────────────────────────────────────────────
@@ -127,6 +127,9 @@ function StudyTimer({ onLogHours, onSynced, targetHours = 8, serverHours = 0 }) 
   }, []);
 
   // ── Seed from server once (only if localStorage has nothing yet today) ────
+  // IMPORTANT: this must run BEFORE the auto-start effect below. seedFromServer
+  // only seeds when `!store.running`, so if auto-start fired first it would
+  // already have flipped `running` to true and silently blocked seeding.
   useEffect(() => {
     timerStore.seedFromServer(serverHours);
     if (serverHours > 0) {
@@ -134,6 +137,17 @@ function StudyTimer({ onLogHours, onSynced, targetHours = 8, serverHours = 0 }) 
       onSynced?.(serverHours);
     }
   }, [serverHours]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // ── Auto-start as soon as the dashboard opens ─────────────────────────────
+  // timerStore.autoStart() is idempotent per page load (guarded inside the
+  // store itself), so it's safe to call on every mount: it fires once when
+  // the app is first opened, and silently no-ops on later remounts caused by
+  // SPA navigation — meaning it won't fight a manual pause later in the
+  // session. Declared after the seeding effect above so today's already-
+  // logged hours are loaded in before we decide whether to start ticking.
+  useEffect(() => {
+    timerStore.autoStart();
+  }, []);
 
   // ── Sync to backend ───────────────────────────────────────────────────────
   const syncToServer = useCallback(

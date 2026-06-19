@@ -1,19 +1,6 @@
 import { useEffect, useState } from "react";
 import { Download, X } from "lucide-react";
 
-/**
- * PWAInstallPrompt
- * ─────────────────
- * Fix: `beforeinstallprompt` fires before React mounts, so we read from
- * `window.__pwaPrompt` which is captured globally in main.jsx.
- *
- * In main.jsx (before ReactDOM.createRoot), add:
- *   window.__pwaPrompt = null;
- *   window.addEventListener('beforeinstallprompt', (e) => {
- *     e.preventDefault();
- *     window.__pwaPrompt = e;
- *   });
- */
 export default function PWAInstallPrompt() {
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [show, setShow] = useState(false);
@@ -21,7 +8,6 @@ export default function PWAInstallPrompt() {
   const [installed, setInstalled] = useState(false);
 
   useEffect(() => {
-    // Already running as installed PWA — don't show
     if (
       window.matchMedia("(display-mode: standalone)").matches ||
       window.navigator.standalone === true
@@ -38,12 +24,9 @@ export default function PWAInstallPrompt() {
     setIsIOS(ios);
 
     if (ios) {
-      // iOS Safari can't auto-prompt — show manual instructions
-      setShow(true);
+       setShow(true);
       return;
     }
-
-    // Read from global capture (may already be set before this component mounted)
     const checkForPrompt = () => {
       if (window.__pwaPrompt) {
         setDeferredPrompt(window.__pwaPrompt);
@@ -52,12 +35,8 @@ export default function PWAInstallPrompt() {
       }
       return false;
     };
-
-    // Check immediately (event may have already fired)
-    if (checkForPrompt()) return;
-
-    // Also listen in case it fires after mount (slower connections / first visit)
-    const handler = (e) => {
+   if (checkForPrompt()) return;
+   const handler = (e) => {
       e.preventDefault();
       window.__pwaPrompt = e;
       setDeferredPrompt(e);
@@ -66,8 +45,6 @@ export default function PWAInstallPrompt() {
     window.addEventListener("beforeinstallprompt", handler);
     return () => window.removeEventListener("beforeinstallprompt", handler);
   }, []);
-
-  // Also hide if user installs via browser chrome
   useEffect(() => {
     const handler = () => setShow(false);
     window.addEventListener("appinstalled", handler);

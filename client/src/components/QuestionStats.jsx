@@ -1,7 +1,3 @@
-// pages/QuestionStats.jsx
-// ─── Enhanced Question Practice Stats Dashboard ───────────────────────────────────
-// Now tracks both Topic-wise PYQ attempts AND Test Series attempts
-// with filters for: Test/PYQ, CSAT/GS, Year-wise breakdowns
 
 import { useMemo, useState } from "react";
 import { useQuestionAttempts } from "../hooks/useQuestionAttempts";

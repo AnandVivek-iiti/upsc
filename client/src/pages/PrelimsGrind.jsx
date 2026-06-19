@@ -12,10 +12,10 @@ import {
 import {
   getPrelimsPaperLink,
   PRELIMS_LAST_VERIFIED_DATE,
-} from "../data/Prelims_paper";
+} from "../data/PYQs/Prelims_paper";
 import AddCustomQuestion from "../components/QuestionStats";
 import ResourceLibrary from "./ResourceLibrary";
-import AIMentorChat from "../components/ui/AIMentorChat";
+import AIMentorChat from "./AI/AIMentorChat";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 const TABS = [

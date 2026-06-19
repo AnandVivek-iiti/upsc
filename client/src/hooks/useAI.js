@@ -1,21 +1,4 @@
-/**
- * useAI.js
- * ─────────────────────────────────────────────────────────────────────────────
- * Thin wrapper around the backend AI endpoints.
- *
- * Endpoints:
- *   POST   /api/evaluate/answer              — AI evaluation (Gemini→GPT4→Claude→Groq)
- *   POST   /api/evaluate/chat                — UPSC mentor chat (thread-aware)
- *   GET    /api/evaluate/chat-threads        — list all threads (sidebar)
- *   GET    /api/evaluate/chat-threads/:id    — full messages for one thread
- *   DELETE /api/evaluate/chat-threads/:id    — delete one thread
- *   GET    /api/dashboard/spaced-repetition  — due items
- *   POST   /api/dashboard/spaced-repetition  — add item
- *   POST   /api/dashboard/question-attempts  — sync attempts
- *
- * JWT is sent automatically via Authorization header.
- * ─────────────────────────────────────────────────────────────────────────────
- */
+
 
 const BASE = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
@@ -102,16 +85,6 @@ export async function clearChatHistory() {
     // No-op in threads model — individual threads are deleted via deleteChatThread
     return { success: true };
 }
-
-// ─── POST /api/tests/submit ───────────────────────────────────────────────────
-// Submits a completed MCQ Test Series result for server-side scoring + AI
-// diagnostic analysis (strengths, weak topics, study plan, auto-revision push).
-// Field names must match testController.js exactly:
-//   test_series, test_title, subject, total_questions, duration_minutes,
-//   marks_correct, marks_wrong, marks_skipped, max_marks,
-//   correct_count, wrong_count, skipped_count, topic_breakdown
-// Returns { success, attempt_id, score, max_marks, percentage, accuracy,
-//           performance_band, ai_analysis, ai_analysis_status, provider_used }
 export async function submitTestResult(payload) {
     const res = await fetch(`${BASE}/tests/submit`, {
         method: "POST",

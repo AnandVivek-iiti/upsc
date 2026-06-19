@@ -1,6 +1,6 @@
 import {
   LayoutDashboard, BookOpen, PenLine, PenTool, Archive, Flame, Target,
-  ChevronRight, Moon, Sun, LogOut, LogIn, Shield, Library, Sparkles, User,
+  ChevronRight, Moon, Sun, LogOut, LogIn, Shield, Library, User,
 } from "lucide-react";
 import { AvatarCircle } from "../../pages/ProfilePage";
 
@@ -15,7 +15,7 @@ const NAV_ITEMS = [
 
 export default function Sidebar({
   activeView, onViewChange, userData, theme, onToggleTheme,
-  isOpen, onClose, onLogout, isLoggedIn, onLoginClick,
+  onClose, onLogout, isLoggedIn, onLoginClick,
   userName, onNavigateProfile,
 }) {
   const streak = userData?.profile?.streak || 0;
@@ -68,7 +68,7 @@ export default function Sidebar({
         >
           <AvatarCircle name={userName} size="sm" as="div" />
           <div className="flex-1 min-w-0 text-left">
-            <p className="text-sm font-semibold text-text-primary truncate leading-tight">{userName}</p>
+            <p className="text-base font-semibold text-text-primary truncate leading-tight">{userName}</p>
             <p className="text-[10px] font-mono text-text-muted group-hover:text-accent-gold transition-colors">View profile →</p>
           </div>
         </button>
@@ -79,11 +79,11 @@ export default function Sidebar({
         <button
           type="button"
           onClick={onToggleTheme}
-          className="w-full flex items-center gap-2 rounded-xl border border-bg-border bg-bg-muted px-3 py-2 text-sm text-text-secondary hover:text-text-primary hover:bg-bg-elevated transition-all duration-150"
+          className="w-full flex items-center gap-2 rounded-xl border border-bg-border bg-bg-muted px-3 py-2 text-base text-text-secondary hover:text-text-primary hover:bg-bg-elevated transition-all duration-150"
           aria-label="Toggle theme"
         >
           {theme === "dark" ? <Sun size={13} /> : <Moon size={13} />}
-          <span className="font-body text-sm">{theme === "dark" ? "Light mode" : "Dark mode"}</span>
+          <span className="font-body text-base">{theme === "dark" ? "Light mode" : "Dark mode"}</span>
         </button>
       </div>
 
@@ -101,7 +101,7 @@ export default function Sidebar({
               style={active ? { background: "var(--accent-gold-dim)", color: "var(--accent-gold)" } : {}}
             >
               <Icon size={15} strokeWidth={active ? 2.5 : 2} style={active ? { color: "var(--accent-gold)" } : {}} />
-              <span className="font-body text-sm font-medium">{label}</span>
+              <span className="font-body text-base font-medium">{label}</span>
               {active && (
                 <ChevronRight size={11} className="ml-auto opacity-50" style={{ color: "var(--accent-gold)" }} />
               )}
@@ -115,7 +115,7 @@ export default function Sidebar({
         {isLoggedIn ? (
           <button
             onClick={() => { onLogout?.(); onClose?.(); }}
-            className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-left text-xs font-mono border border-transparent hover:border-red-500/20 hover:bg-red-500/10 transition-all duration-150"
+            className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-left text-sm font-mono border border-transparent hover:border-red-500/20 hover:bg-red-500/10 transition-all duration-150"
             style={{ color: "var(--accent-red, #ef4444)" }}
           >
             <LogOut size={12} />
@@ -124,7 +124,7 @@ export default function Sidebar({
         ) : (
           <button
             onClick={() => { onLoginClick?.(); onClose?.(); }}
-            className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-left text-xs font-mono border border-accent-gold/20 hover:bg-accent-gold/10 transition-all duration-150"
+            className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-left text-sm font-mono border border-accent-gold/20 hover:bg-accent-gold/10 transition-all duration-150"
             style={{ color: "var(--accent-gold)" }}
           >
             <LogIn size={12} />

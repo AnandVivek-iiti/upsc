@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import Sidebar from "./components/layout/Sidebar.jsx";
 import Dashboard from "./pages/Dashboard";
 import SyllabusTracker from "./pages/SyllabusTracker";
@@ -13,15 +13,12 @@ import AuthPage from "./pages/AuthPage";
 import { useAuth } from "./hooks/useAuth";
 import Adminpannel from "./pages/Adminpannel.jsx";
 import ResourceLibrary from "./pages/ResourceLibrary";
-import ProfilePage, { AvatarCircle } from "./pages/ProfilePage";
+import ProfilePage from "./pages/ProfilePage";
 import PWAInstallPrompt from "./components/PWAInstallPrompt";
 import timerStore from "./hooks/timerStore";
 import BottomNav from "./components/layout/BottomNav.jsx";
-import {
-  LayoutDashboard, BookOpen, PenTool, PenLine, Target, Library,
-} from "lucide-react";
 
-// ─── Splash Screen ─────────────────────────────────────────────────────────────
+// ─── Splash Screen ────────────────────────────────────────────────────────────
 function SplashScreen() {
   return (
     <div
@@ -122,28 +119,18 @@ function ErrorBanner({ error }) {
   return (
     <div className="mx-3 sm:mx-6 mt-3 flex items-center gap-2 px-4 py-2.5 rounded-xl bg-orange-500/10 border border-orange-500/20">
       <AlertCircle size={14} className="text-orange-400 shrink-0" />
-      <p className="text-sm font-mono text-orange-400">{error}</p>
+      <p className="text-base font-mono text-orange-400">{error}</p>
     </div>
   );
 }
 
-// ─── Bottom nav items ──────────────────────────────────────────────────────────
-export const BOTTOM_NAV_ITEMS = [
-  { id: "dashboard",  label: "Home",      icon: LayoutDashboard },
-  { id: "syllabus",   label: "Syllabus",  icon: BookOpen },
-  { id: "mains",      label: "Mains",     icon: PenTool },
-  { id: "pre",        label: "Prelims",   icon: PenLine },
-  { id: "topic-wise", label: "Topics",    icon: Target },
-  { id: "resources",  label: "Resources", icon: Library },
-];
-
 export default function App() {
   const { user, token, loading: authLoading, login, logout } = useAuth();
 
-  const [activeView, setActiveView] = useState("dashboard");
+  const [activeView, setActiveView]           = useState("dashboard");
   const [workspaceQuestion, setWorkspaceQuestion] = useState(null);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [previousView, setPreviousView] = useState("dashboard");
+  const [previousView, setPreviousView]       = useState("dashboard");
+  const [aiMentorPrefill, setAiMentorPrefill] = useState("");   // ← quote prefill
   const [theme, setTheme] = useState(() => {
     if (typeof window === "undefined") return "light";
     return localStorage.getItem("upsc-theme") || "light";
@@ -156,7 +143,6 @@ export default function App() {
     refetch,
     updateProgress,
     bulkUpdateProgress,
-    updateProfile,
     logHours,
     overallProgress,
     todayHours,
@@ -176,21 +162,19 @@ export default function App() {
   const handleViewChange = (view) => {
     setPreviousView(activeView);
     setActiveView(view);
-    setSidebarOpen(false);
     if (view !== "mains") setWorkspaceQuestion(null);
   };
 
-  const handlePracticeQuestion = (question) => {
-    setWorkspaceQuestion(question);
-    setActiveView("mains");
-    setSidebarOpen(false);
-  };
-
   const handleNavigateProfile = () => handleViewChange("profile");
-  const handleProfileUpdate = () => refetch?.();
+  const handleProfileUpdate   = () => refetch?.();
 
-  // Non-bottom-nav views — user can only reach via sidebar on desktop or specific links
-  const isSecondaryView = ["admin", "profile", "auth", "ai-features"].includes(activeView);
+  // ── Quote click: open AI Mentor with pre-filled prompt ────────────────────
+  const handleQuoteClick = (quote) => {
+    setAiMentorPrefill(
+      `Tell me more about this quote by ${quote.src}: "${quote.text}" — its historical context, deeper philosophical meaning, and how I can use it effectively in a UPSC essay or GS answer.`
+    );
+    handleViewChange("ai-mentor");
+  };
 
   if (authLoading) return <SplashScreen />;
   if (loading && !userData && (user || token)) return <LoadingScreen />;
@@ -207,8 +191,6 @@ export default function App() {
           userData={userData}
           theme={theme}
           onToggleTheme={() => setTheme((p) => (p === "light" ? "dark" : "light"))}
-          isOpen={false}
-          onClose={() => {}}
           onLogout={logout}
           isLoggedIn={!!user && !!token}
           onLoginClick={() => setActiveView("auth")}
@@ -217,41 +199,18 @@ export default function App() {
         />
       </div>
 
-      {/* ── Mobile Sidebar Overlay Drawer ── */}
-      {sidebarOpen && (
-        <>
-          <div className="sidebar-overlay lg:hidden" onClick={() => setSidebarOpen(false)} />
-          <div
-            className="fixed top-0 left-0 h-screen z-50 lg:hidden animate-slide-left"
-            role="dialog"
-            aria-modal="true"
-          >
-            <Sidebar
-              activeView={activeView}
-              onViewChange={handleViewChange}
-              userData={userData}
-              theme={theme}
-              onToggleTheme={() => setTheme((p) => (p === "light" ? "dark" : "light"))}
-              isOpen={sidebarOpen}
-              onClose={() => setSidebarOpen(false)}
-              onLogout={logout}
-              isLoggedIn={!!user && !!token}
-              onLoginClick={() => setActiveView("auth")}
-              userName={userName}
-              onNavigateProfile={handleNavigateProfile}
-            />
-          </div>
-        </>
-      )}
-
       {/* ── Main Content ── */}
       <main className="lg:ml-[var(--sidebar-width,14rem)] min-h-[100dvh]">
         <div className="flex min-h-[100dvh] flex-col">
           <div className="flex-1 pb-bottom-nav lg:pb-0">
+
+            {/* HeroBanner — no useNavigate needed, callback handled here */}
             <HeroBanner
               examDate={userData?.profile?.examDate || null}
               customQuote={userData?.profile?.quote || null}
+              onQuoteClick={handleQuoteClick}
             />
+
             <ErrorBanner error={error} />
 
             <div className="page-transition">
@@ -283,7 +242,6 @@ export default function App() {
                 />
               )}
               {activeView === "pre" && <PrelimsGrind isLoggedIn={!!user && !!token} />}
-
               {activeView === "topic-wise" && (
                 <Topicwise
                   onSyllabusUpdate={updateProgress}
@@ -292,7 +250,7 @@ export default function App() {
                   isLoggedIn={!!user && !!token}
                 />
               )}
-              {activeView === "admin" && <Adminpannel />}
+              {activeView === "admin"     && <Adminpannel />}
               {activeView === "resources" && (
                 <ResourceLibrary
                   user={user}
@@ -318,6 +276,17 @@ export default function App() {
                   }}
                 />
               )}
+
+              {/* ── AI Mentor full page — receives prefill from quote click ── */}
+              {activeView === "ai-mentor" && (
+                <AIMentorPage
+                  user={user}
+                  token={token}
+                  isLoggedIn={!!user && !!token}
+                  prefill={aiMentorPrefill}
+                  onClearPrefill={() => setAiMentorPrefill("")}
+                />
+              )}
             </div>
 
             <PWAInstallPrompt />
@@ -338,9 +307,24 @@ export default function App() {
         onLogout={logout}
         onLoginClick={() => setActiveView("auth")}
         onNavigateProfile={handleNavigateProfile}
-        onOpenSidebar={() => setSidebarOpen(true)}
         userName={userName}
       />
     </div>
+  );
+}
+
+// ─── Lazy-import wrapper so AIMentorChat only loads when needed ───────────────
+import { lazy, Suspense } from "react";
+const AIMentorChatLazy = lazy(() => import("./pages/AI/AIMentorChat"));
+
+function AIMentorPage({ user, token, isLoggedIn, prefill, onClearPrefill }) {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center h-64"><div className="w-2 h-2 rounded-full bg-accent-gold animate-bounce" /></div>}>
+      <AIMentorChatLazy
+        isLoggedIn={isLoggedIn}
+        prefill={prefill}
+        onClearPrefill={onClearPrefill}
+      />
+    </Suspense>
   );
 }

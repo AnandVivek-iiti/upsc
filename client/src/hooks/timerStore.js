@@ -1,18 +1,3 @@
-/**
- * timerStore.js — USER-SPECIFIC study timer singleton
- * ─────────────────────────────────────────────────────
- * Stores timer data per-user so study hours are never shared between accounts.
- * Key format: `upsc-timer-<userId>-<YYYY-MM-DD>`
- *
- * API:
- *   timerStore.setUser(userId)          ← MUST call after login / on init
- *   timerStore.elapsed   → number (seconds)
- *   timerStore.running   → boolean
- *   timerStore.start()
- *   timerStore.pause()
- *   timerStore.reset()
- *   timerStore.subscribe(fn)   → unsubscribe fn
- */
 
 import { getISTDateString } from "../utils/dateUtils";
 
@@ -23,6 +8,8 @@ function todayKey() {
 // userId is set via setUser(); null = unauthenticated (no data persisted)
 let _userId = null;
 let _socket = null;
+
+let _autoStartAttempted = false;
 
 // Live state mirrored from this user's OTHER open tabs/devices (read-only —
 // we never let a remote tick override a session running locally).
@@ -121,6 +108,19 @@ const store = {
     }, 1000);
     broadcast();
     notify();
+  },
+
+  /**
+   * Start the timer automatically when the app first opens, without
+   * re-triggering on every later remount (e.g. SPA navigation back to the
+   * Dashboard). Only does anything the first time it's called per page
+   * load, and only if nothing is running yet — so it never overrides a
+   * session a user already paused on purpose.
+   */
+  autoStart() {
+    if (_autoStartAttempted) return;
+    _autoStartAttempted = true;
+    if (!store.running) store.start();
   },
 
   pause() {
