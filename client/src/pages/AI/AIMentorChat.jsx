@@ -1,14 +1,16 @@
-import { useState, useRef, useEffect, useCallback, useMemo } from "react";
+import React, {
+  useState, useRef, useEffect, useCallback, useMemo, memo,
+} from "react";
 import {
   ArrowUp, Sparkles, LogIn, User, Bot, Plus, Trash2, X,
   MessageSquare, Maximize2, Minimize2, Loader2, Search,
+  BookOpen, Zap, Table2, Brain,
 } from "lucide-react";
 import {
-  chatWithMentor,
-  listChatThreads,
-  getChatThread,
-  deleteChatThread,
+  chatWithMentor, listChatThreads, getChatThread, deleteChatThread,
 } from "../../hooks/useAI";
+
+// ─── Constants ────────────────────────────────────────────────────────────────
 
 const STARTER_QUESTIONS = [
   "How should I structure a GS2 governance answer?",
@@ -18,9 +20,19 @@ const STARTER_QUESTIONS = [
   "3-month revision plan for GS3?",
 ];
 
-// Long assistant replies get collapsed with a "Read full answer" toggle.
-// Kept short on purpose — the chat bubble is a quick mentor, not the answer sheet.
-const LONG_REPLY_LIMIT = 260;
+// System prompt injected with every chatWithMentor call
+// (pass as contextHint or embed in your hook — shown here as reference)
+export const MENTOR_SYSTEM_PROMPT = `You are a sharp UPSC mentor. Rules:
+- NEVER open with "You are brilliant/analytical" or any flattery.
+- Answer ONLY what is asked. No background history unless asked.
+- Use rich markdown: ## headings, **bold**, bullet lists, numbered lists.
+- For comparisons → use a markdown table.
+- For key terms / dates → wrap in a :::memory block ::: section.
+- For step-by-step answers → use numbered list.
+- For quotes → give only the quote + author name, no history.
+- Keep answers concise but complete. No padding.`;
+
+// ─── Pure helpers ─────────────────────────────────────────────────────────────
 
 function relativeTime(iso) {
   if (!iso) return "";
@@ -33,108 +45,630 @@ function relativeTime(iso) {
   return `${Math.floor(h / 24)}d`;
 }
 
-// Trim to the nearest word boundary instead of slicing mid-word.
-function truncateClean(text, limit) {
-  if (text.length <= limit) return text;
-  const slice = text.slice(0, limit);
-  const lastSpace = slice.lastIndexOf(" ");
-  return (lastSpace > limit * 0.6 ? slice.slice(0, lastSpace) : slice).trim() + "…";
+// ─── Markdown renderer ────────────────────────────────────────────────────────
+// Parses a subset of markdown into rich React elements.
+// Supports: ## headings, **bold**, *italic*, `code`, tables, bullet lists,
+// numbered lists, :::memory blocks, > blockquotes, --- dividers.
+
+function renderMarkdown(text) {
+  if (!text) return null;
+  const lines = text.split("\n");
+  const elements = [];
+  let i = 0;
+  let keyCounter = 0;
+  const key = () => keyCounter++;
+
+  while (i < lines.length) {
+    const line = lines[i];
+
+    // ── Blank line
+    if (!line.trim()) { i++; continue; }
+
+    // ── Memory card block :::memory
+    if (line.trim().startsWith(":::memory")) {
+      const cardLines = [];
+      i++;
+      while (i < lines.length && !lines[i].trim().startsWith(":::")) {
+        cardLines.push(lines[i]);
+        i++;
+      }
+      i++; // consume closing :::
+      elements.push(
+        <div key={key()} className="amc-memory-card">
+          <div className="amc-memory-header">
+            <Brain size={12} /> Quick Recall
+          </div>
+          <div className="amc-memory-body">
+            {cardLines.map((cl, ci) => {
+              const trimmed = cl.trim();
+              if (!trimmed) return null;
+              const [label, ...rest] = trimmed.split(":");
+              if (rest.length) {
+                return (
+                  <div key={ci} className="amc-memory-row">
+                    <span className="amc-memory-label">{label.replace(/^[-•]\s*/, "")}</span>
+                    <span className="amc-memory-val">{rest.join(":").trim()}</span>
+                  </div>
+                );
+              }
+              return <div key={ci} className="amc-memory-row"><span className="amc-memory-val">{trimmed.replace(/^[-•]\s*/, "")}</span></div>;
+            })}
+          </div>
+        </div>
+      );
+      continue;
+    }
+
+    // ── Table
+    if (line.includes("|") && lines[i + 1]?.includes("|") && lines[i + 1]?.includes("-")) {
+      const headers = line.split("|").map(h => h.trim()).filter(Boolean);
+      i += 2; // skip separator row
+      const rows = [];
+      while (i < lines.length && lines[i].includes("|")) {
+        rows.push(lines[i].split("|").map(c => c.trim()).filter(Boolean));
+        i++;
+      }
+      elements.push(
+        <div key={key()} className="amc-table-wrap">
+          <table className="amc-table">
+            <thead>
+              <tr>{headers.map((h, hi) => <th key={hi}>{inlineFormat(h)}</th>)}</tr>
+            </thead>
+            <tbody>
+              {rows.map((row, ri) => (
+                <tr key={ri}>
+                  {row.map((cell, ci) => <td key={ci}>{inlineFormat(cell)}</td>)}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      );
+      continue;
+    }
+
+    // ── Heading ##
+    if (/^##\s/.test(line)) {
+      elements.push(
+        <p key={key()} className="amc-heading">{line.replace(/^##\s/, "")}</p>
+      );
+      i++; continue;
+    }
+
+    // ── Heading #
+    if (/^#\s/.test(line)) {
+      elements.push(
+        <p key={key()} className="amc-heading1">{line.replace(/^#\s/, "")}</p>
+      );
+      i++; continue;
+    }
+
+    // ── Divider ---
+    if (/^---+$/.test(line.trim())) {
+      elements.push(<hr key={key()} className="amc-divider" />);
+      i++; continue;
+    }
+
+    // ── Blockquote >
+    if (/^>\s/.test(line)) {
+      const quoteLines = [];
+      while (i < lines.length && /^>\s/.test(lines[i])) {
+        quoteLines.push(lines[i].replace(/^>\s/, ""));
+        i++;
+      }
+      elements.push(
+        <div key={key()} className="amc-blockquote">
+          {quoteLines.map((ql, qi) => (
+            <p key={qi}>{inlineFormat(ql)}</p>
+          ))}
+        </div>
+      );
+      continue;
+    }
+
+    // ── Bullet list
+    if (/^[-•*]\s/.test(line.trim())) {
+      const items = [];
+      while (i < lines.length && /^[-•*]\s/.test(lines[i].trim())) {
+        items.push(lines[i].trim().replace(/^[-•*]\s/, ""));
+        i++;
+      }
+      elements.push(
+        <ul key={key()} className="amc-ul">
+          {items.map((item, ii) => (
+            <li key={ii}>{inlineFormat(item)}</li>
+          ))}
+        </ul>
+      );
+      continue;
+    }
+
+    // ── Numbered list
+    if (/^\d+\.\s/.test(line.trim())) {
+      const items = [];
+      while (i < lines.length && /^\d+\.\s/.test(lines[i].trim())) {
+        items.push(lines[i].trim().replace(/^\d+\.\s/, ""));
+        i++;
+      }
+      elements.push(
+        <ol key={key()} className="amc-ol">
+          {items.map((item, ii) => (
+            <li key={ii}>{inlineFormat(item)}</li>
+          ))}
+        </ol>
+      );
+      continue;
+    }
+
+    // ── Info card [!NOTE] / [!TIP] / [!IMPORTANT]
+    if (/^\[!(NOTE|TIP|IMPORTANT|WARN)\]/.test(line.trim())) {
+      const match = line.match(/^\[!(NOTE|TIP|IMPORTANT|WARN)\]\s*(.*)/);
+      const type = match[1].toLowerCase();
+      const rest = match[2] || "";
+      const noteLines = [rest];
+      i++;
+      while (i < lines.length && lines[i].startsWith("  ")) {
+        noteLines.push(lines[i].trim());
+        i++;
+      }
+      elements.push(
+        <div key={key()} className={`amc-callout amc-callout-${type}`}>
+          <span className="amc-callout-label">{match[1]}</span>
+          <span>{noteLines.map((nl, ni) => <span key={ni}>{inlineFormat(nl)} </span>)}</span>
+        </div>
+      );
+      continue;
+    }
+
+    // ── Regular paragraph
+    elements.push(
+      <p key={key()} className="amc-para">{inlineFormat(line)}</p>
+    );
+    i++;
+  }
+
+  return elements;
 }
 
-// ─── Quote card — used when a message is asking the mentor to break down a quote ──
-function QuoteCard({ text, src }) {
+// Inline: **bold**, *italic*, `code`
+function inlineFormat(text) {
+  if (!text) return null;
+  const parts = [];
+  let remaining = text;
+  let k = 0;
+
+  while (remaining.length) {
+    // **bold**
+    const boldMatch = remaining.match(/^(.*?)\*\*(.+?)\*\*(.*)/s);
+    // *italic*
+    const italicMatch = remaining.match(/^(.*?)\*(.+?)\*(.*)/s);
+    // `code`
+    const codeMatch = remaining.match(/^(.*?)`(.+?)`(.*)/s);
+
+    const candidates = [
+      boldMatch && { idx: boldMatch[1].length, type: "bold", m: boldMatch },
+      italicMatch && { idx: italicMatch[1].length, type: "italic", m: italicMatch },
+      codeMatch && { idx: codeMatch[1].length, type: "code", m: codeMatch },
+    ].filter(Boolean);
+
+    if (!candidates.length) break;
+
+    candidates.sort((a, b) => a.idx - b.idx);
+    const winner = candidates[0];
+
+    if (winner.m[1]) parts.push(<span key={k++}>{winner.m[1]}</span>);
+
+    if (winner.type === "bold") parts.push(<strong key={k++}>{winner.m[2]}</strong>);
+    else if (winner.type === "italic") parts.push(<em key={k++}>{winner.m[2]}</em>);
+    else if (winner.type === "code") parts.push(<code key={k++} className="amc-inline-code">{winner.m[2]}</code>);
+
+    remaining = winner.m[3];
+  }
+
+  if (remaining) parts.push(<span key={k++}>{remaining}</span>);
+  return parts.length ? parts : text;
+}
+
+// ─── Static styles ────────────────────────────────────────────────────────────
+
+const AMC_STYLES = `
+@keyframes amc-bounce {
+  0%, 80%, 100% { transform: scale(0.6); }
+  40% { transform: scale(1); }
+}
+@keyframes amc-pop {
+  from { opacity: 0; transform: translateY(10px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes amc-ring {
+  0%   { box-shadow: 0 0 0 0 rgba(59,130,246,0.35); }
+  100% { box-shadow: 0 0 0 14px rgba(59,130,246,0); }
+}
+@keyframes amc-card-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Dock */
+.amc-dock {
+  position: fixed;
+  right: 16px;
+  bottom: calc(var(--bottom-nav-h,0px) + var(--safe-bottom,0px) + 16px);
+  z-index: 9999;
+  display: flex; flex-direction: column; align-items: flex-end; gap: 14px;
+}
+@media (min-width: 768px) {
+  .amc-dock { right: 28px; bottom: calc(var(--safe-bottom,0px) + 28px); }
+}
+
+/* FAB */
+.amc-fab {
+  width: 56px; height: 56px; border-radius: 9999px;
+  display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, var(--accent-blue), #2563eb);
+  color: var(--text-inverse); box-shadow: var(--shadow-lg);
+  transition: transform .15s ease;
+  animation: amc-ring 2.4s ease-out infinite;
+  cursor: pointer; border: none;
+}
+.amc-fab:hover { transform: scale(1.05); }
+.amc-fab:active { transform: scale(0.95); }
+
+/* Panel */
+.amc-panel {
+  animation: amc-pop 180ms cubic-bezier(0.22,1,0.36,1) both;
+  display: flex; flex-direction: column; overflow: hidden;
+  border-radius: 26px; border: 1px solid var(--bg-border);
+  background: var(--bg-surface); box-shadow: var(--shadow-lg);
+}
+
+/* Workspace */
+.amc-workspace {
+  display: flex; flex-direction: column;
+  height: 100dvh; overflow: hidden;
+  background: var(--bg-surface);
+}
+.amc-workspace-body { flex: 1; display: flex; overflow: hidden; }
+.amc-workspace-chat { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+/* Header */
+.amc-header {
+  flex-shrink: 0; display: flex; align-items: center; gap: 12px;
+  padding: 14px 16px;
+  background: linear-gradient(120deg, var(--accent-blue), #1d4ed8);
+  color: var(--text-inverse);
+}
+.amc-icon-btn {
+  padding: 7px; border-radius: 10px; flex-shrink: 0;
+  display: inline-flex; align-items: center; justify-content: center;
+  color: inherit; transition: background-color .15s;
+  cursor: pointer; border: none; background: transparent;
+}
+.amc-icon-btn:hover { background: rgba(255,255,255,0.15); }
+
+/* Scrollbar */
+.amc-scroll::-webkit-scrollbar { width: 3px; }
+.amc-scroll::-webkit-scrollbar-thumb { background: var(--bg-border); border-radius: 999px; }
+
+/* Sidebar — fixed width, never covers more than 42% */
+.amc-fs-sidebar {
+  width: clamp(180px, 28vw, 260px);
+  max-width: 42%;
+  flex-shrink: 0;
+  border-right: 1px solid var(--bg-border);
+  display: flex; flex-direction: column; overflow: hidden;
+  background: var(--bg-surface);
+}
+@media (max-width: 540px) { .amc-fs-sidebar { display: none; } }
+
+/* Sidebar search */
+.amc-search {
+  display: flex; align-items: center; gap: 6px;
+  padding: 6px 10px; border-radius: 10px;
+  border: 1px solid var(--bg-border); background: var(--bg-muted);
+}
+.amc-search input {
+  flex: 1; background: transparent; border: none; outline: none;
+  font-size: 12px; color: var(--text-primary);
+}
+.amc-search input::placeholder { color: var(--text-muted); }
+
+/* User bubble */
+.amc-bubble-user {
+  display: inline-block;
+  padding: 10px 14px; border-radius: 18px; border-top-right-radius: 5px;
+  background: linear-gradient(135deg, var(--accent-blue), #2563eb);
+  color: #fff; font-size: 13px; line-height: 1.55;
+  max-width: 84%;
+}
+
+/* Bot response card */
+.amc-bot-card {
+  background: var(--bg-muted);
+  border: 1px solid var(--bg-border);
+  border-radius: 18px; border-top-left-radius: 5px;
+  padding: 14px 16px;
+  font-size: 13px; line-height: 1.65;
+  color: var(--text-primary);
+  animation: amc-card-in 200ms ease both;
+  max-width: 92%;
+}
+
+/* Markdown elements inside bot card */
+.amc-heading {
+  font-size: 13px; font-weight: 700;
+  color: var(--accent-blue);
+  margin: 10px 0 4px;
+  letter-spacing: 0.01em;
+}
+.amc-heading:first-child { margin-top: 0; }
+.amc-heading1 {
+  font-size: 14px; font-weight: 800;
+  color: var(--text-primary);
+  margin: 10px 0 5px; border-bottom: 1px solid var(--bg-border); padding-bottom: 4px;
+}
+.amc-para { margin: 4px 0; }
+.amc-divider { border: none; border-top: 1px solid var(--bg-border); margin: 10px 0; }
+
+.amc-ul, .amc-ol {
+  margin: 5px 0 5px 14px; padding: 0;
+  display: flex; flex-direction: column; gap: 3px;
+}
+.amc-ul { list-style: none; }
+.amc-ul li { position: relative; padding-left: 14px; }
+.amc-ul li::before {
+  content: "▸"; position: absolute; left: 0;
+  color: var(--accent-blue); font-size: 10px; top: 3px;
+}
+.amc-ol { list-style: decimal; }
+.amc-ol li { padding-left: 2px; }
+
+.amc-inline-code {
+  background: rgba(59,130,246,.12); color: var(--accent-blue);
+  padding: 1px 5px; border-radius: 5px; font-size: 11.5px; font-family: monospace;
+}
+
+/* Blockquote */
+.amc-blockquote {
+  border-left: 3px solid var(--accent-blue);
+  margin: 8px 0; padding: 6px 12px;
+  background: var(--accent-blue-dim);
+  border-radius: 0 10px 10px 0;
+  font-style: italic; font-size: 12.5px;
+  color: var(--text-primary);
+}
+
+/* Callouts */
+.amc-callout {
+  display: flex; gap: 8px; align-items: flex-start;
+  padding: 8px 12px; border-radius: 12px; margin: 6px 0;
+  font-size: 12.5px;
+}
+.amc-callout-note  { background: rgba(59,130,246,.1);  border: 1px solid rgba(59,130,246,.25); }
+.amc-callout-tip   { background: rgba(16,185,129,.1);  border: 1px solid rgba(16,185,129,.25); }
+.amc-callout-important { background: rgba(245,158,11,.1); border: 1px solid rgba(245,158,11,.25); }
+.amc-callout-warn  { background: rgba(239,68,68,.1);   border: 1px solid rgba(239,68,68,.25); }
+.amc-callout-label {
+  font-size: 9px; font-weight: 800; letter-spacing: .06em;
+  padding: 2px 6px; border-radius: 5px; background: currentColor;
+  color: #fff; flex-shrink: 0; align-self: flex-start; margin-top: 1px;
+  opacity: .85;
+}
+
+/* Memory card */
+.amc-memory-card {
+  border-radius: 14px; overflow: hidden;
+  border: 1px solid rgba(139,92,246,.35);
+  margin: 8px 0;
+  animation: amc-card-in 200ms ease both;
+}
+.amc-memory-header {
+  display: flex; align-items: center; gap: 6px;
+  padding: 7px 12px;
+  background: linear-gradient(135deg, rgba(139,92,246,.25), rgba(59,130,246,.15));
+  font-size: 10px; font-weight: 700; letter-spacing: .06em;
+  color: #a78bfa; text-transform: uppercase;
+}
+.amc-memory-body { padding: 8px 12px; display: flex; flex-direction: column; gap: 5px; }
+.amc-memory-row {
+  display: flex; gap: 8px; align-items: baseline;
+  padding-bottom: 5px; border-bottom: 1px solid var(--bg-border);
+}
+.amc-memory-row:last-child { border-bottom: none; padding-bottom: 0; }
+.amc-memory-label {
+  font-size: 11px; font-weight: 600; color: #a78bfa;
+  min-width: 80px; flex-shrink: 0;
+}
+.amc-memory-val { font-size: 12px; color: var(--text-primary); }
+
+/* Table */
+.amc-table-wrap {
+  overflow-x: auto; margin: 8px 0; border-radius: 12px;
+  border: 1px solid var(--bg-border);
+}
+.amc-table {
+  width: 100%; border-collapse: collapse; font-size: 12px;
+}
+.amc-table th {
+  background: var(--accent-blue-dim);
+  color: var(--accent-blue); font-weight: 700;
+  padding: 7px 10px; text-align: left;
+  border-bottom: 1px solid rgba(59,130,246,.25);
+  white-space: nowrap;
+}
+.amc-table td {
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--bg-border);
+  color: var(--text-primary);
+}
+.amc-table tr:last-child td { border-bottom: none; }
+.amc-table tr:nth-child(even) td { background: rgba(0,0,0,.025); }
+
+/* Quote card (user prefill) */
+.amc-quote-card {
+  border-left: 2px solid var(--accent-blue);
+  padding: 8px 12px; border-radius: 0 12px 12px 0;
+  background: var(--accent-blue-dim); margin-bottom: 4px;
+}
+.amc-quote-mark { font-size: 22px; line-height: 1; color: var(--accent-blue); }
+.amc-quote-text { font-size: 12px; line-height: 1.5; color: var(--text-primary); margin: 2px 0; }
+.amc-quote-src  { font-size: 10px; font-family: monospace; color: var(--text-muted); }
+
+/* Starter buttons */
+.amc-starter {
+  width: 100%; text-align: left;
+  padding: 10px 14px; border-radius: 14px; font-size: 12.5px;
+  border: 1px solid var(--bg-border); background: var(--bg-muted);
+  color: var(--text-primary); cursor: pointer; transition: all .15s;
+  display: flex; align-items: center; gap: 8px;
+}
+.amc-starter:hover {
+  border-color: var(--accent-blue);
+  background: var(--accent-blue-dim);
+  color: var(--accent-blue);
+}
+
+/* Input bar */
+.amc-input-bar {
+  display: flex; align-items: flex-end; gap: 8px;
+  padding: 10px 12px; border-radius: 18px;
+  border: 1px solid var(--bg-border); background: var(--bg-muted);
+}
+.amc-send-btn {
+  width: 32px; height: 32px; border-radius: 10px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--accent-blue); color: var(--text-inverse);
+  border: none; cursor: pointer; transition: opacity .15s;
+}
+.amc-send-btn:disabled { opacity: 0.4; cursor: default; }
+
+/* Read-more */
+.amc-readmore {
+  font-size: 11px; font-family: monospace;
+  color: var(--accent-blue); background: none; border: none;
+  padding: 2px 0; cursor: pointer; align-self: flex-start;
+}
+`;
+
+// ─── QuoteCard ────────────────────────────────────────────────────────────────
+
+const QuoteCard = memo(function QuoteCard({ text, src }) {
   return (
     <div className="amc-quote-card">
-      <span className="amc-quote-mark">“</span>
+      <span className="amc-quote-mark">"</span>
       <p className="amc-quote-text">{text}</p>
       {src && <p className="amc-quote-src">— {src}</p>}
     </div>
   );
-}
+});
 
-// ─── Message bubble ───────────────────────────────────────────────────────────
-function Message({ msg, isQuoteFollowup }) {
+// ─── Message ──────────────────────────────────────────────────────────────────
+
+const COLLAPSE_LIMIT = 900; // chars before collapsing bot replies
+
+const Message = memo(function Message({ msg }) {
   const isUser = msg.role === "user";
-  const isLong = !isUser && msg.content.length > LONG_REPLY_LIMIT;
   const [expanded, setExpanded] = useState(false);
-  const shown = isLong && !expanded ? truncateClean(msg.content, LONG_REPLY_LIMIT) : msg.content;
+  const toggle = useCallback(() => setExpanded(v => !v), []);
+
+  if (isUser) {
+    return (
+      <div className="flex justify-end gap-2 items-end">
+        <div className="flex flex-col items-end gap-1 max-w-[84%]">
+          {msg.quote && <QuoteCard text={msg.quote.text} src={msg.quote.src} />}
+          <div className="amc-bubble-user">{msg.content}</div>
+        </div>
+        <div
+          className="w-7 h-7 rounded-full flex items-center justify-center shrink-0 border"
+          style={{ background: "var(--accent-blue-dim)", borderColor: "rgba(59,130,246,.25)" }}
+        >
+          <User size={12} style={{ color: "var(--accent-blue)" }} />
+        </div>
+      </div>
+    );
+  }
+
+  // Bot message
+  const isLong = msg.content.length > COLLAPSE_LIMIT;
+  const displayText = isLong && !expanded
+    ? msg.content.slice(0, COLLAPSE_LIMIT)
+    : msg.content;
 
   return (
-    <div className={`flex gap-2.5 ${isUser ? "flex-row-reverse" : ""}`}>
+    <div className="flex gap-2 items-start">
       <div
-        className="w-7 h-7 rounded-full flex items-center justify-center shrink-0 mt-0.5 border"
-        style={isUser
-          ? { background: "var(--accent-blue-dim)", borderColor: "rgba(59,130,246,.25)" }
-          : { background: "var(--bg-muted)", borderColor: "var(--bg-border)" }}
+        className="w-7 h-7 rounded-full flex items-center justify-center shrink-0 mt-1 border"
+        style={{ background: "var(--bg-muted)", borderColor: "var(--bg-border)" }}
       >
-        {isUser
-          ? <User size={12.5} style={{ color: "var(--accent-blue)" }} />
-          : <Bot size={12.5} className="text-text-muted" />}
+        <Bot size={12} className="text-text-muted" />
       </div>
-      <div className="max-w-[84%] flex flex-col gap-1.5 min-w-0">
-        {isQuoteFollowup && !isUser && (
-          <div className="amc-quote-badge">
-            <Sparkles size={10} /> Quote breakdown
-          </div>
-        )}
-
-        {isUser && msg.quote ? (
-          <QuoteCard text={msg.quote.text} src={msg.quote.src} />
-        ) : (
-          <div className={`amc-bubble ${isUser ? "amc-bubble-user" : "amc-bubble-bot"}`}>
-            {shown.split("\n").filter(Boolean).map((line, i) => {
-              const bullet = /^[-•]\s+/.test(line);
-              return (
-                <p key={i} className={`${i > 0 ? "mt-1.5" : ""} ${bullet ? "amc-bullet" : ""}`}>
-                  {bullet ? line.replace(/^[-•]\s+/, "") : line}
-                </p>
-              );
-            })}
-            {isLong && !expanded && <div className="amc-fade" />}
-          </div>
-        )}
-
-        {isLong && (
-          <button onClick={() => setExpanded((v) => !v)} className="amc-readmore">
-            {expanded ? "Show less" : "Read full answer →"}
-          </button>
+      <div className="flex flex-col gap-2 min-w-0" style={{ maxWidth: "92%" }}>
+        <div className="amc-bot-card">
+          {renderMarkdown(displayText)}
+          {isLong && !expanded && (
+            <div style={{
+              marginTop: 8, paddingTop: 8,
+              borderTop: "1px solid var(--bg-border)"
+            }}>
+              <button onClick={toggle} className="amc-readmore">Read full answer →</button>
+            </div>
+          )}
+        </div>
+        {isLong && expanded && (
+          <button onClick={toggle} className="amc-readmore">Show less ↑</button>
         )}
       </div>
     </div>
   );
-}
+});
 
-function ThinkingDots() {
+// ─── ThinkingDots ─────────────────────────────────────────────────────────────
+
+const ThinkingDots = memo(function ThinkingDots() {
   return (
-    <div className="flex gap-2.5">
-      <div className="w-7 h-7 rounded-full flex items-center justify-center shrink-0 border"
-        style={{ background: "var(--bg-muted)", borderColor: "var(--bg-border)" }}>
-        <Bot size={12.5} className="text-text-muted" />
+    <div className="flex gap-2 items-center">
+      <div
+        className="w-7 h-7 rounded-full flex items-center justify-center shrink-0 border"
+        style={{ background: "var(--bg-muted)", borderColor: "var(--bg-border)" }}
+      >
+        <Bot size={12} className="text-text-muted" />
       </div>
-      <div className="amc-bubble amc-bubble-bot flex gap-1 items-center h-[18px] py-3">
-        {[0, 1, 2].map((i) => (
+      <div className="amc-bot-card flex gap-1 items-center py-3" style={{ padding: "10px 16px" }}>
+        {[0, 1, 2].map(i => (
           <div key={i} className="w-1.5 h-1.5 rounded-full"
-            style={{ background: "var(--accent-blue)", opacity: 0.55, animation: `amc-bounce 1.1s ${i * 0.15}s infinite ease-in-out` }} />
+            style={{
+              background: "var(--accent-blue)", opacity: 0.6,
+              animation: `amc-bounce 1.1s ${i * 0.15}s infinite ease-in-out`,
+            }}
+          />
         ))}
       </div>
     </div>
   );
-}
+});
 
-function ErrorBanner({ error }) {
+// ─── ErrorBanner ──────────────────────────────────────────────────────────────
+
+const ErrorBanner = memo(function ErrorBanner({ error }) {
   return (
     <div className="text-[11px] font-mono px-3 py-2 rounded-xl"
       style={{ color: "#fca5a5", background: "rgba(248,113,113,.08)", border: "0.5px solid rgba(248,113,113,.25)" }}>
       {error}
     </div>
   );
-}
+});
 
-function ThreadRow({ thread, active, onSelect, onDelete }) {
+// ─── ThreadRow ────────────────────────────────────────────────────────────────
+
+const ThreadRow = memo(function ThreadRow({ thread, active, onSelect, onDelete }) {
   const [confirm, setConfirm] = useState(false);
+  const select = useCallback(() => onSelect(thread.id), [onSelect, thread.id]);
+  const confirmDelete = useCallback(e => { e.stopPropagation(); onDelete(thread.id); setConfirm(false); }, [onDelete, thread.id]);
+  const cancelDelete = useCallback(e => { e.stopPropagation(); setConfirm(false); }, []);
+  const askConfirm = useCallback(e => { e.stopPropagation(); setConfirm(true); }, []);
+
   return (
-    <div
-      onClick={() => onSelect(thread.id)}
+    <div onClick={select}
       className="group relative flex items-start gap-2 px-2.5 py-2 rounded-xl cursor-pointer transition-colors"
       style={active
         ? { background: "var(--accent-blue-dim)", border: "1px solid rgba(59,130,246,.25)" }
@@ -150,42 +684,41 @@ function ThreadRow({ thread, active, onSelect, onDelete }) {
         <p className="text-[10px] font-mono text-text-muted mt-0.5">{relativeTime(thread.updatedAt)}</p>
       </div>
       {confirm ? (
-        <div className="flex gap-1 shrink-0" onClick={(e) => e.stopPropagation()}>
-          <button className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-red-500/15 text-red-400"
-            onClick={() => { onDelete(thread.id); setConfirm(false); }}>del</button>
-          <button className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-bg-muted text-text-muted"
-            onClick={() => setConfirm(false)}>no</button>
+        <div className="flex gap-1 shrink-0" onClick={e => e.stopPropagation()}>
+          <button className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-red-500/15 text-red-400" onClick={confirmDelete}>del</button>
+          <button className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-bg-muted text-text-muted" onClick={cancelDelete}>no</button>
         </div>
       ) : (
-        <button className="shrink-0 opacity-0 group-hover:opacity-100 p-0.5 rounded hover:bg-red-500/10"
-          onClick={(e) => { e.stopPropagation(); setConfirm(true); }}>
+        <button className="shrink-0 opacity-0 group-hover:opacity-100 p-0.5 rounded hover:bg-red-500/10" onClick={askConfirm}>
           <Trash2 size={10.5} className="text-text-muted hover:text-red-400" />
         </button>
       )}
     </div>
   );
-}
+});
 
-// History sidebar — shared between full-screen mode (always visible) so it actually
-// loads and stays visible instead of silently failing to open.
-function HistorySidebar({ threads, threadsLoading, threadId, onSelect, onDelete, onNew, search, onSearchChange }) {
+// ─── HistorySidebar ───────────────────────────────────────────────────────────
+
+const HistorySidebar = memo(function HistorySidebar({
+  threads, threadsLoading, threadId, onSelect, onDelete, onNew, search, onSearchChange,
+}) {
   const filtered = useMemo(() => {
     if (!search.trim()) return threads;
     const s = search.toLowerCase();
-    return threads.filter((t) => (t.title || "new chat").toLowerCase().includes(s));
+    return threads.filter(t => (t.title || "new chat").toLowerCase().includes(s));
   }, [threads, search]);
 
   return (
     <div className="amc-fs-sidebar">
       <div className="p-3 border-b border-bg-border shrink-0 space-y-2">
         <button onClick={onNew}
-          className="w-full flex items-center justify-center gap-1.5 px-2 py-2 rounded-xl text-[12px] font-semibold transition-colors"
+          className="w-full flex items-center justify-center gap-1.5 px-2 py-2 rounded-xl text-[12px] font-semibold"
           style={{ border: "1px solid rgba(59,130,246,.3)", color: "var(--accent-blue)", background: "var(--accent-blue-dim)" }}>
           <Plus size={13} /> New chat
         </button>
         <div className="amc-search">
           <Search size={12} className="shrink-0" style={{ color: "var(--text-muted)" }} />
-          <input value={search} onChange={(e) => onSearchChange(e.target.value)} placeholder="Search history…" />
+          <input value={search} onChange={onSearchChange} placeholder="Search…" />
         </div>
       </div>
       <div className="flex-1 overflow-y-auto amc-scroll px-2 py-2 space-y-0.5">
@@ -196,16 +729,155 @@ function HistorySidebar({ threads, threadsLoading, threadId, onSelect, onDelete,
         )}
         {!threadsLoading && filtered.length === 0 && (
           <p className="text-[11px] font-mono text-text-muted text-center py-6 px-2">
-            {search.trim() ? "No chats match that search." : "No saved chats yet — start one above."}
+            {search.trim() ? "No chats match." : "No saved chats yet."}
           </p>
         )}
-        {filtered.map((t) => (
+        {filtered.map(t => (
           <ThreadRow key={t.id} thread={t} active={t.id === threadId} onSelect={onSelect} onDelete={onDelete} />
         ))}
       </div>
     </div>
   );
-}
+});
+
+// ─── ChatMessages ─────────────────────────────────────────────────────────────
+
+const STARTER_ICONS = [BookOpen, Zap, Table2, Brain, Sparkles];
+
+const ChatMessages = memo(function ChatMessages({
+  messages, sending, error, threadLoading, isEmpty, starterCount, onStarterClick, bottomRef,
+}) {
+  if (threadLoading) {
+    return (
+      <div className="flex-1 overflow-y-auto amc-scroll px-4 py-4 flex justify-center items-center">
+        <Loader2 size={20} className="animate-spin" style={{ color: "var(--accent-blue)" }} />
+      </div>
+    );
+  }
+
+  if (isEmpty) {
+    return (
+      <div className="flex-1 overflow-y-auto amc-scroll px-4 py-4">
+        <div className="h-full flex flex-col items-center justify-center gap-5 text-center px-2">
+          <div className="w-14 h-14 rounded-2xl flex items-center justify-center"
+            style={{ background: "linear-gradient(135deg, var(--accent-blue-dim), rgba(139,92,246,.15))", border: "1px solid rgba(59,130,246,.2)" }}>
+            <Sparkles size={22} style={{ color: "var(--accent-blue)" }} />
+          </div>
+          <div>
+            <p className="text-[14px] font-bold text-text-primary">Ask your UPSC Mentor</p>
+            <p className="text-[11px] text-text-muted font-mono mt-1">Point-to-point answers. No padding.</p>
+          </div>
+          <div className="flex flex-col gap-2 w-full max-w-sm">
+            {STARTER_QUESTIONS.slice(0, starterCount).map((q, i) => {
+              const Icon = STARTER_ICONS[i % STARTER_ICONS.length];
+              return (
+                <button key={i} onClick={() => onStarterClick(q)} className="amc-starter">
+                  <Icon size={13} style={{ color: "var(--accent-blue)", flexShrink: 0 }} />
+                  {q}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex-1 overflow-y-auto amc-scroll px-4 py-4 space-y-4">
+      {messages.map((m, i) => <Message key={i} msg={m} />)}
+      {sending && <ThinkingDots />}
+      {error && <ErrorBanner error={error} />}
+      <div ref={bottomRef} />
+    </div>
+  );
+});
+
+// ─── ChatInputWithRef ─────────────────────────────────────────────────────────
+
+const ChatInputWithRef = memo(React.forwardRef(function ChatInputWithRef(
+  { onSend, sending, prefillValue, onPrefillConsumed }, ref
+) {
+  const [input, setInput] = useState("");
+  const textareaRef = useRef(null);
+
+  React.useImperativeHandle(ref, () => ({
+    focus: () => textareaRef.current?.focus(),
+    setValue: v => setInput(v),
+  }));
+
+  useEffect(() => {
+    if (!prefillValue) return;
+    setInput(prefillValue);
+    const t = setTimeout(() => {
+      textareaRef.current?.focus();
+      onPrefillConsumed?.();
+    }, 150);
+    return () => clearTimeout(t);
+  }, [prefillValue]); // eslint-disable-line
+
+  useEffect(() => {
+    const el = textareaRef.current;
+    if (!el) return;
+    el.style.height = "auto";
+    el.style.height = Math.min(el.scrollHeight, 120) + "px";
+  }, [input]);
+
+  const handleChange = useCallback(e => setInput(e.target.value), []);
+
+  const handleSend = useCallback(() => {
+    const msg = input.trim();
+    if (!msg || sending) return;
+    onSend(msg);
+    setInput("");
+    requestAnimationFrame(() => textareaRef.current?.focus());
+  }, [input, sending, onSend]);
+
+  const handleKey = useCallback(e => {
+    if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleSend(); }
+  }, [handleSend]);
+
+  return (
+    <div className="shrink-0 border-t border-bg-border p-3">
+      <div className="amc-input-bar">
+        <textarea
+          ref={textareaRef}
+          value={input}
+          onChange={handleChange}
+          onKeyDown={handleKey}
+          placeholder="Ask anything…"
+          rows={1}
+          style={{ minHeight: 22, maxHeight: 120 }}
+          className="flex-1 bg-transparent text-[13px] text-text-primary focus:outline-none placeholder:text-text-muted resize-none"
+        />
+        <button onClick={handleSend} disabled={!input.trim() || sending} className="amc-send-btn">
+          {sending ? <Loader2 size={14} className="animate-spin" /> : <ArrowUp size={14} />}
+        </button>
+      </div>
+    </div>
+  );
+}));
+
+// ─── SignInPrompt ─────────────────────────────────────────────────────────────
+
+const SignInPrompt = memo(function SignInPrompt() {
+  return (
+    <div className="flex-1 flex flex-col items-center justify-center gap-3 px-6 text-center">
+      <div className="w-12 h-12 rounded-2xl flex items-center justify-center"
+        style={{ background: "var(--accent-blue-dim)" }}>
+        <Sparkles size={20} style={{ color: "var(--accent-blue)" }} />
+      </div>
+      <p className="text-[13px] text-text-primary font-medium">Sign in to chat with your AI Mentor</p>
+      <div className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-[11px] font-mono"
+        style={{ background: "var(--accent-blue-dim)", color: "var(--accent-blue)" }}>
+        <LogIn size={12} /> Your chats are saved automatically
+      </div>
+    </div>
+  );
+});
+
+// ─── Main component ───────────────────────────────────────────────────────────
+
 export default function AIMentorChat({
   contextHint = "",
   isLoggedIn,
@@ -216,86 +888,89 @@ export default function AIMentorChat({
   quoteMeta = null,
   onClearPrefill = null,
 }) {
-  const [open, setOpen]           = useState(!compact || startExpanded);
-  const [fullScreen, setFullScreen] = useState(startExpanded);
-  const [messages, setMessages]   = useState([]);
-  const [input, setInput]         = useState("");
-  const [sending, setSending]     = useState(false);
-  const [error, setError]         = useState(null);
-  const [threadId, setThreadId]   = useState(null);
+  const [open, setOpen]               = useState(!compact || startExpanded);
+  const [fullScreen, setFullScreen]   = useState(startExpanded);
+  const [messages, setMessages]       = useState([]);
+  const [sending, setSending]         = useState(false);
+  const [error, setError]             = useState(null);
+  const [threadId, setThreadId]       = useState(null);
   const [activeTitle, setActiveTitle] = useState("");
-
-  const [threads, setThreads]               = useState([]);
+  const [threads, setThreads]         = useState([]);
   const [threadsLoading, setThreadsLoading] = useState(false);
   const [threadLoading, setThreadLoading]   = useState(false);
-  const [sidebarOpen, setSidebarOpen]       = useState(true);
   const [historySearch, setHistorySearch]   = useState("");
 
   const bottomRef       = useRef(null);
-  const textareaRef     = useRef(null);
-  const panelRef         = useRef(null);
-  const pendingQuoteRef  = useRef(null);
-  const skipFirstSignal  = useRef(true);
+  const panelRef        = useRef(null);
+  const pendingQuoteRef = useRef(null);
+  const skipFirstSignal = useRef(true);
+  const inputRef        = useRef(null);
+  const prevMsgCount    = useRef(0);
+  const isSendingRef    = useRef(false);
 
-  useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages, sending, open]);
+  // Scroll only on new messages
+  useEffect(() => {
+    if (messages.length > prevMsgCount.current) {
+      prevMsgCount.current = messages.length;
+      requestAnimationFrame(() => bottomRef.current?.scrollIntoView({ behavior: "smooth" }));
+    }
+  }, [messages]);
 
   useEffect(() => {
-    if (!textareaRef.current) return;
-    textareaRef.current.style.height = "auto";
-    textareaRef.current.style.height = Math.min(textareaRef.current.scrollHeight, 120) + "px";
-  }, [input]);
- useEffect(() => {
+    if (sending) requestAnimationFrame(() => bottomRef.current?.scrollIntoView({ behavior: "smooth" }));
+  }, [sending]);
+
+  // openSignal → open full-screen
+  useEffect(() => {
     if (skipFirstSignal.current) { skipFirstSignal.current = false; return; }
-    setOpen(true);
-    setFullScreen(true);
+    setOpen(true); setFullScreen(true);
   }, [openSignal]);
- useEffect(() => {
+
+  // Prefill
+  useEffect(() => {
     if (!prefill || !isLoggedIn) return;
     setOpen(true);
     pendingQuoteRef.current = quoteMeta || null;
-    const t = setTimeout(() => {
-      setInput(prefill);
-      textareaRef.current?.focus();
-      onClearPrefill?.();
-    }, 150);
+    const t = setTimeout(() => { inputRef.current?.setValue(prefill); onClearPrefill?.(); }, 200);
     return () => clearTimeout(t);
   }, [prefill, isLoggedIn]); // eslint-disable-line
- useEffect(() => {
-    if (!open || fullScreen) return;
+
+  // Click-outside closes compact panel
+  useEffect(() => {
+    if (!open || fullScreen || !compact) return;
     function handler(e) {
-      if (panelRef.current && !panelRef.current.contains(e.target) && !e.target.closest("[data-amc-fab]")) {
+      if (panelRef.current && !panelRef.current.contains(e.target) && !e.target.closest("[data-amc-fab]"))
         setOpen(false);
-      }
     }
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
-  }, [open, fullScreen]);
+  }, [open, fullScreen, compact]);
 
-  // Escape exits full-screen back to compact, then closes
+  // Escape
   useEffect(() => {
     if (!open) return;
     function onKey(e) {
       if (e.key !== "Escape") return;
-      if (fullScreen) setFullScreen(false);
-      else setOpen(false);
+      if (fullScreen) setFullScreen(false); else setOpen(false);
     }
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
   }, [open, fullScreen]);
 
+  // Thread list
   const loadThreads = useCallback(async () => {
     if (!isLoggedIn) return;
     setThreadsLoading(true);
     try { const res = await listChatThreads(); setThreads(res.threads || []); }
-    catch { /* ignore — sidebar will just show the empty state */ }
+    catch { /* sidebar shows empty state */ }
     finally { setThreadsLoading(false); }
   }, [isLoggedIn]);
- useEffect(() => { if (isLoggedIn) loadThreads(); }, [isLoggedIn, loadThreads]);
+
+  useEffect(() => { if (isLoggedIn) loadThreads(); }, [isLoggedIn, loadThreads]);
 
   const openThread = useCallback(async (id) => {
     if (id === threadId) return;
-    setThreadId(id); setMessages([]); setError(null);
-    setThreadLoading(true);
+    setThreadId(id); setMessages([]); setError(null); setThreadLoading(true);
     try {
       const res = await getChatThread(id);
       setMessages(res.thread.messages || []);
@@ -307,25 +982,28 @@ export default function AIMentorChat({
   const handleDeleteThread = useCallback(async (id) => {
     try {
       await deleteChatThread(id);
-      setThreads((prev) => prev.filter((t) => t.id !== id));
+      setThreads(prev => prev.filter(t => t.id !== id));
       if (id === threadId) { setThreadId(null); setMessages([]); setActiveTitle(""); }
     } catch { /* ignore */ }
   }, [threadId]);
 
-  const newChat = () => {
-    setThreadId(null); setMessages([]); setActiveTitle(""); setError(null); setInput("");
-    setTimeout(() => textareaRef.current?.focus(), 80);
-  };
+  const newChat = useCallback(() => {
+    setThreadId(null); setMessages([]); setActiveTitle(""); setError(null);
+    setTimeout(() => inputRef.current?.focus(), 80);
+  }, []);
 
   const send = useCallback(async (text) => {
-    const msg = (text || input).trim();
-    if (!msg || sending) return;
+    const msg = typeof text === "string" ? text.trim() : "";
+    if (!msg || isSendingRef.current) return;
+
     const quote = pendingQuoteRef.current;
     pendingQuoteRef.current = null;
-    setInput(""); // clears immediately — never lingers after sending
+
     setError(null);
-    setMessages((prev) => [...prev, { role: "user", content: msg, quote }]);
+    setMessages(prev => [...prev, { role: "user", content: msg, quote }]);
     setSending(true);
+    isSendingRef.current = true;
+
     try {
       const res = await chatWithMentor({ message: msg, contextHint, threadId });
       if (!threadId) {
@@ -335,336 +1013,115 @@ export default function AIMentorChat({
       } else if (res.title) {
         setActiveTitle(res.title);
       }
-      setMessages((prev) => [...prev, { role: "assistant", content: res.response }]);
+      setMessages(prev => [...prev, { role: "assistant", content: res.response }]);
     } catch (e) {
       setError(e.message);
-      setMessages((prev) => prev.slice(0, -1));
+      setMessages(prev => prev.slice(0, -1));
     } finally {
       setSending(false);
+      isSendingRef.current = false;
     }
-  }, [input, sending, contextHint, threadId, loadThreads]);
+  }, [contextHint, threadId, loadThreads]);
 
-  const handleKey = (e) => {
-    if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); }
-  };
-
-  const closeAll = () => { setOpen(false); setFullScreen(false); };
+  const handleSearchChange = useCallback(e => setHistorySearch(e.target.value), []);
+  const closeAll           = useCallback(() => { setOpen(false); setFullScreen(false); }, []);
+  const toggleFullScreen   = useCallback(() => setFullScreen(v => !v), []);
+  const handleOpen         = useCallback(() => setOpen(true), []);
 
   const isEmpty = messages.length === 0 && !threadLoading;
 
-  // ── Shared chat body (used by both compact panel and full-screen workspace) ──
-  function ChatBody({ starterCount }) {
-    if (!isLoggedIn) {
-      return (
-        <div className="flex-1 flex flex-col items-center justify-center gap-3 px-6 text-center">
-          <div className="w-12 h-12 rounded-2xl flex items-center justify-center" style={{ background: "var(--accent-blue-dim)" }}>
-            <Sparkles size={20} style={{ color: "var(--accent-blue)" }} />
-          </div>
-          <p className="text-[13px] text-text-primary font-medium">Sign in to chat with your AI Mentor</p>
-          <div className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-[11px] font-mono"
-            style={{ background: "var(--accent-blue-dim)", color: "var(--accent-blue)" }}>
-            <LogIn size={12} /> Your chats are saved automatically
-          </div>
-        </div>
-      );
-    }
+  const chatContent = isLoggedIn ? (
+    <>
+      <ChatMessages
+        messages={messages} sending={sending} error={error}
+        threadLoading={threadLoading} isEmpty={isEmpty}
+        starterCount={fullScreen ? 5 : 3}
+        onStarterClick={send} bottomRef={bottomRef}
+      />
+      <ChatInputWithRef ref={inputRef} onSend={send} sending={sending} />
+    </>
+  ) : <SignInPrompt />;
 
+  const sidebarProps = {
+    threads, threadsLoading, threadId,
+    onSelect: openThread, onDelete: handleDeleteThread,
+    onNew: newChat, search: historySearch, onSearchChange: handleSearchChange,
+  };
 
+  // ── Workspace (compact === false) ─────────────────────────────────────────
+  if (!compact) {
     return (
       <>
-        <div className="flex-1 overflow-y-auto amc-scroll px-4 py-4 space-y-4">
-          {threadLoading ? (
-            <div className="flex justify-center py-10">
-              <div className="flex gap-1">
-                {[0, 1, 2].map((i) => (
-                  <div key={i} className="w-1.5 h-1.5 rounded-full"
-                    style={{ background: "var(--accent-blue)", animation: `amc-bounce 1.1s ${i * 0.15}s infinite ease-in-out` }} />
-                ))}
-              </div>
+        <style>{AMC_STYLES}</style>
+        <div className="amc-workspace">
+          <div className="amc-header" style={{ borderRadius: 0 }}>
+            <div className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0"
+              style={{ background: "rgba(255,255,255,.15)" }}>
+              <Sparkles size={16} />
             </div>
-          ) : isEmpty ? (
-            <div className="h-full flex flex-col items-center justify-center gap-4 text-center px-2">
-              <div className="w-12 h-12 rounded-2xl flex items-center justify-center" style={{ background: "var(--accent-blue-dim)" }}>
-                <Sparkles size={20} style={{ color: "var(--accent-blue)" }} />
-              </div>
-              <div>
-                <p className="text-[13px] font-semibold text-text-primary">Ask your UPSC Mentor</p>
-                <p className="text-[11px] text-text-muted font-mono mt-0.5">Quick, focused answers</p>
-              </div>
-              <div className="flex flex-col gap-1.5 w-full max-w-sm">
-                {STARTER_QUESTIONS.slice(0, starterCount).map((q, i) => (
-                  <button key={i} onClick={() => send(q)} className="amc-starter">
-                    {q}
-                  </button>
-                ))}
-              </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-[13px] font-semibold leading-tight truncate">{activeTitle || "UPSC AI Mentor"}</p>
+              <p className="text-[10px] opacity-70 font-mono">Point-to-point answers</p>
             </div>
-          ) : (
-            <>
-              {messages.map((m, i) => (
-                <Message key={i} msg={m} isQuoteFollowup={Boolean(messages[i - 1]?.quote)} />
-              ))}
-              {sending && <ThinkingDots />}
-              {error && <ErrorBanner error={error} />}
-            </>
-          )}
-          <div ref={bottomRef} />
-        </div>
-
-        <div className="shrink-0 border-t border-bg-border p-3">
-          <div className="amc-input-bar">
-            <textarea
-              ref={textareaRef}
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={handleKey}
-              placeholder="Ask anything…"
-              rows={1}
-              className="flex-1 bg-transparent text-[13px] text-text-primary focus:outline-none placeholder:text-text-muted resize-none"
-              style={{ minHeight: 22, maxHeight: 120 }}
-            />
-            <button
-              onClick={() => send()}
-              disabled={!input.trim() || sending}
-              className="amc-send-btn"
-            >
-              {sending ? <Loader2 size={14} className="animate-spin" /> : <ArrowUp size={14} />}
-            </button>
+            <button onClick={newChat} className="amc-icon-btn"><Plus size={16} /></button>
+          </div>
+          <div className="amc-workspace-body">
+            <HistorySidebar {...sidebarProps} />
+            <div className="amc-workspace-chat">{chatContent}</div>
           </div>
         </div>
       </>
     );
   }
 
+  // ── Compact / floating ───────────────────────────────────────────────────
   return (
     <>
-      <style>{`
-        @keyframes amc-bounce { 0%, 80%, 100% { transform: scale(0.6); } 40% { transform: scale(1); } }
-        @keyframes amc-pop { from { opacity: 0; transform: translateY(10px) scale(0.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
-        @keyframes amc-ring { 0% { box-shadow: 0 0 0 0 rgba(59,130,246,0.35); } 100% { box-shadow: 0 0 0 14px rgba(59,130,246,0); } }
-        @keyframes amc-fade-in { from { opacity: 0; } to { opacity: 1; } }
-
-        .amc-dock {
-          position: fixed;
-          right: 16px;
-          bottom: calc(var(--bottom-nav-h, 0px) + var(--safe-bottom, 0px) + 16px);
-          z-index: 9999;
-          display: flex;
-          flex-direction: column;
-          align-items: flex-end;
-          gap: 14px;
-        }
-        @media (min-width: 768px) {
-          .amc-dock { right: 28px; bottom: calc(var(--safe-bottom, 0px) + 28px); }
-        }
-
-        .amc-fab {
-          width: 56px; height: 56px; border-radius: 9999px;
-          display: flex; align-items: center; justify-content: center;
-          background: linear-gradient(135deg, var(--accent-blue), #2563eb);
-          color: var(--text-inverse);
-          box-shadow: var(--shadow-lg);
-          transition: transform .15s ease;
-          animation: amc-ring 2.4s ease-out infinite;
-        }
-        .amc-fab:hover { transform: scale(1.05); }
-        .amc-fab:active { transform: scale(0.95); }
-
-        .amc-panel {
-          animation: amc-pop 180ms cubic-bezier(0.22,1,0.36,1) both;
-          display: flex; flex-direction: column; overflow: hidden;
-          border-radius: 26px; border: 1px solid var(--bg-border);
-          background: var(--bg-surface); box-shadow: var(--shadow-lg);
-        }
-
-        .amc-header {
-          flex-shrink: 0; display: flex; align-items: center; gap: 12px;
-          padding: 14px 16px;
-          background: linear-gradient(120deg, var(--accent-blue), #1d4ed8);
-          color: var(--text-inverse);
-        }
-        .amc-icon-btn {
-          padding: 7px; border-radius: 10px; flex-shrink: 0;
-          display: inline-flex; align-items: center; justify-content: center;
-          color: inherit; transition: background-color .15s;
-        }
-        .amc-icon-btn:hover { background: rgba(255,255,255,0.15); }
-
-        .amc-scroll::-webkit-scrollbar { width: 4px; }
-        .amc-scroll::-webkit-scrollbar-thumb { background: var(--bg-border); border-radius: 999px; }
-
-        .amc-bubble { position: relative; padding: 11px 14px; border-radius: 18px; font-size: 13px; line-height: 1.6; overflow: hidden; }
-        .amc-bubble-user { border-top-right-radius: 6px; background: linear-gradient(135deg, var(--accent-blue), #2563eb); color: var(--text-inverse); }
-        .amc-bubble-bot { border-top-left-radius: 6px; background: var(--bg-muted); border: 1px solid var(--bg-border); color: var(--text-primary); }
-        .amc-bullet::before { content: "•"; color: var(--accent-blue); margin-right: 6px; font-weight: 700; }
-        .amc-fade { position: absolute; left: 0; right: 0; bottom: 0; height: 34px; background: linear-gradient(transparent, var(--bg-muted)); pointer-events: none; }
-        .amc-readmore {
-          align-self: flex-start; font-size: 11px; font-weight: 600; font-family: 'DM Mono', monospace;
-          color: var(--accent-blue); display: inline-flex; align-items: center; gap: 4px;
-        }
-        .amc-readmore:hover { text-decoration: underline; }
-
-        .amc-quote-card {
-          position: relative; padding: 18px 16px 14px 26px; border-radius: 16px;
-          background: linear-gradient(135deg, var(--accent-blue-dim), rgba(245,158,11,0.07));
-          border: 1px solid rgba(59,130,246,.25);
-        }
-        .amc-quote-mark {
-          position: absolute; top: -2px; left: 8px; font-size: 32px; line-height: 1;
-          color: var(--accent-gold); opacity: .55; font-family: 'Playfair Display', Georgia, serif;
-        }
-        .amc-quote-text { font-family: 'Playfair Display', Georgia, serif; font-style: italic; font-size: 13.5px; line-height: 1.55; color: var(--text-primary); }
-        .amc-quote-src { margin-top: 8px; font-size: 11px; font-family: 'DM Mono', monospace; color: var(--accent-gold); text-align: right; }
-        .amc-quote-badge {
-          display: inline-flex; align-items: center; gap: 5px; font-size: 10px; font-weight: 700;
-          letter-spacing: .04em; text-transform: uppercase; color: var(--accent-blue);
-          background: var(--accent-blue-dim); border: 1px solid rgba(59,130,246,.25);
-          padding: 3px 9px; border-radius: 20px; width: fit-content;
-        }
-
-        .amc-starter {
-          text-align: left; font-size: 12px; padding: 9px 12px; border-radius: 12px;
-          border: 1px solid var(--bg-border); color: var(--text-secondary);
-          background: var(--bg-surface); transition: border-color .15s, color .15s, background .15s;
-        }
-        .amc-starter:hover { border-color: rgba(59,130,246,.4); color: var(--text-primary); background: var(--accent-blue-dim); }
-
-        .amc-input-bar {
-          display: flex; align-items: flex-end; gap: 8px; border-radius: 18px;
-          padding: 9px 9px 9px 14px; border: 1px solid var(--bg-border); background: var(--bg-muted);
-          transition: border-color .15s;
-        }
-        .amc-input-bar:focus-within { border-color: rgba(59,130,246,.45); }
-        .amc-send-btn {
-          width: 32px; height: 32px; border-radius: 12px; flex-shrink: 0;
-          display: flex; align-items: center; justify-content: center;
-          background: linear-gradient(135deg, var(--accent-blue), #2563eb); color: var(--text-inverse);
-          transition: opacity .15s, transform .1s;
-        }
-        .amc-send-btn:disabled { opacity: .35; }
-        .amc-send-btn:not(:disabled):active { transform: scale(0.93); }
-
-        .amc-search {
-          display: flex; align-items: center; gap: 6px; padding: 7px 10px; border-radius: 10px;
-          border: 1px solid var(--bg-border); background: var(--bg-surface);
-        }
-        .amc-search input {
-          flex: 1; background: transparent; border: none; outline: none; font-size: 12px; color: var(--text-primary);
-        }
-        .amc-search input::placeholder { color: var(--text-muted); }
-
-        /* ── Full-screen workspace ── */
-        .amc-overlay {
-          position: fixed; inset: 0; z-index: 10000;
-          background: rgba(8,10,16,0.55); backdrop-filter: blur(6px);
-          display: flex; align-items: center; justify-content: center;
-          animation: amc-fade-in 160ms ease both;
-        }
-        .amc-fullscreen {
-          width: 100%; height: 100%; background: var(--bg-surface);
-          display: flex; flex-direction: column; overflow: hidden;
-          animation: amc-pop 200ms cubic-bezier(.22,1,.36,1) both;
-        }
-        @media (min-width: 860px) {
-          .amc-overlay { padding: 32px; }
-          .amc-fullscreen { width: min(1080px, 100%); height: min(760px, 100%); border-radius: 28px; border: 1px solid var(--bg-border); box-shadow: var(--shadow-lg); }
-        }
-        .amc-fs-body { flex: 1; display: flex; min-height: 0; position: relative; }
-        .amc-fs-sidebar { width: 248px; flex-shrink: 0; border-right: 1px solid var(--bg-border); display: flex; flex-direction: column; background: var(--bg-base); }
-        @media (max-width: 640px) {
-          .amc-fs-sidebar { position: absolute; inset: 0; z-index: 5; width: 100%; }
-        }
-      `}</style>
-
-      {/* round launcher + compact panel */}
+      <style>{AMC_STYLES}</style>
       <div className="amc-dock">
-        {open && !fullScreen && (
-          <div ref={panelRef} className="amc-panel" style={{ width: "min(380px, calc(100vw - 32px))", height: "min(530px, calc(100vh - 140px))" }}>
-            <div className="amc-header">
-              <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 bg-white/15">
-                <Sparkles size={15} />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-[13.5px] font-semibold leading-tight truncate">AI UPSC Mentor</p>
-                <p className="text-[10.5px] font-mono opacity-80 leading-tight mt-0.5 truncate">
-                  {contextHint || "Always here to help"}
-                </p>
-              </div>
-              {isLoggedIn && (
-                <button onClick={() => setFullScreen(true)} className="amc-icon-btn hidden sm:inline-flex" title="Open full workspace">
-                  <Maximize2 size={14} />
+        {open && (
+          <div
+            ref={panelRef}
+            className="amc-panel"
+            style={fullScreen
+              ? {
+                  position: "fixed", inset: 0, borderRadius: 0,
+                  zIndex: 9998, height: "100dvh", animation: "none",
+                  display: "flex", flexDirection: "row",
+                }
+              : {
+                  width: "min(420px, calc(100vw - 32px))",
+                  height: "min(620px, calc(100dvh - 100px))",
+                }
+            }
+          >
+            {fullScreen && <HistorySidebar {...sidebarProps} />}
+
+            <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden", minWidth: 0 }}>
+              <div className="amc-header">
+                <div className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0"
+                  style={{ background: "rgba(255,255,255,.15)" }}>
+                  <Sparkles size={16} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-[13px] font-semibold leading-tight truncate">{activeTitle || "UPSC AI Mentor"}</p>
+                  <p className="text-[10px] opacity-70 font-mono">Point-to-point answers</p>
+                </div>
+                <button onClick={newChat} className="amc-icon-btn"><Plus size={16} /></button>
+                <button onClick={toggleFullScreen} className="amc-icon-btn">
+                  {fullScreen ? <Minimize2 size={15} /> : <Maximize2 size={15} />}
                 </button>
-              )}
-              <button onClick={closeAll} className="amc-icon-btn" title="Close">
-                <X size={14} />
-              </button>
+                <button onClick={closeAll} className="amc-icon-btn"><X size={15} /></button>
+              </div>
+              {chatContent}
             </div>
-            <ChatBody starterCount={3} />
           </div>
         )}
 
-        <button
-          data-amc-fab
-          onClick={() => { if (fullScreen) { closeAll(); } else { setOpen((v) => !v); } }}
-          className="amc-fab"
-          title="AI UPSC Mentor"
-        >
-          {open ? <X size={20} /> : <Sparkles size={20} />}
+        <button data-amc-fab onClick={handleOpen} className="amc-fab" aria-label="Open AI Mentor">
+          <Sparkles size={22} />
         </button>
       </div>
-
-      {/* full-screen workspace */}
-      {open && fullScreen && (
-        <div className="amc-overlay" onMouseDown={(e) => { if (e.target === e.currentTarget) setFullScreen(false); }}>
-          <div className="amc-fullscreen">
-            <div className="amc-header">
-              {isLoggedIn && (
-                <button onClick={() => setSidebarOpen((v) => !v)} className="amc-icon-btn" title="Toggle history">
-                  <MessageSquare size={15} />
-                </button>
-              )}
-              <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 bg-white/15">
-                <Sparkles size={15} />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-[14px] font-semibold leading-tight truncate">{activeTitle || "AI UPSC Mentor"}</p>
-                <p className="text-[11px] font-mono opacity-80 leading-tight mt-0.5 truncate">
-                  {contextHint || "Full workspace"}
-                </p>
-              </div>
-              {isLoggedIn && (
-                <button onClick={newChat} className="amc-icon-btn" title="New chat">
-                  <Plus size={15} />
-                </button>
-              )}
-              <button onClick={() => setFullScreen(false)} className="amc-icon-btn" title="Minimize">
-                <Minimize2 size={15} />
-              </button>
-              <button onClick={closeAll} className="amc-icon-btn" title="Close">
-                <X size={15} />
-              </button>
-            </div>
-
-            <div className="amc-fs-body">
-              {sidebarOpen && isLoggedIn && (
-                <HistorySidebar
-                  threads={threads}
-                  threadsLoading={threadsLoading}
-                  threadId={threadId}
-                  onSelect={(id) => { openThread(id); if (window.innerWidth < 640) setSidebarOpen(false); }}
-                  onDelete={handleDeleteThread}
-                  onNew={newChat}
-                  search={historySearch}
-                  onSearchChange={setHistorySearch}
-                />
-              )}
-              <div className="flex-1 flex flex-col min-w-0">
-                <ChatBody starterCount={5} />
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </>
   );
 }
