@@ -349,7 +349,7 @@ function FullChat({ contextHint, isLoggedIn, prefill, onClearPrefill }) {
       )}
 
       {/* Sidebar */}
-      <aside className={`fixed lg:relative top-0 left-0 h-full z-30 flex flex-col shrink-0 border-r border-bg-border bg-bg-surface transition-transform duration-300 lg:translate-x-0 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
+      <aside className={`fixed lg:relative top-0 left-0 h-full z-[80] flex flex-col shrink-0 border-r border-bg-border bg-bg-surface transition-transform duration-300 lg:translate-x-0 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
         style={{ width: "260px" }}>
         <div className="px-3 pt-4 pb-3 border-b border-bg-border shrink-0">
           <div className="flex items-center gap-2 mb-3">
