@@ -608,11 +608,6 @@ export default function SyllabusTracker({ userData, onUpdateProgress, isLoggedIn
         marginTop: 24,
       }}>
         <AIRevisionPanel isLoggedIn={isLoggedIn} compact={true} />
-        <AIMentorChat
-          contextHint="I'm reviewing my UPSC syllabus progress"
-          isLoggedIn={isLoggedIn}
-          compact={true}
-        />
       </div>
 
       {/* ── Footer ── */}

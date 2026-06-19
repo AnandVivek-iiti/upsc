@@ -1353,10 +1353,7 @@ export default function Topicwise({ onSyllabusUpdate, onBulkSyllabusUpdate = nul
 
       {/* ── AI Mentor Chat ── */}
       <div className="max-w-3xl mx-auto px-3 sm:px-6 py-6">
-        <AIMentorChat
-          contextHint="I'm practising topic-wise UPSC PYQs"
-          isLoggedIn={isLoggedIn}
-        />
+      
       </div>
 
       {/* ── Footer ── */}

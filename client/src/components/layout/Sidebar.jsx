@@ -1,5 +1,5 @@
 import {
-  LayoutDashboard, BookOpen, PenLine, PenTool, Archive, Flame, Target,
+  LayoutDashboard, BookOpen, PenLine, PenTool, Flame, Target,
   ChevronRight, Moon, Sun, LogOut, LogIn, Shield, Library, User,
 } from "lucide-react";
 import { AvatarCircle } from "../../pages/ProfilePage";
@@ -19,7 +19,6 @@ export default function Sidebar({
   userName, onNavigateProfile,
 }) {
   const streak = userData?.profile?.streak || 0;
-  const longestStreak = userData?.profile?.longest_streak || 0;
   const targetYear = userData?.profile?.target_year || 2027;
   const examDateStr = userData?.profile?.examDate || null;
   const examDateObj = examDateStr ? new Date(examDateStr) : null;

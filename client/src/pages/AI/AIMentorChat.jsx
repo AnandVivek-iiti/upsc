@@ -1,7 +1,7 @@
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import {
   ArrowUp, Sparkles, LogIn, User, Bot, Plus, Trash2, X,
-  MessageSquare, Maximize2, Minimize2, Loader2,
+  MessageSquare, Maximize2, Minimize2, Loader2, Search,
 } from "lucide-react";
 import {
   chatWithMentor,
@@ -18,8 +18,9 @@ const STARTER_QUESTIONS = [
   "3-month revision plan for GS3?",
 ];
 
-// Long assistant replies get collapsed with a "show more" toggle
-const LONG_REPLY_LIMIT = 420;
+// Long assistant replies get collapsed with a "Read full answer" toggle.
+// Kept short on purpose — the chat bubble is a quick mentor, not the answer sheet.
+const LONG_REPLY_LIMIT = 260;
 
 function relativeTime(iso) {
   if (!iso) return "";
@@ -32,14 +33,31 @@ function relativeTime(iso) {
   return `${Math.floor(h / 24)}d`;
 }
 
+// Trim to the nearest word boundary instead of slicing mid-word.
+function truncateClean(text, limit) {
+  if (text.length <= limit) return text;
+  const slice = text.slice(0, limit);
+  const lastSpace = slice.lastIndexOf(" ");
+  return (lastSpace > limit * 0.6 ? slice.slice(0, lastSpace) : slice).trim() + "…";
+}
+
+// ─── Quote card — used when a message is asking the mentor to break down a quote ──
+function QuoteCard({ text, src }) {
+  return (
+    <div className="amc-quote-card">
+      <span className="amc-quote-mark">“</span>
+      <p className="amc-quote-text">{text}</p>
+      {src && <p className="amc-quote-src">— {src}</p>}
+    </div>
+  );
+}
+
 // ─── Message bubble ───────────────────────────────────────────────────────────
-function Message({ msg }) {
+function Message({ msg, isQuoteFollowup }) {
   const isUser = msg.role === "user";
   const isLong = !isUser && msg.content.length > LONG_REPLY_LIMIT;
   const [expanded, setExpanded] = useState(false);
-  const shown = isLong && !expanded
-    ? msg.content.slice(0, LONG_REPLY_LIMIT).trim() + "…"
-    : msg.content;
+  const shown = isLong && !expanded ? truncateClean(msg.content, LONG_REPLY_LIMIT) : msg.content;
 
   return (
     <div className={`flex gap-2.5 ${isUser ? "flex-row-reverse" : ""}`}>
@@ -53,24 +71,32 @@ function Message({ msg }) {
           ? <User size={12.5} style={{ color: "var(--accent-blue)" }} />
           : <Bot size={12.5} className="text-text-muted" />}
       </div>
-      <div className="max-w-[82%] flex flex-col gap-1.5 min-w-0">
-        <div
-          className={`px-3.5 py-2.5 rounded-2xl text-[13px] leading-relaxed ${
-            isUser ? "rounded-tr-md" : "rounded-tl-md bg-bg-muted border border-bg-border text-text-primary"
-          }`}
-          style={isUser ? { background: "var(--accent-blue)", color: "var(--text-inverse)" } : {}}
-        >
-          {shown.split("\n").filter(Boolean).map((line, i) => (
-            <p key={i} className={i > 0 ? "mt-1.5" : ""}>{line}</p>
-          ))}
-        </div>
+      <div className="max-w-[84%] flex flex-col gap-1.5 min-w-0">
+        {isQuoteFollowup && !isUser && (
+          <div className="amc-quote-badge">
+            <Sparkles size={10} /> Quote breakdown
+          </div>
+        )}
+
+        {isUser && msg.quote ? (
+          <QuoteCard text={msg.quote.text} src={msg.quote.src} />
+        ) : (
+          <div className={`amc-bubble ${isUser ? "amc-bubble-user" : "amc-bubble-bot"}`}>
+            {shown.split("\n").filter(Boolean).map((line, i) => {
+              const bullet = /^[-•]\s+/.test(line);
+              return (
+                <p key={i} className={`${i > 0 ? "mt-1.5" : ""} ${bullet ? "amc-bullet" : ""}`}>
+                  {bullet ? line.replace(/^[-•]\s+/, "") : line}
+                </p>
+              );
+            })}
+            {isLong && !expanded && <div className="amc-fade" />}
+          </div>
+        )}
+
         {isLong && (
-          <button
-            onClick={() => setExpanded((v) => !v)}
-            className="text-[11px] font-mono self-start hover:underline"
-            style={{ color: "var(--accent-blue)" }}
-          >
-            {expanded ? "Show less" : "Show full answer →"}
+          <button onClick={() => setExpanded((v) => !v)} className="amc-readmore">
+            {expanded ? "Show less" : "Read full answer →"}
           </button>
         )}
       </div>
@@ -85,7 +111,7 @@ function ThinkingDots() {
         style={{ background: "var(--bg-muted)", borderColor: "var(--bg-border)" }}>
         <Bot size={12.5} className="text-text-muted" />
       </div>
-      <div className="px-4 py-3 rounded-2xl rounded-tl-md bg-bg-muted border border-bg-border flex gap-1 items-center h-[18px]">
+      <div className="amc-bubble amc-bubble-bot flex gap-1 items-center h-[18px] py-3">
         {[0, 1, 2].map((i) => (
           <div key={i} className="w-1.5 h-1.5 rounded-full"
             style={{ background: "var(--accent-blue)", opacity: 0.55, animation: `amc-bounce 1.1s ${i * 0.15}s infinite ease-in-out` }} />
@@ -140,38 +166,76 @@ function ThreadRow({ thread, active, onSelect, onDelete }) {
   );
 }
 
-// ─── Main export: floating round launcher + popup panel ──────────────────────
-// Props:
-//   contextHint     – string hint passed to the AI for this page
-//   isLoggedIn      – bool
-//   compact         – if true (default), panel starts closed (just the FAB).
-//                     Pass compact={false} to have it open automatically.
-//   prefill         – string to pre-fill the input (e.g. from a quote click)
-//   onClearPrefill  – callback to clear prefill after it's been applied
+// History sidebar — shared between full-screen mode (always visible) so it actually
+// loads and stays visible instead of silently failing to open.
+function HistorySidebar({ threads, threadsLoading, threadId, onSelect, onDelete, onNew, search, onSearchChange }) {
+  const filtered = useMemo(() => {
+    if (!search.trim()) return threads;
+    const s = search.toLowerCase();
+    return threads.filter((t) => (t.title || "new chat").toLowerCase().includes(s));
+  }, [threads, search]);
+
+  return (
+    <div className="amc-fs-sidebar">
+      <div className="p-3 border-b border-bg-border shrink-0 space-y-2">
+        <button onClick={onNew}
+          className="w-full flex items-center justify-center gap-1.5 px-2 py-2 rounded-xl text-[12px] font-semibold transition-colors"
+          style={{ border: "1px solid rgba(59,130,246,.3)", color: "var(--accent-blue)", background: "var(--accent-blue-dim)" }}>
+          <Plus size={13} /> New chat
+        </button>
+        <div className="amc-search">
+          <Search size={12} className="shrink-0" style={{ color: "var(--text-muted)" }} />
+          <input value={search} onChange={(e) => onSearchChange(e.target.value)} placeholder="Search history…" />
+        </div>
+      </div>
+      <div className="flex-1 overflow-y-auto amc-scroll px-2 py-2 space-y-0.5">
+        {threadsLoading && (
+          <div className="flex justify-center py-6">
+            <Loader2 size={14} className="animate-spin" style={{ color: "var(--accent-blue)" }} />
+          </div>
+        )}
+        {!threadsLoading && filtered.length === 0 && (
+          <p className="text-[11px] font-mono text-text-muted text-center py-6 px-2">
+            {search.trim() ? "No chats match that search." : "No saved chats yet — start one above."}
+          </p>
+        )}
+        {filtered.map((t) => (
+          <ThreadRow key={t.id} thread={t} active={t.id === threadId} onSelect={onSelect} onDelete={onDelete} />
+        ))}
+      </div>
+    </div>
+  );
+}
 export default function AIMentorChat({
   contextHint = "",
   isLoggedIn,
   compact = true,
+  startExpanded = false,
+  openSignal = 0,
   prefill = "",
+  quoteMeta = null,
   onClearPrefill = null,
 }) {
-  const [open, setOpen]         = useState(!compact);
-  const [expanded, setExpanded] = useState(false);
-  const [messages, setMessages] = useState([]);
-  const [input, setInput]       = useState("");
-  const [sending, setSending]   = useState(false);
-  const [error, setError]       = useState(null);
-  const [threadId, setThreadId] = useState(null);
+  const [open, setOpen]           = useState(!compact || startExpanded);
+  const [fullScreen, setFullScreen] = useState(startExpanded);
+  const [messages, setMessages]   = useState([]);
+  const [input, setInput]         = useState("");
+  const [sending, setSending]     = useState(false);
+  const [error, setError]         = useState(null);
+  const [threadId, setThreadId]   = useState(null);
   const [activeTitle, setActiveTitle] = useState("");
 
   const [threads, setThreads]               = useState([]);
   const [threadsLoading, setThreadsLoading] = useState(false);
   const [threadLoading, setThreadLoading]   = useState(false);
-  const [sidebarOpen, setSidebarOpen]       = useState(false);
+  const [sidebarOpen, setSidebarOpen]       = useState(true);
+  const [historySearch, setHistorySearch]   = useState("");
 
-  const bottomRef   = useRef(null);
-  const textareaRef = useRef(null);
-  const panelRef    = useRef(null);
+  const bottomRef       = useRef(null);
+  const textareaRef     = useRef(null);
+  const panelRef         = useRef(null);
+  const pendingQuoteRef  = useRef(null);
+  const skipFirstSignal  = useRef(true);
 
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages, sending, open]);
 
@@ -180,11 +244,15 @@ export default function AIMentorChat({
     textareaRef.current.style.height = "auto";
     textareaRef.current.style.height = Math.min(textareaRef.current.scrollHeight, 120) + "px";
   }, [input]);
-
-  // Apply prefill (e.g. quote click) — opens the panel and focuses the input
-  useEffect(() => {
+ useEffect(() => {
+    if (skipFirstSignal.current) { skipFirstSignal.current = false; return; }
+    setOpen(true);
+    setFullScreen(true);
+  }, [openSignal]);
+ useEffect(() => {
     if (!prefill || !isLoggedIn) return;
     setOpen(true);
+    pendingQuoteRef.current = quoteMeta || null;
     const t = setTimeout(() => {
       setInput(prefill);
       textareaRef.current?.focus();
@@ -192,10 +260,8 @@ export default function AIMentorChat({
     }, 150);
     return () => clearTimeout(t);
   }, [prefill, isLoggedIn]); // eslint-disable-line
-
-  // Close on outside click (desktop convenience)
-  useEffect(() => {
-    if (!open) return;
+ useEffect(() => {
+    if (!open || fullScreen) return;
     function handler(e) {
       if (panelRef.current && !panelRef.current.contains(e.target) && !e.target.closest("[data-amc-fab]")) {
         setOpen(false);
@@ -203,21 +269,32 @@ export default function AIMentorChat({
     }
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
-  }, [open]);
+  }, [open, fullScreen]);
+
+  // Escape exits full-screen back to compact, then closes
+  useEffect(() => {
+    if (!open) return;
+    function onKey(e) {
+      if (e.key !== "Escape") return;
+      if (fullScreen) setFullScreen(false);
+      else setOpen(false);
+    }
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [open, fullScreen]);
 
   const loadThreads = useCallback(async () => {
     if (!isLoggedIn) return;
     setThreadsLoading(true);
     try { const res = await listChatThreads(); setThreads(res.threads || []); }
-    catch { /* ignore */ }
+    catch { /* ignore — sidebar will just show the empty state */ }
     finally { setThreadsLoading(false); }
   }, [isLoggedIn]);
-
-  useEffect(() => { if (expanded) loadThreads(); }, [expanded, loadThreads]);
+ useEffect(() => { if (isLoggedIn) loadThreads(); }, [isLoggedIn, loadThreads]);
 
   const openThread = useCallback(async (id) => {
-    if (id === threadId) { setSidebarOpen(false); return; }
-    setThreadId(id); setMessages([]); setError(null); setSidebarOpen(false);
+    if (id === threadId) return;
+    setThreadId(id); setMessages([]); setError(null);
     setThreadLoading(true);
     try {
       const res = await getChatThread(id);
@@ -237,16 +314,17 @@ export default function AIMentorChat({
 
   const newChat = () => {
     setThreadId(null); setMessages([]); setActiveTitle(""); setError(null); setInput("");
-    setSidebarOpen(false);
     setTimeout(() => textareaRef.current?.focus(), 80);
   };
 
   const send = useCallback(async (text) => {
     const msg = (text || input).trim();
     if (!msg || sending) return;
+    const quote = pendingQuoteRef.current;
+    pendingQuoteRef.current = null;
     setInput(""); // clears immediately — never lingers after sending
     setError(null);
-    setMessages((prev) => [...prev, { role: "user", content: msg }]);
+    setMessages((prev) => [...prev, { role: "user", content: msg, quote }]);
     setSending(true);
     try {
       const res = await chatWithMentor({ message: msg, contextHint, threadId });
@@ -270,9 +348,93 @@ export default function AIMentorChat({
     if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); }
   };
 
+  const closeAll = () => { setOpen(false); setFullScreen(false); };
+
   const isEmpty = messages.length === 0 && !threadLoading;
-  const panelWidth  = expanded ? "min(880px, calc(100vw - 32px))" : "min(380px, calc(100vw - 32px))";
-  const panelHeight = expanded ? "min(620px, calc(100vh - 140px))" : "min(530px, calc(100vh - 140px))";
+
+  // ── Shared chat body (used by both compact panel and full-screen workspace) ──
+  function ChatBody({ starterCount }) {
+    if (!isLoggedIn) {
+      return (
+        <div className="flex-1 flex flex-col items-center justify-center gap-3 px-6 text-center">
+          <div className="w-12 h-12 rounded-2xl flex items-center justify-center" style={{ background: "var(--accent-blue-dim)" }}>
+            <Sparkles size={20} style={{ color: "var(--accent-blue)" }} />
+          </div>
+          <p className="text-[13px] text-text-primary font-medium">Sign in to chat with your AI Mentor</p>
+          <div className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-[11px] font-mono"
+            style={{ background: "var(--accent-blue-dim)", color: "var(--accent-blue)" }}>
+            <LogIn size={12} /> Your chats are saved automatically
+          </div>
+        </div>
+      );
+    }
+
+
+    return (
+      <>
+        <div className="flex-1 overflow-y-auto amc-scroll px-4 py-4 space-y-4">
+          {threadLoading ? (
+            <div className="flex justify-center py-10">
+              <div className="flex gap-1">
+                {[0, 1, 2].map((i) => (
+                  <div key={i} className="w-1.5 h-1.5 rounded-full"
+                    style={{ background: "var(--accent-blue)", animation: `amc-bounce 1.1s ${i * 0.15}s infinite ease-in-out` }} />
+                ))}
+              </div>
+            </div>
+          ) : isEmpty ? (
+            <div className="h-full flex flex-col items-center justify-center gap-4 text-center px-2">
+              <div className="w-12 h-12 rounded-2xl flex items-center justify-center" style={{ background: "var(--accent-blue-dim)" }}>
+                <Sparkles size={20} style={{ color: "var(--accent-blue)" }} />
+              </div>
+              <div>
+                <p className="text-[13px] font-semibold text-text-primary">Ask your UPSC Mentor</p>
+                <p className="text-[11px] text-text-muted font-mono mt-0.5">Quick, focused answers</p>
+              </div>
+              <div className="flex flex-col gap-1.5 w-full max-w-sm">
+                {STARTER_QUESTIONS.slice(0, starterCount).map((q, i) => (
+                  <button key={i} onClick={() => send(q)} className="amc-starter">
+                    {q}
+                  </button>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <>
+              {messages.map((m, i) => (
+                <Message key={i} msg={m} isQuoteFollowup={Boolean(messages[i - 1]?.quote)} />
+              ))}
+              {sending && <ThinkingDots />}
+              {error && <ErrorBanner error={error} />}
+            </>
+          )}
+          <div ref={bottomRef} />
+        </div>
+
+        <div className="shrink-0 border-t border-bg-border p-3">
+          <div className="amc-input-bar">
+            <textarea
+              ref={textareaRef}
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={handleKey}
+              placeholder="Ask anything…"
+              rows={1}
+              className="flex-1 bg-transparent text-[13px] text-text-primary focus:outline-none placeholder:text-text-muted resize-none"
+              style={{ minHeight: 22, maxHeight: 120 }}
+            />
+            <button
+              onClick={() => send()}
+              disabled={!input.trim() || sending}
+              className="amc-send-btn"
+            >
+              {sending ? <Loader2 size={14} className="animate-spin" /> : <ArrowUp size={14} />}
+            </button>
+          </div>
+        </div>
+      </>
+    );
+  }
 
   return (
     <>
@@ -280,11 +442,13 @@ export default function AIMentorChat({
         @keyframes amc-bounce { 0%, 80%, 100% { transform: scale(0.6); } 40% { transform: scale(1); } }
         @keyframes amc-pop { from { opacity: 0; transform: translateY(10px) scale(0.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
         @keyframes amc-ring { 0% { box-shadow: 0 0 0 0 rgba(59,130,246,0.35); } 100% { box-shadow: 0 0 0 14px rgba(59,130,246,0); } }
+        @keyframes amc-fade-in { from { opacity: 0; } to { opacity: 1; } }
+
         .amc-dock {
           position: fixed;
           right: 16px;
           bottom: calc(var(--bottom-nav-h, 0px) + var(--safe-bottom, 0px) + 16px);
-          z-index: 60;
+          z-index: 9999;
           display: flex;
           flex-direction: column;
           align-items: flex-end;
@@ -293,175 +457,214 @@ export default function AIMentorChat({
         @media (min-width: 768px) {
           .amc-dock { right: 28px; bottom: calc(var(--safe-bottom, 0px) + 28px); }
         }
-        .amc-fab { animation: amc-ring 2.4s ease-out infinite; }
-        .amc-panel { animation: amc-pop 180ms cubic-bezier(0.22,1,0.36,1) both; }
+
+        .amc-fab {
+          width: 56px; height: 56px; border-radius: 9999px;
+          display: flex; align-items: center; justify-content: center;
+          background: linear-gradient(135deg, var(--accent-blue), #2563eb);
+          color: var(--text-inverse);
+          box-shadow: var(--shadow-lg);
+          transition: transform .15s ease;
+          animation: amc-ring 2.4s ease-out infinite;
+        }
+        .amc-fab:hover { transform: scale(1.05); }
+        .amc-fab:active { transform: scale(0.95); }
+
+        .amc-panel {
+          animation: amc-pop 180ms cubic-bezier(0.22,1,0.36,1) both;
+          display: flex; flex-direction: column; overflow: hidden;
+          border-radius: 26px; border: 1px solid var(--bg-border);
+          background: var(--bg-surface); box-shadow: var(--shadow-lg);
+        }
+
+        .amc-header {
+          flex-shrink: 0; display: flex; align-items: center; gap: 12px;
+          padding: 14px 16px;
+          background: linear-gradient(120deg, var(--accent-blue), #1d4ed8);
+          color: var(--text-inverse);
+        }
+        .amc-icon-btn {
+          padding: 7px; border-radius: 10px; flex-shrink: 0;
+          display: inline-flex; align-items: center; justify-content: center;
+          color: inherit; transition: background-color .15s;
+        }
+        .amc-icon-btn:hover { background: rgba(255,255,255,0.15); }
+
         .amc-scroll::-webkit-scrollbar { width: 4px; }
         .amc-scroll::-webkit-scrollbar-thumb { background: var(--bg-border); border-radius: 999px; }
+
+        .amc-bubble { position: relative; padding: 11px 14px; border-radius: 18px; font-size: 13px; line-height: 1.6; overflow: hidden; }
+        .amc-bubble-user { border-top-right-radius: 6px; background: linear-gradient(135deg, var(--accent-blue), #2563eb); color: var(--text-inverse); }
+        .amc-bubble-bot { border-top-left-radius: 6px; background: var(--bg-muted); border: 1px solid var(--bg-border); color: var(--text-primary); }
+        .amc-bullet::before { content: "•"; color: var(--accent-blue); margin-right: 6px; font-weight: 700; }
+        .amc-fade { position: absolute; left: 0; right: 0; bottom: 0; height: 34px; background: linear-gradient(transparent, var(--bg-muted)); pointer-events: none; }
+        .amc-readmore {
+          align-self: flex-start; font-size: 11px; font-weight: 600; font-family: 'DM Mono', monospace;
+          color: var(--accent-blue); display: inline-flex; align-items: center; gap: 4px;
+        }
+        .amc-readmore:hover { text-decoration: underline; }
+
+        .amc-quote-card {
+          position: relative; padding: 18px 16px 14px 26px; border-radius: 16px;
+          background: linear-gradient(135deg, var(--accent-blue-dim), rgba(245,158,11,0.07));
+          border: 1px solid rgba(59,130,246,.25);
+        }
+        .amc-quote-mark {
+          position: absolute; top: -2px; left: 8px; font-size: 32px; line-height: 1;
+          color: var(--accent-gold); opacity: .55; font-family: 'Playfair Display', Georgia, serif;
+        }
+        .amc-quote-text { font-family: 'Playfair Display', Georgia, serif; font-style: italic; font-size: 13.5px; line-height: 1.55; color: var(--text-primary); }
+        .amc-quote-src { margin-top: 8px; font-size: 11px; font-family: 'DM Mono', monospace; color: var(--accent-gold); text-align: right; }
+        .amc-quote-badge {
+          display: inline-flex; align-items: center; gap: 5px; font-size: 10px; font-weight: 700;
+          letter-spacing: .04em; text-transform: uppercase; color: var(--accent-blue);
+          background: var(--accent-blue-dim); border: 1px solid rgba(59,130,246,.25);
+          padding: 3px 9px; border-radius: 20px; width: fit-content;
+        }
+
+        .amc-starter {
+          text-align: left; font-size: 12px; padding: 9px 12px; border-radius: 12px;
+          border: 1px solid var(--bg-border); color: var(--text-secondary);
+          background: var(--bg-surface); transition: border-color .15s, color .15s, background .15s;
+        }
+        .amc-starter:hover { border-color: rgba(59,130,246,.4); color: var(--text-primary); background: var(--accent-blue-dim); }
+
+        .amc-input-bar {
+          display: flex; align-items: flex-end; gap: 8px; border-radius: 18px;
+          padding: 9px 9px 9px 14px; border: 1px solid var(--bg-border); background: var(--bg-muted);
+          transition: border-color .15s;
+        }
+        .amc-input-bar:focus-within { border-color: rgba(59,130,246,.45); }
+        .amc-send-btn {
+          width: 32px; height: 32px; border-radius: 12px; flex-shrink: 0;
+          display: flex; align-items: center; justify-content: center;
+          background: linear-gradient(135deg, var(--accent-blue), #2563eb); color: var(--text-inverse);
+          transition: opacity .15s, transform .1s;
+        }
+        .amc-send-btn:disabled { opacity: .35; }
+        .amc-send-btn:not(:disabled):active { transform: scale(0.93); }
+
+        .amc-search {
+          display: flex; align-items: center; gap: 6px; padding: 7px 10px; border-radius: 10px;
+          border: 1px solid var(--bg-border); background: var(--bg-surface);
+        }
+        .amc-search input {
+          flex: 1; background: transparent; border: none; outline: none; font-size: 12px; color: var(--text-primary);
+        }
+        .amc-search input::placeholder { color: var(--text-muted); }
+
+        /* ── Full-screen workspace ── */
+        .amc-overlay {
+          position: fixed; inset: 0; z-index: 10000;
+          background: rgba(8,10,16,0.55); backdrop-filter: blur(6px);
+          display: flex; align-items: center; justify-content: center;
+          animation: amc-fade-in 160ms ease both;
+        }
+        .amc-fullscreen {
+          width: 100%; height: 100%; background: var(--bg-surface);
+          display: flex; flex-direction: column; overflow: hidden;
+          animation: amc-pop 200ms cubic-bezier(.22,1,.36,1) both;
+        }
+        @media (min-width: 860px) {
+          .amc-overlay { padding: 32px; }
+          .amc-fullscreen { width: min(1080px, 100%); height: min(760px, 100%); border-radius: 28px; border: 1px solid var(--bg-border); box-shadow: var(--shadow-lg); }
+        }
+        .amc-fs-body { flex: 1; display: flex; min-height: 0; position: relative; }
+        .amc-fs-sidebar { width: 248px; flex-shrink: 0; border-right: 1px solid var(--bg-border); display: flex; flex-direction: column; background: var(--bg-base); }
+        @media (max-width: 640px) {
+          .amc-fs-sidebar { position: absolute; inset: 0; z-index: 5; width: 100%; }
+        }
       `}</style>
 
+      {/* round launcher + compact panel */}
       <div className="amc-dock">
-        {open && (
-          <div
-            ref={panelRef}
-            className="amc-panel flex flex-col overflow-hidden rounded-[26px] border"
-            style={{
-              width: panelWidth,
-              height: panelHeight,
-              background: "var(--bg-surface)",
-              borderColor: "var(--bg-border)",
-              boxShadow: "var(--shadow-lg)",
-            }}
-          >
-            {/* header */}
-            <div className="shrink-0 flex items-center gap-3 px-4 py-3.5"
-              style={{ background: "var(--accent-blue)", color: "var(--text-inverse)" }}>
+        {open && !fullScreen && (
+          <div ref={panelRef} className="amc-panel" style={{ width: "min(380px, calc(100vw - 32px))", height: "min(530px, calc(100vh - 140px))" }}>
+            <div className="amc-header">
               <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 bg-white/15">
                 <Sparkles size={15} />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-[13.5px] font-semibold leading-tight truncate">
-                  {expanded ? (activeTitle || "AI UPSC Mentor") : "AI UPSC Mentor"}
-                </p>
+                <p className="text-[13.5px] font-semibold leading-tight truncate">AI UPSC Mentor</p>
                 <p className="text-[10.5px] font-mono opacity-80 leading-tight mt-0.5 truncate">
                   {contextHint || "Always here to help"}
                 </p>
               </div>
-              {expanded && isLoggedIn && (
-                <button onClick={() => setSidebarOpen((v) => !v)}
-                  className="p-1.5 rounded-lg hover:bg-white/15 transition-colors">
-                  <MessageSquare size={14} />
-                </button>
-              )}
               {isLoggedIn && (
-                <button onClick={() => setExpanded((v) => !v)}
-                  className="p-1.5 rounded-lg hover:bg-white/15 transition-colors hidden sm:inline-flex">
-                  {expanded ? <Minimize2 size={14} /> : <Maximize2 size={14} />}
+                <button onClick={() => setFullScreen(true)} className="amc-icon-btn hidden sm:inline-flex" title="Open full workspace">
+                  <Maximize2 size={14} />
                 </button>
               )}
-              <button onClick={() => setOpen(false)} className="p-1.5 rounded-lg hover:bg-white/15 transition-colors">
+              <button onClick={closeAll} className="amc-icon-btn" title="Close">
                 <X size={14} />
               </button>
             </div>
-
-            {/* body */}
-            <div className="flex-1 flex min-h-0">
-              {/* thread sidebar (expanded mode only) */}
-              {expanded && sidebarOpen && isLoggedIn && (
-                <div className="w-[200px] shrink-0 border-r border-bg-border flex flex-col">
-                  <div className="p-2.5 shrink-0">
-                    <button onClick={newChat}
-                      className="w-full flex items-center justify-center gap-1.5 px-2 py-2 rounded-xl text-[12px] font-medium transition-colors"
-                      style={{ border: "1px solid rgba(59,130,246,.3)", color: "var(--accent-blue)" }}>
-                      <Plus size={13} /> New chat
-                    </button>
-                  </div>
-                  <div className="flex-1 overflow-y-auto amc-scroll px-2 pb-2 space-y-0.5">
-                    {threadsLoading && <p className="text-[10px] font-mono text-text-muted text-center py-3">Loading…</p>}
-                    {!threadsLoading && threads.length === 0 && (
-                      <p className="text-[10px] font-mono text-text-muted text-center py-6">No chats yet</p>
-                    )}
-                    {threads.map((t) => (
-                      <ThreadRow key={t.id} thread={t} active={t.id === threadId} onSelect={openThread} onDelete={handleDeleteThread} />
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* messages + input */}
-              <div className="flex-1 flex flex-col min-w-0">
-                {!isLoggedIn ? (
-                  <div className="flex-1 flex flex-col items-center justify-center gap-3 px-6 text-center">
-                    <div className="w-12 h-12 rounded-2xl flex items-center justify-center" style={{ background: "var(--accent-blue-dim)" }}>
-                      <Sparkles size={20} style={{ color: "var(--accent-blue)" }} />
-                    </div>
-                    <p className="text-[13px] text-text-primary font-medium">Sign in to chat with your AI Mentor</p>
-                    <div className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-[11px] font-mono"
-                      style={{ background: "var(--accent-blue-dim)", color: "var(--accent-blue)" }}>
-                      <LogIn size={12} /> Your chats are saved automatically
-                    </div>
-                  </div>
-                ) : (
-                  <>
-                    <div className="flex-1 overflow-y-auto amc-scroll px-4 py-4 space-y-4">
-                      {threadLoading ? (
-                        <div className="flex justify-center py-10">
-                          <div className="flex gap-1">
-                            {[0, 1, 2].map((i) => (
-                              <div key={i} className="w-1.5 h-1.5 rounded-full"
-                                style={{ background: "var(--accent-blue)", animation: `amc-bounce 1.1s ${i * 0.15}s infinite ease-in-out` }} />
-                            ))}
-                          </div>
-                        </div>
-                      ) : isEmpty ? (
-                        <div className="h-full flex flex-col items-center justify-center gap-4 text-center px-2">
-                          <div className="w-12 h-12 rounded-2xl flex items-center justify-center" style={{ background: "var(--accent-blue-dim)" }}>
-                            <Sparkles size={20} style={{ color: "var(--accent-blue)" }} />
-                          </div>
-                          <div>
-                            <p className="text-[13px] font-semibold text-text-primary">Ask your UPSC Mentor</p>
-                            <p className="text-[11px] text-text-muted font-mono mt-0.5">Quick, focused answers</p>
-                          </div>
-                          <div className="flex flex-col gap-1.5 w-full">
-                            {STARTER_QUESTIONS.slice(0, expanded ? 5 : 3).map((q, i) => (
-                              <button key={i} onClick={() => send(q)}
-                                className="text-left text-[12px] px-3 py-2 rounded-xl border transition-colors hover:bg-bg-muted"
-                                style={{ borderColor: "var(--bg-border)", color: "var(--text-secondary)" }}>
-                                {q}
-                              </button>
-                            ))}
-                          </div>
-                        </div>
-                      ) : (
-                        <>
-                          {messages.map((m, i) => <Message key={i} msg={m} />)}
-                          {sending && <ThinkingDots />}
-                          {error && <ErrorBanner error={error} />}
-                        </>
-                      )}
-                      <div ref={bottomRef} />
-                    </div>
-
-                    <div className="shrink-0 border-t border-bg-border p-3">
-                      <div className="flex items-end gap-2 rounded-2xl border px-3 py-2 transition-colors"
-                        style={{ borderColor: "var(--bg-border)", background: "var(--bg-muted)" }}>
-                        <textarea
-                          ref={textareaRef}
-                          value={input}
-                          onChange={(e) => setInput(e.target.value)}
-                          onKeyDown={handleKey}
-                          placeholder="Ask anything…"
-                          rows={1}
-                          className="flex-1 bg-transparent text-[13px] text-text-primary focus:outline-none placeholder:text-text-muted resize-none"
-                          style={{ minHeight: 22, maxHeight: 120 }}
-                        />
-                        <button
-                          onClick={() => send()}
-                          disabled={!input.trim() || sending}
-                          className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0 transition-all disabled:opacity-35"
-                          style={{ background: "var(--accent-blue)", color: "var(--text-inverse)" }}
-                        >
-                          {sending ? <Loader2 size={14} className="animate-spin" /> : <ArrowUp size={14} />}
-                        </button>
-                      </div>
-                    </div>
-                  </>
-                )}
-              </div>
-            </div>
+            <ChatBody starterCount={3} />
           </div>
         )}
 
-        {/* round floating launcher */}
         <button
           data-amc-fab
-          onClick={() => setOpen((v) => !v)}
-          className="amc-fab w-14 h-14 rounded-full flex items-center justify-center transition-transform hover:scale-105 active:scale-95"
-          style={{ background: "var(--accent-blue)", color: "var(--text-inverse)", boxShadow: "var(--shadow-lg)" }}
+          onClick={() => { if (fullScreen) { closeAll(); } else { setOpen((v) => !v); } }}
+          className="amc-fab"
           title="AI UPSC Mentor"
         >
           {open ? <X size={20} /> : <Sparkles size={20} />}
         </button>
       </div>
+
+      {/* full-screen workspace */}
+      {open && fullScreen && (
+        <div className="amc-overlay" onMouseDown={(e) => { if (e.target === e.currentTarget) setFullScreen(false); }}>
+          <div className="amc-fullscreen">
+            <div className="amc-header">
+              {isLoggedIn && (
+                <button onClick={() => setSidebarOpen((v) => !v)} className="amc-icon-btn" title="Toggle history">
+                  <MessageSquare size={15} />
+                </button>
+              )}
+              <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 bg-white/15">
+                <Sparkles size={15} />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-[14px] font-semibold leading-tight truncate">{activeTitle || "AI UPSC Mentor"}</p>
+                <p className="text-[11px] font-mono opacity-80 leading-tight mt-0.5 truncate">
+                  {contextHint || "Full workspace"}
+                </p>
+              </div>
+              {isLoggedIn && (
+                <button onClick={newChat} className="amc-icon-btn" title="New chat">
+                  <Plus size={15} />
+                </button>
+              )}
+              <button onClick={() => setFullScreen(false)} className="amc-icon-btn" title="Minimize">
+                <Minimize2 size={15} />
+              </button>
+              <button onClick={closeAll} className="amc-icon-btn" title="Close">
+                <X size={15} />
+              </button>
+            </div>
+
+            <div className="amc-fs-body">
+              {sidebarOpen && isLoggedIn && (
+                <HistorySidebar
+                  threads={threads}
+                  threadsLoading={threadsLoading}
+                  threadId={threadId}
+                  onSelect={(id) => { openThread(id); if (window.innerWidth < 640) setSidebarOpen(false); }}
+                  onDelete={handleDeleteThread}
+                  onNew={newChat}
+                  search={historySearch}
+                  onSearchChange={setHistorySearch}
+                />
+              )}
+              <div className="flex-1 flex flex-col min-w-0">
+                <ChatBody starterCount={5} />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

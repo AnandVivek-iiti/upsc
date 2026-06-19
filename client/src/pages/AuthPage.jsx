@@ -24,7 +24,7 @@ function Field({ label, type = "text", value, onChange, error, icon: Icon, hint,
 
   return (
     <div className="space-y-1.5">
-      <label className="flex items-center gap-1.5 text-[11px] font-mono text-text-muted uppercase tracking-wider">
+      <label className="flex items-center gap-1.5 text-xs font-mono text-text-muted uppercase tracking-wider mb-0.5">
         {Icon && <Icon size={11} className="shrink-0" />}
         {label}
       </label>
@@ -37,7 +37,7 @@ function Field({ label, type = "text", value, onChange, error, icon: Icon, hint,
           min={min}
           max={max}
           step={step}
-          className={`w-full bg-bg-muted border rounded-xl px-4 py-3 text-sm text-text-primary
+          className={`w-full bg-bg-muted border rounded-xl px-4 py-3.5 text-base text-text-primary
             font-body placeholder:text-text-muted/40 transition-all duration-200
             focus:outline-none focus:ring-2 focus:ring-accent-gold/20
             ${error
@@ -60,7 +60,7 @@ function Field({ label, type = "text", value, onChange, error, icon: Icon, hint,
           </button>
         )}
       </div>
-      {hint && !error && <p className="text-[11px] text-text-muted font-mono leading-relaxed">{hint}</p>}
+      {hint && !error && <p className="text-sm text-text-muted font-mono">{hint}</p>}
       {error && (
         <p className="flex items-center gap-1.5 text-[11px] text-accent-red font-mono">
           <AlertCircle size={10} className="shrink-0" /> {error}
@@ -74,14 +74,14 @@ function Field({ label, type = "text", value, onChange, error, icon: Icon, hint,
 function SelectField({ label, value, onChange, options, icon: Icon, error }) {
   return (
     <div className="space-y-1.5">
-      <label className="flex items-center gap-1.5 text-[11px] font-mono text-text-muted uppercase tracking-wider">
+      <label className="flex items-center gap-1.5 text-xs font-mono text-text-muted uppercase tracking-wider mb-0.5">
         {Icon && <Icon size={11} className="shrink-0" />}
         {label}
       </label>
       <select
         value={value}
         onChange={onChange}
-        className={`w-full bg-bg-muted border rounded-xl px-4 py-3 text-sm text-text-primary
+        className={`w-full bg-bg-muted border rounded-xl px-4 py-3.5 text-base text-text-primary
           font-body transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-accent-gold/20
           ${error ? "border-accent-red/60" : "border-bg-border focus:border-accent-gold/50"}
         `}
@@ -246,7 +246,6 @@ export default function AuthPage({ onAuthSuccess, onBack }) {
       setGoogleLoading(false);
     }
   }
-  // ──────────────────────────────────────────────────────────────────────────
 
   const switchMode = (m) => {
     setMode(m);
@@ -368,7 +367,7 @@ export default function AuthPage({ onAuthSuccess, onBack }) {
       {onBack && (
         <button
           onClick={onBack}
-          className="absolute top-4 left-4 z-20 flex items-center gap-1.5 text-xs font-mono text-text-muted hover:text-text-primary transition-colors px-3 py-2 rounded-xl border border-bg-border bg-bg-surface touch-manipulation"
+          className="absolute top-4 left-4 z-20 flex items-center gap-1.5 text-sm font-mono text-text-muted hover:text-text-primary transition-colors px-3 py-2 rounded-xl border border-bg-border bg-bg-surface touch-manipulation"
           aria-label="Go back"
         >
           ← Back
@@ -414,7 +413,7 @@ export default function AuthPage({ onAuthSuccess, onBack }) {
             </div>
           </div>
 
-          <h1 className="font-display text-xl sm:text-2xl font-semibold text-text-primary">
+          <h1 className="font-display text-2xl sm:text-3xl font-semibold text-text-primary">
             UPSC Mentor
           </h1>
 
@@ -460,7 +459,7 @@ export default function AuthPage({ onAuthSuccess, onBack }) {
             }}
           >
             <AlertCircle size={14} className="text-accent-red shrink-0 mt-0.5" />
-            <p className="text-xs text-accent-red font-mono leading-relaxed">{globalError}</p>
+            <p className="text-sm text-accent-red font-mono leading-relaxed">{globalError}</p>
           </div>
         )}
 
@@ -473,7 +472,7 @@ export default function AuthPage({ onAuthSuccess, onBack }) {
             }}
           >
             <CheckCircle2 size={14} className="text-accent-green shrink-0" />
-            <p className="text-xs text-accent-green font-mono">{successMsg}</p>
+            <p className="text-sm text-accent-green font-mono">{successMsg}</p>
           </div>
         )}
 
@@ -485,7 +484,7 @@ export default function AuthPage({ onAuthSuccess, onBack }) {
             {GOOGLE_CLIENT_ID && (
               <>
                 {googleLoading ? (
-                  <div className="flex items-center justify-center gap-2 py-3 rounded-xl border border-bg-border text-sm text-text-muted">
+                  <div className="flex items-center justify-center gap-2 py-3 rounded-xl border border-bg-border text-base text-text-muted">
                     <Loader2 size={16} className="animate-spin" /> Signing in with Google…
                   </div>
                 ) : (
@@ -503,12 +502,12 @@ export default function AuthPage({ onAuthSuccess, onBack }) {
             <button
               onClick={handleLogin}
               disabled={loading}
-              className="btn-primary w-full flex items-center justify-center gap-2 mt-2 py-3 text-sm touch-manipulation"
+              className="btn-primary w-full flex items-center justify-center gap-2 mt-2 touch-manipulation"
             >
               {loading ? <Loader2 size={16} className="animate-spin" /> : <><span>Sign In</span><ArrowRight size={15} /></>}
             </button>
 
-            <p className="text-center text-xs text-text-muted font-mono">
+            <p className="text-center text-sm text-text-muted font-mono">
               New here?{" "}
               <button onClick={() => switchMode("signup")} className="text-accent-gold hover:underline touch-manipulation">
                 Create an account
@@ -525,7 +524,7 @@ export default function AuthPage({ onAuthSuccess, onBack }) {
             {GOOGLE_CLIENT_ID && (
               <>
                 {googleLoading ? (
-                  <div className="flex items-center justify-center gap-2 py-3 rounded-xl border border-bg-border text-sm text-text-muted">
+                  <div className="flex items-center justify-center gap-2 py-3 rounded-xl border border-bg-border text-base text-text-muted">
                     <Loader2 size={16} className="animate-spin" /> Signing up with Google…
                   </div>
                 ) : (
@@ -546,11 +545,11 @@ export default function AuthPage({ onAuthSuccess, onBack }) {
               onChange={sf("confirmPassword")} error={fieldErrors.confirmPassword}
               icon={Lock} autoComplete="new-password" />
 
-            <button onClick={handleSignupNext} className="btn-primary w-full flex items-center justify-center gap-2 mt-2 py-3 text-sm touch-manipulation">
+            <button onClick={handleSignupNext} className="btn-primary w-full flex items-center justify-center gap-2 mt-2 touch-manipulation">
               <span>Next — Study Profile</span><ArrowRight size={15} />
             </button>
 
-            <p className="text-center text-xs text-text-muted font-mono">
+            <p className="text-center text-sm text-text-muted font-mono">
               Already registered?{" "}
               <button onClick={() => switchMode("login")} className="text-accent-gold hover:underline touch-manipulation">
                 Sign in
@@ -562,7 +561,7 @@ export default function AuthPage({ onAuthSuccess, onBack }) {
         {mode === "signup" && signupStep === 1 && (
           <div className="space-y-5">
             <div className="px-4 py-3 rounded-xl" style={{ background: "var(--accent-gold-dim)", border: "0.5px solid rgba(245,158,11,0.2)" }}>
-              <p className="text-xs font-mono text-accent-gold leading-relaxed">
+              <p className="text-sm font-mono text-accent-gold leading-relaxed">
                 Almost there! Tell us about your UPSC preparation so we can personalise your dashboard.
               </p>
             </div>
@@ -604,10 +603,10 @@ export default function AuthPage({ onAuthSuccess, onBack }) {
             </div>
 
             <div className="flex gap-3 pt-1">
-              <button onClick={() => { clearErrors(); setSignupStep(0); }} className="btn-outline flex-1 flex items-center justify-center gap-1.5 py-3 text-sm touch-manipulation">
+              <button onClick={() => { clearErrors(); setSignupStep(0); }} className="btn-outline flex-1 flex items-center justify-center gap-1.5 py-3 text-base touch-manipulation">
                 ← Back
               </button>
-              <button onClick={handleSignup} disabled={loading} className="btn-primary flex-[2] flex items-center justify-center gap-2 py-3 text-sm touch-manipulation">
+              <button onClick={handleSignup} disabled={loading} className="btn-primary flex-[2] flex items-center justify-center gap-2 py-3 text-base touch-manipulation">
                 {loading ? <Loader2 size={16} className="animate-spin" /> : <><span>Create Account</span><ArrowRight size={15} /></>}
               </button>
             </div>

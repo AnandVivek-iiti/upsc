@@ -17,7 +17,8 @@ import ProfilePage from "./pages/ProfilePage";
 import PWAInstallPrompt from "./components/PWAInstallPrompt";
 import timerStore from "./hooks/timerStore";
 import BottomNav from "./components/layout/BottomNav.jsx";
-
+import AIMentorWorkspace from './pages/AIMentorWorkspace.jsx'
+import AIMentorChat from "./pages/AI/AIMentorChat";
 // ─── Splash Screen ────────────────────────────────────────────────────────────
 function SplashScreen() {
   return (
@@ -127,9 +128,9 @@ function ErrorBanner({ error }) {
 export default function App() {
   const { user, token, loading: authLoading, login, logout } = useAuth();
 
-  const [activeView, setActiveView]           = useState("dashboard");
+  const [activeView, setActiveView] = useState("dashboard");
   const [workspaceQuestion, setWorkspaceQuestion] = useState(null);
-  const [previousView, setPreviousView]       = useState("dashboard");
+  const [previousView, setPreviousView] = useState("dashboard");
   const [aiMentorPrefill, setAiMentorPrefill] = useState("");   // ← quote prefill
   const [theme, setTheme] = useState(() => {
     if (typeof window === "undefined") return "light";
@@ -166,7 +167,7 @@ export default function App() {
   };
 
   const handleNavigateProfile = () => handleViewChange("profile");
-  const handleProfileUpdate   = () => refetch?.();
+  const handleProfileUpdate = () => refetch?.();
 
   // ── Quote click: open AI Mentor with pre-filled prompt ────────────────────
   const handleQuoteClick = (quote) => {
@@ -180,9 +181,11 @@ export default function App() {
   if (loading && !userData && (user || token)) return <LoadingScreen />;
 
   const userName = userData?.profile?.name || user?.name || "";
-
+  const isWorkspace =
+    activeView === "ai-mentor";
   return (
     <div className="min-h-[100dvh]">
+
       {/* ── Desktop Sidebar ── */}
       <div className="hidden lg:block fixed top-0 left-0 h-screen z-30" style={{ width: "var(--sidebar-width, 14rem)" }}>
         <Sidebar
@@ -205,11 +208,13 @@ export default function App() {
           <div className="flex-1 pb-bottom-nav lg:pb-0">
 
             {/* HeroBanner — no useNavigate needed, callback handled here */}
-            <HeroBanner
-              examDate={userData?.profile?.examDate || null}
-              customQuote={userData?.profile?.quote || null}
-              onQuoteClick={handleQuoteClick}
-            />
+         {!isWorkspace && (
+  <HeroBanner
+    examDate={userData?.profile?.examDate || null}
+    customQuote={userData?.profile?.quote || null}
+    onQuoteClick={handleQuoteClick}
+  />
+)}
 
             <ErrorBanner error={error} />
 
@@ -250,7 +255,7 @@ export default function App() {
                   isLoggedIn={!!user && !!token}
                 />
               )}
-              {activeView === "admin"     && <Adminpannel />}
+              {activeView === "admin" && <Adminpannel />}
               {activeView === "resources" && (
                 <ResourceLibrary
                   user={user}
@@ -279,19 +284,20 @@ export default function App() {
 
               {/* ── AI Mentor full page — receives prefill from quote click ── */}
               {activeView === "ai-mentor" && (
-                <AIMentorPage
-                  user={user}
-                  token={token}
+                <AIMentorWorkspace
                   isLoggedIn={!!user && !!token}
                   prefill={aiMentorPrefill}
                   onClearPrefill={() => setAiMentorPrefill("")}
                 />
               )}
             </div>
-
+<AIMentorChat
+  isLoggedIn={!!user && !!token}
+  compact={true}
+/>
             <PWAInstallPrompt />
           </div>
-          <Footer />
+          {!isWorkspace && <Footer />}
         </div>
       </main>
 

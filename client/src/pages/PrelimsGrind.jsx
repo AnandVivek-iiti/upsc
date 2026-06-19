@@ -323,12 +323,6 @@ export default function PrelimsGrind({ isLoggedIn = false }) {
           </div>
         </section>
 
-        {/* ── AI Mentor Chat ── */}
-        <AIMentorChat
-          contextHint="I'm practising UPSC Prelims MCQs"
-          isLoggedIn={isLoggedIn}
-          compact={true}
-        />
       </div>
     </div>
   );

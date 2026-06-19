@@ -1,4 +1,4 @@
-import { ArrowUpRight, ShieldCheck, Heart } from "lucide-react";
+import { ArrowUpRight, Heart } from "lucide-react";
 import {
   LAST_VERIFIED_DATE,
   OFFICIAL_UPSC_LINKS,
@@ -65,7 +65,7 @@ export default function Footer() {
       <div className="mx-auto w-full max-w-7xl px-6 py-8">
 
         {/* bg image — pointer-events-none so it never blocks clicks */}
-        <div className="absolute inset-0 -z-5 opacity-10 pointer-events-none">
+        <div className="absolute inset-0 -z-10 opacity-10 pointer-events-none">
           <img
             src="/assets/mt1.png"
             alt="Footer Background"

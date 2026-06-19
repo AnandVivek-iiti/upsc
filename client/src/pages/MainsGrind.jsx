@@ -338,12 +338,7 @@ export default function MainsGrind({ isLoggedIn = false }) {
           </div>
         </section>
 
-        {/* ── AI Mentor Chat ── */}
-        <AIMentorChat
-          contextHint="I'm practising UPSC Mains long-answer questions"
-          isLoggedIn={isLoggedIn}
-          compact={true}
-        />
+      
       </div>
     </div>
   );
