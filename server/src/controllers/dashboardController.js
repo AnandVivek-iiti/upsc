@@ -1,5 +1,7 @@
 const User = require("../models/User");
 const { UserData } = require("../models/UserData");
+const { getISTDateString } = require("../utils/dateUtils");
+const { emitToUser } = require("../socket/socketManager");
 
 // ─── GET /api/dashboard ────────────────────────────────────────────────────────
 // Returns profile + daily logs + answers + spaced_repetition + question_attempts.
@@ -78,6 +80,8 @@ const updateModuleProgress = async (req, res, next) => {
     userData.changed("syllabus_progress", true);
     await userData.save();
 
+    emitToUser(req.user.id, "dashboard:syllabus-updated", { syllabus_progress: sp });
+
     res.json({
       success: true,
       stage, paper, module: moduleName,
@@ -140,6 +144,8 @@ const bulkUpdateSyllabus = async (req, res, next) => {
     userData.changed("syllabus_progress", true);
     await userData.save();
 
+    emitToUser(req.user.id, "dashboard:syllabus-updated", { syllabus_progress: sp });
+
     res.json({ success: true, updated: updates.length, syllabus_progress: sp });
   } catch (err) {
     next(err);
@@ -200,7 +206,7 @@ const logStudyHours = async (req, res, next) => {
     }
     const hours_val = Math.round(parsedHours * 100) / 100;
 
-    const today = new Date().toISOString().split("T")[0];
+    const today = getISTDateString();
     const logEntry = {
       date: today,
       hours: hours_val,
@@ -231,9 +237,8 @@ const logStudyHours = async (req, res, next) => {
     if (isNewDay && hours_val > 0) {
       const user = await User.findByPk(req.user.id);
 
-      const yesterday = new Date();
-      yesterday.setDate(yesterday.getDate() - 1);
-      const yDate = yesterday.toISOString().split("T")[0];
+      const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000);
+      const yDate = getISTDateString(yesterday);
       const hadYesterday = logs.some((l) => l.date === yDate && l.hours > 0);
 
       user.streak = hadYesterday ? (user.streak || 0) + 1 : 1;
@@ -241,6 +246,12 @@ const logStudyHours = async (req, res, next) => {
         user.longest_streak = user.streak;
       }
       await user.save();
+
+      emitToUser(req.user.id, "dashboard:log-updated", {
+        log: logEntry,
+        streak: user.streak,
+        longest_streak: user.longest_streak,
+      });
 
       return res.json({
         success: true,
@@ -250,6 +261,12 @@ const logStudyHours = async (req, res, next) => {
         milestone: user.streak % 7 === 0 ? `${user.streak}-day streak milestone!` : null,
       });
     }
+
+    emitToUser(req.user.id, "dashboard:log-updated", {
+      log: logEntry,
+      streak: req.user.streak || 0,
+      longest_streak: req.user.longest_streak || 0,
+    });
 
     res.json({
       success: true,
@@ -337,7 +354,7 @@ const getSpacedRepetition = async (req, res, next) => {
       return res.status(404).json({ success: false, error: "User data not found." });
     }
 
-    const today = new Date().toISOString().split("T")[0];
+    const today = getISTDateString();
     const queue = userData.spaced_repetition?.queue || [];
     const due   = queue.filter((item) => item.next_review <= today);
 
@@ -363,17 +380,16 @@ const addSpacedRepetition = async (req, res, next) => {
 
     const intervalMap = { easy: 7, medium: 3, hard: 1 };
     const interval    = intervalMap[difficulty] || 3;
-    const today       = new Date();
-    const nextReview  = new Date(today);
-    nextReview.setDate(today.getDate() + interval);
+    const now         = new Date();
+    const nextReview  = new Date(now.getTime() + interval * 24 * 60 * 60 * 1000);
 
     const newItem = {
       id:            `sr_${Date.now()}`,
       topic:         topic.trim(),
       paper:         paper || "General",
       difficulty:    difficulty || "medium",
-      added:         today.toISOString().split("T")[0],
-      next_review:   nextReview.toISOString().split("T")[0],
+      added:         getISTDateString(now),
+      next_review:   getISTDateString(nextReview),
       review_count:  0,
       interval_days: interval,
     };

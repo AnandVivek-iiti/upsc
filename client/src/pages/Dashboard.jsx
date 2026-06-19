@@ -20,6 +20,8 @@ import {
   CloudOff,
   ChevronDown,
   ChevronUp,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { useState, useEffect, useCallback } from "react";
 import { SYLLABUS, PAPER_ORDER, getPct } from "../data/syllabusData";
@@ -28,10 +30,11 @@ import timerStore, { getUserTimerHours } from "../hooks/timerStore";
 import QuestionStatsPanel from "../components/QuestionStats";
 import { AvatarCircle } from "./ProfilePage";
 import AIRevisionPanel from "../components/ui/AIRevisionPanel";
+import { getISTDateString, getISTDay } from "../utils/dateUtils";
 
 // ─── Tiny helpers ──────────────────────────────────────────────────────────────
 function todayKey() {
-  return new Date().toISOString().split("T")[0];
+  return getISTDateString();
 }
 function secsToHours(secs) {
   return parseFloat((secs / 3600).toFixed(2));
@@ -48,6 +51,9 @@ function fmtHM(secs) {
   const m = Math.floor((secs % 3600) / 60);
   if (h === 0) return `${m}m`;
   return m === 0 ? `${h}h` : `${h}h ${m}m`;
+}
+function pad2(n) {
+  return String(n).padStart(2, "0");
 }
 
 // ─── Collapsible Section Wrapper ───────────────────────────────────────────────
@@ -93,6 +99,7 @@ function StudyTimer({ onLogHours, onSynced, targetHours = 8, serverHours = 0 }) 
   // Initialise directly from the singleton so we never show stale values
   const [elapsed, setElapsed] = useState(timerStore.elapsed);
   const [running, setRunning] = useState(timerStore.running);
+  const [remote, setRemote] = useState(timerStore.remote);
   const [syncState, setSyncState] = useState("idle");
   const [isCompact, setIsCompact] = useState(false);
   const lastSyncRef = { current: serverHours };
@@ -111,9 +118,10 @@ function StudyTimer({ onLogHours, onSynced, targetHours = 8, serverHours = 0 }) 
     setElapsed(timerStore.elapsed);
     setRunning(timerStore.running);
 
-    const unsub = timerStore.subscribe(({ elapsed: e, running: r }) => {
+    const unsub = timerStore.subscribe(({ elapsed: e, running: r, remote: rm }) => {
       setElapsed(e);
       setRunning(r);
+      if (rm) setRemote(rm);
     });
     return unsub;
   }, []);
@@ -201,6 +209,14 @@ function StudyTimer({ onLogHours, onSynced, targetHours = 8, serverHours = 0 }) 
              : ""}
           </span>
         </span>
+
+        {/* Cross-device live indicator */}
+        {remote.active && (
+          <span className="label-tag text-[10px] sm:text-xs text-accent-blue border-accent-blue/30 bg-accent-blue/10 flex items-center gap-1">
+            <span className="w-1.5 h-1.5 rounded-full bg-accent-blue animate-pulse" />
+            Studying on another device — {fmtHM(remote.elapsed)}
+          </span>
+        )}
 
         {/* Status badge */}
         <span
@@ -330,6 +346,7 @@ function StudyTimer({ onLogHours, onSynced, targetHours = 8, serverHours = 0 }) 
 function StudyChart({ logs = [], targetHours = 8, userId = null }) {
   const [view, setView] = useState("weekly");
   const [isMobile, setIsMobile] = useState(false);
+  const [monthOffset, setMonthOffset] = useState(0); // 0 = current month, -1 = prev, ...
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 640);
@@ -337,6 +354,12 @@ function StudyChart({ logs = [], targetHours = 8, userId = null }) {
     window.addEventListener("resize", checkMobile);
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
+
+  // Reset to the current month whenever the chart is switched back to weekly,
+  // so re-opening monthly view later doesn't silently resume on an old month.
+  useEffect(() => {
+    if (view === "weekly") setMonthOffset(0);
+  }, [view]);
 
   const getHoursForDate = (dateStr) => {
     const serverHours = logs.find((l) => l.date === dateStr)?.hours || 0;
@@ -356,65 +379,67 @@ function StudyChart({ logs = [], targetHours = 8, userId = null }) {
     return Array.from({ length: isMobile ? 5 : 7 }, (_, i) => {
       const d = new Date(today);
       d.setDate(today.getDate() - ((isMobile ? 4 : 6) - i));
-      const dateStr = d.toISOString().split("T")[0];
+      const dateStr = getISTDateString(d);
       return {
-        label:   DAY_NAMES[d.getDay()].substring(0, isMobile ? 2 : 3),
+        label:   DAY_NAMES[getISTDay(d)].substring(0, isMobile ? 2 : 3),
         hours:   getHoursForDate(dateStr),
         isToday: i === (isMobile ? 4 : 6),
       };
     });
   })();
 
-  const monthlyData = (() => {
-    const today = new Date();
-    const weeks = [];
-    for (let w = 4; w >= 0; w--) {
-      const days = Array.from({ length: 7 }, (_, d) => {
-        const day = new Date(today);
-        day.setDate(today.getDate() - w * 7 + d - 6);
-        return day;
-      }).filter((d) => d <= today);
+  // ── Monthly calendar — every day gets its own visible cell, nothing is ─────
+  // summed into a week anymore. Built straight from Y/M/D parts (no Date
+  // round-tripping for the date strings), so it can't drift across timezones.
+  const todayStr = todayKey(); // "YYYY-MM-DD" in IST
+  const [todayY, todayM] = todayStr.split("-").map(Number);
 
-      if (days.length === 0) continue;
+  const viewedMonth = new Date(todayY, todayM - 1 + monthOffset, 1);
+  const viewYear  = viewedMonth.getFullYear();
+  const viewMonth = viewedMonth.getMonth(); // 0-indexed
+  const daysInMonth  = new Date(viewYear, viewMonth + 1, 0).getDate();
+  const firstWeekday = viewedMonth.getDay(); // 0=Sun .. 6=Sat
 
-      const start = days[0];
-      const label = `${String(start.getDate()).padStart(2, "0")}/${String(
-        start.getMonth() + 1,
-      ).padStart(2, "0")}`;
-      const total = parseFloat(
-        days
-          .reduce(
-            (s, d) => s + getHoursForDate(d.toISOString().split("T")[0]),
-            0,
-          )
-          .toFixed(1),
-      );
-      weeks.push({
-        label,
-        total,
-        weekTarget: targetHours * days.length,
-        isCurrent: w === 0,
-      });
-    }
-    return weeks;
-  })();
+  const monthDays = Array.from({ length: daysInMonth }, (_, i) => {
+    const dayNum   = i + 1;
+    const dateStr  = `${viewYear}-${pad2(viewMonth + 1)}-${pad2(dayNum)}`;
+    const isFuture = dateStr > todayStr;
+    const hours    = isFuture ? 0 : getHoursForDate(dateStr);
+    return {
+      day: dayNum,
+      dateStr,
+      hours,
+      isToday: dateStr === todayStr,
+      isFuture,
+      met:     !isFuture && hours >= targetHours,
+      studied: !isFuture && hours > 0,
+    };
+  });
 
-  const weeklyMax  = Math.max(targetHours, ...weeklyData.map((d) => d.hours), 0.1);
-  const monthlyMax = Math.max(...monthlyData.map((d) => d.total), targetHours * 7, 0.1);
+  const monthLabel     = viewedMonth.toLocaleString("en-US", { month: "long", year: "numeric" });
+  const isCurrentMonth = monthOffset === 0;
+
+  const elapsedDays   = monthDays.filter((d) => !d.isFuture);
+  const studiedCount  = elapsedDays.filter((d) => d.studied).length;
+  const metCount      = elapsedDays.filter((d) => d.met).length;
+  const monthTotal    = parseFloat(elapsedDays.reduce((s, d) => s + d.hours, 0).toFixed(1));
+  const monthAvg      = studiedCount ? parseFloat((monthTotal / studiedCount).toFixed(1)) : 0;
+
+  const weeklyMax = Math.max(targetHours, ...weeklyData.map((d) => d.hours), 0.1);
 
   return (
     <div className="glass-panel p-3 sm:p-4 space-y-2.5 sm:space-y-3">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-1.5 sm:gap-2">
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
           <TrendingUp size={14} className="text-accent-green shrink-0" />
-          <h3 className="text-xs sm:text-sm font-display font-semibold text-text-primary">
-            {view === "weekly" ? "Weekly Hours" : "Monthly Overview"}
+          <h3 className="text-xs sm:text-sm font-display font-semibold text-text-primary truncate">
+            {view === "weekly" ? "Weekly Hours" : monthLabel}
           </h3>
         </div>
-        <div className="flex items-center bg-bg-muted rounded-lg p-0.5 gap-0.5">
+        <div className="flex items-center bg-bg-muted rounded-lg p-0.5 gap-0.5 shrink-0">
           {[
             ["weekly", isMobile ? "5D" : "7D"],
-            ["monthly", "30D"],
+            ["monthly", "Month"],
           ].map(([v, lbl]) => (
             <button
               key={v}
@@ -487,52 +512,111 @@ function StudyChart({ logs = [], targetHours = 8, userId = null }) {
           </div>
         </div>
       ) : (
-        <div className="space-y-2 sm:space-y-3">
-          {monthlyData.map(({ label, total, weekTarget, isCurrent }) => {
-            const pct = (total / monthlyMax) * 100;
-            const met = total >= weekTarget;
-            return (
-              <div key={label} className="space-y-1">
-                <div className="flex justify-between items-center">
-                  <div className="flex items-center gap-1.5 sm:gap-2">
-                    <span
-                      className={`text-[10px] sm:text-xs font-mono ${
-                        isCurrent ? "text-accent-gold" : "text-text-secondary"
-                      }`}
-                    >
-                      w/o {label}
-                    </span>
-                    {isCurrent && (
-                      <span className="label-tag text-[10px] sm:text-xs text-accent-gold border-accent-gold/30 bg-accent-gold/10">
-                        now
-                      </span>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-1 sm:gap-1.5">
-                    <span className="text-[10px] sm:text-[11px] font-mono text-text-muted">{total}h</span>
-                    {met && <CheckCircle size={10} className="text-accent-green" />}
-                  </div>
-                </div>
-                <div className="h-2 sm:h-2.5 bg-bg-muted rounded-full overflow-hidden">
-                  <div
-                    className={`h-full rounded-full transition-all duration-700 ${
-                      isCurrent
-                        ? "bg-accent-gold"
-                        : met
-                        ? "bg-accent-green/70"
-                        : total > 0
-                        ? "bg-accent-blue/50"
-                        : "bg-bg-muted"
-                    }`}
-                    style={{ width: `${Math.max(pct, total > 0 ? 2 : 0)}%` }}
-                  />
-                </div>
+        <div className="space-y-2.5 sm:space-y-3">
+          {/* Month navigation */}
+          <div className="flex items-center justify-between">
+            <button
+              onClick={() => setMonthOffset((o) => o - 1)}
+              className="btn-ghost border border-bg-border p-1 sm:p-1.5 rounded-lg hover:border-accent-gold/30 transition-colors"
+              title="Previous month"
+            >
+              <ChevronLeft size={14} />
+            </button>
+            <span className="text-[10px] sm:text-[11px] font-mono text-text-muted">
+              {isCurrentMonth ? "This month" : monthLabel}
+            </span>
+            <button
+              onClick={() => setMonthOffset((o) => Math.min(0, o + 1))}
+              disabled={isCurrentMonth}
+              className={`btn-ghost border border-bg-border p-1 sm:p-1.5 rounded-lg transition-colors ${
+                isCurrentMonth ? "opacity-30 cursor-not-allowed" : "hover:border-accent-gold/30"
+              }`}
+              title="Next month"
+            >
+              <ChevronRight size={14} />
+            </button>
+          </div>
+
+          {/* Month summary */}
+          <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
+            {[
+              { label: "Total",   val: `${monthTotal}h` },
+              { label: "Days hit", val: `${metCount}/${elapsedDays.length}` },
+              { label: "Avg/day", val: `${monthAvg}h` },
+            ].map(({ label, val }) => (
+              <div key={label} className="bg-bg-muted rounded-lg p-1.5 sm:p-2 text-center">
+                <p className="text-[9px] sm:text-[10px] font-mono text-text-muted uppercase">{label}</p>
+                <p className="text-xs sm:text-sm font-display font-bold text-text-primary mt-0.5">{val}</p>
               </div>
-            );
-          })}
-          <p className="text-[9px] sm:text-[10px] font-mono text-text-muted">
-            Weekly target: {targetHours}h/day × days in week
-          </p>
+            ))}
+          </div>
+
+          {/* Weekday header */}
+          <div className="grid grid-cols-7 gap-1 sm:gap-1.5 text-center">
+            {["S", "M", "T", "W", "T", "F", "S"].map((d, i) => (
+              <span key={i} className="text-[8px] sm:text-[10px] font-mono text-text-muted">
+                {d}
+              </span>
+            ))}
+          </div>
+
+          {/* Calendar grid — one visible cell per day, never aggregated */}
+          <div className="grid grid-cols-7 gap-1 sm:gap-1.5">
+            {Array.from({ length: firstWeekday }, (_, i) => (
+              <div key={`pad-${i}`} />
+            ))}
+            {monthDays.map((d) => (
+              <div
+                key={d.dateStr}
+                title={d.isFuture ? "" : `${d.dateStr} — ${d.hours}h studied`}
+                className={`aspect-square rounded-md sm:rounded-lg flex flex-col items-center justify-center gap-0.5 border transition-colors ${
+                  d.isToday
+                    ? "border-accent-gold bg-accent-gold/15"
+                    : d.isFuture
+                    ? "border-transparent bg-transparent"
+                    : d.met
+                    ? "border-accent-green/40 bg-accent-green/15"
+                    : d.studied
+                    ? "border-accent-blue/30 bg-accent-blue/10"
+                    : "border-bg-border/50 bg-bg-muted/60"
+                }`}
+              >
+                <span
+                  className={`text-[9px] sm:text-[11px] font-mono leading-none ${
+                    d.isToday
+                      ? "text-accent-gold font-bold"
+                      : d.isFuture
+                      ? "text-text-muted/30"
+                      : "text-text-secondary"
+                  }`}
+                >
+                  {d.day}
+                </span>
+                {!d.isFuture && d.hours > 0 && (
+                  <span className="text-[7px] sm:text-[9px] font-mono text-text-muted leading-none">
+                    {d.hours}h
+                  </span>
+                )}
+                {d.met && <CheckCircle size={8} className="text-accent-green sm:w-2.5 sm:h-2.5" />}
+              </div>
+            ))}
+          </div>
+
+          {/* Legend */}
+          <div className="flex flex-wrap items-center gap-x-2 sm:gap-x-3 gap-y-1 text-[9px] sm:text-[10px] font-mono text-text-muted">
+            <span className="flex items-center gap-1">
+              <span className="inline-block w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-sm border border-accent-gold bg-accent-gold/15" /> Today
+            </span>
+            <span className="flex items-center gap-1">
+              <span className="inline-block w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-sm border border-accent-green/40 bg-accent-green/15" /> Target met
+            </span>
+            <span className="flex items-center gap-1">
+              <span className="inline-block w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-sm border border-accent-blue/30 bg-accent-blue/10" /> Studied
+            </span>
+            <span className="flex items-center gap-1">
+              <span className="inline-block w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-sm border border-bg-border/50 bg-bg-muted/60" /> No study
+            </span>
+          </div>
         </div>
       )}
     </div>
@@ -565,69 +649,6 @@ function StatCard({ icon: Icon, label, value, sub, accent = false, iconColor }) 
         {value}
       </p>
       {sub && <p className="text-[9px] sm:text-xs text-text-secondary truncate">{sub}</p>}
-    </div>
-  );
-}
-
-// ─── RevisionQueue ─────────────────────────────────────────────────────────────
-function RevisionQueue({ syllabusData }) {
-  const dueItems = [];
-  for (const stage of ["prelims", "mains"]) {
-    const stagePapers = syllabusData?.[stage];
-    if (!stagePapers) continue;
-    for (const [paperKey, paper] of Object.entries(SYLLABUS[stage])) {
-      const userPaper = stagePapers[paperKey];
-      if (!userPaper) continue;
-      for (const [modName, mod] of Object.entries(userPaper.modules)) {
-        if (mod.status === "done" || mod.status === "revision") {
-          dueItems.push({
-            paper: paper.label.replace("Paper ", "P").split("—")[0].trim(),
-            module: modName,
-            status: mod.status,
-          });
-        }
-      }
-    }
-  }
-  return (
-    <div className="glass-panel p-3 sm:p-4 space-y-2.5 sm:space-y-3">
-      <div className="flex items-center gap-2">
-        <Brain size={14} className="text-accent-purple shrink-0" />
-        <h3 className="text-xs sm:text-sm font-display font-semibold text-text-primary">Revision Queue</h3>
-        {dueItems.length > 0 && (
-          <span className="label-tag text-[10px] sm:text-xs text-accent-purple border-accent-purple/30 bg-accent-purple/10 ml-auto">
-            {dueItems.length} due
-          </span>
-        )}
-      </div>
-      {dueItems.length === 0 ? (
-        <p className="text-[11px] sm:text-xs text-text-muted font-mono py-2">
-          Mark topics as "done" or "needs revision" in Syllabus Tracker.
-        </p>
-      ) : (
-        <div className="space-y-1.5 sm:space-y-2 max-h-48 overflow-y-auto pr-1">
-          {dueItems.map(({ paper, module, status }) => (
-            <div
-              key={`${paper}-${module}`}
-              className="flex items-center gap-2 p-2 sm:p-2.5 rounded-lg bg-bg-muted hover:bg-bg-border transition-colors"
-            >
-              <BookMarked size={12} className="text-text-muted shrink-0" />
-              <span className="text-[11px] sm:text-xs text-text-secondary font-body flex-1 truncate min-w-0">
-                {module}
-              </span>
-              <span
-                className={`label-tag text-[10px] sm:text-xs shrink-0 ${
-                  status === "revision"
-                    ? "text-orange-400 border-orange-400/30 bg-orange-400/10"
-                    : "text-accent-green border-accent-green/30 bg-accent-green/10"
-                }`}
-              >
-                {status === "revision" ? "revise" : "done"}
-              </span>
-            </div>
-          ))}
-        </div>
-      )}
     </div>
   );
 }
@@ -1143,24 +1164,14 @@ export default function Dashboard({
         )}
       </div>
 
-      {/* ── Answer Writing + Revision Queue ── */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-2 sm:gap-3">
-        {isMobile ? (
-          <>
-            <CollapsibleSection title="Answer Writing" icon={PenLine} defaultOpen={false}>
-              <AnswerWritingTracker />
-            </CollapsibleSection>
-            <CollapsibleSection title="Revision Queue" icon={Brain} defaultOpen={false}>
-              <RevisionQueue syllabusData={syllabusData} />
-            </CollapsibleSection>
-          </>
-        ) : (
-          <>
-            <AnswerWritingTracker />
-            <RevisionQueue syllabusData={syllabusData} />
-          </>
-        )}
-      </div>
+      {/* ── Answer Writing ── */}
+      {isMobile ? (
+        <CollapsibleSection title="Answer Writing" icon={PenLine} defaultOpen={false}>
+          <AnswerWritingTracker />
+        </CollapsibleSection>
+      ) : (
+        <AnswerWritingTracker />
+      )}
 
       {/* ── Study Chart + Paper Coverage ── */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-2 sm:gap-3">

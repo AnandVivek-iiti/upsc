@@ -10,7 +10,7 @@
  */
 import { useState, useRef, useEffect, useCallback } from "react";
 import {
-    Send, Cpu, MessageSquare, Sparkles, RefreshCw, LogIn, User, Bot,
+   ArrowUp, Send, Cpu, MessageSquare, Sparkles, RefreshCw, LogIn, User, Bot,
     Plus, Trash2, ChevronLeft, Brain, Clock, X, Menu,
 } from "lucide-react";
 import {
@@ -238,7 +238,7 @@ function CompactChat({ contextHint, isLoggedIn }) {
                         <button onClick={() => send()} disabled={!input.trim() || loading}
                             className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 transition-all disabled:opacity-40"
                             style={{ background: "var(--accent-gold)", color: "var(--bg-base)" }}>
-                            <Send size={14} />
+                            <ArrowUp size={14} />
                         </button>
                     </div>
                 </>
@@ -518,7 +518,7 @@ function FullChat({ contextHint, isLoggedIn }) {
                         <p className="text-sm font-semibold text-text-primary truncate">
                             {activeTitle || (isEmpty ? "AI UPSC Mentor" : "New Chat")}
                         </p>
-                       
+
                     </div>
 
                     {activeThreadId && (
@@ -609,7 +609,7 @@ function FullChat({ contextHint, isLoggedIn }) {
                             >
                                 {sending
                                     ? <Cpu size={13} className="animate-spin" />
-                                    : <Send size={13} />
+                                    : <ArrowUp size={13} />
                                 }
                             </button>
                         </div>

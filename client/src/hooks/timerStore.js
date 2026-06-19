@@ -14,12 +14,24 @@
  *   timerStore.subscribe(fn)   → unsubscribe fn
  */
 
+import { getISTDateString } from "../utils/dateUtils";
+
 function todayKey() {
-  return new Date().toISOString().split("T")[0];
+  return getISTDateString();
 }
 
 // userId is set via setUser(); null = unauthenticated (no data persisted)
 let _userId = null;
+let _socket = null;
+
+// Live state mirrored from this user's OTHER open tabs/devices (read-only —
+// we never let a remote tick override a session running locally).
+let _remote = { active: false, elapsed: 0, at: 0 };
+
+function broadcast() {
+  if (!_socket || !store.running) return;
+  _socket.emit("timer:state", { elapsed: store.elapsed, running: store.running });
+}
 
 function storageKey() {
   if (!_userId) return null;
@@ -57,10 +69,13 @@ export function getUserTimerHours(userId, dateStr) {
 const _listeners = new Set();
 
 function notify() {
-  _listeners.forEach((fn) => fn({ elapsed: store.elapsed, running: store.running }));
+  _listeners.forEach((fn) =>
+    fn({ elapsed: store.elapsed, running: store.running, remote: { ..._remote } }),
+  );
 }
 
 let _interval = null;
+let _tickCount = 0;
 
 const store = {
   elapsed: 0,
@@ -95,11 +110,16 @@ const store = {
     if (store.running) return;
     store.running = true;
     const base = Date.now() - store.elapsed * 1000;
+    _tickCount = 0;
     _interval = setInterval(() => {
       store.elapsed = Math.floor((Date.now() - base) / 1000);
       persist(store.elapsed);
+      // Broadcast to this user's other tabs/devices every ~5s, not every tick
+      _tickCount = (_tickCount + 1) % 5;
+      if (_tickCount === 0) broadcast();
       notify();
     }, 1000);
+    broadcast();
     notify();
   },
 
@@ -109,6 +129,7 @@ const store = {
     clearInterval(_interval);
     _interval = null;
     persist(store.elapsed);
+    if (_socket) _socket.emit("timer:state", { elapsed: store.elapsed, running: false });
     notify();
   },
 
@@ -118,7 +139,35 @@ const store = {
     _interval = null;
     store.elapsed = 0;
     persist(0);
+    if (_socket) _socket.emit("timer:state", { elapsed: 0, running: false });
     notify();
+  },
+
+  /** Wire a connected socket.io client for cross-tab/device real-time sync. */
+  attachSocket(socket) {
+    if (_socket === socket) return;
+    _socket = socket;
+    if (!_socket) return;
+    _socket.off("timer:state");
+    _socket.on("timer:state", (payload) => {
+      if (payload.disconnected || !payload.running) {
+        _remote = { active: false, elapsed: payload.elapsed || 0, at: Date.now() };
+      } else {
+        _remote = { active: true, elapsed: payload.elapsed || 0, at: Date.now() };
+      }
+      notify();
+    });
+  },
+
+  detachSocket() {
+    if (_socket) _socket.off("timer:state");
+    _socket = null;
+    _remote = { active: false, elapsed: 0, at: 0 };
+    notify();
+  },
+
+  get remote() {
+    return { ..._remote };
   },
 
   subscribe(fn) {

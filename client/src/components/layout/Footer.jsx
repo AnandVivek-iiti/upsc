@@ -45,7 +45,7 @@ function LinkItem({ href, label, tag, tagColor = "gold" }) {
 
 function SectionHeading({ children }) {
   return (
-    <p className="mb-2 font-mono text-[11px] uppercase tracking-widest text-text-tertiary">
+    <p className="mb-2 font-mono text-[11px] uppercase tracking-widest text-text-muted">
       {children}
     </p>
   );
@@ -61,7 +61,7 @@ const COLUMNS = [
 
 export default function Footer() {
   return (
-    <footer className="relative border-t border-bg-border bg-bg-surface/90 backdrop-blur">
+    <footer className="relative border-t border-bg-border bg-bg-surface/90 backdrop-blur pb-bottom-nav lg:pb-0">
       <div className="mx-auto w-full max-w-7xl px-6 py-8">
 
         {/* bg image — pointer-events-none so it never blocks clicks */}

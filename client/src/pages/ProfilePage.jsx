@@ -15,7 +15,7 @@ export function getInitials(name = "") {
 }
 
 // ─── AvatarCircle — exported so Sidebar / topbar can reuse it ────────────────
-export function AvatarCircle({ name = "", size = "md", onClick, className = "" }) {
+export function AvatarCircle({ name = "", size = "md", onClick, className = "", as: Tag = "button" }) {
   const initials = getInitials(name);
   const sizeMap = {
     sm: "w-8  h-8  text-xs",
@@ -24,7 +24,7 @@ export function AvatarCircle({ name = "", size = "md", onClick, className = "" }
     xl: "w-20 h-20 text-2xl",
   };
   return (
-    <button
+    <Tag
       onClick={onClick}
       title={name || "Profile"}
       aria-label="Open profile"
@@ -43,7 +43,7 @@ export function AvatarCircle({ name = "", size = "md", onClick, className = "" }
       }}
     >
       {initials}
-    </button>
+    </Tag>
   );
 }
 
@@ -424,14 +424,12 @@ export default function ProfilePage({ token, onBack, onProfileUpdate, userData =
               </div>
               <div className="space-y-1">
                 {[
-                  { label: "Current streak", value: `${p.streak || 0} days`, color: "#fb923c" },
                   { label: "Longest streak", value: `${p.longest_streak || 0} days`, color: "#fbbf24" },
                   { label: "Target year", value: `CSE ${p.target_year || "—"}`, color: "var(--text-primary)" },
                   {
                     label: "Days to exam", value: daysLeft != null ? `${daysLeft}d` : "—",
                     color: daysLeft != null && daysLeft <= 90 ? "#f87171" : "#4ade80"
                   },
-                  { label: "Daily goal", value: `${p.daily_target_hours || 8}h`, color: "#60a5fa" },
                   { label: "MCQ Accuracy", value: `${mcqAccuracy}%`, color: "#4ade80" },
                   { label: "Role", value: profile?.role === "admin" ? "Admin" : "Student", color: "#a78bfa" },
                 ].map(({ label, value, color }) => (
@@ -443,16 +441,7 @@ export default function ProfilePage({ token, onBack, onProfileUpdate, userData =
               </div>
             </div>
 
-            {/* Account ID card */}
-            <div className="glass-panel p-5 sm:p-6 rounded-2xl">
-              <div className="flex items-center gap-3 mb-3">
-                <Zap size={15} className="text-accent-gold" />
-                <h3 className="text-base sm:text-lg font-semibold text-text-primary">Account</h3>
-              </div>
-              <p className="text-xs sm:text-sm font-mono text-text-muted break-all">
-                ID: <span className="text-text-secondary font-mono">{profile?.id || "—"}</span>
-              </p>
-            </div>
+
           </div>
 
           {/* ── Right column: edit panels ── */}

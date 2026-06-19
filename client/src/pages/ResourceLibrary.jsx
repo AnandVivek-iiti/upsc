@@ -5,6 +5,7 @@
 
 import { useState, useMemo } from "react";
 import TestSeriesPage from "./Testseriespage";
+
 import {
   NCERT_BOOKS, SUBJECTS, SUBJECT_PAPER_MAP, NCERT_LAST_UPDATED,
 } from "../data/ncert_data";
@@ -231,7 +232,7 @@ function NCERTBookCard({ book, localDone, onToggleDone }) {
               transition: "all .15s",
             }}
           >
-            {book.url || book.filePath ? "Open PDF ↗" : "Not configured"}
+            {book.url || book.filePath ? "Open PDF ↗" : "Add file"}
           </button>
 
           <button
@@ -267,13 +268,12 @@ function getNoteMeta(type) {
 
 function NoteCard({ note }) {
   const [hovered, setHovered] = useState(false);
-  const meta = getNoteMeta(note.type);
+  const meta    = getNoteMeta(note.type);
   const hasFile = Boolean(note.url || note.filePath);
 
   const handleOpen = () => {
     const target = note.url || (note.filePath ? `/api/notes/file?path=${encodeURIComponent(note.filePath)}` : null);
     if (target) window.open(target, "_blank", "noopener,noreferrer");
-    else alert("No file added for this note yet.\nEdit src/data/notes_data.js to add a filePath or url.");
   };
 
   return (
@@ -295,7 +295,7 @@ function NoteCard({ note }) {
       <div style={{ height: 3, background: `linear-gradient(90deg, ${meta.accent}, ${meta.accent}88)`, flexShrink: 0 }} />
 
       <div
-        onClick={handleOpen}
+        onClick={hasFile ? handleOpen : undefined}
         style={{
           position: "relative",
           height: 116,
@@ -349,7 +349,6 @@ function NoteCard({ note }) {
             {note.module}
           </div>
         )}
-
         {hovered && hasFile && (
           <div style={{
             position: "absolute", inset: 0,
@@ -407,9 +406,10 @@ function NoteCard({ note }) {
             fontFamily: "'DM Mono', monospace",
             fontWeight: 600,
             transition: "all .15s",
+            display: "flex", alignItems: "center", justifyContent: "center", gap: 5,
           }}
         >
-          {hasFile ? `Open ${note.type?.toUpperCase()} ↗` : "Add Your File"}
+          {hasFile ? `Open ${note.type?.toUpperCase()} ↗` : "Add file"}
         </button>
       </div>
     </div>
@@ -438,16 +438,15 @@ function getRefBookMeta(moduleStr = "") {
 }
 
 function RefBookCard({ book }) {
-  const [hovered, setHovered] = useState(false);
+  const [hovered, setHovered]     = useState(false);
   const priorityColor = PRIORITY_COLORS[book.priority] || "#a78bfa";
   const priorityLabel = { "must-read": "Must Read", "recommended": "Recommended", "optional": "Optional" };
-  const meta = getRefBookMeta(book.module);
+  const meta    = getRefBookMeta(book.module);
   const hasFile = Boolean(book.url || book.filePath);
 
   const handleOpen = () => {
     const target = book.url || (book.filePath ? `/api/refbooks/file?path=${encodeURIComponent(book.filePath)}` : null);
     if (target) window.open(target, "_blank", "noopener,noreferrer");
-    else alert("No PDF added for this book yet.\nEdit src/data/reference_books_data.js to add your own filePath (a scan of your own copy), or a free official link if one exists.");
   };
 
   return (
@@ -469,7 +468,7 @@ function RefBookCard({ book }) {
       <div style={{ height: 3, background: `linear-gradient(90deg, ${priorityColor}, ${priorityColor}88)`, flexShrink: 0 }} />
 
       <div
-        onClick={handleOpen}
+        onClick={hasFile ? handleOpen : undefined}
         style={{
           position: "relative",
           height: 140,
@@ -582,9 +581,10 @@ function RefBookCard({ book }) {
             fontFamily: "'DM Mono', monospace",
             fontWeight: 600,
             transition: "all .15s",
+            display: "flex", alignItems: "center", justifyContent: "center", gap: 5,
           }}
         >
-          {hasFile ? "Open PDF ↗" : "Add Your PDF"}
+          {hasFile ? "Open PDF ↗" : "Add file"}
         </button>
       </div>
     </div>
@@ -1054,7 +1054,7 @@ export default function ResourceLibrary({ user = null, updateProgress = null, bu
       {/* ════════ TAB: MY NOTES ═════════════════════════════════════════════ */}
       {activeTab === "notes" && (
         <>
-          <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 20 }}>
+          <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 20, alignItems: "center" }}>
             <FilterChip label="All" active={paperFilter === "All"} color="#c084fc" onClick={() => setPaperFilter("All")} />
             {NOTE_PAPERS.map(p => <FilterChip key={p} label={p} active={paperFilter === p} color="#c084fc" onClick={() => setPaperFilter(p)} />)}
           </div>

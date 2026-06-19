@@ -93,8 +93,9 @@ function MiniStatCard({ value, label, accent }) {
       textAlign: "center",
       borderTop: `3px solid ${accent}`,
       boxShadow: "var(--shadow-sm)",
+      minWidth: 0,
     }}>
-      <div style={{ fontSize: 28, fontWeight: 700, color: "var(--text-primary)", lineHeight: 1, fontFamily: "'Playfair Display', Georgia, serif" }}>
+      <div className="st-stat-value" style={{ fontSize: 28, fontWeight: 700, color: "var(--text-primary)", lineHeight: 1, fontFamily: "'Playfair Display', Georgia, serif" }}>
         {value}
       </div>
       <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 5, fontFamily: "'DM Mono', monospace" }}>
@@ -119,6 +120,7 @@ function ModuleRow({ name, mod, color, onCycleStatus, onSetProgress }) {
 
   return (
     <div
+      className="st-module-row"
       style={{
         display: "flex",
         alignItems: "flex-start",
@@ -131,41 +133,43 @@ function ModuleRow({ name, mod, color, onCycleStatus, onSetProgress }) {
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-      <StatusIcon status={mod.status} onClick={onCycleStatus} />
+      <div className="st-module-main" style={{ display: "flex", alignItems: "flex-start", gap: 14, flex: 1, minWidth: 0 }}>
+        <StatusIcon status={mod.status} onClick={onCycleStatus} />
 
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ fontSize: 14, fontWeight: 500, color: "var(--text-primary)", marginBottom: 6 }}>{name}</div>
-        <div style={{ display: "flex", gap: 4, flexWrap: "wrap", marginBottom: 8 }}>
-          {(mod.topics || []).map((t) => (
-            <span key={t} style={{
-              fontSize: 10,
-              padding: "2px 8px",
-              background: "var(--bg-muted)",
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ fontSize: 14, fontWeight: 500, color: "var(--text-primary)", marginBottom: 6 }}>{name}</div>
+          <div style={{ display: "flex", gap: 4, flexWrap: "wrap", marginBottom: 8 }}>
+            {(mod.topics || []).map((t) => (
+              <span key={t} style={{
+                fontSize: 10,
+                padding: "2px 8px",
+                background: "var(--bg-muted)",
+                color: "var(--text-muted)",
+                borderRadius: 20,
+                border: "0.5px solid var(--bg-border)",
+                fontFamily: "'DM Mono', monospace",
+              }}>
+                {t}
+              </span>
+            ))}
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <ProgressBar value={mod.progress} color={color} height={4} />
+            <span style={{
+              fontSize: 12,
               color: "var(--text-muted)",
-              borderRadius: 20,
-              border: "0.5px solid var(--bg-border)",
+              minWidth: 34,
+              textAlign: "right",
+              fontVariantNumeric: "tabular-nums",
               fontFamily: "'DM Mono', monospace",
             }}>
-              {t}
+              {mod.progress}%
             </span>
-          ))}
-        </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <ProgressBar value={mod.progress} color={color} height={4} />
-          <span style={{
-            fontSize: 12,
-            color: "var(--text-muted)",
-            minWidth: 34,
-            textAlign: "right",
-            fontVariantNumeric: "tabular-nums",
-            fontFamily: "'DM Mono', monospace",
-          }}>
-            {mod.progress}%
-          </span>
+          </div>
         </div>
       </div>
 
-      <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0, paddingTop: 2 }}>
+      <div className="st-module-actions" style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0, paddingTop: 2 }}>
         <StatusBadge status={mod.status} onClick={onCycleStatus} />
         {editing ? (
           <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
@@ -247,6 +251,7 @@ function PaperCard({ paperId, paper, isOpen, onToggle, onCycleStatus, onSetProgr
       {/* Paper header */}
       <button
         onClick={onToggle}
+        className="st-paper-header"
         style={{
           width: "100%",
           display: "flex",
@@ -261,25 +266,25 @@ function PaperCard({ paperId, paper, isOpen, onToggle, onCycleStatus, onSetProgr
       >
         <div style={{ width: 10, height: 10, borderRadius: "50%", background: paper.color, flexShrink: 0 }} />
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: 15, fontWeight: 600, color: "var(--text-primary)", fontFamily: "'Playfair Display', serif" }}>
+          <div className="st-paper-label" style={{ fontSize: 15, fontWeight: 600, color: "var(--text-primary)", fontFamily: "'Playfair Display', serif" }}>
             {paper.label}
           </div>
           {paper.subtitle && (
-            <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 2, fontFamily: "'DM Mono', monospace" }}>
+            <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 2, fontFamily: "'DM Mono', monospace", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
               {paper.subtitle}
             </div>
           )}
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 12, flexShrink: 0 }}>
+        <div className="st-paper-meta" style={{ display: "flex", alignItems: "center", gap: 12, flexShrink: 0 }}>
           <div style={{ textAlign: "right" }}>
             <div style={{ fontSize: 20, fontWeight: 700, color: "var(--text-primary)", fontFamily: "'Playfair Display', serif", lineHeight: 1 }}>
               {pct}%
             </div>
-            <div style={{ fontSize: 10, color: "var(--text-muted)", fontFamily: "'DM Mono', monospace", marginTop: 2 }}>
+            <div style={{ fontSize: 10, color: "var(--text-muted)", fontFamily: "'DM Mono', monospace", marginTop: 2, whiteSpace: "nowrap" }}>
               {done}/{mods.length} done
             </div>
           </div>
-          <div style={{
+          <div className="st-paper-circle" style={{
             width: 48,
             height: 48,
             borderRadius: "50%",
@@ -287,10 +292,11 @@ function PaperCard({ paperId, paper, isOpen, onToggle, onCycleStatus, onSetProgr
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
+            flexShrink: 0,
           }}>
             <div style={{ width: 36, height: 36, borderRadius: "50%", background: "var(--bg-surface)" }} />
           </div>
-          <span style={{ fontSize: 16, color: "var(--text-muted)", transition: "transform .2s", transform: isOpen ? "rotate(180deg)" : "none" }}>
+          <span style={{ fontSize: 16, color: "var(--text-muted)", transition: "transform .2s", transform: isOpen ? "rotate(180deg)" : "none", flexShrink: 0 }}>
             ▾
           </span>
         </div>
@@ -341,12 +347,12 @@ function StageCoverageBar({ label, papers, paperOrder }) {
           );
         })}
       </div>
-      <div style={{ display: "flex", marginTop: 6 }}>
+      <div style={{ display: "flex", marginTop: 6, flexWrap: "wrap", rowGap: 4 }}>
         {paperOrder.map((id) => {
           const p = papers[id];
           if (!p) return null;
           return (
-            <div key={id} style={{ flex: 1, display: "flex", alignItems: "center", gap: 4, justifyContent: "center" }}>
+            <div key={id} style={{ flex: "1 1 auto", minWidth: 44, display: "flex", alignItems: "center", gap: 4, justifyContent: "center" }}>
               <div style={{ width: 7, height: 7, borderRadius: "50%", background: p.color }} />
               <span style={{ fontSize: 10, color: "var(--text-muted)", fontFamily: "'DM Mono', monospace" }}>{id}</span>
             </div>
@@ -421,25 +427,56 @@ export default function SyllabusTracker({ userData, onUpdateProgress, isLoggedIn
   const currentOrder  = PAPER_ORDER[stage];
 
   return (
-    <div style={{
+    <div className="st-root" style={{
       fontFamily: "'DM Sans', 'Segoe UI', system-ui, sans-serif",
       maxWidth: 1152,
       width: "100%",
       margin: "0 auto",
       padding: "32px 24px",
       color: "var(--text-primary)",
+      boxSizing: "border-box",
     }}>
+      <style>{`
+        .st-root { box-sizing: border-box; }
+        .st-root *, .st-root *::before, .st-root *::after { box-sizing: border-box; }
+
+        @media (max-width: 640px) {
+          .st-root { padding: 16px 12px !important; }
+          .st-topbar { flex-direction: column !important; align-items: flex-start !important; gap: 16px !important; margin-bottom: 24px !important; }
+          .st-topbar-right { text-align: left !important; width: 100%; }
+          .st-title { font-size: 22px !important; }
+          .st-overall { font-size: 38px !important; }
+          .st-stats-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 8px !important; }
+          .st-coverage-box { padding: 16px 14px !important; }
+          .st-stage-tabs { width: 100% !important; }
+          .st-stage-tab-btn { flex: 1 !important; padding: 8px 10px !important; font-size: 15px !important; }
+          .st-paper-header { padding: 12px 14px !important; gap: 10px !important; }
+          .st-paper-meta { gap: 8px !important; }
+          .st-paper-circle { display: none !important; }
+          .st-module-row { flex-direction: column !important; gap: 8px !important; padding: 12px 14px !important; }
+          .st-module-actions { width: 100% !important; justify-content: space-between !important; padding-top: 0 !important; }
+          .st-ai-grid { grid-template-columns: 1fr !important; }
+        }
+
+        @media (max-width: 420px) {
+          .st-title { font-size: 19px !important; }
+          .st-overall { font-size: 32px !important; }
+          .st-stat-value { font-size: 20px !important; }
+          .st-paper-label { font-size: 13.5px !important; }
+        }
+      `}</style>
 
       {/* ── Top Bar ── */}
-      <div style={{
+      <div className="st-topbar" style={{
         display: "flex",
         justifyContent: "space-between",
         alignItems: "flex-start",
         marginBottom: 32,
         gap: 24,
+        flexWrap: "wrap",
       }}>
-        <div>
-          <div style={{
+        <div style={{ minWidth: 0 }}>
+          <div className="st-title" style={{
             fontSize: 28,
             fontWeight: 600,
             color: "var(--text-primary)",
@@ -470,8 +507,8 @@ export default function SyllabusTracker({ userData, onUpdateProgress, isLoggedIn
             </span>
           </div>
         </div>
-        <div style={{ textAlign: "right", flexShrink: 0 }}>
-          <div style={{
+        <div className="st-topbar-right" style={{ textAlign: "right", flexShrink: 0 }}>
+          <div className="st-overall" style={{
             fontSize: 52,
             fontWeight: 900,
             color: "var(--text-primary)",
@@ -490,7 +527,7 @@ export default function SyllabusTracker({ userData, onUpdateProgress, isLoggedIn
       </div>
 
       {/* ── Mini stats ── */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 10, marginBottom: 24 }}>
+      <div className="st-stats-grid" style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 10, marginBottom: 24 }}>
         <MiniStatCard value={countDone}     label="Done"           accent="var(--accent-green)" />
         <MiniStatCard value={countProgress} label="In progress"    accent="var(--accent-blue)"  />
         <MiniStatCard value={countRevision} label="Needs revision" accent="var(--accent-gold)"  />
@@ -498,7 +535,7 @@ export default function SyllabusTracker({ userData, onUpdateProgress, isLoggedIn
       </div>
 
       {/* ── Coverage bars ── */}
-      <div style={{
+      <div className="st-coverage-box" style={{
         background: "var(--bg-surface)",
         border: "0.5px solid var(--bg-border)",
         borderRadius: 14,
@@ -511,7 +548,7 @@ export default function SyllabusTracker({ userData, onUpdateProgress, isLoggedIn
       </div>
 
       {/* ── Stage tabs ── */}
-      <div style={{
+      <div className="st-stage-tabs" style={{
         display: "flex",
         border: "0.5px solid var(--bg-border)",
         borderRadius: 10,
@@ -523,6 +560,7 @@ export default function SyllabusTracker({ userData, onUpdateProgress, isLoggedIn
         {["prelims", "mains"].map((s) => (
           <button
             key={s}
+            className="st-stage-tab-btn"
             onClick={() => setStage(s)}
             style={{
               padding: "9px 28px",
@@ -563,7 +601,7 @@ export default function SyllabusTracker({ userData, onUpdateProgress, isLoggedIn
       </div>
 
       {/* ── AI Revision + Mentor Chat ── */}
-      <div style={{
+      <div className="st-ai-grid" style={{
         display: "grid",
         gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
         gap: 16,

@@ -1,6 +1,9 @@
 import { useState, useEffect, useCallback } from "react";
 import { getUserData, updateSyllabusProgress, logDailyHours, bulkUpdateSyllabus } from "../utils/api";
 import { SYLLABUS, deepClone } from "../data/syllabusData";
+import { connectSocket, disconnectSocket } from "../utils/socket";
+import { getISTDateString } from "../utils/dateUtils";
+import timerStore from "./timerStore";
 
 
 export function useUserData({ enabled = true, token = null } = {}) {
@@ -46,6 +49,49 @@ export function useUserData({ enabled = true, token = null } = {}) {
       setData(null);
     }
   }, [fetchData, enabled, token]);
+
+  // ─── Real-time dashboard sync — Socket.io ────────────────────────────────────
+  // Pushes daily-log / streak / syllabus updates from any other open tab or
+  // device for this same account, so the dashboard reflects them instantly
+  // instead of waiting for the next manual refetch.
+  useEffect(() => {
+    if (!enabled || !token) {
+      disconnectSocket();
+      timerStore.detachSocket();
+      return;
+    }
+
+    const socket = connectSocket(token);
+    if (!socket) return;
+    timerStore.attachSocket(socket);
+
+    const onLogUpdated = ({ log, streak, longest_streak }) => {
+      setData((prev) => {
+        if (!prev) return prev;
+        const logs = Array.isArray(prev.daily_logs) ? [...prev.daily_logs] : [];
+        const idx = logs.findIndex((l) => l.date === log.date);
+        if (idx >= 0) logs[idx] = log; else logs.push(log);
+        return {
+          ...prev,
+          daily_logs: logs,
+          profile: { ...prev.profile, streak, longest_streak },
+        };
+      });
+    };
+
+    const onSyllabusUpdated = ({ syllabus_progress }) => {
+      setData((prev) => (prev ? { ...prev, syllabus: mergeProgressIntoSyllabus(syllabus_progress || {}) } : prev));
+    };
+
+    socket.on("dashboard:log-updated", onLogUpdated);
+    socket.on("dashboard:syllabus-updated", onSyllabusUpdated);
+
+    return () => {
+      socket.off("dashboard:log-updated", onLogUpdated);
+      socket.off("dashboard:syllabus-updated", onSyllabusUpdated);
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [enabled, token]);
 
   // ─── Merge saved progress onto the static syllabus structure ────────────────
   function mergeProgressIntoSyllabus(progress) {
@@ -191,7 +237,7 @@ export function useUserData({ enabled = true, token = null } = {}) {
 
   const todayHours = data
     ? (() => {
-        const today = new Date().toISOString().split("T")[0];
+        const today = getISTDateString();
         const log   = data.daily_logs?.find((l) => l.date === today);
         return log?.hours || 0;
       })()
@@ -203,7 +249,7 @@ export function useUserData({ enabled = true, token = null } = {}) {
         for (let i = 6; i >= 0; i--) {
           const d = new Date();
           d.setDate(d.getDate() - i);
-          dates.push(d.toISOString().split("T")[0]);
+          dates.push(getISTDateString(d));
         }
         const total = dates.reduce((sum, d) => {
           const log = data.daily_logs?.find((l) => l.date === d);

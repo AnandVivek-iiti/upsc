@@ -1,4 +1,8 @@
-const { evaluateAnswer: callAIClient, SYSTEM_INSTRUCTION, CHAT_SYSTEM_INSTRUCTION, extractMemory } = require("../config/ai-client");
+const {
+  evaluateAnswer: callAIClient,
+  CHAT_SYSTEM_INSTRUCTION,
+  extractMemory,
+} = require("../config/ai-client");
 const { UserData } = require("../models/UserData");
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 
@@ -26,14 +30,15 @@ const MEMORY_EXTRACTION_EVERY_N_TURNS = 3;
 function buildStudentContext(user, userData) {
   const lines = [];
 
-  if (user?.target_year)            lines.push(`Target exam year: ${user.target_year}`);
+  if (user?.target_year) lines.push(`Target exam year: ${user.target_year}`);
   if (typeof user?.streak === "number" && user.streak > 0) {
     lines.push(`Current study streak: ${user.streak} day(s)`);
   }
 
   // ── Syllabus progress + weakest modules ───────────────────────────────────
   const sp = userData?.syllabus_progress || {};
-  let total = 0, count = 0;
+  let total = 0,
+    count = 0;
   const weak = [];
   for (const [stage, papers] of Object.entries(sp)) {
     for (const [paper, modules] of Object.entries(papers || {})) {
@@ -46,11 +51,16 @@ function buildStudentContext(user, userData) {
     }
   }
   if (count > 0) {
-    lines.push(`Overall syllabus progress: ${Math.round(total / count)}% across ${count} modules`);
+    lines.push(
+      `Overall syllabus progress: ${Math.round(total / count)}% across ${count} modules`,
+    );
   }
   if (weak.length > 0) {
     weak.sort((a, b) => a.progress - b.progress);
-    const top = weak.slice(0, 5).map(w => `${w.paper} → ${w.modName} (${w.progress}%)`).join(", ");
+    const top = weak
+      .slice(0, 5)
+      .map((w) => `${w.paper} → ${w.modName} (${w.progress}%)`)
+      .join(", ");
     lines.push(`Weakest syllabus areas right now: ${top}`);
   }
 
@@ -60,7 +70,10 @@ function buildStudentContext(user, userData) {
     const scores = answers
       .map((a) => {
         try {
-          const ev = typeof a.evaluation === "string" ? JSON.parse(a.evaluation) : a.evaluation;
+          const ev =
+            typeof a.evaluation === "string"
+              ? JSON.parse(a.evaluation)
+              : a.evaluation;
           return typeof ev?.score === "number" ? ev.score : null;
         } catch {
           return null;
@@ -68,15 +81,23 @@ function buildStudentContext(user, userData) {
       })
       .filter((s) => s !== null);
     if (scores.length > 0) {
-      const avg = (scores.reduce((s, n) => s + n, 0) / scores.length).toFixed(1);
-      lines.push(`Mains answers evaluated so far: ${answers.length} (average score ${avg}/10)`);
+      const avg = (scores.reduce((s, n) => s + n, 0) / scores.length).toFixed(
+        1,
+      );
+      lines.push(
+        `Mains answers evaluated so far: ${answers.length} (average score ${avg}/10)`,
+      );
     }
   }
 
   // ── Durable facts distilled from past chats (see extractMemory) ──────────
-  const memory = Array.isArray(userData?.mentor_memory) ? userData.mentor_memory : [];
+  const memory = Array.isArray(userData?.mentor_memory)
+    ? userData.mentor_memory
+    : [];
   if (memory.length > 0) {
-    lines.push(`Notable things to remember about this student: ${memory.slice(0, 15).join("; ")}`);
+    lines.push(
+      `Notable things to remember about this student: ${memory.slice(0, 15).join("; ")}`,
+    );
   }
 
   if (lines.length === 0) return "";
@@ -102,14 +123,19 @@ function deriveTitle(text) {
  * `migrated` comes back true (or simply overwrites mentor_threads anyway).
  */
 function migrateLegacyChat(userData) {
-  const existingThreads = Array.isArray(userData.mentor_threads) ? userData.mentor_threads : [];
-  const legacy = Array.isArray(userData.mentor_chat) ? userData.mentor_chat : [];
+  const existingThreads = Array.isArray(userData.mentor_threads)
+    ? userData.mentor_threads
+    : [];
+  const legacy = Array.isArray(userData.mentor_chat)
+    ? userData.mentor_chat
+    : [];
 
   if (existingThreads.length > 0 || legacy.length === 0) {
     return { threads: existingThreads, migrated: false };
   }
 
-  const firstUserMsg = legacy.find((m) => m.role === "user")?.content || "Earlier conversation";
+  const firstUserMsg =
+    legacy.find((m) => m.role === "user")?.content || "Earlier conversation";
   const migratedThread = {
     id: `thr_legacy_${Date.now()}`,
     title: deriveTitle(firstUserMsg),
@@ -151,7 +177,7 @@ const evaluateAnswer = async (req, res, next) => {
 
     const evalPrompt = `**MAINS EVALUATION REQUEST**
 
-Paper: ${paper || "General Studies"}
+Paper: ${paper || "GS2"}
 Word Count: ${wordCount} words
 
 **Question:**
@@ -164,19 +190,22 @@ Please evaluate this answer according to your mentor framework. Be specific abou
 
     console.log(`[Evaluation] Processing for user: ${req.user.id}`);
 
-    const { result, provider } = await callAIClient(evalPrompt);
-
+    const { result, provider } = await callAIClient(evalPrompt, paper || "GS2");
     // ── Save evaluation metadata to UserData (Sequelize JSONB) ───────────────
     // req.user.id = UUID string (set by authMiddleware via Sequelize)
-    const userData = await UserData.findOne({ where: { user_id: req.user.id } });
+    const userData = await UserData.findOne({
+      where: { user_id: req.user.id },
+    });
     if (userData) {
-      const answers = Array.isArray(userData.answers) ? [...userData.answers] : [];
+      const answers = Array.isArray(userData.answers)
+        ? [...userData.answers]
+        : [];
       answers.push({
-        id:         `ans_${Date.now()}`,
-        date:       new Date().toISOString(),
-        paper:      paper || "GS",
-        question:   question.trim(),
-        answer:     answer.trim(),
+        id: `ans_${Date.now()}`,
+        date: new Date().toISOString(),
+        paper: paper || "GS",
+        question: question.trim(),
+        answer: answer.trim(),
         evaluation: JSON.stringify(result),
         word_count: wordCount,
       });
@@ -212,7 +241,9 @@ const chat = async (req, res, next) => {
     const { message, context_hint, thread_id } = req.body;
 
     if (!message?.trim()) {
-      return res.status(400).json({ success: false, error: "Message is required." });
+      return res
+        .status(400)
+        .json({ success: false, error: "Message is required." });
     }
 
     if (!process.env.GEMINI_API_KEY) {
@@ -242,7 +273,9 @@ const chat = async (req, res, next) => {
     }
 
     const contextBlock = buildStudentContext(req.user, userData);
-    const pageBlock     = context_hint ? `\n\nThe student is currently in this section of the app: "${context_hint}"` : "";
+    const pageBlock = context_hint
+      ? `\n\nThe student is currently in this section of the app: "${context_hint}"`
+      : "";
 
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
     const model = genAI.getGenerativeModel({
@@ -255,16 +288,16 @@ const chat = async (req, res, next) => {
       parts: [{ text: msg.content }],
     }));
 
-    const chatSession   = model.startChat({ history: geminiHistory });
-    const result        = await chatSession.sendMessage(message.trim());
-    const responseText  = result.response.text();
+    const chatSession = model.startChat({ history: geminiHistory });
+    const result = await chatSession.sendMessage(message.trim());
+    const responseText = result.response.text();
 
     // ── Persist both turns onto this thread, capped so it can't grow forever ─
     const now = new Date().toISOString();
     thread.messages = [
       ...thread.messages,
-      { role: "user",      content: message.trim(), at: now },
-      { role: "assistant", content: responseText,    at: now },
+      { role: "user", content: message.trim(), at: now },
+      { role: "assistant", content: responseText, at: now },
     ].slice(-MAX_HISTORY_MESSAGES);
     thread.updatedAt = now;
 
@@ -281,18 +314,30 @@ const chat = async (req, res, next) => {
     // Doesn't block the response; runs only every Nth user turn in a thread
     // to keep the extra Gemini call infrequent. Any failure is swallowed —
     // memory is a nice-to-have, never allowed to affect the chat itself.
-    const userTurnCount = thread.messages.filter((m) => m.role === "user").length;
+    const userTurnCount = thread.messages.filter(
+      (m) => m.role === "user",
+    ).length;
     if (userTurnCount % MEMORY_EXTRACTION_EVERY_N_TURNS === 0) {
       const turnText = `Student: ${message.trim()}\nMentor: ${responseText}`;
-      extractMemory(Array.isArray(userData.mentor_memory) ? userData.mentor_memory : [], turnText)
+      extractMemory(
+        Array.isArray(userData.mentor_memory) ? userData.mentor_memory : [],
+        turnText,
+      )
         .then(async (updatedMemory) => {
-          const fresh = await UserData.findOne({ where: { user_id: req.user.id } });
+          const fresh = await UserData.findOne({
+            where: { user_id: req.user.id },
+          });
           if (!fresh) return;
           fresh.mentor_memory = updatedMemory;
           fresh.changed("mentor_memory", true);
           await fresh.save();
         })
-        .catch((e) => console.warn("[Memory Extraction] background save failed:", e.message));
+        .catch((e) =>
+          console.warn(
+            "[Memory Extraction] background save failed:",
+            e.message,
+          ),
+        );
     }
 
     return res.status(200).json({
@@ -315,7 +360,9 @@ const chat = async (req, res, next) => {
  */
 const listChatThreads = async (req, res, next) => {
   try {
-    const userData = await UserData.findOne({ where: { user_id: req.user.id } });
+    const userData = await UserData.findOne({
+      where: { user_id: req.user.id },
+    });
     if (!userData) return res.status(200).json({ success: true, threads: [] });
 
     const { threads, migrated } = migrateLegacyChat(userData);
@@ -344,7 +391,9 @@ const listChatThreads = async (req, res, next) => {
 const getChatThread = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const userData = await UserData.findOne({ where: { user_id: req.user.id } });
+    const userData = await UserData.findOne({
+      where: { user_id: req.user.id },
+    });
     const threads = userData?.mentor_threads || [];
     const thread = threads.find((t) => t.id === id);
 
@@ -365,9 +414,13 @@ const getChatThread = async (req, res, next) => {
 const deleteChatThread = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const userData = await UserData.findOne({ where: { user_id: req.user.id } });
+    const userData = await UserData.findOne({
+      where: { user_id: req.user.id },
+    });
     if (userData) {
-      userData.mentor_threads = (userData.mentor_threads || []).filter((t) => t.id !== id);
+      userData.mentor_threads = (userData.mentor_threads || []).filter(
+        (t) => t.id !== id,
+      );
       userData.changed("mentor_threads", true);
       await userData.save();
     }
@@ -377,4 +430,10 @@ const deleteChatThread = async (req, res, next) => {
   }
 };
 
-module.exports = { evaluateAnswer, chat, listChatThreads, getChatThread, deleteChatThread };
+module.exports = {
+  evaluateAnswer,
+  chat,
+  listChatThreads,
+  getChatThread,
+  deleteChatThread,
+};

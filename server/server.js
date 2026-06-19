@@ -1,5 +1,6 @@
 require("dotenv").config();
 
+const http = require("http");
 const express = require("express");
 const cors = require("cors");
 
@@ -10,6 +11,7 @@ const VisitorLog = require("./src/models/VisitorLog");
 require("./src/models/User");
 require("./src/models/Feature");
 require("./src/models/UserData"); // registers UserData, SyllabusModule, Answer, DailyLog, SpacedRepItem
+require("./src/models/TestAttempt"); // registers TestAttempt (MCQ Test Series results) so its table gets created on sync
 
 const { globalLimiter } = require("./src/middleware/rateLimiter");
 const { errorHandler, notFound } = require("./src/middleware/errorMiddleware");
@@ -18,6 +20,10 @@ const authRoutes = require("./src/routes/authRoutes");
 const dashboardRoutes = require("./src/routes/dashboardRoutes");
 const evaluateRoutes = require("./src/routes/evaluateRoutes");
 const adminRoutes = require("./src/routes/adminRoutes");
+const testRoutes = require("./src/routes/testRoutes");
+
+// ── Socket.io — real-time dashboard sync (timer/progress across tabs+devices) ─
+const { initSocket } = require("./src/socket/socketManager");
 
 // ─── Connect Database ─────────────────────────────────────────────────────────
 connectDB(); // connects + syncs all Sequelize models → creates tables
@@ -44,9 +50,8 @@ app.use(
 );
 
 // ─── Body Parsing ─────────────────────────────────────────────────────────────
-app.use(express.json({ limit: "2mb" }));
-app.use(express.urlencoded({ extended: true, limit: "2mb" }));
-
+app.use(express.json({ limit: "150mb" }));
+app.use(express.urlencoded({ extended: true, limit: "150mb" }));
 // ─── Global Rate Limiter ──────────────────────────────────────────────────────
 app.use(globalLimiter);
 
@@ -79,15 +84,23 @@ app.use("/api/auth", authRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/evaluate", evaluateRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/tests", testRoutes);
 
 // ─── 404 & Error Handlers ─────────────────────────────────────────────────────
 app.use(notFound);
 app.use(errorHandler);
 
+// ─── HTTP Server + Socket.io ──────────────────────────────────────────────────
+// Socket.io needs to attach to the raw http.Server, not the Express app
+// directly — that's why we wrap app in http.createServer() and pass THAT to
+// both initSocket() and .listen(), instead of calling app.listen() like before.
+const httpServer = http.createServer(app);
+initSocket(httpServer);
+
 // ─── Lift ─────────────────────────────────────────────────────────────────────
-app.listen(PORT, () => {
+httpServer.listen(PORT, () => {
   console.log(`\n🎯 UPSC Mentor API  →  http://localhost:${PORT}`);
-  console.log(`   AI Model  : gemini-2.5-flash`);
   console.log(`   Database  : PostgreSQL`);
+  console.log(`   Socket.io : enabled (real-time dashboard sync)`);
   console.log(`   Env       : ${process.env.NODE_ENV || "development"}\n`);
 });

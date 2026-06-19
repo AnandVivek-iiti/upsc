@@ -87,7 +87,7 @@ function EvalResult({ data, provider }) {
     const [topperOpen, setTopperOpen] = useState(false);
     const [copied, setCopied] = useState(false);
 
-    const isSample = provider?.includes("Sample");
+  const isSample = false;
 
     const copy = () => {
         navigator.clipboard.writeText(data.topper_answer || "");
