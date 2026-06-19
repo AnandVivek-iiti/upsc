@@ -91,10 +91,13 @@ export default function PWAInstallPrompt() {
   if (!show || installed) return null;
 
   return (
-    <div
-      className="fixed bottom-4 left-4 right-4 z-50 animate-slide-up"
-      style={{ bottom: "calc(1rem + var(--safe-bottom, 0px))" }}
-    >
+   <div
+  className="fixed left-4 right-4 z-[80] animate-slide-up"
+  style={{
+    bottom:
+      "calc(var(--bottom-nav-h, 72px) + 1rem + var(--safe-bottom, 0px))",
+  }}
+>
       <div className="glass-panel flex items-center gap-3 px-4 py-3 max-w-sm mx-auto">
         {/* Icon */}
         <div
