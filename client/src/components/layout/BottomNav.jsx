@@ -25,7 +25,6 @@ const PRIMARY_NAV = [
 // ─── "More" drawer items ───────────────────────────────────────────────────────
 const MORE_NAV = [
   { id: "resources",   label: "Resources",   icon: Library },
-  { id: "ai-features", label: "AI Features", icon: Sparkles },
 ];
 
 export default function BottomNav({
