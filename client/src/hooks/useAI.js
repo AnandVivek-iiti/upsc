@@ -15,13 +15,6 @@ function authHeaders() {
   };
 }
 
-/**
- * Wraps fetch + JSON parsing so a non-JSON error response (502 from a proxy,
- * a crashed server returning an HTML error page, a plain-text 500) doesn't
- * blow up with a cryptic "Unexpected token < in JSON" and hide the actual
- * HTTP status from the user. Always throws a readable Error on failure;
- * always returns the parsed JSON body on success.
- */
 async function request(url, options = {}) {
   let res;
   try {
@@ -37,10 +30,7 @@ async function request(url, options = {}) {
     try {
       json = JSON.parse(rawText);
     } catch {
-      // Server returned something that isn't JSON (HTML error page, plain
-      // text, empty proxy response). Fall through with json = null so the
-      // status-based message below kicks in instead of throwing here.
-    }
+     }
   }
 
   if (!res.ok) {
@@ -52,10 +42,7 @@ async function request(url, options = {}) {
   }
 
   if (json === null) {
-    // 2xx response with a non-JSON or empty body — shouldn't normally
-    // happen for this API, but don't silently return null and let callers
-    // crash on `.success` / `.threads` etc.
-    throw new Error("Server returned an unexpected response.");
+     throw new Error("Server returned an unexpected response.");
   }
 
   return json;
@@ -69,10 +56,6 @@ export async function evaluateAnswer({ question, answer, paper }) {
     body: JSON.stringify({ question, answer, paper }),
   });
 }
-
-// ─── POST /api/evaluate/chat ──────────────────────────────────────────────────
-// Pass an existing thread_id to continue that thread, or omit to start a new one.
-// Returns { success, response, thread_id, title }
 export async function chatWithMentor({ message, contextHint = "", threadId = null }) {
   return request(`${BASE}/evaluate/chat`, {
     method: "POST",
@@ -84,9 +67,6 @@ export async function chatWithMentor({ message, contextHint = "", threadId = nul
     }),
   });
 }
-
-// ─── GET /api/evaluate/chat-threads ──────────────────────────────────────────
-// Returns { success, threads: [{ id, title, updatedAt, message_count }] }
 export async function listChatThreads() {
   return request(`${BASE}/evaluate/chat-threads`, {
     headers: authHeaders(),

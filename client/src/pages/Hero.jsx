@@ -25,6 +25,7 @@ const CATEGORY_COLOURS = {
   Science: { bg: "rgba(6,182,212,.15)", color: "#67e8f9", border: "rgba(6,182,212,.3)" },
   Wisdom: { bg: "rgba(245,158,11,.12)", color: "#fcd34d", border: "rgba(245,158,11,.25)" },
   Politics: { bg: "rgba(239,68,68,.15)", color: "#fca5a5", border: "rgba(239,68,68,.3)" },
+  Proverb: { bg: "rgba(20,184,166,.15)", color: "#5eead4", border: "rgba(20,184,166,.3)" },
 };
 
 // ─── QuotePanel — 365-quote logic, original compact card styling ─────────────
@@ -85,6 +86,16 @@ function QuotePanel({ customQuote, onQuoteClick }) {
       >
         "{quote.text}"
       </p>
+
+      {/* Translation / meaning line — shown for Hindi quotes and English idioms */}
+      {quote.meaning && (
+        <p
+          className="text-[10px] sm:text-[11px] text-white/55 leading-snug mt-1.5 transition-opacity duration-300"
+          style={{ opacity: fade ? 1 : 0 }}
+        >
+          {quote.meaning}
+        </p>
+      )}
 
       {/* Author + AI hint */}
       <div className="flex items-center justify-between mt-3 sm:mt-4">

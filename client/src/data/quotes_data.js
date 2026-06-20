@@ -263,7 +263,11 @@ export const QUOTES = [
     src: "Simone de Beauvoir",
     category: "Philosophy",
   },
-  { text: "To be is to do.", src: "Immanuel Kant", category: "Philosophy" },
+  {
+    text: "Treat humanity, whether in your own person or in that of another, always as an end and never merely as a means.",
+    src: "Immanuel Kant",
+    category: "Philosophy",
+  },
   {
     text: "Science is organized knowledge. Wisdom is organized life.",
     src: "Immanuel Kant",
@@ -382,7 +386,7 @@ export const QUOTES = [
     category: "Science",
   },
   {
-    text: "Emile Durkheim showed us that society is more than the sum of its individual parts.",
+    text: "Religion is, in a word, the system of symbols by means of which society becomes conscious of itself.",
     src: "Emile Durkheim",
     category: "Sociology",
   },
@@ -397,9 +401,9 @@ export const QUOTES = [
     category: "Sociology",
   },
   {
-    text: "The power of the state should be measured in terms of the happiness of its people.",
+    text: "Politics is a strong and slow boring of hard boards.",
     src: "Max Weber",
-    category: "Sociology",
+    category: "Politics",
   },
   {
     text: "Politics is the art of the possible, the attainable — the art of the next best.",
@@ -1113,43 +1117,60 @@ export const QUOTES = [
     category: "Literature",
   },
 
-  // ── Kabir, Mirabai, Tukaram (Indian Bhakti poets) ─────────────────────────
+  // ── Kabir, Mirabai (Indian Bhakti poets) ──────────────────────────────────
   {
     text: "It is love alone that leads to right action. What brings order in the world is to love and let love do what it will.",
     src: "Jiddu Krishnamurti",
     category: "Indian",
   },
   {
-    text: "Dheere dheere re mana, dheere sab kuch hoye — gardener waters with a hundred pots, season comes in its own time.",
-    src: "Kabir",
+    text: "धीरे-धीरे रे मना, धीरे सब कुछ होय। माली सींचे सौ घड़ा, ऋतु आए फल होय॥",
+    src: "कबीर",
     category: "Indian",
+    lang: "hi",
+    meaning:
+      "Patience brings everything in its own time — the gardener may water with a hundred pots, but the fruit ripens only when its season comes.",
   },
   {
-    text: "Bura jo dekhan main chala, bura na milya koy — one who searches for evil, finds none but himself.",
-    src: "Kabir",
+    text: "बुरा जो देखन मैं चला, बुरा न मिलिया कोय। जो मन खोजा आपना, मुझसे बुरा न कोय॥",
+    src: "कबीर",
     category: "Indian",
+    lang: "hi",
+    meaning:
+      "I went out looking for someone wicked, but found no one. When I looked within my own heart, I found no one worse than myself.",
   },
   {
-    text: "Moko kahan dhundhe re bande, main to tere paas mein — where do you seek me? I am right beside you.",
-    src: "Kabir",
+    text: "मो को कहाँ ढूँढ़े रे बंदे, मैं तो तेरे पास में। ना मैं मंदिर ना मैं मस्जिद, ना काबे कैलाश में॥",
+    src: "कबीर",
     category: "Indian",
+    lang: "hi",
+    meaning:
+      "Where do you search for me, seeker? I am right beside you — not in temple, not in mosque, not in Kaaba or Kailash.",
   },
   {
-    text: "I have found my guru in every creature. The universe is my teacher.",
-    src: "Mirabai",
+    text: "पायो जी मैंने राम रतन धन पायो।",
+    src: "मीराबाई",
     category: "Indian",
+    lang: "hi",
+    meaning: "I have found the priceless treasure — the name of Ram.",
   },
 
   // ── Iqbal ─────────────────────────────────────────────────────────────────
   {
-    text: "Khudi ko kar buland itna ke har taqdeer se pehle — elevate yourself so high that God himself asks: what is your wish?",
-    src: "Allama Iqbal",
+    text: "खुदी को कर बुलंद इतना, कि हर तक़दीर से पहले। ख़ुदा बंदे से ख़ुद पूछे, बता तेरी रज़ा क्या है॥",
+    src: "अल्लामा इक़बाल",
     category: "Indian",
+    lang: "hi",
+    meaning:
+      "Raise your selfhood so high that before every destiny is written, God Himself asks you: tell me, what is your wish?",
   },
   {
-    text: "Sitaron se aage jahan aur bhi hain — beyond the stars, there are worlds yet to be found.",
-    src: "Allama Iqbal",
+    text: "सितारों से आगे जहाँ और भी हैं, अभी इश्क़ के इम्तिहान और भी हैं॥",
+    src: "अल्लामा इक़बाल",
     category: "Indian",
+    lang: "hi",
+    meaning:
+      "Beyond the stars lie other worlds still; there are yet more trials of passion to face.",
   },
   {
     text: "Nations are born in the hearts of poets; they prosper and die in the hands of politicians.",
@@ -1251,8 +1272,8 @@ export const QUOTES = [
     category: "UPSC",
   },
   {
-    text: "A state that suppresses all freedom of speech, and which by imposing the most terrible punishments attempts to force its citizens to speak only with reverence of existing authority, is a state that breaks an unwritten law.",
-    src: "Bruno Bauer",
+    text: "The only freedom which deserves the name is that of pursuing our own good in our own way.",
+    src: "John Stuart Mill",
     category: "Governance",
   },
   {
@@ -1504,11 +1525,6 @@ export const QUOTES = [
     category: "Ethics",
   },
   {
-    text: "The time is always right to do what is right.",
-    src: "Martin Luther King Jr.",
-    category: "Ethics",
-  },
-  {
     text: "Whatever you are, be a good one.",
     src: "Abraham Lincoln",
     category: "Wisdom",
@@ -1528,36 +1544,463 @@ export const QUOTES = [
     src: "Abraham Lincoln",
     category: "Wisdom",
   },
+
+  // ── More Impactful UPSC Quotes — Constitution, Governance & Global Voices ──
+  {
+    text: "Constitutional morality is not a natural sentiment. It has to be cultivated.",
+    src: "Dr. B.R. Ambedkar",
+    category: "UPSC",
+  },
+  {
+    text: "However good a Constitution may be, if those who are implementing it are not good, it will prove to be bad.",
+    src: "Dr. B.R. Ambedkar",
+    category: "UPSC",
+  },
+  {
+    text: "Democracy is not merely a form of government. It is primarily a mode of associated living, of conjoint communicated experience.",
+    src: "Dr. B.R. Ambedkar",
+    category: "Governance",
+  },
+  {
+    text: "Unity is the only road to our salvation.",
+    src: "Sardar Vallabhbhai Patel",
+    category: "Indian",
+  },
+  {
+    text: "A moment comes, which comes but rarely in history, when we step out from the old to the new, when an age ends, and when the soul of a nation, long suppressed, finds utterance.",
+    src: "Jawaharlal Nehru",
+    category: "Indian",
+  },
+  {
+    text: "You cannot shake hands with a clenched fist.",
+    src: "Indira Gandhi",
+    category: "Indian",
+  },
+  {
+    text: "No power on earth can stop an idea whose time has come.",
+    src: "Victor Hugo",
+    category: "Governance",
+  },
+  {
+    text: "If you want to shine like a sun, first burn like a sun.",
+    src: "Dr. A.P.J. Abdul Kalam",
+    category: "Indian",
+  },
+  {
+    text: "Failure will never overtake me if my determination to succeed is strong enough.",
+    src: "Dr. A.P.J. Abdul Kalam",
+    category: "Indian",
+  },
+  {
+    text: "Knowledge is power, but more important is the wisdom to use it for the good of all.",
+    src: "Kofi Annan",
+    category: "UPSC",
+  },
+  {
+    text: "It's the little things citizens do. That's what will make the difference. My little thing is planting trees.",
+    src: "Wangari Maathai",
+    category: "Environment",
+  },
+  {
+    text: "In nature nothing exists alone.",
+    src: "Rachel Carson",
+    category: "Environment",
+  },
+  {
+    text: "Poverty is the greatest polluter.",
+    src: "Indira Gandhi",
+    category: "Environment",
+  },
+  {
+    text: "One child, one teacher, one book, one pen can change the world.",
+    src: "Malala Yousafzai",
+    category: "UPSC",
+  },
+  {
+    text: "Good people do not need laws to tell them to act responsibly, while bad people will find a way around the laws.",
+    src: "Plato",
+    category: "Governance",
+  },
+  {
+    text: "Sustainable development is the pathway to the future we want for all.",
+    src: "Ban Ki-moon",
+    category: "Environment",
+  },
+  {
+    text: "The Indian Constitution is first and foremost a social document.",
+    src: "Granville Austin",
+    category: "UPSC",
+  },
+  {
+    text: "We can change friends but not neighbours.",
+    src: "Atal Bihari Vajpayee",
+    category: "Governance",
+  },
+
+  // ── Hindi Voices — Poets, Dohas & Patriotic Slogans (हिंदी वाणी) ───────────
+  {
+    text: "काल करे सो आज कर, आज करे सो अब। पल में प्रलय होएगी, बहुरि करोगे कब॥",
+    src: "कबीर",
+    category: "Indian",
+    lang: "hi",
+    meaning:
+      "Do today what you planned for tomorrow, do now what you planned for today — in an instant everything can end, so when will you do it if not now?",
+  },
+  {
+    text: "करत-करत अभ्यास के जड़मति होत सुजान। रसरी आवत जात ते सिल पर परत निशान॥",
+    src: "तुलसीदास",
+    category: "Indian",
+    lang: "hi",
+    meaning:
+      "Through constant practice, even a dull mind becomes sharp — just as a rope, going back and forth, leaves its mark on stone.",
+  },
+  {
+    text: "तुम मुझे ख़ून दो, मैं तुम्हें आज़ादी दूँगा।",
+    src: "सुभाष चंद्र बोस",
+    category: "Indian",
+    lang: "hi",
+    meaning: "Give me blood, and I shall give you freedom.",
+  },
+  {
+    text: "इन्क़लाब ज़िंदाबाद!",
+    src: "भगत सिंह",
+    category: "Indian",
+    lang: "hi",
+    meaning: "Long live the revolution!",
+  },
+  {
+    text: "दुश्मन की गोलियों का सामना हम करेंगे, आज़ाद ही रहे हैं, आज़ाद ही रहेंगे।",
+    src: "चंद्रशेखर आज़ाद",
+    category: "Indian",
+    lang: "hi",
+    meaning:
+      "We will face the enemy's bullets — we have always been free, and free we shall remain.",
+  },
+  {
+    text: "स्वराज्य हमारा जन्मसिद्ध अधिकार है और इसे लेकर ही रहूँगा।",
+    src: "बाल गंगाधर तिलक",
+    category: "Indian",
+    lang: "hi",
+    meaning: "Swaraj is my birthright, and I shall have it.",
+  },
+  {
+    text: "सरफ़रोशी की तमन्ना अब हमारे दिल में है, देखना है ज़ोर कितना बाज़ु-ए-क़ातिल में है।",
+    src: "राम प्रसाद बिस्मिल",
+    category: "Indian",
+    lang: "hi",
+    meaning:
+      "The desire for sacrifice now lives in our hearts; let's see how much strength remains in the executioner's arm.",
+  },
+
+  // ── Hindi Wisdom — Proverbs & Muhaware (कहावतें और मुहावरे) ────────────────
+  {
+    text: "बूँद-बूँद से घड़ा भरता है।",
+    src: "हिंदी कहावत",
+    category: "Proverb",
+    lang: "hi",
+    meaning:
+      "Drop by drop, the pitcher fills — small, consistent efforts add up to big results.",
+  },
+  {
+    text: "जैसी करनी वैसी भरनी।",
+    src: "हिंदी कहावत",
+    category: "Proverb",
+    lang: "hi",
+    meaning: "As you sow, so shall you reap.",
+  },
+  {
+    text: "होनहार बिरवान के होत चीकने पात।",
+    src: "हिंदी कहावत",
+    category: "Proverb",
+    lang: "hi",
+    meaning:
+      "A promising sapling shows its quality in its leaves early on — true talent reveals itself early.",
+  },
+  {
+    text: "मन के हारे हार है, मन के जीते जीत।",
+    src: "हिंदी कहावत",
+    category: "Proverb",
+    lang: "hi",
+    meaning:
+      "Defeat begins in the mind, and so does victory — your mindset decides the outcome.",
+  },
+  {
+    text: "जान है तो जहान है।",
+    src: "हिंदी कहावत",
+    category: "Proverb",
+    lang: "hi",
+    meaning:
+      "If there is life, there is a whole world of possibility — health comes first.",
+  },
+  {
+    text: "अंत भला तो सब भला।",
+    src: "हिंदी कहावत",
+    category: "Proverb",
+    lang: "hi",
+    meaning: "All is well that ends well.",
+  },
+  {
+    text: "साँच को आँच नहीं।",
+    src: "हिंदी कहावत",
+    category: "Proverb",
+    lang: "hi",
+    meaning: "Truth fears no fire — an honest person has nothing to be afraid of.",
+  },
+  {
+    text: "नेकी कर, दरिया में डाल।",
+    src: "हिंदी कहावत",
+    category: "Proverb",
+    lang: "hi",
+    meaning:
+      "Do good, and cast it into the river — do good without expecting anything in return.",
+  },
+  {
+    text: "दाने-दाने पर लिखा है खाने वाले का नाम।",
+    src: "हिंदी कहावत",
+    category: "Proverb",
+    lang: "hi",
+    meaning:
+      "Every grain of food carries the name of the one destined to eat it — what is meant for you will reach you.",
+  },
+  {
+    text: "हाथ कंगन को आरसी क्या।",
+    src: "हिंदी मुहावरा",
+    category: "Proverb",
+    lang: "hi",
+    meaning:
+      "A bangle on the wrist needs no mirror to be seen — a self-evident truth needs no proof.",
+  },
+  {
+    text: "अधजल गगरी छलकत जाए।",
+    src: "हिंदी मुहावरा",
+    category: "Proverb",
+    lang: "hi",
+    meaning:
+      "A half-filled pitcher spills the most — those who know the least tend to boast the loudest.",
+  },
+  {
+    text: "ऊँट के मुँह में जीरा।",
+    src: "हिंदी मुहावरा",
+    category: "Proverb",
+    lang: "hi",
+    meaning:
+      "A pinch of cumin in a camel's mouth — far too small an effort for the scale of the need.",
+  },
+  {
+    text: "बंदर क्या जाने अदरक का स्वाद।",
+    src: "हिंदी मुहावरा",
+    category: "Proverb",
+    lang: "hi",
+    meaning:
+      "What does a monkey know of the taste of ginger — one who lacks understanding cannot judge something refined.",
+  },
+
+  // ── English Proverbs & Idioms ────────────────────────────────────────────
+  {
+    text: "A stitch in time saves nine.",
+    src: "English Proverb",
+    category: "Proverb",
+    meaning:
+      "Fixing a small problem now prevents it from becoming a much bigger one later.",
+  },
+  {
+    text: "Where there is a will, there is a way.",
+    src: "English Proverb",
+    category: "Proverb",
+    meaning: "Strong determination can overcome almost any obstacle.",
+  },
+  {
+    text: "Actions speak louder than words.",
+    src: "English Proverb",
+    category: "Proverb",
+    meaning: "What you do matters more than what you say.",
+  },
+  {
+    text: "The early bird catches the worm.",
+    src: "English Proverb",
+    category: "Proverb",
+    meaning: "Those who act first or prepare early gain the advantage.",
+  },
+  {
+    text: "Practice makes perfect.",
+    src: "English Proverb",
+    category: "Proverb",
+    meaning: "Repeated, deliberate effort leads to mastery.",
+  },
+  {
+    text: "Slow and steady wins the race.",
+    src: "English Proverb",
+    category: "Proverb",
+    meaning: "Consistency over time beats short bursts of speed.",
+  },
+  {
+    text: "Rome wasn't built in a day.",
+    src: "English Proverb",
+    category: "Proverb",
+    meaning: "Great achievements take sustained time and patience.",
+  },
+  {
+    text: "When the going gets tough, the tough get going.",
+    src: "English Proverb",
+    category: "Proverb",
+    meaning: "Difficulty calls for greater effort, not retreat.",
+  },
+  {
+    text: "Fortune favours the bold.",
+    src: "English Proverb",
+    category: "Proverb",
+    meaning: "Those who take courageous action are often the ones rewarded.",
+  },
+  {
+    text: "Strike while the iron is hot.",
+    src: "English Proverb",
+    category: "Proverb",
+    meaning: "Act when the moment and conditions are right.",
+  },
+  {
+    text: "Honesty is the best policy.",
+    src: "English Proverb",
+    category: "Proverb",
+    meaning: "Truthfulness earns lasting trust and respect.",
+  },
+  {
+    text: "All that glitters is not gold.",
+    src: "English Proverb",
+    category: "Proverb",
+    meaning: "Appearances can be deceptive — not everything attractive is valuable.",
+  },
+  {
+    text: "Necessity is the mother of invention.",
+    src: "English Proverb",
+    category: "Proverb",
+    meaning: "Difficult circumstances often inspire the most creative solutions.",
+  },
+  {
+    text: "United we stand, divided we fall.",
+    src: "English Proverb",
+    category: "Proverb",
+    meaning: "Unity creates strength; division creates weakness.",
+  },
+  {
+    text: "Better late than never.",
+    src: "English Proverb",
+    category: "Proverb",
+    meaning: "It is better to act late than to never act at all.",
+  },
+  {
+    text: "Don't put all your eggs in one basket.",
+    src: "English Proverb",
+    category: "Proverb",
+    meaning:
+      "Spread your efforts or resources so a single setback can't ruin everything.",
+  },
+  {
+    text: "Every cloud has a silver lining.",
+    src: "English Proverb",
+    category: "Proverb",
+    meaning: "Even difficult situations carry the possibility of something good.",
+  },
+  {
+    text: "Charity begins at home.",
+    src: "English Proverb",
+    category: "Proverb",
+    meaning:
+      "Responsibility and care should start within one's own circle before extending outward.",
+  },
+  {
+    text: "Prevention is better than cure.",
+    src: "English Proverb",
+    category: "Proverb",
+    meaning:
+      "It's wiser to stop a problem before it starts than to fix it afterward.",
+  },
+  {
+    text: "A picture is worth a thousand words.",
+    src: "English Proverb",
+    category: "Proverb",
+    meaning:
+      "A single image can communicate an idea more powerfully than a lengthy explanation.",
+  },
 ];
 
-// ── Get quote for current hour (changes every hour, randomly seeded by date+hour) ─
-export function getHourlyQuote() {
-  const now = new Date();
-  const seed =
-    now.getFullYear() * 100000 +
-    (now.getMonth() + 1) * 1000 +
-    now.getDate() * 100 +
-    now.getHours();
-  // Simple deterministic hash
-  let hash = seed;
-  hash = ((hash >> 16) ^ hash) * 0x45d9f3b;
-  hash = ((hash >> 16) ^ hash) * 0x45d9f3b;
-  hash = (hash >> 16) ^ hash;
-  return QUOTES[Math.abs(hash) % QUOTES.length];
+// ── Seeded RNG (Mulberry32) — deterministic per calendar date ───────────────
+function mulberry32(seed) {
+  let a = seed >>> 0;
+  return function () {
+    a |= 0;
+    a = (a + 0x6d2b79f5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
 }
 
-// ── Get 24 quotes for today (one per hour) ──────────────────────────────────
-export function getTodayQuotes() {
+function dateSeed(date) {
+  return (
+    date.getFullYear() * 10000 + (date.getMonth() + 1) * 100 + date.getDate()
+  );
+}
+
+function seededShuffle(array, rng) {
+  const arr = array.slice();
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(rng() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function pickN(pool, n, rng) {
+  if (pool.length === 0 || n <= 0) return [];
+  const shuffled = seededShuffle(pool, rng);
+  const picked = [];
+  for (let i = 0; i < n; i++) picked.push(shuffled[i % shuffled.length]);
+  return picked;
+}
+
+// Builds today's deterministic 24-quote set, guaranteeing at least
+// 2 Hindi quotes (dohas, slogans, kahawatein, muhaware) and at least
+// 2 English proverbs/idioms are present somewhere in the day's mix.
+function buildDailySet(date, count = 24) {
+  const rng = mulberry32(dateSeed(date));
+
+  const hindiPool = QUOTES.filter((q) => q.lang === "hi");
+  const englishProverbPool = QUOTES.filter(
+    (q) => q.category === "Proverb" && q.lang !== "hi",
+  );
+  const generalPool = QUOTES.filter(
+    (q) => q.lang !== "hi" && q.category !== "Proverb",
+  );
+
+  const HINDI_MIN = 4;
+  const ENGLISH_PROVERB_MIN = 4;
+
+  const hindiPicks = pickN(hindiPool, Math.min(HINDI_MIN, count), rng);
+  const proverbPicks = pickN(
+    englishProverbPool,
+    Math.min(ENGLISH_PROVERB_MIN, count),
+    rng,
+  );
+  const remaining = Math.max(0, count - hindiPicks.length - proverbPicks.length);
+  const generalPicks = pickN(generalPool, remaining, rng);
+
+  return seededShuffle(
+    [...hindiPicks, ...proverbPicks, ...generalPicks],
+    rng,
+  ).slice(0, count);
+}
+
+// ── Get quote for current hour (changes every hour; at least 2 Hindi + 2 English-proverb
+// quotes are guaranteed somewhere in today's 24-quote set) ───────────────────
+export function getHourlyQuote() {
   const now = new Date();
-  const base =
-    now.getFullYear() * 10000 + (now.getMonth() + 1) * 100 + now.getDate();
-  return Array.from({ length: 24 }, (_, hour) => {
-    let seed = base * 100 + hour;
-    seed = ((seed >> 16) ^ seed) * 0x45d9f3b;
-    seed = ((seed >> 16) ^ seed) * 0x45d9f3b;
-    seed = (seed >> 16) ^ seed;
-    return QUOTES[Math.abs(seed) % QUOTES.length];
-  });
+  const todaySet = buildDailySet(now, 24);
+  return todaySet[now.getHours() % todaySet.length];
+}
+
+// ── Get 24 quotes for today (one per hour, ≥2 Hindi + ≥2 English-proverb) ───
+export function getTodayQuotes() {
+  return buildDailySet(new Date(), 24);
 }
 
 // ── Get a quote for any day-of-year index (for calendar/365 spread) ──────────

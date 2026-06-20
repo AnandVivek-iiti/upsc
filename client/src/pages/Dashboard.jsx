@@ -23,10 +23,10 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { SYLLABUS, PAPER_ORDER, getPct } from "../data/PYQs/syllabusData";
 import AuthGate from "../components/ui/AuthGate";
-import timerStore, { getUserTimerHours } from "../hooks/timerStore";
+import timerStore from "../hooks/timerStore";
 import QuestionStatsPanel from "../components/QuestionStats";
 import { AvatarCircle } from "./ProfilePage";
 import AIRevisionPanel from "./AI/AIRevisionPanel";
@@ -35,9 +35,6 @@ import { getISTDateString, getISTDay } from "../utils/dateUtils";
 // ─── Tiny helpers ──────────────────────────────────────────────────────────────
 function todayKey() {
   return getISTDateString();
-}
-function secsToHours(secs) {
-  return parseFloat((secs / 3600).toFixed(2));
 }
 function fmtTime(secs) {
   const h = Math.floor(secs / 3600);
@@ -55,6 +52,16 @@ function fmtHM(secs) {
 function pad2(n) {
   return String(n).padStart(2, "0");
 }
+
+// ─── Modern chart palette ────────────────────────────────────────────────────
+// Shared across StudyChart / PaperProgress / StudyTimer so every "chart" in the
+// dashboard reads as part of the same visual language.
+const CHART_COLORS = {
+  goalMet:    { solid: "#10b981", grad: "linear-gradient(180deg, #34d399 0%, #059669 100%)", glow: "rgba(16,185,129,0.4)" },
+  inProgress: { solid: "#6366f1", grad: "linear-gradient(180deg, #818cf8 0%, #4f46e5 100%)", glow: "rgba(99,102,241,0.4)" },
+  today:      { solid: "#f59e0b", grad: "linear-gradient(180deg, #fcd34d 0%, #d97706 100%)", glow: "rgba(245,158,11,0.45)" },
+  best:       { solid: "#ec4899", grad: "linear-gradient(180deg, #f472b6 0%, #db2777 100%)", glow: "rgba(236,72,153,0.4)" },
+};
 
 // ─── Collapsible Section Wrapper ───────────────────────────────────────────────
 function CollapsibleSection({ title, icon: Icon, children, defaultOpen = true }) {
@@ -90,19 +97,14 @@ function CollapsibleSection({ title, icon: Icon, children, defaultOpen = true })
     </div>
   );
 }
-
-// ─── StudyTimer ────────────────────────────────────────────────────────────────
-// Subscribes to timerStore (a module-level singleton) so the interval keeps
-// ticking even when the user navigates to another page and this component
-// unmounts. On remount it simply reads the current store state — no restart.
-function StudyTimer({ onLogHours, onSynced, targetHours = 8, serverHours = 0 }) {
+function StudyTimer({ onLogHours, onSynced, targetHours = 8, serverHours = 0, dataReady = false, userId = null }) {
   // Initialise directly from the singleton so we never show stale values
   const [elapsed, setElapsed] = useState(timerStore.elapsed);
   const [running, setRunning] = useState(timerStore.running);
   const [remote, setRemote] = useState(timerStore.remote);
   const [syncState, setSyncState] = useState("idle");
   const [isCompact, setIsCompact] = useState(false);
-  const lastSyncRef = { current: serverHours };
+  const [ringGrown, setRingGrown] = useState(false);
 
   // ── Responsive breakpoint detection ─────────────────────────────────────────
   useEffect(() => {
@@ -110,6 +112,12 @@ function StudyTimer({ onLogHours, onSynced, targetHours = 8, serverHours = 0 }) 
     checkSize();
     window.addEventListener("resize", checkSize);
     return () => window.removeEventListener("resize", checkSize);
+  }, []);
+
+  // ── Grow the ring + hour blocks in from zero on first paint ────────────────
+  useEffect(() => {
+    const t = setTimeout(() => setRingGrown(true), 150);
+    return () => clearTimeout(t);
   }, []);
 
   // ── Subscribe to store ticks ──────────────────────────────────────────────
@@ -126,35 +134,12 @@ function StudyTimer({ onLogHours, onSynced, targetHours = 8, serverHours = 0 }) 
     return unsub;
   }, []);
 
-  // ── Seed from server once (only if localStorage has nothing yet today) ────
-  // IMPORTANT: this must run BEFORE the auto-start effect below. seedFromServer
-  // only seeds when `!store.running`, so if auto-start fired first it would
-  // already have flipped `running` to true and silently blocked seeding.
+  // ── Scope the singleton to this user (resets local state on user switch) ──
   useEffect(() => {
-    timerStore.seedFromServer(serverHours);
-    if (serverHours > 0) {
-      lastSyncRef.current = serverHours;
-      onSynced?.(serverHours);
-    }
-  }, [serverHours]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  // ── Auto-start as soon as the dashboard opens ─────────────────────────────
-  // timerStore.autoStart() is idempotent per page load (guarded inside the
-  // store itself), so it's safe to call on every mount: it fires once when
-  // the app is first opened, and silently no-ops on later remounts caused by
-  // SPA navigation — meaning it won't fight a manual pause later in the
-  // session. Declared after the seeding effect above so today's already-
-  // logged hours are loaded in before we decide whether to start ticking.
+    timerStore.setUser(userId);
+  }, [userId]);
   useEffect(() => {
-    timerStore.autoStart();
-  }, []);
-
-  // ── Sync to backend ───────────────────────────────────────────────────────
-  const syncToServer = useCallback(
-    async (secs) => {
-      const hours = secsToHours(secs);
-      if (hours === lastSyncRef.current) return;
-      lastSyncRef.current = hours;
+    timerStore.setSyncHandler(async (hours) => {
       setSyncState("syncing");
       try {
         await onLogHours(hours, "Timer session");
@@ -165,25 +150,18 @@ function StudyTimer({ onLogHours, onSynced, targetHours = 8, serverHours = 0 }) 
         setSyncState("error");
         setTimeout(() => setSyncState("idle"), 3000);
       }
-    },
-    [onLogHours, onSynced],
-  );
+    });
+  }, [onLogHours, onSynced]);
 
-  // ── Sync on tab hide / close ──────────────────────────────────────────────
   useEffect(() => {
-    const onHide = () => {
-      if (timerStore.running) syncToServer(timerStore.elapsed);
-    };
-    document.addEventListener("visibilitychange", onHide);
-    return () => document.removeEventListener("visibilitychange", onHide);
-  }, [syncToServer]);
+    if (!dataReady) return;
+    timerStore.hydrate(serverHours);
+    timerStore.autoStart();
+  }, [dataReady, serverHours]);
 
   // ── Controls ──────────────────────────────────────────────────────────────
   const handleStart = () => timerStore.start();
-  const handlePause = () => {
-    timerStore.pause();
-    syncToServer(timerStore.elapsed);
-  };
+  const handlePause = () => timerStore.pause();
   const handleReset = () => timerStore.reset();
 
   // ── Derived display values ────────────────────────────────────────────────
@@ -192,7 +170,8 @@ function StudyTimer({ onLogHours, onSynced, targetHours = 8, serverHours = 0 }) 
   const R           = isCompact ? 45 : 54;
   const SVG_SIZE    = isCompact ? 110 : 140;
   const CIRC        = 2 * Math.PI * R;
-  const dashOffset  = CIRC * (1 - progress);
+  const displayProgress = ringGrown ? progress : 0;
+  const dashOffset  = CIRC * (1 - displayProgress);
   const ringColor   = running ? "#4ade80" : elapsed > 0 ? "#C9A84C" : "#374151";
   const statusLabel = running ? "Studying" : elapsed > 0 ? "Paused" : "Not started";
   const statusColor = running ? "#4ade80" : elapsed > 0 ? "#C9A84C" : "#6b7280";
@@ -262,7 +241,7 @@ function StudyTimer({ onLogHours, onSynced, targetHours = 8, serverHours = 0 }) 
               strokeDasharray={CIRC}
               strokeDashoffset={dashOffset}
               transform={`rotate(-90 ${SVG_SIZE/2} ${SVG_SIZE/2})`}
-              style={{ transition: "stroke-dashoffset 1s linear, stroke 0.4s" }}
+              style={{ transition: "stroke-dashoffset 1.1s cubic-bezier(0.16, 1, 0.3, 1), stroke 0.4s" }}
             />
           </svg>
           <div className="absolute inset-0 flex flex-col items-center justify-center">
@@ -301,16 +280,27 @@ function StudyTimer({ onLogHours, onSynced, targetHours = 8, serverHours = 0 }) 
                 const partial = !filled && elapsed > i * 3600;
                 const pct     = partial ? ((elapsed - i * 3600) / 3600) * 100 : 0;
                 return (
-                  <div key={i} className="relative h-4 sm:h-5 rounded overflow-hidden bg-bg-muted flex-1">
+                  <div
+                    key={i}
+                    className="relative h-4 sm:h-5 rounded overflow-hidden bg-bg-muted flex-1 transition-all duration-500 ease-out"
+                    style={{
+                      opacity: ringGrown ? 1 : 0,
+                      transform: ringGrown ? "scaleY(1)" : "scaleY(0.4)",
+                      transitionDelay: `${i * 40}ms`,
+                    }}
+                  >
                     {filled && (
-                      <div className="absolute inset-0 bg-accent-green/70 rounded" />
+                      <div
+                        className="absolute inset-0 rounded"
+                        style={{ background: CHART_COLORS.goalMet.grad }}
+                      />
                     )}
                     {partial && (
                       <div
                         className="absolute inset-y-0 left-0 rounded"
                         style={{
                           width: `${pct}%`,
-                          background: running ? "#4ade80aa" : "#C9A84Caa",
+                          background: running ? CHART_COLORS.goalMet.grad : CHART_COLORS.today.grad,
                         }}
                       />
                     )}
@@ -355,12 +345,12 @@ function StudyTimer({ onLogHours, onSynced, targetHours = 8, serverHours = 0 }) 
     </div>
   );
 }
-
 // ─── StudyChart ────────────────────────────────────────────────────────────────
-function StudyChart({ logs = [], targetHours = 8, userId = null }) {
+function StudyChart({ logs = [], targetHours = 8 }) {
   const [view, setView] = useState("weekly");
   const [isMobile, setIsMobile] = useState(false);
-  const [monthOffset, setMonthOffset] = useState(0); // 0 = current month, -1 = prev, ...
+  const [monthOffset, setMonthOffset] = useState(0);
+  const [yearOffset, setYearOffset] = useState(0);
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 640);
@@ -369,22 +359,27 @@ function StudyChart({ logs = [], targetHours = 8, userId = null }) {
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
-  // Reset to the current month whenever the chart is switched back to weekly,
-  // so re-opening monthly view later doesn't silently resume on an old month.
   useEffect(() => {
-    if (view === "weekly") setMonthOffset(0);
+    if (view !== "monthly") setMonthOffset(0);
+    if (view !== "yearly") setYearOffset(0);
   }, [view]);
+
+  // ── "Grow in" animation — replays whenever the view or navigated period
+  // changes, so bars/cells always feel alive rather than just popping in. ─────
+  const [grown, setGrown] = useState(false);
+  useEffect(() => {
+    setGrown(false);
+    const t = setTimeout(() => setGrown(true), 60);
+    return () => clearTimeout(t);
+  }, [view, monthOffset, yearOffset]);
 
   const getHoursForDate = (dateStr) => {
     const serverHours = logs.find((l) => l.date === dateStr)?.hours || 0;
-    // For today, prefer live store value over saved localStorage (most accurate)
     if (dateStr === todayKey()) {
       const liveHours = parseFloat((timerStore.elapsed / 3600).toFixed(2));
-      const savedHours = getUserTimerHours(userId, dateStr);
-      return Math.max(serverHours, liveHours, savedHours);
+      return Math.max(serverHours, liveHours);
     }
-    const localHours = getUserTimerHours(userId, dateStr);
-    return Math.max(serverHours, localHours);
+    return serverHours;
   };
 
   const weeklyData = (() => {
@@ -402,17 +397,14 @@ function StudyChart({ logs = [], targetHours = 8, userId = null }) {
     });
   })();
 
-  // ── Monthly calendar — every day gets its own visible cell, nothing is ─────
-  // summed into a week anymore. Built straight from Y/M/D parts (no Date
-  // round-tripping for the date strings), so it can't drift across timezones.
-  const todayStr = todayKey(); // "YYYY-MM-DD" in IST
+  const todayStr = todayKey();
   const [todayY, todayM] = todayStr.split("-").map(Number);
 
   const viewedMonth = new Date(todayY, todayM - 1 + monthOffset, 1);
   const viewYear  = viewedMonth.getFullYear();
-  const viewMonth = viewedMonth.getMonth(); // 0-indexed
+  const viewMonth = viewedMonth.getMonth();
   const daysInMonth  = new Date(viewYear, viewMonth + 1, 0).getDate();
-  const firstWeekday = viewedMonth.getDay(); // 0=Sun .. 6=Sat
+  const firstWeekday = viewedMonth.getDay();
 
   const monthDays = Array.from({ length: daysInMonth }, (_, i) => {
     const dayNum   = i + 1;
@@ -433,13 +425,95 @@ function StudyChart({ logs = [], targetHours = 8, userId = null }) {
   const monthLabel     = viewedMonth.toLocaleString("en-US", { month: "long", year: "numeric" });
   const isCurrentMonth = monthOffset === 0;
 
+  const viewedYear    = todayY + yearOffset;
+  const isCurrentYear = yearOffset === 0;
+
   const elapsedDays   = monthDays.filter((d) => !d.isFuture);
   const studiedCount  = elapsedDays.filter((d) => d.studied).length;
   const metCount      = elapsedDays.filter((d) => d.met).length;
   const monthTotal    = parseFloat(elapsedDays.reduce((s, d) => s + d.hours, 0).toFixed(1));
   const monthAvg      = studiedCount ? parseFloat((monthTotal / studiedCount).toFixed(1)) : 0;
 
-  const weeklyMax = Math.max(targetHours, ...weeklyData.map((d) => d.hours), 0.1);
+  // ── Weekly axis scale ───────────────────────────────────────────────────────
+  const dataMax  = Math.max(...weeklyData.map((d) => d.hours), 0);
+  const scaleMax = Math.max(targetHours, Math.ceil(dataMax) || 1);
+  const TICKS    = 5;
+  const ticks = Array.from({ length: TICKS }, (_, i) =>
+    parseFloat((scaleMax * (1 - i / (TICKS - 1))).toFixed(1))
+  );
+  const AXIS_W = "w-7 sm:w-8";
+
+  // ── Weekly summary stats (mirrors the monthly summary cards) ────────────────
+  const weekStudiedCount = weeklyData.filter((d) => d.hours > 0).length;
+  const weekMetCount     = weeklyData.filter((d) => d.hours >= targetHours).length;
+  const weekTotal        = parseFloat(weeklyData.reduce((s, d) => s + d.hours, 0).toFixed(1));
+  const weekAvg          = weekStudiedCount ? parseFloat((weekTotal / weekStudiedCount).toFixed(1)) : 0;
+
+  const weekStats = [
+    { label: "Total",    val: `${weekTotal}h`,                          icon: Clock,       color: "#C9A84C" },
+    { label: "Days Hit", val: `${weekMetCount}/${weeklyData.length}`,   icon: CheckCircle, color: "#22c55e" },
+    { label: "Avg/Day",  val: `${weekAvg}h`,                            icon: TrendingUp,  color: "#3b82f6" },
+  ];
+
+  // ── Monthly summary card styling (mirrors the weekly chart's accent colors) ─
+  const monthStats = [
+    { label: "Total",    val: `${monthTotal}h`,                     icon: Clock,       color: "#C9A84C" },
+    { label: "Days Hit", val: `${metCount}/${elapsedDays.length}`,  icon: CheckCircle, color: "#22c55e" },
+    { label: "Avg/Day",  val: `${monthAvg}h`,                       icon: TrendingUp,  color: "#3b82f6" },
+  ];
+
+  // ── Yearly data — totals per month for the navigated year ───────────────────
+  const yearlyData = (() => {
+    const MONTH_FULL = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    const serverTodayHours    = logs.find((l) => l.date === todayStr)?.hours || 0;
+    const liveTodayHours      = parseFloat((timerStore.elapsed / 3600).toFixed(2));
+    const effectiveTodayHours = Math.max(serverTodayHours, liveTodayHours);
+
+    return Array.from({ length: 12 }, (_, m) => {
+      const monthPrefix = `${viewedYear}-${pad2(m + 1)}`;
+      let total = logs
+        .filter((l) => l.date && l.date.startsWith(monthPrefix))
+        .reduce((s, l) => s + (l.hours || 0), 0);
+
+      const isCurrentMonthCell = viewedYear === todayY && m === todayM - 1;
+      if (isCurrentMonthCell) {
+        // logs already include today's server-saved hours; swap in the live value
+        total = total - serverTodayHours + effectiveTodayHours;
+      }
+
+      const isFuture = viewedYear > todayY || (viewedYear === todayY && m > todayM - 1);
+
+      return {
+        label: MONTH_FULL[m],
+        short: isMobile ? MONTH_FULL[m].slice(0, 1) : MONTH_FULL[m].slice(0, 3),
+        hours: isFuture ? 0 : parseFloat(Math.max(total, 0).toFixed(1)),
+        isCurrent: isCurrentMonthCell,
+        isFuture,
+      };
+    });
+  })();
+
+  const elapsedMonths      = yearlyData.filter((d) => !d.isFuture);
+  const studiedMonthsCount = elapsedMonths.filter((d) => d.hours > 0).length;
+  const yearTotal = parseFloat(elapsedMonths.reduce((s, d) => s + d.hours, 0).toFixed(1));
+  const bestMonth = elapsedMonths.reduce(
+    (best, d) => (d.hours > best.hours ? d : best),
+    { hours: 0, label: "—" }
+  );
+  const yearAvg = studiedMonthsCount ? parseFloat((yearTotal / studiedMonthsCount).toFixed(1)) : 0;
+
+  const yearStats = [
+    { label: "Total",      val: `${yearTotal}h`,                                                      icon: Clock,       color: "#C9A84C" },
+    { label: "Best Month", val: bestMonth.hours > 0 ? `${bestMonth.label} · ${bestMonth.hours}h` : "—", icon: Flame,       color: "#ec4899" },
+    { label: "Avg/Month",  val: `${yearAvg}h`,                                                          icon: TrendingUp,  color: "#3b82f6" },
+  ];
+
+  // ── Yearly axis scale ────────────────────────────────────────────────────────
+  const yearDataMax  = Math.max(...yearlyData.map((d) => d.hours), 0);
+  const yearScaleMax = Math.max(Math.ceil(yearDataMax / 5) * 5, 5);
+  const yearTicks = Array.from({ length: TICKS }, (_, i) =>
+    parseFloat((yearScaleMax * (1 - i / (TICKS - 1))).toFixed(1))
+  );
 
   return (
     <div className="glass-panel p-3 sm:p-4 space-y-2.5 sm:space-y-3">
@@ -447,13 +521,18 @@ function StudyChart({ logs = [], targetHours = 8, userId = null }) {
         <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
           <TrendingUp size={14} className="text-accent-green shrink-0" />
           <h3 className="text-xs sm:text-sm font-display font-semibold text-text-primary truncate">
-            {view === "weekly" ? "Weekly Hours" : monthLabel}
+            {view === "weekly"
+              ? (isMobile ? "5-Day Hours" : "Weekly Hours")
+              : view === "monthly"
+              ? monthLabel
+              : `${viewedYear} Overview`}
           </h3>
         </div>
         <div className="flex items-center bg-bg-muted rounded-lg p-0.5 gap-0.5 shrink-0">
           {[
             ["weekly", isMobile ? "5D" : "7D"],
             ["monthly", "Month"],
+            ["yearly", "Year"],
           ].map(([v, lbl]) => (
             <button
               key={v}
@@ -471,164 +550,378 @@ function StudyChart({ logs = [], targetHours = 8, userId = null }) {
       </div>
 
       {view === "weekly" ? (
-        <div className="space-y-2">
-          <div className="flex items-end gap-0.5 sm:gap-1.5 h-20 sm:h-24">
-            {weeklyData.map(({ label, hours, isToday }) => {
-              const pct = (hours / weeklyMax) * 100;
-              const met = hours >= targetHours;
-              return (
-                <div key={label} className="flex-1 flex flex-col items-center gap-1">
-                  <span className="text-[8px] sm:text-[9px] font-mono text-text-muted tabular-nums h-3">
-                    {hours > 0 ? `${hours}h` : ""}
-                  </span>
-                  <div
-                    className="w-full relative flex flex-col justify-end"
-                    style={{ height: 50 }}
-                  >
-                    <div
-                      className={`w-full rounded-t transition-all duration-500 ${
-                        isToday
-                          ? "bg-accent-gold"
-                          : met
-                          ? "bg-accent-green/70"
-                          : hours > 0
-                          ? "bg-accent-blue/50"
-                          : "bg-bg-muted"
-                      }`}
-                      style={{ height: `${Math.max(pct, hours > 0 ? 6 : 2)}%` }}
-                    />
-                    <div
-                      className="absolute w-full border-t border-dashed border-text-muted/30 pointer-events-none"
-                      style={{ bottom: `${(targetHours / weeklyMax) * 100}%` }}
-                    />
-                  </div>
+        <div className="space-y-1.5">
+          <div className="flex">
+            <div className={`${AXIS_W} shrink-0 flex flex-col justify-between h-36 sm:h-44 pr-1 sm:pr-1.5 text-right`}>
+              {ticks.map((t) => (
+                <span key={t} className="text-[9px] sm:text-[10px] font-mono text-text-muted leading-none">
+                  {t}h
+                </span>
+              ))}
+            </div>
+            <div className="relative flex-1 h-36 sm:h-44 border-l border-b border-bg-border">
+              {ticks.slice(0, -1).map((t) => (
+                <div
+                  key={t}
+                  className="absolute left-0 right-0 border-t border-bg-border/50"
+                  style={{ top: `${((scaleMax - t) / scaleMax) * 100}%` }}
+                />
+              ))}
+              <div className="absolute inset-0 flex items-end px-1 sm:px-2">
+                {weeklyData.map(({ label, hours, isToday }, i) => {
+                  const met = hours >= targetHours;
+                  const pct = Math.min((hours / scaleMax) * 100, 100);
+                  const palette = isToday ? CHART_COLORS.today : met ? CHART_COLORS.goalMet : CHART_COLORS.inProgress;
+                  return (
+                    <div key={label} className="flex-1 h-full flex items-end justify-center">
+                      {hours > 0 && (
+                        <div
+                          title={`${hours}h`}
+                          className="w-full max-w-[28px] sm:max-w-[34px] rounded-t-md transition-all duration-700 ease-out"
+                          style={{
+                            height: `${grown ? Math.max(pct, 4) : 0}%`,
+                            background: palette.grad,
+                            boxShadow: `0 2px 10px ${palette.glow}`,
+                            transitionDelay: `${i * 60}ms`,
+                          }}
+                        />
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+
+          <div className="flex">
+            <div className={`${AXIS_W} shrink-0`} />
+            <div className="flex-1 flex px-1 sm:px-2">
+              {weeklyData.map(({ label, isToday }) => (
+                <span
+                  key={label}
+                  className={`flex-1 text-center text-[9px] sm:text-[11px] font-mono ${
+                    isToday ? "text-accent-gold font-bold" : "text-text-muted"
+                  }`}
+                >
+                  {label}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          <div className="flex flex-wrap items-center justify-center gap-x-3 sm:gap-x-4 gap-y-1 text-[9px] sm:text-[10px] font-mono text-text-muted pt-1">
+            <span className="flex items-center gap-1">
+              <span className="inline-block w-2 h-2 rounded-sm" style={{ background: CHART_COLORS.goalMet.grad }} /> Goal met
+            </span>
+            <span className="flex items-center gap-1">
+              <span className="inline-block w-2 h-2 rounded-sm" style={{ background: CHART_COLORS.inProgress.grad }} /> In progress
+            </span>
+            <span className="flex items-center gap-1">
+              <span className="inline-block w-2 h-2 rounded-sm" style={{ background: CHART_COLORS.today.grad }} /> Today
+            </span>
+            <span className="flex items-center gap-1">
+              <span className="inline-block w-2 h-2 rounded-sm bg-bg-muted border border-bg-border" /> Target left
+            </span>
+          </div>
+
+          {/* Week summary — same accent-tinted cards as the monthly/yearly views */}
+          <div className="grid grid-cols-3 gap-1.5 sm:gap-2 pt-1">
+            {weekStats.map(({ label, val, icon: Icon, color }, i) => (
+              <div
+                key={label}
+                className="rounded-lg p-2.5 sm:p-3.5 text-center flex flex-col items-center justify-center gap-1 sm:gap-1.5 transition-all duration-500 ease-out"
+                style={{
+                  background: `${color}14`,
+                  border: `1px solid ${color}30`,
+                  opacity: grown ? 1 : 0,
+                  transform: grown ? "translateY(0)" : "translateY(10px)",
+                  transitionDelay: `${i * 90}ms`,
+                }}
+              >
+                <div className="flex items-center gap-1">
+                  <Icon size={11} style={{ color }} />
                   <span
-                    className={`text-[8px] sm:text-[10px] font-mono ${
-                      isToday ? "text-accent-gold" : "text-text-muted"
-                    }`}
+                    className="text-[9px] sm:text-[10px] font-mono uppercase tracking-wider font-semibold"
+                    style={{ color }}
                   >
                     {label}
                   </span>
                 </div>
-              );
-            })}
-          </div>
-          <div className="flex flex-wrap items-center gap-x-2 sm:gap-x-3 gap-y-1 text-[9px] sm:text-[10px] font-mono text-text-muted">
-            <span className="flex items-center gap-1">
-              <span className="inline-block w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-sm bg-accent-gold" /> Today
-            </span>
-            <span className="flex items-center gap-1">
-              <span className="inline-block w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-sm bg-accent-green/70" /> Met
-            </span>
-            <span className="flex items-center gap-1">
-              <span className="inline-block w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-sm bg-accent-blue/50" /> Partial
-            </span>
+                <p className="text-lg sm:text-2xl font-display font-bold text-text-primary leading-none">
+                  {val}
+                </p>
+              </div>
+            ))}
           </div>
         </div>
-      ) : (
+      ) : view === "monthly" ? (
         <div className="space-y-2.5 sm:space-y-3">
-          {/* Month navigation */}
-          <div className="flex items-center justify-between">
+          {/* Month navigation — pill bar, matches the weekly view-toggle weight */}
+          <div className="flex items-center justify-between bg-bg-muted rounded-lg p-1 sm:p-1.5">
             <button
               onClick={() => setMonthOffset((o) => o - 1)}
-              className="btn-ghost border border-bg-border p-1 sm:p-1.5 rounded-lg hover:border-accent-gold/30 transition-colors"
+              className="p-1.5 sm:p-2 rounded-md border border-transparent hover:border-accent-gold/30 hover:bg-bg-surface transition-colors"
               title="Previous month"
             >
-              <ChevronLeft size={14} />
+              <ChevronLeft size={15} />
             </button>
-            <span className="text-[10px] sm:text-[11px] font-mono text-text-muted">
+            <span className="text-xs sm:text-sm font-display font-semibold text-text-primary">
               {isCurrentMonth ? "This month" : monthLabel}
             </span>
             <button
               onClick={() => setMonthOffset((o) => Math.min(0, o + 1))}
               disabled={isCurrentMonth}
-              className={`btn-ghost border border-bg-border p-1 sm:p-1.5 rounded-lg transition-colors ${
-                isCurrentMonth ? "opacity-30 cursor-not-allowed" : "hover:border-accent-gold/30"
+              className={`p-1.5 sm:p-2 rounded-md border border-transparent transition-colors ${
+                isCurrentMonth ? "opacity-30 cursor-not-allowed" : "hover:border-accent-gold/30 hover:bg-bg-surface"
               }`}
               title="Next month"
             >
-              <ChevronRight size={14} />
+              <ChevronRight size={15} />
             </button>
           </div>
 
-          {/* Month summary */}
+          {/* Month summary — accent-tinted, icon + bold value, fills the card */}
           <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
-            {[
-              { label: "Total",   val: `${monthTotal}h` },
-              { label: "Days hit", val: `${metCount}/${elapsedDays.length}` },
-              { label: "Avg/day", val: `${monthAvg}h` },
-            ].map(({ label, val }) => (
-              <div key={label} className="bg-bg-muted rounded-lg p-1.5 sm:p-2 text-center">
-                <p className="text-[9px] sm:text-[10px] font-mono text-text-muted uppercase">{label}</p>
-                <p className="text-xs sm:text-sm font-display font-bold text-text-primary mt-0.5">{val}</p>
+            {monthStats.map(({ label, val, icon: Icon, color }, i) => (
+              <div
+                key={label}
+                className="rounded-lg p-2.5 sm:p-3.5 text-center flex flex-col items-center justify-center gap-1 sm:gap-1.5 transition-all duration-500 ease-out"
+                style={{
+                  background: `${color}14`,
+                  border: `1px solid ${color}30`,
+                  opacity: grown ? 1 : 0,
+                  transform: grown ? "translateY(0)" : "translateY(10px)",
+                  transitionDelay: `${i * 90}ms`,
+                }}
+              >
+                <div className="flex items-center gap-1">
+                  <Icon size={11} style={{ color }} />
+                  <span
+                    className="text-[9px] sm:text-[10px] font-mono uppercase tracking-wider font-semibold"
+                    style={{ color }}
+                  >
+                    {label}
+                  </span>
+                </div>
+                <p className="text-lg sm:text-2xl font-display font-bold text-text-primary leading-none">
+                  {val}
+                </p>
               </div>
             ))}
           </div>
 
           {/* Weekday header */}
-          <div className="grid grid-cols-7 gap-1 sm:gap-1.5 text-center">
+          <div className="grid grid-cols-7 gap-1.5 sm:gap-2 text-center">
             {["S", "M", "T", "W", "T", "F", "S"].map((d, i) => (
-              <span key={i} className="text-[8px] sm:text-[10px] font-mono text-text-muted">
+              <span key={i} className="text-[9px] sm:text-[11px] font-mono text-text-muted">
                 {d}
               </span>
             ))}
           </div>
 
-          {/* Calendar grid — one visible cell per day, never aggregated */}
-          <div className="grid grid-cols-7 gap-1 sm:gap-1.5">
+          {/* Calendar grid */}
+          <div className="grid grid-cols-7 gap-1.5 sm:gap-2">
             {Array.from({ length: firstWeekday }, (_, i) => (
               <div key={`pad-${i}`} />
             ))}
-            {monthDays.map((d) => (
-              <div
-                key={d.dateStr}
-                title={d.isFuture ? "" : `${d.dateStr} — ${d.hours}h studied`}
-                className={`aspect-square rounded-md sm:rounded-lg flex flex-col items-center justify-center gap-0.5 border transition-colors ${
-                  d.isToday
-                    ? "border-accent-gold bg-accent-gold/15"
-                    : d.isFuture
-                    ? "border-transparent bg-transparent"
-                    : d.met
-                    ? "border-accent-green/40 bg-accent-green/15"
-                    : d.studied
-                    ? "border-accent-blue/30 bg-accent-blue/10"
-                    : "border-bg-border/50 bg-bg-muted/60"
-                }`}
-              >
-                <span
-                  className={`text-[9px] sm:text-[11px] font-mono leading-none ${
-                    d.isToday
-                      ? "text-accent-gold font-bold"
-                      : d.isFuture
-                      ? "text-text-muted/30"
-                      : "text-text-secondary"
+            {monthDays.map((d, i) => {
+              const palette = d.isToday
+                ? CHART_COLORS.today
+                : d.met
+                ? CHART_COLORS.goalMet
+                : d.studied
+                ? CHART_COLORS.inProgress
+                : null;
+              return (
+                <div
+                  key={d.dateStr}
+                  title={d.isFuture ? "" : `${d.dateStr} — ${d.hours}h studied`}
+                  className={`aspect-square rounded-lg sm:rounded-xl flex flex-col items-center justify-center gap-0.5 border transition-all duration-500 ease-out ${
+                    d.isFuture
+                      ? "border-transparent bg-transparent"
+                      : palette
+                      ? "border-transparent"
+                      : "border-gray-600/30 bg-gray-700/20"
                   }`}
+                  style={{
+                    background: palette ? palette.grad : undefined,
+                    boxShadow: palette ? `0 2px 8px ${palette.glow}` : undefined,
+                    opacity: d.isFuture || grown ? 1 : 0,
+                    transform: d.isFuture || grown ? "scale(1)" : "scale(0.5)",
+                    transitionDelay: `${Math.min(i, 30) * 12}ms`,
+                  }}
                 >
-                  {d.day}
-                </span>
-                {!d.isFuture && d.hours > 0 && (
-                  <span className="text-[7px] sm:text-[9px] font-mono text-text-muted leading-none">
-                    {d.hours}h
+                  <span
+                    className={`text-[11px] sm:text-sm font-mono leading-none font-bold ${
+                      d.isFuture
+                        ? "text-text-muted/30"
+                        : palette
+                        ? "text-white"
+                        : "text-text-secondary"
+                    }`}
+                  >
+                    {d.day}
                   </span>
-                )}
-                {d.met && <CheckCircle size={8} className="text-accent-green sm:w-2.5 sm:h-2.5" />}
-              </div>
-            ))}
+                  {!d.isFuture && d.hours > 0 && (
+                    <span
+                      className={`text-[9px] sm:text-[11px] font-mono leading-none ${
+                        palette ? "text-white/85" : "text-text-muted"
+                      }`}
+                    >
+                      {d.hours}h
+                    </span>
+                  )}
+                  {d.met && <CheckCircle size={9} className="text-white sm:w-3 sm:h-3" />}
+                </div>
+              );
+            })}
           </div>
 
           {/* Legend */}
           <div className="flex flex-wrap items-center gap-x-2 sm:gap-x-3 gap-y-1 text-[9px] sm:text-[10px] font-mono text-text-muted">
             <span className="flex items-center gap-1">
-              <span className="inline-block w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-sm border border-accent-gold bg-accent-gold/15" /> Today
+              <span className="inline-block w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-sm" style={{ background: CHART_COLORS.goalMet.grad }} /> Goal met
             </span>
             <span className="flex items-center gap-1">
-              <span className="inline-block w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-sm border border-accent-green/40 bg-accent-green/15" /> Target met
+              <span className="inline-block w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-sm" style={{ background: CHART_COLORS.inProgress.grad }} /> Studied
             </span>
             <span className="flex items-center gap-1">
-              <span className="inline-block w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-sm border border-accent-blue/30 bg-accent-blue/10" /> Studied
+              <span className="inline-block w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-sm" style={{ background: CHART_COLORS.today.grad }} /> Today
             </span>
             <span className="flex items-center gap-1">
-              <span className="inline-block w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-sm border border-bg-border/50 bg-bg-muted/60" /> No study
+              <span className="inline-block w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-sm bg-gray-700/20 border border-gray-600/30" /> No study
+            </span>
+          </div>
+        </div>
+      ) : (
+        <div className="space-y-2.5 sm:space-y-3">
+          {/* Year navigation — same pill bar weight as week/month toggles */}
+          <div className="flex items-center justify-between bg-bg-muted rounded-lg p-1 sm:p-1.5">
+            <button
+              onClick={() => setYearOffset((o) => o - 1)}
+              className="p-1.5 sm:p-2 rounded-md border border-transparent hover:border-accent-gold/30 hover:bg-bg-surface transition-colors"
+              title="Previous year"
+            >
+              <ChevronLeft size={15} />
+            </button>
+            <span className="text-xs sm:text-sm font-display font-semibold text-text-primary">
+              {isCurrentYear ? "This year" : viewedYear}
+            </span>
+            <button
+              onClick={() => setYearOffset((o) => Math.min(0, o + 1))}
+              disabled={isCurrentYear}
+              className={`p-1.5 sm:p-2 rounded-md border border-transparent transition-colors ${
+                isCurrentYear ? "opacity-30 cursor-not-allowed" : "hover:border-accent-gold/30 hover:bg-bg-surface"
+              }`}
+              title="Next year"
+            >
+              <ChevronRight size={15} />
+            </button>
+          </div>
+
+          {/* Year summary */}
+          <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
+            {yearStats.map(({ label, val, icon: Icon, color }, i) => (
+              <div
+                key={label}
+                className="rounded-lg p-2.5 sm:p-3.5 text-center flex flex-col items-center justify-center gap-1 sm:gap-1.5 transition-all duration-500 ease-out"
+                style={{
+                  background: `${color}14`,
+                  border: `1px solid ${color}30`,
+                  opacity: grown ? 1 : 0,
+                  transform: grown ? "translateY(0)" : "translateY(10px)",
+                  transitionDelay: `${i * 90}ms`,
+                }}
+              >
+                <div className="flex items-center gap-1">
+                  <Icon size={11} style={{ color }} />
+                  <span
+                    className="text-[9px] sm:text-[10px] font-mono uppercase tracking-wider font-semibold"
+                    style={{ color }}
+                  >
+                    {label}
+                  </span>
+                </div>
+                <p className="text-base sm:text-2xl font-display font-bold text-text-primary leading-none truncate max-w-full">
+                  {val}
+                </p>
+              </div>
+            ))}
+          </div>
+
+          {/* Bar chart — 12 months */}
+          <div className="flex">
+            <div className={`${AXIS_W} shrink-0 flex flex-col justify-between h-36 sm:h-44 pr-1 sm:pr-1.5 text-right`}>
+              {yearTicks.map((t) => (
+                <span key={t} className="text-[9px] sm:text-[10px] font-mono text-text-muted leading-none">
+                  {t}h
+                </span>
+              ))}
+            </div>
+            <div className="relative flex-1 h-36 sm:h-44 border-l border-b border-bg-border">
+              {yearTicks.slice(0, -1).map((t) => (
+                <div
+                  key={t}
+                  className="absolute left-0 right-0 border-t border-bg-border/50"
+                  style={{ top: `${((yearScaleMax - t) / yearScaleMax) * 100}%` }}
+                />
+              ))}
+              <div className="absolute inset-0 flex items-end px-1 sm:px-2">
+                {yearlyData.map((d, i) => {
+                  const pct = Math.min((d.hours / yearScaleMax) * 100, 100);
+                  const isBest = bestMonth.hours > 0 && d.label === bestMonth.label && !d.isCurrent;
+                  const palette = d.isCurrent
+                    ? CHART_COLORS.today
+                    : isBest
+                    ? CHART_COLORS.best
+                    : CHART_COLORS.inProgress;
+                  return (
+                    <div key={i} className="flex-1 h-full flex items-end justify-center">
+                      {!d.isFuture && d.hours > 0 && (
+                        <div
+                          title={`${d.label}: ${d.hours}h`}
+                          className="w-full max-w-[16px] sm:max-w-[22px] rounded-t-md transition-all duration-700 ease-out"
+                          style={{
+                            height: `${grown ? Math.max(pct, 4) : 0}%`,
+                            background: palette.grad,
+                            boxShadow: `0 2px 10px ${palette.glow}`,
+                            transitionDelay: `${i * 50}ms`,
+                          }}
+                        />
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+
+          <div className="flex">
+            <div className={`${AXIS_W} shrink-0`} />
+            <div className="flex-1 flex px-1 sm:px-2">
+              {yearlyData.map((d, i) => (
+                <span
+                  key={i}
+                  className={`flex-1 text-center text-[9px] sm:text-[11px] font-mono ${
+                    d.isCurrent ? "text-accent-gold font-bold" : "text-text-muted"
+                  }`}
+                >
+                  {d.short}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          {/* Legend */}
+          <div className="flex flex-wrap items-center justify-center gap-x-3 sm:gap-x-4 gap-y-1 text-[9px] sm:text-[10px] font-mono text-text-muted pt-1">
+            <span className="flex items-center gap-1">
+              <span className="inline-block w-2 h-2 rounded-sm" style={{ background: CHART_COLORS.inProgress.grad }} /> Monthly hours
+            </span>
+            <span className="flex items-center gap-1">
+              <span className="inline-block w-2 h-2 rounded-sm" style={{ background: CHART_COLORS.best.grad }} /> Best month
+            </span>
+            <span className="flex items-center gap-1">
+              <span className="inline-block w-2 h-2 rounded-sm" style={{ background: CHART_COLORS.today.grad }} /> Current month
             </span>
           </div>
         </div>
@@ -636,14 +929,25 @@ function StudyChart({ logs = [], targetHours = 8, userId = null }) {
     </div>
   );
 }
-
 // ─── StatCard ──────────────────────────────────────────────────────────────────
-function StatCard({ icon: Icon, label, value, sub, accent = false, iconColor }) {
+function StatCard({ icon: Icon, label, value, sub, accent = false, iconColor, delay = 0 }) {
+  // Grows in (fade + slide-up) shortly after mount, staggered by `delay`, so the
+  // whole stat row feels like it's "filling in" when the dashboard opens.
+  const [grown, setGrown] = useState(false);
+  useEffect(() => {
+    const t = setTimeout(() => setGrown(true), 120 + delay);
+    return () => clearTimeout(t);
+  }, [delay]);
+
   return (
     <div
-      className={`glass-panel p-2.5 sm:p-4 flex flex-col gap-0.5 sm:gap-1.5 transition-all duration-300 active:scale-95 sm:hover:-translate-y-0.5 sm:hover:border-accent-gold/30 cursor-default ${
+      className={`glass-panel p-2.5 sm:p-4 flex flex-col gap-0.5 sm:gap-1.5 transition-all duration-500 ease-out active:scale-95 sm:hover:-translate-y-0.5 sm:hover:border-accent-gold/30 cursor-default ${
         accent ? "border-accent-gold/30 bg-accent-gold/5" : ""
       }`}
+      style={{
+        opacity: grown ? 1 : 0,
+        transform: grown ? "translateY(0)" : "translateY(10px)",
+      }}
     >
       <div className="flex items-center gap-1 sm:gap-2">
         <Icon
@@ -975,6 +1279,14 @@ function PaperProgress({ syllabusData }) {
       });
     }
   }
+
+  // ── Grow the bars in from zero on first paint ───────────────────────────────
+  const [grown, setGrown] = useState(false);
+  useEffect(() => {
+    const t = setTimeout(() => setGrown(true), 120);
+    return () => clearTimeout(t);
+  }, []);
+
   return (
     <div className="glass-panel p-3 sm:p-4 space-y-2.5 sm:space-y-3">
       <div className="flex items-center gap-2">
@@ -986,8 +1298,8 @@ function PaperProgress({ syllabusData }) {
           Mark progress in Syllabus Tracker to see coverage.
         </p>
       ) : (
-        <div className="space-y-2">
-          {rows.map(({ label, color, pct }) => (
+        <div className="space-y-2.5">
+          {rows.map(({ label, color, pct }, i) => (
             <div key={label} className="space-y-1">
               <div className="flex justify-between items-center gap-2">
                 <span className="text-[11px] sm:text-xs text-text-secondary truncate max-w-[65%] sm:max-w-[70%]">
@@ -995,10 +1307,16 @@ function PaperProgress({ syllabusData }) {
                 </span>
                 <span className="text-[10px] sm:text-[11px] font-mono text-text-muted shrink-0">{pct}%</span>
               </div>
-              <div className="h-1.5 bg-bg-muted rounded-full overflow-hidden">
+              <div className="h-2 bg-bg-muted rounded-full overflow-hidden">
                 <div
-                  className="h-full rounded-full transition-all duration-700"
-                  style={{ width: `${pct}%`, backgroundColor: color }}
+                  className="h-full rounded-full transition-all ease-out"
+                  style={{
+                    width: grown ? `${pct}%` : "0%",
+                    background: `linear-gradient(90deg, ${color}cc, ${color})`,
+                    boxShadow: pct > 0 ? `0 0 8px ${color}66` : "none",
+                    transitionDuration: "900ms",
+                    transitionDelay: `${i * 110}ms`,
+                  }}
                 />
               </div>
             </div>
@@ -1025,17 +1343,22 @@ export default function Dashboard({
   const userId = user?.id || user?._id || null;
   if (!user) return <AuthGate feature="Dashboard" onNavigateAuth={onNavigateAuth} />;
 
-  const [timerHours, setTimerHours] = useState(() => {
-    return getUserTimerHours(userId, todayKey());
-  });
+  const [timerHours, setTimerHours] = useState(0);
 
   const [isMobile, setIsMobile] = useState(false);
+  const [progressGrown, setProgressGrown] = useState(false);
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
     checkMobile();
     window.addEventListener("resize", checkMobile);
     return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+  // ── Grow the overall coverage bar in from zero on first paint ───────────────
+  useEffect(() => {
+    const t = setTimeout(() => setProgressGrown(true), 200);
+    return () => clearTimeout(t);
   }, []);
 
   const serverHoursNum = parseFloat(serverTodayHours) || 0;
@@ -1089,22 +1412,25 @@ export default function Dashboard({
           value={fmtHM(Math.round(todayHours * 3600))}
           sub={`Target: ${targetHours}h`}
           accent={todayHours >= targetHours}
+          delay={0}
         />
-        <StatCard icon={TrendingUp} label="7-Day Avg" value={`${weekAvgHours}h`} sub="Per day" />
+        <StatCard icon={TrendingUp} label="7-Day Avg" value={`${weekAvgHours}h`} sub="Per day" delay={60} />
         <StatCard
           icon={Flame}
           label="Streak"
           value={`${streak}d`}
           sub={`Best: ${longestStreak}d`}
           iconColor="#fb923c"
+          delay={120}
         />
-        <StatCard icon={BookMarked} label="Answers" value={totalAnswers} sub="Written" />
+        <StatCard icon={BookMarked} label="Answers" value={totalAnswers} sub="Written" delay={180} />
         <StatCard
           icon={BarChart2}
           label="Coverage"
           value={`${Math.round(overallProgress)}%`}
           sub="Syllabus"
           iconColor="#C9A84C"
+          delay={240}
         />
         <StatCard
           icon={Target}
@@ -1112,6 +1438,7 @@ export default function Dashboard({
           value={`${getPct(syllabusData?.mains?.GS1?.modules || {})}%`}
           sub="GS1 modules"
           iconColor="#4ade80"
+          delay={300}
         />
       </div>
 
@@ -1125,10 +1452,14 @@ export default function Dashboard({
             {Math.round(overallProgress)}%
           </span>
         </div>
-        <div className="h-2 bg-bg-muted rounded-full overflow-hidden">
+        <div className="h-2.5 bg-bg-muted rounded-full overflow-hidden">
           <div
-            className="h-full bg-gradient-to-r from-accent-gold to-yellow-400 rounded-full transition-all duration-700"
-            style={{ width: `${overallProgress}%` }}
+            className="h-full bg-gradient-to-r from-accent-gold to-yellow-400 rounded-full transition-all ease-out"
+            style={{
+              width: progressGrown ? `${overallProgress}%` : "0%",
+              boxShadow: "0 0 10px rgba(201,168,76,0.5)",
+              transitionDuration: "1100ms",
+            }}
           />
         </div>
         <p className="text-[10px] sm:text-xs text-text-muted font-mono">
@@ -1141,7 +1472,7 @@ export default function Dashboard({
             : "Advanced stage. Revision and PYQ analysis."}
         </p>
       </div>
-
+<br/>
       {/* ── Question Stats (conditionally collapsible on mobile) ── */}
       {isMobile ? (
         <CollapsibleSection title="Question Statistics" defaultOpen={false}>
@@ -1157,6 +1488,8 @@ export default function Dashboard({
         onSynced={setTimerHours}
         targetHours={targetHours}
         serverHours={serverHoursNum}
+        dataReady={!!userData}
+        userId={userId}
       />
 
       {/* ── Tasks + Current Affairs ── */}
@@ -1192,7 +1525,7 @@ export default function Dashboard({
         {isMobile ? (
           <>
             <CollapsibleSection title="Study Chart" icon={TrendingUp} defaultOpen={false}>
-              <StudyChart logs={dailyLogs} targetHours={targetHours} userId={userId} />
+              <StudyChart logs={dailyLogs} targetHours={targetHours} />
             </CollapsibleSection>
             <CollapsibleSection title="Paper Coverage" icon={BarChart2} defaultOpen={false}>
               <PaperProgress syllabusData={syllabusData} />
@@ -1200,7 +1533,7 @@ export default function Dashboard({
           </>
         ) : (
           <>
-            <StudyChart logs={dailyLogs} targetHours={targetHours} userId={userId} />
+            <StudyChart logs={dailyLogs} targetHours={targetHours} />
             <PaperProgress syllabusData={syllabusData} />
           </>
         )}
