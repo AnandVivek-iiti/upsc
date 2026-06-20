@@ -1,6 +1,6 @@
 // ─── QuestionStats.jsx with Filled Donut + Subject Pie+Table + Topic Table ──
 
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState, useEffect, useRef } from "react";
 import {
   Target,
   CheckCircle2,
@@ -12,10 +12,10 @@ import {
   Info,
   PieChart as PieChartIcon,
   Table,
-  ChevronDown,
-  ChevronUp,
   Search,
-  Filter,
+  SlidersHorizontal,
+  ArrowRight,
+  X,
 } from "lucide-react";
 import { useQuestionAttempts } from "../hooks/useQuestionAttempts";
 
@@ -220,8 +220,16 @@ function BreakdownRow({ color, label, pct, pctLabel, countLabel, delay = 0 }) {
 function SubjectPieChart({ data, total, onSegmentClick, selectedSegment }) {
   const grown = useGrow(200);
   const [hoveredIndex, setHoveredIndex] = useState(null);
+  const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 });
+  const wrapRef = useRef(null);
 
   if (data.length === 0 || total === 0) return null;
+
+  const handleMove = (e) => {
+    if (!wrapRef.current) return;
+    const rect = wrapRef.current.getBoundingClientRect();
+    setTooltipPos({ x: e.clientX - rect.left, y: e.clientY - rect.top });
+  };
 
   const size = 320;
   const R = (size / 2) - 10;
@@ -255,12 +263,6 @@ function SubjectPieChart({ data, total, onSegmentClick, selectedSegment }) {
       Z
     `;
 
-    const midAngle = (startAngle + cumulativeAngle) / 2;
-    const midRad = (midAngle - 90) * Math.PI / 180;
-    const labelR = R * 0.65;
-    const labelX = cx + labelR * Math.cos(midRad);
-    const labelY = cy + labelR * Math.sin(midRad);
-
     return {
       ...d,
       pct,
@@ -272,8 +274,6 @@ function SubjectPieChart({ data, total, onSegmentClick, selectedSegment }) {
       isSelected,
       isHovered,
       index: i,
-      labelX,
-      labelY,
     };
   });
 
@@ -285,53 +285,34 @@ function SubjectPieChart({ data, total, onSegmentClick, selectedSegment }) {
       gap: 12,
       width: "100%",
     }}>
-      <div style={{
-        position: "relative",
-        width: size,
-        height: size,
-        maxWidth: "100%",
-        aspectRatio: "1 / 1",
-      }}>
+      <div
+        ref={wrapRef}
+        onMouseMove={handleMove}
+        style={{
+          position: "relative",
+          width: size,
+          height: size,
+          maxWidth: "100%",
+          aspectRatio: "1 / 1",
+        }}
+      >
         <svg width="100%" height="100%" viewBox={`0 0 ${size} ${size}`}>
           {segments.map((seg) => (
-            <g key={seg.label}>
-              <path
-                d={seg.pathData}
-                fill={seg.color}
-                stroke={seg.isSelected ? "#ffffff" : seg.isHovered ? "#ffffff" : "var(--bg-surface)"}
-                strokeWidth={seg.isSelected ? 3 : seg.isHovered ? 2 : 0.5}
-                style={{
-                  cursor: "pointer",
-                  transition: "opacity 0.2s ease, stroke-width 0.2s ease",
-                  opacity: grown ? 1 : 0,
-                  filter: seg.isSelected ? `drop-shadow(0 0 20px ${seg.color}88)` :
-                          seg.isHovered ? `drop-shadow(0 0 12px ${seg.color}55)` : "none",
-                }}
-                onMouseEnter={() => setHoveredIndex(seg.index)}
-                onMouseLeave={() => setHoveredIndex(null)}
-                onClick={() => onSegmentClick(seg.label)}
-              />
-              {seg.pct > 0.03 && (
-                <text
-                  x={seg.labelX}
-                  y={seg.labelY}
-                  textAnchor="middle"
-                  dominantBaseline="central"
-                  fontSize={seg.pct > 0.07 ? 11 : 9}
-                  fontWeight={seg.isSelected ? 700 : 600}
-                  fill="#ffffff"
-                  fontFamily={MONO}
-                  style={{
-                    pointerEvents: "none",
-                    transition: "all 0.2s ease",
-                    textShadow: "0 1px 8px rgba(0,0,0,0.9), 0 0 20px rgba(0,0,0,0.6)",
-                    opacity: grown ? 1 : 0,
-                  }}
-                >
-                  {Math.round(seg.pct * 100)}%
-                </text>
-              )}
-            </g>
+            <path
+              key={seg.label}
+              d={seg.pathData}
+              fill={seg.color}
+              stroke={seg.isSelected ? "#ffffff" : seg.isHovered ? "#ffffff" : "var(--bg-surface)"}
+              strokeWidth={seg.isSelected ? 3 : seg.isHovered ? 2 : 0.5}
+              style={{
+                cursor: "pointer",
+                transition: "opacity 0.2s ease, stroke-width 0.2s ease",
+                opacity: grown ? (seg.isHovered || seg.isSelected || hoveredIndex === null ? 1 : 0.55) : 0,
+              }}
+              onMouseEnter={() => setHoveredIndex(seg.index)}
+              onMouseLeave={() => setHoveredIndex(null)}
+              onClick={() => onSegmentClick(seg.label)}
+            />
           ))}
 
           <circle
@@ -342,31 +323,93 @@ function SubjectPieChart({ data, total, onSegmentClick, selectedSegment }) {
             stroke="var(--bg-border)"
             strokeWidth={1.5}
           />
-          <text
-            x={cx}
-            y={cy - 4}
-            textAnchor="middle"
-            dominantBaseline="central"
-            fontSize={16}
-            fontWeight={700}
-            fill="var(--text-primary)"
-            fontFamily={SERIF}
-          >
-            {total}
-          </text>
-          <text
-            x={cx}
-            y={cy + 14}
-            textAnchor="middle"
-            dominantBaseline="central"
-            fontSize={8}
-            fill="var(--text-muted)"
-            fontFamily={MONO}
-            letterSpacing="0.5"
-          >
-            TOTAL
-          </text>
+          {hoveredIndex !== null ? (
+            <>
+              <text
+                x={cx}
+                y={cy - 4}
+                textAnchor="middle"
+                dominantBaseline="central"
+                fontSize={14}
+                fontWeight={700}
+                fill={segments[hoveredIndex].color}
+                fontFamily={SERIF}
+              >
+                {Math.round(segments[hoveredIndex].pct * 100)}%
+              </text>
+              <text
+                x={cx}
+                y={cy + 14}
+                textAnchor="middle"
+                dominantBaseline="central"
+                fontSize={7.5}
+                fill="var(--text-muted)"
+                fontFamily={MONO}
+                letterSpacing="0.3"
+              >
+                {segments[hoveredIndex].label.length > 16
+                  ? `${segments[hoveredIndex].label.slice(0, 15)}…`
+                  : segments[hoveredIndex].label}
+              </text>
+            </>
+          ) : (
+            <>
+              <text
+                x={cx}
+                y={cy - 4}
+                textAnchor="middle"
+                dominantBaseline="central"
+                fontSize={16}
+                fontWeight={700}
+                fill="var(--text-primary)"
+                fontFamily={SERIF}
+              >
+                {total}
+              </text>
+              <text
+                x={cx}
+                y={cy + 14}
+                textAnchor="middle"
+                dominantBaseline="central"
+                fontSize={8}
+                fill="var(--text-muted)"
+                fontFamily={MONO}
+                letterSpacing="0.5"
+              >
+                TOTAL
+              </text>
+            </>
+          )}
         </svg>
+
+        {hoveredIndex !== null && (
+          <div
+            style={{
+              position: "absolute",
+              left: tooltipPos.x,
+              top: tooltipPos.y,
+              transform: "translate(-50%, -130%)",
+              background: "var(--bg-surface)",
+              border: `1px solid ${segments[hoveredIndex].color}`,
+              borderRadius: 8,
+              padding: "5px 10px",
+              fontSize: 11,
+              fontFamily: MONO,
+              pointerEvents: "none",
+              whiteSpace: "nowrap",
+              zIndex: 5,
+              display: "flex",
+              alignItems: "center",
+              gap: 6,
+            }}
+          >
+            <span style={{ width: 8, height: 8, borderRadius: 2, background: segments[hoveredIndex].color, flexShrink: 0 }} />
+            <span style={{ color: "var(--text-primary)", fontWeight: 600 }}>{segments[hoveredIndex].label}</span>
+            <span style={{ color: segments[hoveredIndex].color, fontWeight: 700 }}>
+              {Math.round(segments[hoveredIndex].pct * 100)}%
+            </span>
+          </div>
+        )}
       </div>
 
       <div style={{
@@ -419,8 +462,8 @@ function SubjectPieChart({ data, total, onSegmentClick, selectedSegment }) {
   );
 }
 
-// ─── Enhanced Data Table with More Filters ──────────────────────────────────
-function EnhancedDataTable({ data, total, viewType }) {
+// ─── Enhanced Data Table ─────────────────────────────────────────────────
+function EnhancedDataTable({ data, total, viewType, attempts }) {
   const [sortField, setSortField] = useState("count");
   const [sortDirection, setSortDirection] = useState("desc");
   const [searchTerm, setSearchTerm] = useState("");
@@ -428,6 +471,7 @@ function EnhancedDataTable({ data, total, viewType }) {
   const [rowsPerPage, setRowsPerPage] = useState(8);
   const [minAccuracy, setMinAccuracy] = useState(0);
   const [minAttempts, setMinAttempts] = useState(0);
+  const [activeLabel, setActiveLabel] = useState(null);
 
   const handleSort = (field) => {
     if (sortField === field) {
@@ -442,14 +486,12 @@ function EnhancedDataTable({ data, total, viewType }) {
   const filteredData = useMemo(() => {
     let result = data;
 
-    // Search filter
     if (searchTerm.trim()) {
       result = result.filter(d =>
         d.label.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
-    // Min accuracy filter
     if (minAccuracy > 0) {
       result = result.filter(d => {
         const attempted = d.correct + d.wrong;
@@ -459,7 +501,6 @@ function EnhancedDataTable({ data, total, viewType }) {
       });
     }
 
-    // Min attempts filter
     if (minAttempts > 0) {
       result = result.filter(d => d.count >= minAttempts);
     }
@@ -488,143 +529,137 @@ function EnhancedDataTable({ data, total, viewType }) {
     currentPage * rowsPerPage
   );
 
+  const hasActiveFilters = searchTerm.trim() || minAccuracy > 0 || minAttempts > 0;
+
+  const matchedAttempts = useMemo(() => {
+    if (!activeLabel || !attempts) return [];
+    const field = viewType === "Subject" ? "subject" : "topic";
+    return attempts.filter(a => (a[field] || "Miscellaneous") === activeLabel);
+  }, [attempts, activeLabel, viewType]);
+
   const SortableHeader = ({ field, label, align = "right" }) => (
     <th
       onClick={() => handleSort(field)}
       style={{
-        padding: "10px 12px",
-        fontSize: 11,
+        padding: "12px 14px",
+        fontSize: 10.5,
         fontFamily: MONO,
         fontWeight: 700,
-        color: "var(--text-muted)",
+        color: sortField === field ? "var(--text-primary)" : "var(--text-muted)",
         textTransform: "uppercase",
-        letterSpacing: 0.5,
+        letterSpacing: 0.6,
         textAlign: align,
         cursor: "pointer",
-        borderBottom: "2px solid var(--bg-border)",
         whiteSpace: "nowrap",
         transition: "color 0.2s ease",
         userSelect: "none",
       }}
     >
-      {label} {sortField === field ? (sortDirection === "asc" ? "↑" : "↓") : "↕"}
+      {label} <span style={{ opacity: sortField === field ? 1 : 0.35 }}>{sortField === field ? (sortDirection === "asc" ? "↑" : "↓") : "↕"}</span>
     </th>
   );
 
   return (
     <div style={{ width: "100%" }}>
-      {/* Filters */}
+      {/* ── Filter bar ── */}
+      <div style={{
+        display: "flex", alignItems: "center", gap: 8, marginBottom: 10,
+      }}>
+        <SlidersHorizontal size={13} style={{ color: "var(--text-muted)" }} />
+        <span style={{ fontSize: 10.5, fontFamily: MONO, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: 0.7 }}>
+          Filters
+        </span>
+        {hasActiveFilters && (
+          <button
+            onClick={() => { setSearchTerm(""); setMinAccuracy(0); setMinAttempts(0); setCurrentPage(1); }}
+            style={{
+              fontSize: 10, fontFamily: MONO, color: P.wrong.solid, background: "transparent",
+              border: "none", cursor: "pointer", padding: 0, marginLeft: 2, fontWeight: 600,
+            }}
+          >
+            Clear
+          </button>
+        )}
+      </div>
+
       <div style={{
         display: "grid",
-        gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
-        gap: 10,
-        marginBottom: 14,
-        padding: "14px 16px",
+        gridTemplateColumns: "repeat(auto-fit, minmax(190px, 1fr))",
+        gap: 12,
+        marginBottom: 18,
+        padding: "16px",
         background: "var(--bg-muted)",
-        borderRadius: 10,
+        borderRadius: 14,
         border: "1px solid var(--bg-border)",
       }}>
-        <div style={{ position: "relative" }}>
-          <Search size={14} style={{
-            position: "absolute",
-            left: 10,
-            top: "50%",
-            transform: "translateY(-50%)",
-            color: "var(--text-muted)",
-            opacity: 0.5,
-          }} />
+        <div>
+          <label style={{ display: "block", fontSize: 9.5, fontFamily: MONO, color: "var(--text-muted)", marginBottom: 6, fontWeight: 700, letterSpacing: 0.5, textTransform: "uppercase" }}>
+            Search {viewType}
+          </label>
+          <div style={{ position: "relative" }}>
+            <Search size={14} style={{
+              position: "absolute", left: 11, top: "50%", transform: "translateY(-50%)",
+              color: "var(--text-muted)", opacity: 0.6,
+            }} />
+            <input
+              value={searchTerm}
+              onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }}
+              placeholder={`e.g. ${data[0]?.label || viewType}`}
+              style={{
+                width: "100%", padding: "9px 12px 9px 34px", fontSize: 12.5, fontFamily: SANS,
+                background: "var(--bg-surface)", border: "1px solid var(--bg-border)",
+                borderRadius: 9, color: "var(--text-primary)", outline: "none",
+                boxSizing: "border-box", transition: "border-color 0.2s ease",
+              }}
+              onFocus={(e) => { e.currentTarget.style.borderColor = P.blue.solid; }}
+              onBlur={(e) => { e.currentTarget.style.borderColor = "var(--bg-border)"; }}
+            />
+          </div>
+        </div>
+
+        <div>
+          <label style={{ display: "block", fontSize: 9.5, fontFamily: MONO, color: "var(--text-muted)", marginBottom: 6, fontWeight: 700, letterSpacing: 0.5, textTransform: "uppercase" }}>
+            Min Accuracy
+          </label>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, background: "var(--bg-surface)", border: "1px solid var(--bg-border)", borderRadius: 9, padding: "0 12px" }}>
+            <input
+              type="number" min="0" max="100" value={minAccuracy}
+              onChange={(e) => { setMinAccuracy(Math.min(100, Math.max(0, Number(e.target.value) || 0))); setCurrentPage(1); }}
+              style={{
+                width: "100%", padding: "9px 0", fontSize: 12.5, fontFamily: MONO,
+                background: "transparent", border: "none", color: "var(--text-primary)", outline: "none",
+              }}
+            />
+            <span style={{ fontSize: 11, color: "var(--text-muted)", fontFamily: MONO, flexShrink: 0 }}>%</span>
+          </div>
+        </div>
+
+        <div>
+          <label style={{ display: "block", fontSize: 9.5, fontFamily: MONO, color: "var(--text-muted)", marginBottom: 6, fontWeight: 700, letterSpacing: 0.5, textTransform: "uppercase" }}>
+            Min Questions
+          </label>
           <input
-            value={searchTerm}
-            onChange={(e) => {
-              setSearchTerm(e.target.value);
-              setCurrentPage(1);
-            }}
-            placeholder={`Search ${viewType.toLowerCase()}...`}
+            type="number" min="0" value={minAttempts}
+            onChange={(e) => { setMinAttempts(Math.max(0, Number(e.target.value) || 0)); setCurrentPage(1); }}
             style={{
-              width: "100%",
-              padding: "7px 10px 7px 32px",
-              fontSize: 12,
-              fontFamily: SANS,
-              background: "var(--bg-surface)",
-              border: "1px solid var(--bg-border)",
-              borderRadius: 8,
-              color: "var(--text-primary)",
-              outline: "none",
-              transition: "all 0.2s ease",
+              width: "100%", padding: "9px 12px", fontSize: 12.5, fontFamily: MONO,
+              background: "var(--bg-surface)", border: "1px solid var(--bg-border)",
+              borderRadius: 9, color: "var(--text-primary)", outline: "none", boxSizing: "border-box",
             }}
           />
         </div>
 
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <span style={{ fontSize: 10, color: "var(--text-muted)", fontFamily: MONO }}>Min Acc:</span>
-          <input
-            type="number"
-            min="0"
-            max="100"
-            value={minAccuracy}
-            onChange={(e) => {
-              setMinAccuracy(Math.min(100, Math.max(0, Number(e.target.value) || 0)));
-              setCurrentPage(1);
-            }}
-            style={{
-              width: 60,
-              padding: "6px 8px",
-              fontSize: 12,
-              fontFamily: MONO,
-              background: "var(--bg-surface)",
-              border: "1px solid var(--bg-border)",
-              borderRadius: 8,
-              color: "var(--text-primary)",
-              outline: "none",
-              textAlign: "center",
-            }}
-          />
-          <span style={{ fontSize: 10, color: "var(--text-muted)" }}>%</span>
-        </div>
-
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <span style={{ fontSize: 10, color: "var(--text-muted)", fontFamily: MONO }}>Min Qs:</span>
-          <input
-            type="number"
-            min="0"
-            value={minAttempts}
-            onChange={(e) => {
-              setMinAttempts(Math.max(0, Number(e.target.value) || 0));
-              setCurrentPage(1);
-            }}
-            style={{
-              width: 60,
-              padding: "6px 8px",
-              fontSize: 12,
-              fontFamily: MONO,
-              background: "var(--bg-surface)",
-              border: "1px solid var(--bg-border)",
-              borderRadius: 8,
-              color: "var(--text-primary)",
-              outline: "none",
-              textAlign: "center",
-            }}
-          />
-        </div>
-
-        <div style={{ display: "flex", alignItems: "center", gap: 8, justifyContent: "flex-end" }}>
-          <span style={{ fontSize: 10, color: "var(--text-muted)", fontFamily: MONO }}>Rows:</span>
+        <div>
+          <label style={{ display: "block", fontSize: 9.5, fontFamily: MONO, color: "var(--text-muted)", marginBottom: 6, fontWeight: 700, letterSpacing: 0.5, textTransform: "uppercase" }}>
+            Rows Per Page
+          </label>
           <select
             value={rowsPerPage}
-            onChange={(e) => {
-              setRowsPerPage(Number(e.target.value));
-              setCurrentPage(1);
-            }}
+            onChange={(e) => { setRowsPerPage(Number(e.target.value)); setCurrentPage(1); }}
             style={{
-              padding: "6px 10px",
-              fontSize: 11,
-              fontFamily: MONO,
-              background: "var(--bg-surface)",
-              border: "1px solid var(--bg-border)",
-              borderRadius: 8,
-              color: "var(--text-primary)",
-              outline: "none",
-              cursor: "pointer",
+              width: "100%", padding: "9px 12px", fontSize: 12.5, fontFamily: MONO,
+              background: "var(--bg-surface)", border: "1px solid var(--bg-border)",
+              borderRadius: 9, color: "var(--text-primary)", outline: "none", cursor: "pointer", boxSizing: "border-box",
             }}
           >
             <option value={5}>5</option>
@@ -636,51 +671,35 @@ function EnhancedDataTable({ data, total, viewType }) {
         </div>
       </div>
 
-      {/* Table */}
+      {/* ── Table ── */}
       <div style={{
         overflowX: "auto",
-        borderRadius: 12,
+        borderRadius: 14,
         border: "1px solid var(--bg-border)",
         background: "var(--bg-surface)",
       }}>
-        <table style={{
-          width: "100%",
-          borderCollapse: "collapse",
-          fontSize: 12,
-        }}>
+        <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12.5 }}>
           <thead>
-            <tr>
+            <tr style={{ background: "var(--bg-muted)" }}>
               <SortableHeader field="label" label={viewType} align="left" />
               <SortableHeader field="count" label="Total" />
-              <SortableHeader field="correct" label="✓" />
-              <SortableHeader field="wrong" label="✗" />
-              <SortableHeader field="skipped" label="⊘" />
+              <SortableHeader field="correct" label="Correct" />
+              <SortableHeader field="wrong" label="Wrong" />
+              <SortableHeader field="skipped" label="Skipped" />
               <th style={{
-                padding: "10px 12px",
-                fontSize: 11,
-                fontFamily: MONO,
-                fontWeight: 700,
-                color: "var(--text-muted)",
-                textTransform: "uppercase",
-                letterSpacing: 0.5,
-                textAlign: "right",
-                borderBottom: "2px solid var(--bg-border)",
-                whiteSpace: "nowrap",
+                padding: "12px 14px", fontSize: 10.5, fontFamily: MONO, fontWeight: 700,
+                color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: 0.6,
+                textAlign: "right", whiteSpace: "nowrap",
               }}>
                 Accuracy
               </th>
+              <th style={{ width: 28 }} />
             </tr>
           </thead>
           <tbody>
             {paginatedData.length === 0 ? (
               <tr>
-                <td colSpan={6} style={{
-                  padding: "32px",
-                  textAlign: "center",
-                  color: "var(--text-muted)",
-                  fontFamily: MONO,
-                  fontSize: 12,
-                }}>
+                <td colSpan={7} style={{ padding: "36px", textAlign: "center", color: "var(--text-muted)", fontFamily: MONO, fontSize: 12 }}>
                   No {viewType.toLowerCase()}s match your filters
                 </td>
               </tr>
@@ -694,81 +713,49 @@ function EnhancedDataTable({ data, total, viewType }) {
                 return (
                   <tr
                     key={d.label}
+                    onClick={() => setActiveLabel(d.label)}
                     style={{
-                      borderBottom: i < paginatedData.length - 1 ? "1px solid var(--bg-border)" : "none",
+                      borderTop: "1px solid var(--bg-border)",
+                      background: i % 2 === 1 ? "var(--bg-muted)" : "transparent",
+                      cursor: "pointer",
                       transition: "background 0.15s ease",
                     }}
-                    onMouseEnter={(e) => e.currentTarget.style.background = "var(--bg-muted)"}
-                    onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}
+                    onMouseEnter={(e) => e.currentTarget.style.background = `${P.blue.solid}10`}
+                    onMouseLeave={(e) => e.currentTarget.style.background = i % 2 === 1 ? "var(--bg-muted)" : "transparent"}
                   >
-                    <td style={{
-                      padding: "10px 12px",
-                      color: "var(--text-primary)",
-                      fontWeight: 500,
-                      fontSize: 12,
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 8,
-                    }}>
-                      <span style={{
-                        width: 10,
-                        height: 10,
-                        borderRadius: 4,
-                        background: color,
-                        flexShrink: 0,
-                        display: "inline-block",
-                      }} />
-                      <span style={{ wordBreak: "break-word" }}>{d.label}</span>
+                    <td style={{ padding: "11px 14px", color: "var(--text-primary)", fontWeight: 600, fontSize: 12.5 }}>
+                      <span style={{ display: "flex", alignItems: "center", gap: 9 }}>
+                        <span style={{ width: 9, height: 9, borderRadius: 3, background: color, flexShrink: 0, display: "inline-block" }} />
+                        <span style={{ wordBreak: "break-word" }}>{d.label}</span>
+                      </span>
                     </td>
-                    <td style={{
-                      padding: "10px 12px",
-                      textAlign: "right",
-                      fontFamily: MONO,
-                      color: "var(--text-secondary)",
-                      fontSize: 12,
-                      fontWeight: 600,
-                    }}>
+                    <td style={{ padding: "11px 14px", textAlign: "right", fontFamily: MONO, color: "var(--text-secondary)", fontWeight: 600 }}>
                       {d.count}
                     </td>
-                    <td style={{
-                      padding: "10px 12px",
-                      textAlign: "right",
-                      fontFamily: MONO,
-                      color: P.correct.solid,
-                      fontWeight: 600,
-                      fontSize: 12,
-                    }}>
+                    <td style={{ padding: "11px 14px", textAlign: "right", fontFamily: MONO, color: P.correct.solid, fontWeight: 600 }}>
                       {d.correct}
                     </td>
-                    <td style={{
-                      padding: "10px 12px",
-                      textAlign: "right",
-                      fontFamily: MONO,
-                      color: P.wrong.solid,
-                      fontWeight: 600,
-                      fontSize: 12,
-                    }}>
+                    <td style={{ padding: "11px 14px", textAlign: "right", fontFamily: MONO, color: P.wrong.solid, fontWeight: 600 }}>
                       {d.wrong}
                     </td>
-                    <td style={{
-                      padding: "10px 12px",
-                      textAlign: "right",
-                      fontFamily: MONO,
-                      color: P.skipped.solid,
-                      fontWeight: 600,
-                      fontSize: 12,
-                    }}>
+                    <td style={{ padding: "11px 14px", textAlign: "right", fontFamily: MONO, color: P.skipped.solid, fontWeight: 600 }}>
                       {d.skipped}
                     </td>
-                    <td style={{
-                      padding: "10px 12px",
-                      textAlign: "right",
-                      fontFamily: MONO,
-                      fontWeight: 700,
-                      color: accColor,
-                      fontSize: 12,
-                    }}>
-                      {attempted > 0 ? `${acc}%` : "—"}
+                    <td style={{ padding: "11px 14px", textAlign: "right" }}>
+                      {attempted > 0 ? (
+                        <span style={{
+                          display: "inline-block", padding: "3px 10px", borderRadius: 20,
+                          fontFamily: MONO, fontWeight: 700, fontSize: 11.5,
+                          color: accColor, background: `${accColor}18`,
+                        }}>
+                          {acc}%
+                        </span>
+                      ) : (
+                        <span style={{ color: "var(--text-muted)", fontFamily: MONO, fontSize: 11.5 }}>—</span>
+                      )}
+                    </td>
+                    <td style={{ padding: "11px 10px", textAlign: "right" }}>
+                      <ArrowRight size={13} style={{ color: "var(--text-muted)", opacity: 0.5 }} />
                     </td>
                   </tr>
                 );
@@ -778,21 +765,16 @@ function EnhancedDataTable({ data, total, viewType }) {
         </table>
       </div>
 
+      {paginatedData.length > 0 && (
+        <div style={{ fontSize: 10.5, fontFamily: MONO, color: "var(--text-muted)", marginTop: 10, opacity: 0.75 }}>
+          Click any row to view all its questions
+        </div>
+      )}
+
       {/* Pagination */}
       {totalPages > 1 && (
-        <div style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginTop: 12,
-          flexWrap: "wrap",
-          gap: 8,
-        }}>
-          <span style={{
-            fontSize: 10.5,
-            fontFamily: MONO,
-            color: "var(--text-muted)",
-          }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 14, flexWrap: "wrap", gap: 8 }}>
+          <span style={{ fontSize: 10.5, fontFamily: MONO, color: "var(--text-muted)" }}>
             {sortedData.length} {viewType.toLowerCase()}s · Page {currentPage} of {totalPages}
           </span>
           <div style={{ display: "flex", gap: 6 }}>
@@ -800,16 +782,11 @@ function EnhancedDataTable({ data, total, viewType }) {
               onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
               disabled={currentPage === 1}
               style={{
-                padding: "6px 14px",
-                fontSize: 10.5,
-                fontFamily: MONO,
-                background: "var(--bg-muted)",
-                border: "1px solid var(--bg-border)",
-                borderRadius: 8,
+                padding: "6px 14px", fontSize: 10.5, fontFamily: MONO, background: "var(--bg-muted)",
+                border: "1px solid var(--bg-border)", borderRadius: 8,
                 color: currentPage === 1 ? "var(--text-muted)" : "var(--text-primary)",
                 cursor: currentPage === 1 ? "default" : "pointer",
-                opacity: currentPage === 1 ? 0.4 : 1,
-                transition: "all 0.2s ease",
+                opacity: currentPage === 1 ? 0.4 : 1, transition: "all 0.2s ease",
               }}
             >
               Previous
@@ -818,16 +795,11 @@ function EnhancedDataTable({ data, total, viewType }) {
               onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
               disabled={currentPage === totalPages}
               style={{
-                padding: "6px 14px",
-                fontSize: 10.5,
-                fontFamily: MONO,
-                background: "var(--bg-muted)",
-                border: "1px solid var(--bg-border)",
-                borderRadius: 8,
+                padding: "6px 14px", fontSize: 10.5, fontFamily: MONO, background: "var(--bg-muted)",
+                border: "1px solid var(--bg-border)", borderRadius: 8,
                 color: currentPage === totalPages ? "var(--text-muted)" : "var(--text-primary)",
                 cursor: currentPage === totalPages ? "default" : "pointer",
-                opacity: currentPage === totalPages ? 0.4 : 1,
-                transition: "all 0.2s ease",
+                opacity: currentPage === totalPages ? 0.4 : 1, transition: "all 0.2s ease",
               }}
             >
               Next
@@ -835,6 +807,139 @@ function EnhancedDataTable({ data, total, viewType }) {
           </div>
         </div>
       )}
+
+      {activeLabel && (
+        <QuestionsModal
+          label={activeLabel}
+          viewType={viewType}
+          questions={matchedAttempts}
+          onClose={() => setActiveLabel(null)}
+        />
+      )}
+    </div>
+  );
+}
+
+// ─── Questions Modal ─────────────────────────────────────────────────────
+function QuestionsModal({ label, viewType, questions, onClose }) {
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = ""; };
+  }, []);
+
+  const sorted = useMemo(() => {
+    return [...questions].sort((a, b) => {
+      const at = a.attemptedAt ? new Date(a.attemptedAt).getTime() : 0;
+      const bt = b.attemptedAt ? new Date(b.attemptedAt).getTime() : 0;
+      return bt - at;
+    });
+  }, [questions]);
+
+  const visible = sorted.slice(0, 100);
+  const localDiffColor = { Easy: P.correct.solid, Medium: P.gold.solid, Hard: P.wrong.solid };
+  const resultColorFor = (r) => r === "correct" ? P.correct.solid : r === "wrong" ? P.wrong.solid : P.skipped.solid;
+  const resultIconFor = (r) => r === "correct" ? "✓" : r === "wrong" ? "✗" : "⊘";
+
+  return (
+    <div
+      onClick={onClose}
+      style={{
+        position: "fixed", inset: 0, background: "rgba(0,0,0,0.55)",
+        display: "flex", alignItems: "center", justifyContent: "center",
+        zIndex: 100, padding: 18,
+      }}
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        style={{
+          width: "100%", maxWidth: 760, maxHeight: "82vh",
+          background: "var(--bg-surface)", border: "1px solid var(--bg-border)",
+          borderRadius: 18, display: "flex", flexDirection: "column", overflow: "hidden",
+        }}
+      >
+        {/* Header */}
+        <div style={{
+          display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12,
+          padding: "18px 22px", borderBottom: "1px solid var(--bg-border)", flexShrink: 0,
+        }}>
+          <div>
+            <div style={{ fontSize: 9.5, fontFamily: MONO, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: 0.7, fontWeight: 700, marginBottom: 3 }}>
+              {viewType}
+            </div>
+            <div style={{ fontSize: 17, fontWeight: 700, fontFamily: SERIF, color: "var(--text-primary)" }}>
+              {label}
+            </div>
+          </div>
+          <button
+            onClick={onClose}
+            style={{
+              display: "flex", alignItems: "center", justifyContent: "center",
+              width: 32, height: 32, borderRadius: 10, border: "1px solid var(--bg-border)",
+              background: "var(--bg-muted)", color: "var(--text-muted)", cursor: "pointer", flexShrink: 0,
+            }}
+          >
+            <X size={15} />
+          </button>
+        </div>
+
+        <div style={{ padding: "10px 22px", fontSize: 11, fontFamily: MONO, color: "var(--text-muted)", flexShrink: 0 }}>
+          {sorted.length} question{sorted.length === 1 ? "" : "s"} attempted from this {viewType.toLowerCase()}
+        </div>
+
+        {/* Table */}
+        <div style={{ overflowY: "auto", flex: 1, padding: "0 22px 20px" }}>
+          {visible.length === 0 ? (
+            <div style={{ padding: "30px", textAlign: "center", color: "var(--text-muted)", fontFamily: MONO, fontSize: 12 }}>
+              No questions found.
+            </div>
+          ) : (
+            <div style={{ borderRadius: 12, border: "1px solid var(--bg-border)", overflow: "hidden" }}>
+              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
+                <thead>
+                  <tr style={{ background: "var(--bg-muted)" }}>
+                    <th style={{ padding: "10px 12px", textAlign: "left", fontSize: 10, fontFamily: MONO, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: 0.5 }}>Question</th>
+                    <th style={{ padding: "10px 12px", textAlign: "center", fontSize: 10, fontFamily: MONO, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: 0.5, whiteSpace: "nowrap" }}>Difficulty</th>
+                    <th style={{ padding: "10px 12px", textAlign: "center", fontSize: 10, fontFamily: MONO, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: 0.5, whiteSpace: "nowrap" }}>Result</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {visible.map((a, i) => {
+                    const rc = resultColorFor(a.result);
+                    const dc = localDiffColor[a.difficulty] || P.gold.solid;
+                    return (
+                      <tr key={a.id || i} style={{ borderTop: "1px solid var(--bg-border)", background: i % 2 === 1 ? "var(--bg-muted)" : "transparent" }}>
+                        <td style={{ padding: "10px 12px", color: "var(--text-primary)", lineHeight: 1.55, fontWeight: 500 }}>
+                          {a.questionText?.slice(0, 180)}{a.questionText?.length > 180 ? "…" : ""}
+                          {a.year && (
+                            <span style={{ marginLeft: 8, fontSize: 10, color: "var(--text-muted)", fontFamily: MONO }}>· {a.year}</span>
+                          )}
+                        </td>
+                        <td style={{ padding: "10px 12px", textAlign: "center", whiteSpace: "nowrap" }}>
+                          {a.difficulty && (
+                            <span style={{ fontSize: 10, padding: "3px 9px", borderRadius: 20, background: `${dc}18`, color: dc, fontFamily: MONO, fontWeight: 600 }}>
+                              {a.difficulty}
+                            </span>
+                          )}
+                        </td>
+                        <td style={{ padding: "10px 12px", textAlign: "center", whiteSpace: "nowrap" }}>
+                          <span style={{ fontSize: 10, padding: "3px 9px", borderRadius: 20, background: `${rc}18`, color: rc, fontFamily: MONO, fontWeight: 700 }}>
+                            {resultIconFor(a.result)} {a.result}
+                          </span>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
+          {sorted.length > 100 && (
+            <div style={{ textAlign: "center", fontSize: 10.5, color: "var(--text-muted)", fontFamily: MONO, padding: "12px 0 0" }}>
+              Showing first 100 of {sorted.length} questions.
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
@@ -964,10 +1069,11 @@ function SectionCard({ title, accent, right, note, children, style = {} }) {
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, marginBottom: note ? 8 : 20, flexWrap: "wrap" }}>
           {title && (
             <div style={{
-              fontSize: 15, fontWeight: 600, color: "var(--text-primary)",
+              fontSize: 16, fontWeight: 700, color: "var(--text-primary)",
               fontFamily: SERIF, display: "flex", alignItems: "center", gap: 10,
+              letterSpacing: "-0.1px",
             }}>
-              {accent && <span style={{ width: 4, height: 16, borderRadius: 2, background: accent, display: "inline-block", boxShadow: `0 0 8px ${accent}80` }} />}
+              {accent && <span style={{ width: 4, height: 17, borderRadius: 2, background: accent, display: "inline-block" }} />}
               {title}
             </div>
           )}
@@ -996,62 +1102,11 @@ function LegendDot({ color, label }) {
   );
 }
 
-// ─── Filter Chip ──────────────────────────────────────────────────────────
-function Chip({ label, active, color, onClick }) {
-  return (
-    <button
-      onClick={onClick}
-      style={{
-        fontSize: 11, padding: "6px 14px", borderRadius: 20, cursor: "pointer",
-        fontFamily: MONO, fontWeight: active ? 700 : 500, whiteSpace: "nowrap",
-        transition: "all 0.2s ease",
-        border: active ? `1px solid ${color}` : "1px solid var(--bg-border)",
-        background: active ? `${color}18` : "transparent",
-        color: active ? color : "var(--text-muted)",
-        boxShadow: active ? `0 2px 8px ${color}25` : "none",
-      }}
-    >
-      {label}
-    </button>
-  );
-}
-
-function FilterRow({ rowLabel, options, active, onPick, colorFor }) {
-  return (
-    <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
-      <span style={{
-        fontSize: 10, color: "var(--text-muted)", fontFamily: MONO, minWidth: 60,
-        fontWeight: 700, textTransform: "uppercase", letterSpacing: 0.8,
-      }}>
-        {rowLabel}
-      </span>
-      {options.map((opt) => (
-        <Chip
-          key={opt}
-          label={opt}
-          active={active === opt}
-          color={opt === "All" ? P.purple.solid : (colorFor ? colorFor(opt) : P.purple.solid)}
-          onClick={() => onPick(opt)}
-        />
-      ))}
-    </div>
-  );
-}
-
 // ─── Main Component ──────────────────────────────────────────────────────
 export default function QuestionStats() {
   const { attempts, clearAttempts } = useQuestionAttempts();
-  const [showLog, setShowLog] = useState(false);
   const [selectedSegment, setSelectedSegment] = useState(null);
   const [viewMode, setViewMode] = useState("subjects");
-
-  // ── Attempt Log filters ──
-  const [sourceFilter, setSourceFilter] = useState("All");
-  const [paperFilter, setPaperFilter] = useState("All");
-  const [resultFilter, setResultFilter] = useState("All");
-  const [diffFilter, setDiffFilter] = useState("All");
-  const [subjectFilter, setSubjectFilter] = useState("All");
-  const [search, setSearch] = useState("");
 
   // ── derived stats ──
   const total = attempts.length;
@@ -1104,7 +1159,7 @@ export default function QuestionStats() {
   const subjectData = useMemo(() => {
     const map = {};
     attempts.forEach(a => {
-      const s = a.subject || "Unknown";
+      const s = a.subject || "Miscellaneous";
       if (!map[s]) map[s] = { correct: 0, wrong: 0, skipped: 0 };
       if (a.result === "correct") map[s].correct++;
       else if (a.result === "wrong") map[s].wrong++;
@@ -1122,7 +1177,7 @@ export default function QuestionStats() {
   const topicData = useMemo(() => {
     const map = {};
     attempts.forEach(a => {
-      const t = a.topic || "Unknown";
+      const t = a.topic || "Miscellaneous";
       if (!map[t]) map[t] = { correct: 0, wrong: 0, skipped: 0 };
       if (a.result === "correct") map[t].correct++;
       else if (a.result === "wrong") map[t].wrong++;
@@ -1139,30 +1194,6 @@ export default function QuestionStats() {
 
   const currentData = viewMode === "subjects" ? subjectData : topicData;
   const currentLabel = viewMode === "subjects" ? "Subject" : "Topic";
-
-  const subjectOptions = useMemo(() => ["All", ...new Set(attempts.map(a => a.subject).filter(Boolean))], [attempts]);
-  const paperOptions = useMemo(() => ["All", ...new Set(attempts.map(a => a.paper).filter(Boolean))], [attempts]);
-
-  const filteredLog = useMemo(() => {
-    return attempts.filter(a => {
-      if (sourceFilter !== "All") {
-        const src = a.source === "Test" ? "Test" : "PYQ";
-        if (src !== sourceFilter) return false;
-      }
-      if (paperFilter !== "All" && a.paper !== paperFilter) return false;
-      if (resultFilter !== "All" && a.result !== resultFilter) return false;
-      if (diffFilter !== "All" && (a.difficulty || "Medium") !== diffFilter) return false;
-      if (subjectFilter !== "All" && a.subject !== subjectFilter) return false;
-      if (search.trim()) {
-        const s = search.trim().toLowerCase();
-        const hay = `${a.questionText || ""} ${a.topic || ""} ${a.subject || ""} ${a.testTitle || ""}`.toLowerCase();
-        if (!hay.includes(s)) return false;
-      }
-      return true;
-    });
-  }, [attempts, sourceFilter, paperFilter, resultFilter, diffFilter, subjectFilter, search]);
-
-  const visibleLog = filteredLog.slice(0, 60);
 
   // ── Empty state ──
   if (total === 0) {
@@ -1185,7 +1216,6 @@ export default function QuestionStats() {
 
   const diffOrder = ["Easy", "Medium", "Hard"];
   const diffDotColor = { Easy: P.correct.solid, Medium: P.gold.solid, Hard: P.wrong.solid };
-  const resultDotColor = { correct: P.correct.solid, wrong: P.wrong.solid, skipped: P.skipped.solid };
 
   return (
     <div style={{ fontFamily: SANS, width: "100%", color: "var(--text-primary)" }}>
@@ -1193,10 +1223,10 @@ export default function QuestionStats() {
       {/* ── Header ── */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 18, flexWrap: "wrap", gap: 12 }}>
         <div>
-          <div style={{ fontSize: 30, fontWeight: 600, fontFamily: SERIF, lineHeight: 1.15 }}>
+          <div style={{ fontSize: 32, fontWeight: 700, fontFamily: SERIF, lineHeight: 1.15, letterSpacing: "-0.3px" }}>
             Practice Analytics
           </div>
-          <div style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 6, fontFamily: MONO }}>
+          <div style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 7, fontFamily: MONO, letterSpacing: 0.2 }}>
             {total} attempts tracked · PYQs + all test series
           </div>
         </div>
@@ -1334,8 +1364,8 @@ export default function QuestionStats() {
               ? `${subjectData.length} subjects · ${total} total Qs`
               : `${topicData.length} topics · ${total} total Qs`}
             note={viewMode === "subjects"
-              ? "Click a pie segment to highlight it · Table shows detailed subject performance"
-              : "Detailed topic-wise breakdown with advanced filters"}
+              ? "Click a pie segment to highlight it · click a table row to view its questions"
+              : "Click any row to view all questions from that topic"}
           >
             {/* View toggle */}
             <div style={{
@@ -1413,6 +1443,7 @@ export default function QuestionStats() {
                     data={subjectData}
                     total={total}
                     viewType="Subject"
+                    attempts={attempts}
                   />
                 </div>
               </div>
@@ -1421,179 +1452,12 @@ export default function QuestionStats() {
                 data={topicData}
                 total={total}
                 viewType="Topic"
+                attempts={attempts}
               />
             )}
           </SectionCard>
         </div>
       )}
-
-      {/* ── Attempt Log ── */}
-      <SectionCard title="Attempt Log" accent={P.blue.solid}>
-
-        {/* Filters */}
-        <div style={{
-          display: "flex", flexDirection: "column", gap: 12, marginBottom: 20,
-          padding: "16px 18px", background: "var(--bg-muted)", borderRadius: 12,
-          border: "1px solid var(--bg-border)",
-        }}>
-          <FilterRow
-            rowLabel="Source"
-            options={["All", "PYQ", "Test"]}
-            active={sourceFilter}
-            onPick={setSourceFilter}
-            colorFor={(o) => (o === "Test" ? P.gold.solid : P.blue.solid)}
-          />
-
-          {paperOptions.length > 1 && (
-            <FilterRow
-              rowLabel="Paper"
-              options={paperOptions}
-              active={paperFilter}
-              onPick={setPaperFilter}
-              colorFor={() => P.indigo.solid}
-            />
-          )}
-
-          <FilterRow
-            rowLabel="Result"
-            options={["All", "correct", "wrong", "skipped"]}
-            active={resultFilter}
-            onPick={setResultFilter}
-            colorFor={(o) => resultDotColor[o] || P.purple.solid}
-          />
-
-          <FilterRow
-            rowLabel="Difficulty"
-            options={["All", "Easy", "Medium", "Hard"]}
-            active={diffFilter}
-            onPick={setDiffFilter}
-            colorFor={(o) => diffDotColor[o] || P.purple.solid}
-          />
-
-          {subjectOptions.length > 1 && (
-            <FilterRow
-              rowLabel="Subject"
-              options={subjectOptions}
-              active={subjectFilter}
-              onPick={setSubjectFilter}
-              colorFor={() => P.gold.solid}
-            />
-          )}
-
-          <div style={{ position: "relative", marginTop: 4 }}>
-            <input
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search questions, topics, test titles…"
-              style={{
-                width: "100%", padding: "10px 14px 10px 38px", fontSize: 13,
-                background: "var(--bg-surface)", border: "1px solid var(--bg-border)",
-                borderRadius: 10, color: "var(--text-primary)", outline: "none",
-                fontFamily: SANS, boxSizing: "border-box", transition: "all 0.2s ease",
-              }}
-              onFocus={(e) => { e.currentTarget.style.borderColor = P.correct.solid; e.currentTarget.style.boxShadow = `0 0 0 1px ${P.correct.dim}`; }}
-              onBlur={(e) => { e.currentTarget.style.borderColor = "var(--bg-border)"; e.currentTarget.style.boxShadow = "none"; }}
-            />
-            <span style={{ position: "absolute", left: 13, top: "50%", transform: "translateY(-50%)", color: "var(--text-muted)", pointerEvents: "none", fontSize: 15 }}>
-              ⌕
-            </span>
-          </div>
-        </div>
-
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 10, marginBottom: 14 }}>
-          <span style={{ fontSize: 12, color: "var(--text-muted)", fontFamily: MONO }}>
-            {filteredLog.length} of {total} attempts match
-          </span>
-          <button
-            onClick={() => setShowLog(v => !v)}
-            style={{
-              fontSize: 11, padding: "6px 16px", borderRadius: 10, cursor: "pointer",
-              border: "1px solid var(--bg-border)", background: "var(--bg-surface)",
-              color: "var(--text-secondary)", fontFamily: MONO, fontWeight: 500,
-              transition: "all 0.2s",
-            }}
-          >
-            {showLog ? "▲ Hide" : "▼ Show"} ({Math.min(filteredLog.length, 60)})
-          </button>
-        </div>
-
-        {showLog && (
-          <div style={{ display: "flex", flexDirection: "column", gap: 10, maxHeight: 500, overflowY: "auto", padding: "2px 0" }}>
-            {visibleLog.length === 0 ? (
-              <div style={{ padding: "24px", textAlign: "center", color: "var(--text-muted)", fontSize: 12, fontFamily: MONO }}>
-                No attempts match these filters.
-              </div>
-            ) : visibleLog.map((a, i) => {
-              const resultColor = a.result === "correct" ? P.correct.solid : a.result === "wrong" ? P.wrong.solid : P.skipped.solid;
-              const resultIcon = a.result === "correct" ? "✓" : a.result === "wrong" ? "✗" : "⊘";
-              return (
-                <div key={a.id || i} style={{
-                  background: "var(--bg-muted)", borderRadius: 10, padding: "12px 16px",
-                  borderLeft: `3px solid ${resultColor}`,
-                  transition: "transform 0.15s",
-                }}
-                  onMouseEnter={e => e.currentTarget.style.transform = "translateX(3px)"}
-                  onMouseLeave={e => e.currentTarget.style.transform = "translateX(0)"}
-                >
-                  <div style={{ fontSize: 13, fontWeight: 500, color: "var(--text-primary)", lineHeight: 1.6, marginBottom: 6, wordBreak: "break-word" }}>
-                    {a.questionText?.slice(0, 160)}{a.questionText?.length > 160 ? "…" : ""}
-                  </div>
-                  <div style={{ display: "flex", gap: 6, flexWrap: "wrap", alignItems: "center" }}>
-                    {a.source && (
-                      <span style={{ fontSize: 10, padding: "2px 10px", borderRadius: 20, background: a.source === "Test" ? "rgba(251,191,36,0.12)" : "rgba(96,165,250,0.12)", color: a.source === "Test" ? P.gold.solid : P.blue.solid, border: `1px solid ${a.source === "Test" ? P.gold.solid : P.blue.solid}30`, fontFamily: MONO, fontWeight: 600 }}>
-                        {a.source === "Test" ? "Test Series" : "PYQ"}
-                      </span>
-                    )}
-                    {a.paper && (
-                      <span style={{ fontSize: 10, padding: "2px 10px", borderRadius: 20, background: "var(--bg-surface)", color: P.indigo.solid, border: "1px solid var(--bg-border)", fontFamily: MONO, fontWeight: 600 }}>
-                        {a.paper}
-                      </span>
-                    )}
-                    {a.subject && (
-                      <span style={{ fontSize: 10, padding: "2px 10px", borderRadius: 20, background: "var(--bg-surface)", color: "var(--text-muted)", border: "1px solid var(--bg-border)", fontFamily: MONO }}>
-                        {a.subject}
-                      </span>
-                    )}
-                    {a.topic && (
-                      <span style={{ fontSize: 10, padding: "2px 10px", borderRadius: 20, background: "var(--bg-surface)", color: "var(--text-muted)", border: "1px solid var(--bg-border)", fontFamily: MONO }}>
-                        {a.topic}
-                      </span>
-                    )}
-                    {a.year && (
-                      <span style={{ fontSize: 10, padding: "2px 10px", borderRadius: 20, background: "var(--bg-surface)", color: "var(--text-muted)", border: "1px solid var(--bg-border)", fontFamily: MONO, fontWeight: 600 }}>
-                        {a.year}
-                      </span>
-                    )}
-                    {a.difficulty && (
-                      <span style={{ fontSize: 10, padding: "2px 10px", borderRadius: 20, background: `${diffDotColor[a.difficulty] || P.gold.solid}18`, color: diffDotColor[a.difficulty] || P.gold.solid, border: `1px solid ${diffDotColor[a.difficulty] || P.gold.solid}30`, fontFamily: MONO, fontWeight: 600 }}>
-                        {a.difficulty}
-                      </span>
-                    )}
-                    <span style={{ fontSize: 10, padding: "2px 10px", borderRadius: 20, background: `${resultColor}18`, color: resultColor, border: `1px solid ${resultColor}30`, fontFamily: MONO, fontWeight: 700, display: "flex", alignItems: "center", gap: 3 }}>
-                      {resultIcon} {a.result}
-                    </span>
-                    {a.attemptedAt && (
-                      <span style={{ marginLeft: "auto", fontSize: 10, color: "var(--text-muted)", fontFamily: MONO, opacity: 0.7 }}>
-                        {new Date(a.attemptedAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}
-                      </span>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
-            {filteredLog.length > 60 && (
-              <div style={{ textAlign: "center", fontSize: 11, color: "var(--text-muted)", fontFamily: MONO, padding: "8px 0" }}>
-                Showing first 60 of {filteredLog.length} matches — narrow the filters to see more precisely.
-              </div>
-            )}
-          </div>
-        )}
-        {!showLog && (
-          <p style={{ fontSize: 11, color: "var(--text-muted)", fontFamily: MONO, textAlign: "center", margin: 0 }}>
-            Click "Show" to browse individual attempts.
-          </p>
-        )}
-      </SectionCard>
     </div>
   );
 }
