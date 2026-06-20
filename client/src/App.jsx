@@ -17,8 +17,9 @@ import ProfilePage from "./pages/ProfilePage";
 import PWAInstallPrompt from "./components/PWAInstallPrompt";
 import timerStore from "./hooks/timerStore";
 import BottomNav from "./components/layout/BottomNav.jsx";
-import AIMentorWorkspace from './pages/AIMentorWorkspace.jsx'
+import AIMentorWorkspace from "./pages/AIMentorWorkspace.jsx";
 import AIMentorChat from "./pages/AI/AIMentorChat";
+
 // ─── Splash Screen ────────────────────────────────────────────────────────────
 function SplashScreen() {
   return (
@@ -131,7 +132,7 @@ export default function App() {
   const [activeView, setActiveView] = useState("dashboard");
   const [workspaceQuestion, setWorkspaceQuestion] = useState(null);
   const [previousView, setPreviousView] = useState("dashboard");
-  const [aiMentorPrefill, setAiMentorPrefill] = useState("");   // ← quote prefill
+  const [aiMentorPrefill, setAiMentorPrefill] = useState(""); // ← quote prefill
   const [theme, setTheme] = useState(() => {
     if (typeof window === "undefined") return "light";
     return localStorage.getItem("upsc-theme") || "light";
@@ -181,11 +182,14 @@ export default function App() {
   if (loading && !userData && (user || token)) return <LoadingScreen />;
 
   const userName = userData?.profile?.name || user?.name || "";
-  const isWorkspace =
-    activeView === "ai-mentor";
+  // The dedicated full-page AI Mentor workspace is its own self-contained
+  // screen (header, sidebar, chat). The floating chat bubble must NOT also
+  // render on top of it — that was stacking two separate mentor UIs and
+  // covering the workspace's own controls.
+  const isWorkspace = activeView === "ai-mentor";
+
   return (
     <div className="min-h-[100dvh]">
-
       {/* ── Desktop Sidebar ── */}
       <div className="hidden lg:block fixed top-0 left-0 h-screen z-30" style={{ width: "var(--sidebar-width, 14rem)" }}>
         <Sidebar
@@ -206,15 +210,15 @@ export default function App() {
       <main className="lg:ml-[var(--sidebar-width,14rem)] min-h-[100dvh]">
         <div className="flex min-h-[100dvh] flex-col">
           <div className="flex-1 pb-bottom-nav lg:pb-0">
-
-            {/* HeroBanner — no useNavigate needed, callback handled here */}
-         {!isWorkspace && (
-  <HeroBanner
-    examDate={userData?.profile?.examDate || null}
-    customQuote={userData?.profile?.quote || null}
-    onQuoteClick={handleQuoteClick}
-  />
-)}
+            {/* HeroBanner — hidden on the full-page AI Mentor workspace, which
+                owns its own header */}
+            {!isWorkspace && (
+              <HeroBanner
+                examDate={userData?.profile?.examDate || null}
+                customQuote={userData?.profile?.quote || null}
+                onQuoteClick={handleQuoteClick}
+              />
+            )}
 
             <ErrorBanner error={error} />
 
@@ -291,15 +295,19 @@ export default function App() {
                 />
               )}
             </div>
-<AIMentorChat
-  isLoggedIn={!!user && !!token}
-  compact={true}
-/>
+
             <PWAInstallPrompt />
           </div>
           {!isWorkspace && <Footer />}
         </div>
       </main>
+
+      {!isWorkspace && (
+        <AIMentorChat
+          isLoggedIn={!!user && !!token}
+          compact={true}
+        />
+      )}
 
       {/* ── Mobile Bottom Navigation ── */}
       <BottomNav
@@ -317,20 +325,4 @@ export default function App() {
       />
     </div>
   );
-}
-
-// ─── Lazy-import wrapper so AIMentorChat only loads when needed ───────────────
-import { lazy, Suspense } from "react";
-const AIMentorChatLazy = lazy(() => import("./pages/AI/AIMentorChat"));
-
-function AIMentorPage({ user, token, isLoggedIn, prefill, onClearPrefill }) {
-  return (
-    <Suspense fallback={<div className="flex items-center justify-center h-64"><div className="w-2 h-2 rounded-full bg-accent-gold animate-bounce" /></div>}>
-      <AIMentorChatLazy
-        isLoggedIn={isLoggedIn}
-        prefill={prefill}
-        onClearPrefill={onClearPrefill}
-      />
-    </Suspense>
-  );
-}
+      }
