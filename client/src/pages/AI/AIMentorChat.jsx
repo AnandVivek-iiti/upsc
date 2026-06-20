@@ -765,7 +765,7 @@ const ChatMessages = memo(function ChatMessages({
           </div>
           <div>
             <p className="text-[14px] font-bold text-text-primary">Ask your UPSC Mentor</p>
-            <p className="text-[11px] text-text-muted font-mono mt-1">Point-to-point answers. No padding.</p>
+            <p className="text-[11px] text-text-muted font-mono mt-1">Point-to-point answers.</p>
           </div>
           <div className="flex flex-col gap-2 w-full max-w-sm">
             {STARTER_QUESTIONS.slice(0, starterCount).map((q, i) => {
