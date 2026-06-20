@@ -1,5 +1,5 @@
-// ─── QuestionStats.jsx — mobile-safe (padding-trick) SVGs, zero shadows,
-// ─── pure-rectangle year bars, Result+Difficulty chip filters in BOTH tables ──
+// ─── QuestionStats.jsx — flat/no-shadow, mobile-safe pie, rectangle bars,
+// ─── chip filters (Result + Difficulty) built into BOTH the Subject and Topic tables ──
 
 import { useMemo, useState, useEffect, useRef } from "react";
 import {
@@ -53,7 +53,7 @@ function useGrow(delay = 80) {
   return grown;
 }
 
-// ─── Filled Donut Ring — mobile-safe square via padding-bottom trick, no shadow ──
+// ─── Filled Donut Ring (flat — no shadow) ─────────────────────────────────
 function FilledDonutRing({ correct, wrong, skipped, accuracy, size = 148 }) {
   const grown = useGrow(100);
   const total = correct + wrong + skipped || 1;
@@ -69,9 +69,9 @@ function FilledDonutRing({ correct, wrong, skipped, accuracy, size = 148 }) {
   ].filter(s => s.count > 0);
 
   return (
-    <div style={{ width: "100%", maxWidth: size, margin: "0 auto", position: "relative", flexShrink: 0, boxShadow: "none" }}>
+    <div style={{ width: "100%", maxWidth: size, margin: "0 auto", position: "relative", flexShrink: 0 }}>
       <div style={{ width: "100%", paddingBottom: "100%", position: "relative" }}>
-        <svg viewBox={`0 0 ${size} ${size}`} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", overflow: "visible", filter: "none", boxShadow: "none" }}>
+        <svg viewBox={`0 0 ${size} ${size}`} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", overflow: "visible" }}>
           <circle cx={cx} cy={cy} r={R} fill="none" stroke="var(--bg-muted)" strokeWidth={13} />
 
           {segments.map((seg) => {
@@ -133,14 +133,14 @@ function BreakdownRow({ color, label, pct, pctLabel, countLabel, delay = 0 }) {
           <span style={{ fontSize: 10.5, color: "var(--text-muted)" }}>{countLabel}</span>
         </span>
       </div>
-      <div style={{ height: 6, borderRadius: 4, background: "var(--bg-muted)", overflow: "hidden", boxShadow: "none" }}>
+      <div style={{ height: 6, borderRadius: 4, background: "var(--bg-muted)", overflow: "hidden" }}>
         <div style={{ height: "100%", width: grown ? `${pct}%` : "0%", background: color, borderRadius: 4, transition: "width 0.8s cubic-bezier(0.34,1.56,0.64,1)" }} />
       </div>
     </div>
   );
 }
 
-// ─── Subject Pie Chart — mobile-safe square, no glow/drop-shadow on hover ──
+// ─── Subject Pie Chart (flat, mobile-safe square, only active slice changes) ──
 function SubjectPieChart({ data, total, onSegmentClick, selectedSegment }) {
   const grown = useGrow(200);
   const [hoveredIndex, setHoveredIndex] = useState(null);
@@ -184,7 +184,7 @@ function SubjectPieChart({ data, total, onSegmentClick, selectedSegment }) {
       <div
         ref={wrapRef}
         onMouseMove={handleMove}
-        style={{ position: "relative", width: "100%", maxWidth: size, overflow: "visible", boxShadow: "none" }}
+        style={{ position: "relative", width: "100%", maxWidth: size, overflow: "visible" }}
       >
         <div style={{ width: "100%", paddingBottom: "100%", position: "relative" }}>
           <svg viewBox={`0 0 ${size} ${size}`} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", overflow: "visible" }}>
@@ -201,7 +201,6 @@ function SubjectPieChart({ data, total, onSegmentClick, selectedSegment }) {
                     cursor: "pointer",
                     transition: "filter 0.2s ease, stroke-width 0.2s ease, opacity 0.5s ease",
                     opacity: grown ? 1 : 0,
-                    // no drop-shadow — brightness/saturate only, this was the glow culprit
                     filter: active ? "brightness(1.18) saturate(1.1)" : "none",
                   }}
                   onMouseEnter={() => setHoveredIndex(seg.index)}
@@ -240,7 +239,6 @@ function SubjectPieChart({ data, total, onSegmentClick, selectedSegment }) {
             border: `1px solid ${segments[hoveredIndex].color}`, borderRadius: 8,
             padding: "5px 10px", fontSize: 12, fontFamily: MONO, pointerEvents: "none",
             whiteSpace: "nowrap", zIndex: 5, display: "flex", alignItems: "center", gap: 6,
-            boxShadow: "none",
           }}>
             <span style={{ width: 8, height: 8, borderRadius: 2, background: segments[hoveredIndex].color, flexShrink: 0 }} />
             <span style={{ color: "var(--text-primary)", fontWeight: 600 }}>{segments[hoveredIndex].label}</span>
@@ -272,7 +270,7 @@ function SubjectPieChart({ data, total, onSegmentClick, selectedSegment }) {
   );
 }
 
-// ─── Chip + FilterRow (used inside BOTH the Subject and Topic tables) ─────
+// ─── Chip + FilterRow (used inside both tables now) ───────────────────────
 function Chip({ label, active, color, onClick }) {
   return (
     <button
@@ -280,7 +278,7 @@ function Chip({ label, active, color, onClick }) {
       style={{
         fontSize: 11, padding: "5px 13px", borderRadius: 20, cursor: "pointer",
         fontFamily: MONO, fontWeight: active ? 700 : 500, whiteSpace: "nowrap",
-        transition: "all 0.2s ease", boxShadow: "none",
+        transition: "all 0.2s ease",
         border: active ? `1px solid ${color}` : "1px solid var(--bg-border)",
         background: active ? `${color}18` : "transparent",
         color: active ? color : "var(--text-muted)",
@@ -319,7 +317,7 @@ function aggregateBy(attempts, field) {
     .sort((a, b) => b.count - a.count);
 }
 
-// ─── Enhanced Data Table — Result + Difficulty chips live in BOTH tables ──
+// ─── Enhanced Data Table — Result + Difficulty chip filters live in BOTH tables ──
 function EnhancedDataTable({ attempts, field, viewType }) {
   const [sortField, setSortField] = useState("count");
   const [sortDirection, setSortDirection] = useState("desc");
@@ -399,18 +397,17 @@ function EnhancedDataTable({ attempts, field, viewType }) {
 
   return (
     <div style={{ width: "100%" }}>
-      {/* ── Chip filters: Result + Difficulty — present in this table no matter which tab calls it ── */}
+      {/* ── Chip filters: Result + Difficulty ── */}
       <div style={{
         display: "flex", flexDirection: "column", gap: 10, marginBottom: 12,
         padding: "12px 14px", background: "var(--bg-muted)", borderRadius: 12, border: "1px solid var(--bg-border)",
-        boxShadow: "none",
       }}>
         <FilterRow rowLabel="Result" options={["All", "correct", "wrong", "skipped"]} active={resultFilter} onPick={(v) => { setResultFilter(v); setCurrentPage(1); }} colorFor={(o) => resultDotColor[o]} />
         <FilterRow rowLabel="Difficulty" options={["All", "Easy", "Medium", "Hard"]} active={diffFilter} onPick={(v) => { setDiffFilter(v); setCurrentPage(1); }} colorFor={(o) => diffDotColor[o]} />
       </div>
 
       {/* ── Search + numeric filters + rows-per-page ── */}
-      <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 10, marginBottom: 14, padding: "12px 14px", background: "var(--bg-muted)", borderRadius: 12, border: "1px solid var(--bg-border)", boxShadow: "none" }}>
+      <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 10, marginBottom: 14, padding: "12px 14px", background: "var(--bg-muted)", borderRadius: 12, border: "1px solid var(--bg-border)" }}>
         <div style={{ position: "relative", flex: "1 1 160px", minWidth: 140 }}>
           <Search size={14} style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "var(--text-muted)", opacity: 0.6 }} />
           <input
@@ -441,7 +438,7 @@ function EnhancedDataTable({ attempts, field, viewType }) {
       </div>
 
       {/* ── Table ── */}
-      <div style={{ overflowX: "auto", borderRadius: 14, border: "1px solid var(--bg-border)", background: "var(--bg-surface)", boxShadow: "none" }}>
+      <div style={{ overflowX: "auto", borderRadius: 14, border: "1px solid var(--bg-border)", background: "var(--bg-surface)" }}>
         <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13.5, minWidth: 480 }}>
           <thead>
             <tr style={{ background: "var(--bg-muted)" }}>
@@ -539,13 +536,13 @@ function QuestionsModal({ label, viewType, questions, onClose }) {
 
   return (
     <div onClick={onClose} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.55)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 100, padding: 14 }}>
-      <div onClick={(e) => e.stopPropagation()} style={{ width: "100%", maxWidth: 760, maxHeight: "85vh", background: "var(--bg-surface)", border: "1px solid var(--bg-border)", borderRadius: 18, display: "flex", flexDirection: "column", overflow: "hidden", boxShadow: "none" }}>
+      <div onClick={(e) => e.stopPropagation()} style={{ width: "100%", maxWidth: 760, maxHeight: "85vh", background: "var(--bg-surface)", border: "1px solid var(--bg-border)", borderRadius: 18, display: "flex", flexDirection: "column", overflow: "hidden" }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, padding: "16px 18px", borderBottom: "1px solid var(--bg-border)", flexShrink: 0 }}>
           <div>
             <div style={{ fontSize: 10, fontFamily: MONO, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: 0.7, fontWeight: 700, marginBottom: 3 }}>{viewType}</div>
             <div style={{ fontSize: 18, fontWeight: 700, fontFamily: SERIF, color: "var(--text-primary)" }}>{label}</div>
           </div>
-          <button onClick={onClose} style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 34, height: 34, borderRadius: 10, border: "1px solid var(--bg-border)", background: "var(--bg-muted)", color: "var(--text-muted)", cursor: "pointer", flexShrink: 0, boxShadow: "none" }}>
+          <button onClick={onClose} style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 34, height: 34, borderRadius: 10, border: "1px solid var(--bg-border)", background: "var(--bg-muted)", color: "var(--text-muted)", cursor: "pointer", flexShrink: 0 }}>
             <X size={16} />
           </button>
         </div>
@@ -597,7 +594,7 @@ function QuestionsModal({ label, viewType, questions, onClose }) {
   );
 }
 
-// ─── Year Bar Chart — PURE flat rectangles, zero border-radius, zero shadow ──
+// ─── Year Bar Chart — pure flat rectangles, no rounding, no shadow ─────────
 function YearBarChart({ byYear }) {
   const grown = useGrow(280);
   const years = Object.keys(byYear).sort((a, b) => Number(a) - Number(b)).slice(-8);
@@ -613,7 +610,7 @@ function YearBarChart({ byYear }) {
           const hCorrect = grown ? (c / maxTotal) * 100 : 0;
           return (
             <div key={y} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 7, flex: "0 1 40px" }}>
-              <div style={{ position: "relative", width: 28, height: 96, background: "var(--bg-muted)", boxShadow: "none" }}>
+              <div style={{ position: "relative", width: 28, height: 96, background: "var(--bg-muted)" }}>
                 <div style={{ position: "absolute", bottom: 0, left: 0, width: "100%", height: `${hTotal}%`, background: `${P.blue.solid}30`, transition: "height 0.9s cubic-bezier(0.34,1.56,0.64,1)" }} />
                 <div style={{ position: "absolute", bottom: 0, left: "20%", width: "60%", height: `${hCorrect}%`, background: P.correct.solid, transition: "height 0.9s cubic-bezier(0.34,1.56,0.64,1) 0.08s" }} />
               </div>
@@ -627,7 +624,7 @@ function YearBarChart({ byYear }) {
   );
 }
 
-// ─── StatTile — flat, zero shadow ──────────────────────────────────────────
+// ─── StatTile (flat) ──────────────────────────────────────────────────────
 function StatTile({ icon: Icon, value, label, color, sub, delay = 0 }) {
   const grown = useGrow(delay + 60);
   return (
@@ -647,7 +644,7 @@ function StatTile({ icon: Icon, value, label, color, sub, delay = 0 }) {
   );
 }
 
-// ─── SectionCard — flat, zero shadow, overflow visible (so pies never clip) ──
+// ─── SectionCard — flat, no shadow, overflow visible ───────────────────────
 function SectionCard({ title, accent, right, note, children, style = {} }) {
   return (
     <div style={{
@@ -764,7 +761,7 @@ export default function QuestionStats() {
         </div>
         <button
           onClick={() => { if (window.confirm("Clear all attempt history? This cannot be undone.")) { clearAttempts(); setSelectedSegment(null); } }}
-          style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, padding: "9px 18px", borderRadius: 10, border: "1px solid rgba(248,113,113,0.3)", background: "rgba(248,113,113,0.06)", color: "#fca5a5", cursor: "pointer", fontFamily: MONO, fontWeight: 500, boxShadow: "none" }}
+          style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, padding: "9px 18px", borderRadius: 10, border: "1px solid rgba(248,113,113,0.3)", background: "rgba(248,113,113,0.06)", color: "#fca5a5", cursor: "pointer", fontFamily: MONO, fontWeight: 500 }}
           onMouseEnter={e => { e.currentTarget.style.background = "rgba(248,113,113,0.12)"; e.currentTarget.style.borderColor = "rgba(248,113,113,0.5)"; }}
           onMouseLeave={e => { e.currentTarget.style.background = "rgba(248,113,113,0.06)"; e.currentTarget.style.borderColor = "rgba(248,113,113,0.3)"; }}
         >
@@ -773,7 +770,7 @@ export default function QuestionStats() {
       </div>
 
       {/* ── How to read this ── */}
-      <div style={{ display: "flex", alignItems: "flex-start", gap: 10, flexWrap: "wrap", background: "var(--bg-muted)", border: "1px solid var(--bg-border)", borderRadius: 12, padding: "13px 18px", marginBottom: 20, boxShadow: "none" }}>
+      <div style={{ display: "flex", alignItems: "flex-start", gap: 10, flexWrap: "wrap", background: "var(--bg-muted)", border: "1px solid var(--bg-border)", borderRadius: 12, padding: "13px 18px", marginBottom: 20 }}>
         <Info size={16} style={{ color: P.blue.solid, marginTop: 2, flexShrink: 0 }} />
         <div style={{ fontSize: 13, color: "var(--text-secondary)", lineHeight: 1.6, flex: 1, minWidth: 220 }}>
           Every percentage below is <strong style={{ color: "var(--text-primary)" }}>accuracy</strong> — correct ÷ (correct + wrong). Skipped questions are counted separately and never affect a percentage.
@@ -796,7 +793,7 @@ export default function QuestionStats() {
       </div>
 
       {/* ── Row A: Outcome split + Accuracy by difficulty + Year-wise — 3 across, stacks on mobile ── */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 18, marginBottom: 18, alignItems: "stretch" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(270px, 1fr))", gap: 18, marginBottom: 18, alignItems: "stretch" }}>
 
         <SectionCard title="Outcome Split" accent={P.correct.solid} right={`${total} total`}>
           <div style={{ display: "flex", gap: 24, alignItems: "center", flexWrap: "wrap" }}>
@@ -834,7 +831,7 @@ export default function QuestionStats() {
         )}
       </div>
 
-      {/* ── Row B: Subject view (Pie + Table) or Topic view (Table only) — both have Result/Difficulty filters ── */}
+      {/* ── Row B: Subject view (Pie + Table) or Topic view (Table only) — both tables have Result/Difficulty chip filters ── */}
       {currentData.length > 0 && (
         <div style={{ marginBottom: 18 }}>
           <SectionCard
@@ -845,18 +842,18 @@ export default function QuestionStats() {
           >
             <div style={{ display: "flex", gap: 10, marginBottom: 22, flexWrap: "wrap" }}>
               <button onClick={() => { setViewMode("subjects"); setSelectedSegment(null); }}
-                style={{ padding: "9px 20px", borderRadius: 10, fontSize: 13, fontFamily: MONO, border: viewMode === "subjects" ? `2px solid ${P.purple.solid}` : "1px solid var(--bg-border)", background: viewMode === "subjects" ? `${P.purple.solid}18` : "transparent", color: viewMode === "subjects" ? P.purple.solid : "var(--text-muted)", cursor: "pointer", display: "flex", alignItems: "center", gap: 8, fontWeight: viewMode === "subjects" ? 700 : 500, boxShadow: "none" }}>
+                style={{ padding: "9px 20px", borderRadius: 10, fontSize: 13, fontFamily: MONO, border: viewMode === "subjects" ? `2px solid ${P.purple.solid}` : "1px solid var(--bg-border)", background: viewMode === "subjects" ? `${P.purple.solid}18` : "transparent", color: viewMode === "subjects" ? P.purple.solid : "var(--text-muted)", cursor: "pointer", display: "flex", alignItems: "center", gap: 8, fontWeight: viewMode === "subjects" ? 700 : 500 }}>
                 <PieChartIcon size={17} /> Subject View
               </button>
               <button onClick={() => { setViewMode("topics"); setSelectedSegment(null); }}
-                style={{ padding: "9px 20px", borderRadius: 10, fontSize: 13, fontFamily: MONO, border: viewMode === "topics" ? `2px solid ${P.indigo.solid}` : "1px solid var(--bg-border)", background: viewMode === "topics" ? `${P.indigo.solid}18` : "transparent", color: viewMode === "topics" ? P.indigo.solid : "var(--text-muted)", cursor: "pointer", display: "flex", alignItems: "center", gap: 8, fontWeight: viewMode === "topics" ? 700 : 500, boxShadow: "none" }}>
+                style={{ padding: "9px 20px", borderRadius: 10, fontSize: 13, fontFamily: MONO, border: viewMode === "topics" ? `2px solid ${P.indigo.solid}` : "1px solid var(--bg-border)", background: viewMode === "topics" ? `${P.indigo.solid}18` : "transparent", color: viewMode === "topics" ? P.indigo.solid : "var(--text-muted)", cursor: "pointer", display: "flex", alignItems: "center", gap: 8, fontWeight: viewMode === "topics" ? 700 : 500 }}>
                 <Table size={17} /> Topic Table
               </button>
             </div>
 
             {viewMode === "subjects" ? (
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 24, alignItems: "start" }}>
-                <div style={{ overflow: "visible" }}>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 24, alignItems: "start" }}>
+                <div>
                   <SubjectPieChart data={subjectData} total={total} onSegmentClick={(label) => setSelectedSegment(selectedSegment === label ? null : label)} selectedSegment={selectedSegment} />
                 </div>
                 <div>
