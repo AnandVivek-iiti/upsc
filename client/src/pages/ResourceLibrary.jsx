@@ -442,10 +442,13 @@ function RefBookCard({ book }) {
   const meta    = getRefBookMeta(book.module);
   const hasFile = Boolean(book.url || book.filePath);
 
-  const handleOpen = () => {
-    const target = book.url || (book.filePath ? `/api/refbooks/file?path=${encodeURIComponent(book.filePath)}` : null);
-    if (target) window.open(target, "_blank", "noopener,noreferrer");
-  };
+ const handleOpen = () => {
+  const target = book.url || book.filePath;
+
+  if (target) {
+    window.open(target, "_blank", "noopener,noreferrer");
+  }
+};
 
   return (
     <div
