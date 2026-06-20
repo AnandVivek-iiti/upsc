@@ -64,11 +64,15 @@ const CHART_COLORS = {
 };
 
 // ─── Collapsible Section Wrapper ───────────────────────────────────────────────
-function CollapsibleSection({ title, icon: Icon, children, defaultOpen = true }) {
+// overflow is only ever hidden while the panel is collapsed — once open, nothing
+// inside (pie charts, tooltips, table overflow) gets clipped. `tight` shrinks the
+// inner horizontal padding for panels (like Question Stats) that need every extra
+// pixel of width on mobile.
+function CollapsibleSection({ title, icon: Icon, children, defaultOpen = true, tight = false }) {
   const [isOpen, setIsOpen] = useState(defaultOpen);
 
   return (
-    <div className="glass-panel overflow-hidden">
+    <div className={`glass-panel ${isOpen ? "overflow-visible" : "overflow-hidden"}`}>
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="w-full flex items-center justify-between p-3 sm:p-4 hover:bg-bg-muted/50 transition-colors"
@@ -87,10 +91,10 @@ function CollapsibleSection({ title, icon: Icon, children, defaultOpen = true })
       </button>
       <div
         className={`transition-all duration-300 ease-in-out ${
-          isOpen ? "max-h-[2000px] opacity-100" : "max-h-0 opacity-0"
-        } overflow-hidden`}
+          isOpen ? "max-h-[6000px] opacity-100 overflow-visible" : "max-h-0 opacity-0 overflow-hidden"
+        }`}
       >
-        <div className="px-3 sm:px-4 pb-3 sm:pb-4">
+        <div className={`${tight ? "px-1.5 sm:px-2.5" : "px-3 sm:px-4"} pb-3 sm:pb-4`} style={{ overflow: "visible" }}>
           {children}
         </div>
       </div>
@@ -1475,7 +1479,7 @@ export default function Dashboard({
 <br/>
       {/* ── Question Stats (conditionally collapsible on mobile) ── */}
       {isMobile ? (
-        <CollapsibleSection title="Question Statistics" defaultOpen={false}>
+        <CollapsibleSection title="Question Statistics" defaultOpen={false} tight>
           <QuestionStatsPanel />
         </CollapsibleSection>
       ) : (
