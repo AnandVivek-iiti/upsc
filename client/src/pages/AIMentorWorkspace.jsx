@@ -8,7 +8,7 @@ export default function AIMentorWorkspace({
   onClearPrefill,
 }) {
   return (
-    <div className="h-[calc(100vh-2rem)] p-6">
+    <div className="w-full h-[100dvh] overflow-hidden">
       <AIMentorChat
         isLoggedIn={isLoggedIn}
         compact={false}
