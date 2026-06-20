@@ -21,13 +21,24 @@ const MAX_THREADS = 50;
 // firing on every single turn.
 const MEMORY_EXTRACTION_EVERY_N_TURNS = 3;
 
+// ── Keywords that signal the student is actually asking about their own
+// progress/profile — only then do we surface Student Context to the model.
+// Otherwise it gets injected into unrelated answers (e.g. quote explanations)
+// and the model narrates it back as filler ("keep that streak going!").
+const PROGRESS_QUERY_PATTERN =
+  /\b(my progress|my streak|how am i doing|weak (area|topic|subject)s?|where (do|should) i (focus|improve)|study plan|revision plan|my (score|performance)|am i ready|target year|how far am i)\b/i;
+
 /**
  * Builds a short "Student Context" block from the user's profile + saved
- * progress, so the mentor already knows the basics (target year, overall
- * progress, weak spots, recent evaluation scores) without being told again
- * every conversation. Returns "" when there isn't enough data yet.
+ * progress. Only returns non-empty when the current message is actually
+ * about the student's own progress/profile — for everything else (e.g.
+ * "explain this quote", "what is Article 21") this stays empty so the model
+ * doesn't drag personal stats into unrelated answers.
  */
-function buildStudentContext(user, userData) {
+function buildStudentContext(user, userData, currentMessage) {
+  const isProgressQuery = PROGRESS_QUERY_PATTERN.test(currentMessage || "");
+  if (!isProgressQuery) return "";
+
   const lines = [];
 
   if (user?.target_year) lines.push(`Target exam year: ${user.target_year}`);
@@ -101,7 +112,7 @@ function buildStudentContext(user, userData) {
   }
 
   if (lines.length === 0) return "";
-  return `\n\n## Student Context (use this naturally where relevant — don't just list it back)\n${lines.map((l) => `- ${l}`).join("\n")}`;
+  return `\n\n## Student Context (the student asked about their own progress — use this data to answer factually and specifically; do not add encouragement or commentary beyond the data itself)\n${lines.map((l) => `- ${l}`).join("\n")}`;
 }
 
 /**
@@ -272,15 +283,21 @@ const chat = async (req, res, next) => {
       threads = [thread, ...threads];
     }
 
-    const contextBlock = buildStudentContext(req.user, userData);
+    // Only pulls in personal stats when the question is actually about the
+    // student's own progress — see buildStudentContext for the gate.
+    const contextBlock = buildStudentContext(req.user, userData, message);
     const pageBlock = context_hint
-      ? `\n\nThe student is currently in this section of the app: "${context_hint}"`
+      ? `\n\nThe student is currently in this section of the app: "${context_hint}". Only reference this if directly relevant to the question.`
       : "";
 
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
     const model = genAI.getGenerativeModel({
       model: "gemini-2.5-flash",
       systemInstruction: CHAT_SYSTEM_INSTRUCTION + contextBlock + pageBlock,
+      generationConfig: {
+        temperature: 0.5,
+        maxOutputTokens: 1536,
+      },
     });
 
     const geminiHistory = thread.messages.map((msg) => ({
@@ -437,3 +454,4 @@ module.exports = {
   getChatThread,
   deleteChatThread,
 };
+                             
