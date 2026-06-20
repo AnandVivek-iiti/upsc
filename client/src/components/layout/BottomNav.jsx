@@ -1,11 +1,5 @@
-/**
- * BottomNav.jsx
- * ─────────────────────────────────────────────────────────────────────────────
- * Native-app-style sticky bottom navigation for mobile.
- * Visible only on < lg breakpoint.
- * Primary 5 nav items + a "More" drawer for secondary items.
- */
-import { useState, useRef, useEffect } from "react";
+
+import { useState, useRef, useEffect, useMemo } from "react";
 import {
   LayoutDashboard, BookOpen, PenTool, PenLine, Target,
   Library, MoreHorizontal, X, Moon, Sun, LogOut, LogIn,
@@ -24,7 +18,8 @@ const PRIMARY_NAV = [
 
 // ─── "More" drawer items ───────────────────────────────────────────────────────
 const MORE_NAV = [
-  { id: "resources",   label: "Resources",   icon: Library },
+  { id: "resources", label: "Resources", icon: Library },
+  { id: "ai-mentor",  label: "AI Mentor", icon: Sparkles },
 ];
 
 export default function BottomNav({
@@ -56,13 +51,24 @@ export default function BottomNav({
   }, [moreOpen]);
 
   const streak = userData?.profile?.streak || 0;
+  const isAdmin = useMemo(() => {
+    if (user?.role === "admin") return true;
+    if (user) return false; // we have a user object and it says non-admin
+    try {
+      const stored = JSON.parse(localStorage.getItem("upsc_user") || "{}");
+      return stored?.role === "admin";
+    } catch {
+      return false;
+    }
+  }, [user]);
 
   const handleNav = (id) => {
     onViewChange(id);
     setMoreOpen(false);
   };
 
-  const isMoreActive = MORE_NAV.some((n) => n.id === activeView) ||
+  const isMoreActive =
+    MORE_NAV.some((n) => n.id === activeView) ||
     ["admin", "profile"].includes(activeView);
 
   return (
@@ -147,24 +153,20 @@ export default function BottomNav({
             )}
 
             {/* Admin (if admin) */}
-            {(() => {
-              try {
-                const u = JSON.parse(localStorage.getItem("upsc_user") || "{}");
-                if (u?.role === "admin") {
-                  return (
-                    <button
-                      onClick={() => handleNav("admin")}
-                      className="flex items-center gap-3 px-4 py-3 rounded-2xl transition-all duration-150 text-left"
-                      style={{ background: "var(--bg-muted)", color: "var(--text-secondary)", border: "1px solid transparent" }}
-                    >
-                      <Shield size={18} />
-                      <span className="text-sm font-medium">Admin</span>
-                    </button>
-                  );
+            {isAdmin && (
+              <button
+                onClick={() => handleNav("admin")}
+                className="flex items-center gap-3 px-4 py-3 rounded-2xl transition-all duration-150 text-left"
+                style={
+                  activeView === "admin"
+                    ? { background: "var(--accent-gold-dim)", color: "var(--accent-gold)", border: "1px solid rgba(245,158,11,0.25)" }
+                    : { background: "var(--bg-muted)", color: "var(--text-secondary)", border: "1px solid transparent" }
                 }
-              } catch { }
-              return null;
-            })()}
+              >
+                <Shield size={18} />
+                <span className="text-sm font-medium">Admin</span>
+              </button>
+            )}
           </div>
 
           {/* Divider */}
