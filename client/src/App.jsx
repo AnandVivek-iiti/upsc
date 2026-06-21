@@ -19,6 +19,7 @@ import timerStore from "./hooks/timerStore";
 import BottomNav from "./components/layout/BottomNav.jsx";
 import AIMentorWorkspace from "./pages/AIMentorWorkspace.jsx";
 import AIMentorChat from "./pages/AI/AIMentorChat";
+import MentorNotes from "./pages/Notes/MentorNotes.jsx";
 
 // ─── Splash Screen ────────────────────────────────────────────────────────────
 function SplashScreen() {
@@ -185,8 +186,9 @@ export default function App() {
   // The dedicated full-page AI Mentor workspace is its own self-contained
   // screen (header, sidebar, chat). The floating chat bubble must NOT also
   // render on top of it — that was stacking two separate mentor UIs and
-  // covering the workspace's own controls.
-  const isWorkspace = activeView === "ai-mentor";
+  // covering the workspace's own controls. Notes gets the same distraction-free
+  // treatment since it's also an immersive, full-page writing surface.
+  const isWorkspace = activeView === "ai-mentor" || activeView === "notes";
 
   return (
     <div className="min-h-[100dvh]">
@@ -294,6 +296,14 @@ export default function App() {
                   onClearPrefill={() => setAiMentorPrefill("")}
                 />
               )}
+
+              {/* ── Mentor Notes — full-bleed notes + AI writing surface ── */}
+              {activeView === "notes" && (
+                <MentorNotes
+                  isLoggedIn={!!user && !!token}
+                  contextHint="Notes section"
+                />
+              )}
             </div>
 
             <PWAInstallPrompt />
@@ -325,4 +335,4 @@ export default function App() {
       />
     </div>
   );
-      }
+}
