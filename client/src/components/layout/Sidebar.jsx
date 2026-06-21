@@ -1,5 +1,5 @@
 import {
-  LayoutDashboard, BookOpen, PenLine, PenTool, Flame, Target,
+  LayoutDashboard, BookOpen,NotebookPen, PenLine, PenTool, Flame, Target,
   ChevronRight, Moon, Sun, LogOut, LogIn, Shield, Library, User,
 } from "lucide-react";
 import { AvatarCircle } from "../../pages/ProfilePage";
