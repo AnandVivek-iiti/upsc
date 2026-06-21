@@ -1,9 +1,8 @@
-
 import { useState, useRef, useEffect, useMemo } from "react";
 import {
   LayoutDashboard, BookOpen, PenTool, PenLine, Target,
   Library, MoreHorizontal, X, Moon, Sun, LogOut, LogIn,
-  User, Flame, Shield, Sparkles,
+  User, Flame, Shield, Sparkles, NotebookPen,
 } from "lucide-react";
 import { AvatarCircle } from "../../pages/ProfilePage";
 
@@ -19,6 +18,7 @@ const PRIMARY_NAV = [
 // ─── "More" drawer items ───────────────────────────────────────────────────────
 const MORE_NAV = [
   { id: "resources", label: "Resources", icon: Library },
+  { id: "notes",      label: "Notes",     icon: NotebookPen },
   { id: "ai-mentor",  label: "AI Mentor", icon: Sparkles },
 ];
 
