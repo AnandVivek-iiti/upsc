@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 import {
   improveNotes, findMistakesInNotes, generateRevisionNotes, convertToMainsFormat,
-} from "../../hooks/useAI";
+} from "../hooks/useAI";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
