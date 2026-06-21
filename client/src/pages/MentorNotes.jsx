@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 import {
   improveNotes, findMistakesInNotes, generateRevisionNotes, convertToMainsFormat,
-} from "../../hooks/useAI";
+} from "../hooks/useAI";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -18,21 +18,21 @@ const AUTOSAVE_DEBOUNCE_MS = 1400;
 const MIN_CONTENT_FOR_AI = 40;
 
 const TOPICS = [
-  { id: "polity",      label: "Polity",          color: "#f87171" },
-  { id: "history",     label: "History",         color: "#c084fc" },
-  { id: "economy",     label: "Economy",         color: "#34d399" },
-  { id: "geography",   label: "Geography",       color: "#60a5fa" },
-  { id: "sociology",   label: "Sociology",       color: "#5eead4" },
-  { id: "ethics",      label: "Ethics",          color: "#f59e0b" },
-  { id: "environment", label: "Environment",     color: "#84cc16" },
-  { id: "scitech",     label: "Science & Tech",  color: "#f9a8d4" },
+  { id: "polity", label: "Polity", color: "#f87171" },
+  { id: "history", label: "History", color: "#c084fc" },
+  { id: "economy", label: "Economy", color: "#34d399" },
+  { id: "geography", label: "Geography", color: "#60a5fa" },
+  { id: "sociology", label: "Sociology", color: "#5eead4" },
+  { id: "ethics", label: "Ethics", color: "#f59e0b" },
+  { id: "environment", label: "Environment", color: "#84cc16" },
+  { id: "scitech", label: "Science & Tech", color: "#f9a8d4" },
 ];
 
 const AI_ACTIONS = [
-  { id: "improve",  label: "Improve Notes",          short: "Improve",  icon: Wand2,          fn: improveNotes,          accent: "#60a5fa" },
-  { id: "mistakes", label: "Find Mistakes",          short: "Mistakes", icon: AlertTriangle,  fn: findMistakesInNotes,   accent: "#f59e0b" },
-  { id: "revision", label: "Generate Revision Notes",short: "Revise",   icon: Zap,            fn: generateRevisionNotes, accent: "#34d399" },
-  { id: "mains",    label: "Convert to Mains Format",short: "Mains",    icon: GraduationCap,  fn: convertToMainsFormat,  accent: "#a78bfa" },
+  { id: "improve", label: "Improve Notes", short: "Improve", icon: Wand2, fn: improveNotes, accent: "#60a5fa" },
+  { id: "mistakes", label: "Find Mistakes", short: "Mistakes", icon: AlertTriangle, fn: findMistakesInNotes, accent: "#f59e0b" },
+  { id: "revision", label: "Generate Revision Notes", short: "Revise", icon: Zap, fn: generateRevisionNotes, accent: "#34d399" },
+  { id: "mains", label: "Convert to Mains Format", short: "Mains", icon: GraduationCap, fn: convertToMainsFormat, accent: "#a78bfa" },
 ];
 
 // ─── Pure helpers ─────────────────────────────────────────────────────────────
@@ -232,8 +232,8 @@ function parseMistakesReport(raw) {
     const m = raw.match(re);
     return m ? m[1].trim() : "";
   };
-  const missingRaw  = section("MISSING",  ["TRAPS:", "REVISION:"]);
-  const trapsRaw    = section("TRAPS",    ["REVISION:"]);
+  const missingRaw = section("MISSING", ["TRAPS:", "REVISION:"]);
+  const trapsRaw = section("TRAPS", ["REVISION:"]);
   const revisionRaw = section("REVISION", []);
 
   const toList = (block) => block.split("\n").map(l => l.replace(/^[-•*]\s*/, "").trim()).filter(Boolean);
@@ -1139,4 +1139,4 @@ export default function MentorNotes({ isLoggedIn = false, contextHint = "Notes s
       {signInGateOpen && <SignInGate onClose={() => setSignInGateOpen(false)} />}
     </>
   );
-                    }
+}

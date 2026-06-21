@@ -1100,32 +1100,58 @@ export default function AIMentorChat({
   // Drops the trailing assistant reply and re-asks the last user message —
   // used by the "regenerate" button on bot messages. Does NOT touch or
   // duplicate the user bubble itself.
-  const regenerate = useCallback(async () => {
-    if (isSendingRef.current) return;
-    setMessages(prev => {
-      let lastUserIdx = -1;
-      for (let i = prev.length - 1; i >= 0; i--) {
-        if (prev[i].role === "user") { lastUserIdx = i; break; }
+ const regenerate = useCallback(async () => {
+  if (isSendingRef.current) return;
+
+  let lastUserMsg = "";
+
+  setMessages(prev => {
+    let lastUserIdx = -1;
+
+    for (let i = prev.length - 1; i >= 0; i--) {
+      if (prev[i].role === "user") {
+        lastUserIdx = i;
+        break;
       }
-      if (lastUserIdx === -1) return prev;
+    }
 
-      const lastUserMsg = prev[lastUserIdx].content;
-      const trimmed = prev.slice(0, lastUserIdx + 1);
+    if (lastUserIdx === -1) return prev;
 
-      setError(null);
-      setSending(true);
-      isSendingRef.current = true;
+    lastUserMsg = prev[lastUserIdx].content;
 
-      chatWithMentor({ message: lastUserMsg, contextHint, threadId })
-        .then(res => {
-          if (res.title) setActiveTitle(res.title);
-          setMessages(p => [...p, { role: "assistant", content: res.response }]);
-        })
-        .catch(e => setError(e.message))
-        .finally(() => { setSending(false); isSendingRef.current = false;
-                        return trimmed;
+    // remove previous assistant response
+    return prev.slice(0, lastUserIdx + 1);
+  });
+
+  if (!lastUserMsg) return;
+
+  setError(null);
+  setSending(true);
+  isSendingRef.current = true;
+
+  try {
+    const res = await chatWithMentor({
+      message: lastUserMsg,
+      contextHint,
+      threadId,
     });
-  }, [contextHint, threadId]);
+
+    if (res.title) setActiveTitle(res.title);
+
+    setMessages(prev => [
+      ...prev,
+      {
+        role: "assistant",
+        content: res.response,
+      },
+    ]);
+  } catch (e) {
+    setError(e.message);
+  } finally {
+    setSending(false);
+    isSendingRef.current = false;
+  }
+}, [contextHint, threadId]);
 
   const handleSearchChange = useCallback(e => setHistorySearch(e.target.value), []);
   const closeAll           = useCallback(() => { setOpen(false); setFullScreen(false); }, []);
@@ -1229,4 +1255,5 @@ export default function AIMentorChat({
       </div>
     </>
   );
+
   }

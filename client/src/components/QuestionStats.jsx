@@ -21,13 +21,13 @@ import { useQuestionAttempts } from "../hooks/useQuestionAttempts";
 
 // ─── Palette ──────────────────────────────────────────────────────────────
 const P = {
-  correct:  { solid: "#34d399" },
-  wrong:    { solid: "#f87171" },
-  skipped:  { solid: "#94a3b8" },
-  gold:     { solid: "#fbbf24" },
-  blue:     { solid: "#3b82f6" },
-  purple:   { solid: "#8b5cf6" },
-  indigo:   { solid: "#6366f1" },
+  correct: { solid: "#34d399" },
+  wrong: { solid: "#f87171" },
+  skipped: { solid: "#94a3b8" },
+  gold: { solid: "#fbbf24" },
+  blue: { solid: "#3b82f6" },
+  purple: { solid: "#8b5cf6" },
+  indigo: { solid: "#6366f1" },
 };
 
 const PIE_COLORS = [
