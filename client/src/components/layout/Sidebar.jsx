@@ -11,6 +11,7 @@ const NAV_ITEMS = [
   { id: "pre",         label: "Prelims Grind",  icon: PenLine },
   { id: "topic-wise",  label: "Topic-wise",     icon: Target },
   { id: "resources",   label: "Resources",      icon: Library },
+    { id: "notes",      label: "Notes",     icon: NotebookPen },
 ];
 
 export default function Sidebar({
