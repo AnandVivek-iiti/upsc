@@ -1395,7 +1395,7 @@ export default function Dashboard({
             className="flex items-center gap-2 px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl border border-bg-border bg-bg-surface hover:border-accent-gold/30 hover:bg-bg-muted transition-all duration-150 group shrink-0 ml-2"
             title="View profile"
           >
-            <AvatarCircle name={userName} size="sm" />
+            <AvatarCircle name={userName} size="sm" as="span" />
             <div className="hidden sm:block text-left">
               <p className="text-xs font-semibold text-text-primary leading-tight truncate max-w-[100px] md:max-w-[120px]">
                 {userName}

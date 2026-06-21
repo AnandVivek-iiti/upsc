@@ -97,7 +97,7 @@ async function extractMemory(existingMemory, turnText) {
       systemInstruction: MEMORY_EXTRACTION_SYSTEM_INSTRUCTION,
       generationConfig: {
         temperature: 0.2,
-        maxOutputTokens: 800,
+        maxOutputTokens: 1800,
         responseMimeType: "application/json",
       },
     });
@@ -117,41 +117,24 @@ async function extractMemory(existingMemory, turnText) {
     return current;
   }
 }
-
-// ── SAMPLE ANSWER GENERATOR (offline fallback) ──────────────────────────────
-// Called when all API providers are unavailable/failing.
-
-// ── SAMPLE TEST ANALYSIS GENERATOR (offline fallback) ───────────────────────
-// Called when all API providers are unavailable/failing for test analysis.
-// Builds a deterministic, still-genuinely-useful diagnostic report purely
-// from the topic_breakdown numbers — no AI required. Mirrors the spirit of
-// generateSampleEvaluation above, but for MCQ Test Series results.
-
-// ── OpenRouter model chain ───────────────────────────────────────────────────
-// OpenRouter is the primary provider. It tries a list of models in order —
-// free models first (zero marginal cost), then best-quality paid models as
-// a quality fallback if every free model fails or returns something unusable.
-// Override the whole list via OPENROUTER_MODELS (comma-separated slugs from
-// https://openrouter.ai/models) if you want different models or ordering.
 const DEFAULT_OPENROUTER_FREE_MODELS = [
-  "deepseek/deepseek-chat-v3.1:free",
-  "deepseek/deepseek-r1:free",
   "meta-llama/llama-3.3-70b-instruct:free",
-  "qwen/qwen-2.5-72b-instruct:free",
-  "google/gemini-2.0-flash-exp:free",
-  "mistralai/mistral-small-3.1-24b-instruct:free",
-];
-const DEFAULT_OPENROUTER_QUALITY_MODELS = [
-  "anthropic/claude-sonnet-4.5",
-  "openai/gpt-4o",
-  "google/gemini-2.5-pro",
+  "qwen/qwen3-235b-a22b:free",
+  "qwen/qwen3-32b:free",
+  "google/gemma-3-27b-it:free",
+  "mistralai/mistral-small-3.2-24b-instruct:free",
 ];
 
 function getOpenRouterModelChain() {
-  if (process.env.OPENROUTER_MODELS) {
-    return process.env.OPENROUTER_MODELS.split(",").map((s) => s.trim()).filter(Boolean);
-  }
-  return [...DEFAULT_OPENROUTER_FREE_MODELS, ...DEFAULT_OPENROUTER_QUALITY_MODELS];
+  const raw =
+    process.env.OPENROUTER_MODELS ||
+    process.env.OPENROUTER_MODEL;
+
+  const models = raw
+    ? raw.split(",").map(s => s.trim()).filter(Boolean)
+    : DEFAULT_OPENROUTER_FREE_MODELS;
+
+  return [...new Set(models)];
 }
 
 function getOpenRouterClient() {
@@ -182,103 +165,10 @@ function toChatMessages(systemInstruction, history, message) {
 }
 
 const providers = [
-  // ── PROVIDER 1: OpenRouter (primary) ────────────────────────────────────
-  // Cascades through every model in getOpenRouterModelChain() before giving
-  // up — free models first, then best-quality paid models — so a single
-  // OpenRouter key behaves like its own internal fallback chain.
-  {
-    name: "OpenRouter",
-    isAvailable: () => !!process.env.OPENROUTER_API_KEY,
-    call: async (userPrompt, systemInstruction, mode = "json") => {
-      const openrouter = getOpenRouterClient();
-      const models = getOpenRouterModelChain();
-      const modelErrors = [];
-
-      for (const model of models) {
-        try {
-          const response = await openrouter.chat.completions.create({
-            model,
-            temperature: mode === "text" ? 0.4 : 0.3,
-            max_tokens: 8192,
-            ...(mode === "json" ? { response_format: { type: "json_object" } } : {}),
-            messages: [
-              { role: "system", content: systemInstruction },
-              { role: "user", content: userPrompt },
-            ],
-          });
-          const text = response.choices?.[0]?.message?.content;
-          if (!text || !text.trim()) throw new Error("empty response");
-          console.log(`[OpenRouter] success with model: ${model}`);
-          return mode === "text" ? text : safeJSONParse(text);
-        } catch (err) {
-          const message = err?.message || String(err);
-          console.warn(`[OpenRouter] model "${model}" failed: ${message}`);
-          modelErrors.push(`${model}: ${message}`);
-
-          // Some free models reject strict response_format — retry once
-          // without it, asking for raw JSON in the prompt instead, before
-          // moving on to the next model in the chain.
-          if (mode === "json" && /response_format|json_object|json_validate/i.test(message)) {
-            try {
-              const retryResponse = await openrouter.chat.completions.create({
-                model,
-                temperature: 0.2,
-                max_tokens: 8192,
-                messages: [
-                  {
-                    role: "system",
-                    content: `${systemInstruction}\nRespond with ONLY valid raw JSON — no markdown code fences, no commentary before or after.`,
-                  },
-                  { role: "user", content: userPrompt },
-                ],
-              });
-              const retryText = retryResponse.choices?.[0]?.message?.content;
-              if (retryText && retryText.trim()) {
-                console.log(`[OpenRouter] recovered with model (loose schema): ${model}`);
-                return safeJSONParse(retryText);
-              }
-            } catch (retryErr) {
-              modelErrors.push(`${model} (retry): ${retryErr.message}`);
-            }
-          }
-          // Otherwise just fall through to the next model in the chain.
-        }
-      }
-      throw new Error(`All OpenRouter models failed. ${modelErrors.join(" | ")}`);
-    },
-    chatCall: async (systemInstruction, history, message) => {
-      const openrouter = getOpenRouterClient();
-      const models = getOpenRouterModelChain();
-      const messages = toChatMessages(systemInstruction, history, message);
-      const modelErrors = [];
-
-      for (const model of models) {
-        try {
-          const response = await openrouter.chat.completions.create({
-            model,
-            temperature: 0.5,
-            max_tokens: 1536,
-            messages,
-          });
-          const text = response.choices?.[0]?.message?.content;
-          if (!text || !text.trim()) throw new Error("empty response");
-          console.log(`[OpenRouter:Chat] success with model: ${model}`);
-          return text;
-        } catch (err) {
-          const m = err?.message || String(err);
-          console.warn(`[OpenRouter:Chat] model "${model}" failed: ${m}`);
-          modelErrors.push(`${model}: ${m}`);
-        }
-      }
-      throw new Error(`All OpenRouter models failed. ${modelErrors.join(" | ")}`);
-    },
-  },
-
-  // ── PROVIDER 2: Gemini (fallback) ───────────────────────────────────────
   {
     name: "Gemini",
     isAvailable: () => !!process.env.GEMINI_API_KEY,
-    call: async (userPrompt, systemInstruction, mode = "json") => {
+    call: async (userPrompt, systemInstruction, mode = "json", minChars = 0) => {
       const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
       const model = genAI.getGenerativeModel({
         model: "gemini-2.5-flash",
@@ -292,6 +182,9 @@ const providers = [
 
       const result = await model.generateContent(userPrompt);
       const text = result.response.text();
+      if (mode === "text" && minChars && text.trim().length < minChars) {
+        throw new Error(`response too short (${text.trim().length} chars, need ${minChars}) — likely a low-effort answer`);
+      }
       return mode === "text" ? text : safeJSONParse(text);
     },
     chatCall: async (systemInstruction, history, message) => {
@@ -299,7 +192,7 @@ const providers = [
       const model = genAI.getGenerativeModel({
         model: "gemini-2.5-flash",
         systemInstruction,
-        generationConfig: { temperature: 0.5, maxOutputTokens: 1536 },
+        generationConfig: { temperature: 0.5, maxOutputTokens: 8196 },
       });
       const geminiHistory = (history || []).map((m) => ({
         role: m.role === "user" ? "user" : "model",
@@ -310,12 +203,10 @@ const providers = [
       return result.response.text();
     },
   },
-
-  // ── PROVIDER 3: Groq Cloud (fallback) ───────────────────────────────────
-  {
+{
     name: "Groq",
     isAvailable: () => !!process.env.GROQ_API_KEY,
-    call: async (userPrompt, systemInstruction, mode = "json") => {
+    call: async (userPrompt, systemInstruction, mode = "json", minChars = 0) => {
       const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
       const wantsJSON = mode !== "text";
 
@@ -331,6 +222,9 @@ const providers = [
           ],
         });
         const text = response.choices[0].message.content;
+        if (!wantsJSON && minChars && text.trim().length < minChars) {
+          throw new Error(`response too short (${text.trim().length} chars, need ${minChars}) — likely a low-effort answer`);
+        }
         return wantsJSON ? safeJSONParse(text) : text;
       } catch (err) {
         if (
@@ -365,26 +259,107 @@ const providers = [
       const messages = toChatMessages(systemInstruction, history, message);
       const response = await groq.chat.completions.create({
         model: "llama-3.3-70b-versatile",
-        max_tokens: 1536,
+        max_tokens: 8196,
         temperature: 0.5,
         messages,
       });
       return response.choices[0].message.content;
     },
   },
-];
 
-// Lets callers (e.g. the chat endpoint) fail fast with a clean 503 instead of
-// going through the full provider loop when nothing is configured at all.
+  {
+    name: "OpenRouter",
+    isAvailable: () => !!process.env.OPENROUTER_API_KEY,
+    call: async (userPrompt, systemInstruction, mode = "json", minChars = 0) => {
+      const openrouter = getOpenRouterClient();
+      const models = getOpenRouterModelChain();
+      const modelErrors = [];
+
+      for (const model of models) {
+        try {
+          const response = await openrouter.chat.completions.create({
+            model,
+            temperature: mode === "text" ? 0.4 : 0.3,
+            max_tokens: 8192,
+            ...(mode === "json" ? { response_format: { type: "json_object" } } : {}),
+            messages: [
+              { role: "system", content: systemInstruction },
+              { role: "user", content: userPrompt },
+            ],
+          });
+          const text = response.choices?.[0]?.message?.content;
+          if (!text || !text.trim()) throw new Error("empty response");
+          if (mode === "text" && minChars && text.trim().length < minChars) {
+            throw new Error(`response too short (${text.trim().length} chars, need ${minChars}) — likely a low-effort answer`);
+          }
+          console.log(`[OpenRouter] success with model: ${model}`);
+          return mode === "text" ? text : safeJSONParse(text);
+        } catch (err) {
+          const message = err?.message || String(err);
+          console.warn(`[OpenRouter] model "${model}" failed: ${message}`);
+          modelErrors.push(`${model}: ${message}`);
+     if (mode === "json" && /response_format|json_object|json_validate/i.test(message)) {
+            try {
+              const retryResponse = await openrouter.chat.completions.create({
+                model,
+                temperature: 0.2,
+                max_tokens: 8192,
+                messages: [
+                  {
+                    role: "system",
+                    content: `${systemInstruction}\nRespond with ONLY valid raw JSON — no markdown code fences, no commentary before or after.`,
+                  },
+                  { role: "user", content: userPrompt },
+                ],
+              });
+              const retryText = retryResponse.choices?.[0]?.message?.content;
+              if (retryText && retryText.trim()) {
+                console.log(`[OpenRouter] recovered with model (loose schema): ${model}`);
+                return safeJSONParse(retryText);
+              }
+            } catch (retryErr) {
+              modelErrors.push(`${model} (retry): ${retryErr.message}`);
+            }
+          }
+           }
+      }
+      throw new Error(`All OpenRouter models failed. ${modelErrors.join(" | ")}`);
+    },
+    chatCall: async (systemInstruction, history, message) => {
+      const openrouter = getOpenRouterClient();
+      const models = getOpenRouterModelChain();
+      const messages = toChatMessages(systemInstruction, history, message);
+      const modelErrors = [];
+
+      for (const model of models) {
+        try {
+          const response = await openrouter.chat.completions.create({
+            model,
+            temperature: 0.5,
+            max_tokens: 8196,
+            messages,
+          });
+          const text = response.choices?.[0]?.message?.content;
+          if (!text || !text.trim()) throw new Error("empty response");
+          console.log(`[OpenRouter:Chat] success with model: ${model}`);
+          return text;
+        } catch (err) {
+          const m = err?.message || String(err);
+          console.warn(`[OpenRouter:Chat] model "${model}" failed: ${m}`);
+          modelErrors.push(`${model}: ${m}`);
+        }
+      }
+      throw new Error(`All OpenRouter models failed. ${modelErrors.join(" | ")}`);
+    },
+  },
+
+
+
+];
 function isAnyProviderAvailable() {
   return providers.some((p) => p.isAvailable());
 }
-
-// ── Shared multi-provider runner ─────────────────────────────────────────────
-// Every feature (evaluate / test / notes) tries the same provider chain in
-// the same order and needs the same try/log/fallback loop — this used to be
-// duplicated 2x inline; now it's one function all 3 features call.
-async function runWithProviders(userPrompt, systemInstruction, { mode = "json", label = "AI Client" } = {}) {
+async function runWithProviders(userPrompt, systemInstruction, { mode = "json", label = "AI Client", minChars = 0 } = {}) {
   const availableProviders = providers.filter((p) => p.isAvailable());
   if (availableProviders.length === 0) {
     throw new Error("No AI providers configured.");
@@ -394,7 +369,7 @@ async function runWithProviders(userPrompt, systemInstruction, { mode = "json", 
   for (const provider of availableProviders) {
     try {
       console.log(`[${label}] Trying provider: ${provider.name}...`);
-      const result = await provider.call(userPrompt, systemInstruction, mode);
+      const result = await provider.call(userPrompt, systemInstruction, mode, minChars);
       console.log(`[${label}] Success with: ${provider.name}`);
       return { result, provider: provider.name };
     } catch (err) {
@@ -557,10 +532,6 @@ ${topicLines || "(no topic breakdown provided)"}
 
 Analyze this performance. Identify genuine strengths, diagnose weak topics with priority for revision, and produce a realistic 7-day study plan targeting the weakest areas first. Be specific and reference the actual numbers above.`;
 }
-
-// ── NOTES FEATURE: Improve / Find Mistakes / Revision / Mains Format ────────
-// Maps each Notes action id (as used by the frontend AI_ACTIONS list in
-// MentorNote.jsx) to its dedicated system instruction from notesInstructions.js.
 const NOTES_SYSTEM_INSTRUCTIONS = {
   improve: NOTES_IMPROVE_SYSTEM_INSTRUCTION,
   mistakes: NOTES_MISTAKES_SYSTEM_INSTRUCTION,
@@ -576,6 +547,12 @@ Topic: ${topic?.trim() || "(unspecified)"}
 
 ${content.trim()}`;
 }
+const NOTES_MIN_OUTPUT_CHARS = {
+  improve: 900,
+  mistakes: 500,
+  revision: 500,
+  mains: 1400,
+};
 
 /**
  * runNotesAction — single entry point for all 4 Notes AI actions (Improve /
@@ -612,6 +589,7 @@ async function runNotesAction(actionId, payload) {
   const { result, provider } = await runWithProviders(userPrompt, systemInstruction, {
     mode: "text",
     label: `Notes:${actionId}`,
+    minChars: NOTES_MIN_OUTPUT_CHARS[actionId] || 200,
   });
 
   return { result, provider };
@@ -621,6 +599,8 @@ module.exports = {
   evaluateAnswer,
   analyzeTestPerformance,
   runNotesAction,
+  runMentorChat,
+  isAnyProviderAvailable,
   CHAT_SYSTEM_INSTRUCTION,
   TEST_ANALYSIS_SYSTEM_INSTRUCTION,
   extractMemory,

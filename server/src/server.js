@@ -21,6 +21,7 @@ const dashboardRoutes = require(".//routes/dashboardRoutes");
 const evaluateRoutes = require(".//routes/evaluateRoutes");
 const adminRoutes = require(".//routes/adminRoutes");
 const testRoutes = require(".//routes/testRoutes");
+const notesRoutes = require(".//routes/notesRoutes");
 
 // ── Socket.io — real-time dashboard sync (timer/progress across tabs+devices) ─
 const { initSocket } = require(".//socket/socketManager");
@@ -85,6 +86,7 @@ app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/evaluate", evaluateRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/tests", testRoutes);
+app.use("/api/notes", notesRoutes);
 
 // ─── 404 & Error Handlers ─────────────────────────────────────────────────────
 app.use(notFound);

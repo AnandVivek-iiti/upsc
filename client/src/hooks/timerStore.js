@@ -14,6 +14,9 @@ let _syncFn = null;          // registered by the UI: (hours) => Promise  →  P
 let _lastSyncedSecs = 0;
 let _remote = { active: false, elapsed: 0, at: 0 };
 
+let _currentDay = null;      // IST date key (todayKey()) that `store.elapsed` currently belongs to
+let _base = 0;                // Date.now() origin elapsed is computed from while running
+
 const SYNC_EVERY_SECS = 30; // push cumulative hours to the backend this often while running
 
 function broadcast() {
@@ -29,6 +32,38 @@ function syncNow() {
   _lastSyncedSecs = store.elapsed;
   const hours = parseFloat((store.elapsed / 3600).toFixed(2));
   _syncFn(hours);
+}
+
+/**
+ * Detects whether the IST calendar day has changed since `elapsed` was last
+ * tracked, and if so, closes out the old day and resets the counter to 0.
+ * Returns true if a rollover happened.
+ *
+ * Called: every running tick, on tab refocus, and before start() — so it
+ * catches the midnight crossing whether the timer is actively running or
+ * was just left paused overnight.
+ */
+function checkDayRollover() {
+  const day = todayKey();
+  if (_currentDay === null) {
+    _currentDay = day;
+    return false;
+  }
+  if (day === _currentDay) return false;
+
+  // Best-effort: flush whatever hasn't been synced yet under the OLD day
+  // before wiping elapsed. Note this still lands wherever the backend's
+  // /daily-log resolves "today" to (server clock), so a sync that fires
+  // exactly at the boundary can occasionally be attributed to the new day —
+  // acceptable since the periodic 30s sync keeps the gap to a few seconds.
+  syncNow();
+
+  _currentDay = day;
+  store.elapsed = 0;
+  _lastSyncedSecs = 0;
+  _base = Date.now(); // re-anchor so a running timer keeps counting from 0
+  notify();
+  return true;
 }
 
 const _listeners = new Set();
@@ -57,6 +92,7 @@ const store = {
     }
     _userId = userId || null;
     _hydrated = false;
+    _currentDay = null;
     store.elapsed = 0;
     _lastSyncedSecs = 0;
     notify();
@@ -70,6 +106,7 @@ const store = {
   hydrate(serverHours) {
     if (_hydrated) return;
     _hydrated = true;
+    _currentDay = todayKey();
     store.elapsed = Math.round((serverHours || 0) * 3600);
     _lastSyncedSecs = store.elapsed;
     notify();
@@ -77,12 +114,14 @@ const store = {
 
   start() {
     if (store.running) return;
+    checkDayRollover(); // catch "left paused, resumed after midnight"
     store.running = true;
-    const base = Date.now() - store.elapsed * 1000;
+    _base = Date.now() - store.elapsed * 1000;
     _tickCount = 0;
     _syncTickCount = 0;
     _interval = setInterval(() => {
-      store.elapsed = Math.floor((Date.now() - base) / 1000);
+      checkDayRollover(); // catch midnight crossing while running
+      store.elapsed = Math.floor((Date.now() - _base) / 1000);
       // Broadcast to this user's other tabs/devices every ~5s, not every tick
       _tickCount = (_tickCount + 1) % 5;
       if (_tickCount === 0) broadcast();
@@ -157,7 +196,11 @@ const store = {
 
 if (typeof document !== "undefined") {
   document.addEventListener("visibilitychange", () => {
-    if (document.hidden && store.running) syncNow();
+    if (document.hidden) {
+      if (store.running) syncNow();
+    } else {
+      checkDayRollover();
+    }
   });
 }
 

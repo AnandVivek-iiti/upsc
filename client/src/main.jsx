@@ -4,9 +4,12 @@ import App from "./App.jsx";
 import "./index.css";
 import { registerSW } from "virtual:pwa-register";
 import PWAInstallPrompt from "./components/PWAInstallPrompt";
+let isApplyingUpdate = false;
 
 const updateSW = registerSW({
   onNeedRefresh() {
+    if (isApplyingUpdate) return;
+    isApplyingUpdate = true;
     updateSW(true);
   },
   onOfflineReady() {

@@ -2,10 +2,10 @@ const {
   evaluateAnswer: callAIClient,
   CHAT_SYSTEM_INSTRUCTION,
   extractMemory,
-  runNotesAction,
+  runMentorChat,
+  isAnyProviderAvailable,
 } = require("../config/ai-client");
 const { UserData } = require("../models/UserData");
-const { GoogleGenerativeAI } = require("@google/generative-ai");
 const MAX_HISTORY_MESSAGES = 60;
 
 const MAX_THREADS = 50;
@@ -205,39 +205,6 @@ Please evaluate this answer according to your mentor framework. Be specific abou
 };
 
 
-const VALID_NOTE_ACTIONS = new Set(["improve", "mistakes", "revision", "mains"]);
-
-const runNoteAction = async (req, res, next) => {
-  try {
-    const { action } = req.params;
-    if (!VALID_NOTE_ACTIONS.has(action)) {
-      return res.status(400).json({
-        success: false,
-        error: `Unknown notes action "${action}".`,
-      });
-    }
-
-    const { title, topic, content } = req.body;
-    if (!content || content.trim().length < 20) {
-      return res.status(400).json({
-        success: false,
-        error: "Note content is too short for AI to work with (min 20 characters).",
-      });
-    }
-
-    const { result, provider } = await runNotesAction(action, { title, topic, content });
-
-    return res.status(200).json({
-      success: true,
-      provider_used: provider,
-      result,
-    });
-  } catch (err) {
-    console.error(`Notes action "${req.params.action}" crashed:`, err);
-    next(err);
-  }
-};
-
 const chat = async (req, res, next) => {
   try {
     const { message, context_hint, thread_id } = req.body;
@@ -248,7 +215,7 @@ const chat = async (req, res, next) => {
         .json({ success: false, error: "Message is required." });
     }
 
-    if (!process.env.GEMINI_API_KEY) {
+    if (!isAnyProviderAvailable()) {
       return res.status(503).json({
         success: false,
         error: "Chat service is temporarily offline.",
@@ -281,24 +248,16 @@ const chat = async (req, res, next) => {
       ? `\n\nThe student is currently in this section of the app: "${context_hint}". Only reference this if directly relevant to the question.`
       : "";
 
-    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-    const model = genAI.getGenerativeModel({
-      model: "gemini-2.5-flash",
-      systemInstruction: CHAT_SYSTEM_INSTRUCTION + contextBlock + pageBlock,
-      generationConfig: {
-        temperature: 0.5,
-        maxOutputTokens: 1536,
-      },
-    });
-
-    const geminiHistory = thread.messages.map((msg) => ({
-      role: msg.role === "user" ? "user" : "model",
-      parts: [{ text: msg.content }],
-    }));
-
-    const chatSession = model.startChat({ history: geminiHistory });
-    const result = await chatSession.sendMessage(message.trim());
-    const responseText = result.response.text();
+    // Same multi-provider fallback chain (OpenRouter → Gemini → Groq) as the
+    // Mains evaluator and Notes actions, instead of calling Gemini directly —
+    // this is what lets a Gemini rate limit fall through to another model
+    // instead of surfacing a raw 429 straight to the student.
+    const systemInstruction = CHAT_SYSTEM_INSTRUCTION + contextBlock + pageBlock;
+    const { response: responseText, provider } = await runMentorChat(
+      systemInstruction,
+      thread.messages,
+      message.trim(),
+    );
 
     // ── Persist both turns onto this thread, capped so it can't grow forever ─
     const now = new Date().toISOString();
@@ -404,10 +363,6 @@ const getChatThread = async (req, res, next) => {
   }
 };
 
-/**
- * DELETE /api/evaluate/chat-threads/:id
- * Removes one saved chat permanently.
- */
 const deleteChatThread = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -433,5 +388,4 @@ module.exports = {
   listChatThreads,
   getChatThread,
   deleteChatThread,
-  runNoteAction,
 };
