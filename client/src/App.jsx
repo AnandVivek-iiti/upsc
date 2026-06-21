@@ -19,7 +19,7 @@ import timerStore from "./hooks/timerStore";
 import BottomNav from "./components/layout/BottomNav.jsx";
 import AIMentorWorkspace from "./pages/AIMentorWorkspace.jsx";
 import AIMentorChat from "./pages/AI/AIMentorChat";
-import MentorNotes from "./pages/Notes/MentorNotes.jsx";
+import MentorNotes from "./pages/MentorNotes.jsx";
 
 // ─── Splash Screen ────────────────────────────────────────────────────────────
 function SplashScreen() {
