@@ -2,39 +2,19 @@ const {
   evaluateAnswer: callAIClient,
   CHAT_SYSTEM_INSTRUCTION,
   extractMemory,
+  runNotesAction,
 } = require("../config/ai-client");
 const { UserData } = require("../models/UserData");
 const { GoogleGenerativeAI } = require("@google/generative-ai");
-
-// ── Cap how many past messages we feed back into Gemini + store per thread ──
-// 60 entries ≈ 30 user/assistant turns — enough real memory without letting
-// a single thread's JSONB payload grow unbounded forever.
 const MAX_HISTORY_MESSAGES = 60;
 
-// ── Cap how many saved chat threads a user can accumulate ───────────────────
-// Oldest (by last-updated) threads get dropped beyond this so the JSONB
-// column on UserData stays a sane size.
 const MAX_THREADS = 50;
 
-// ── Run background memory extraction every Nth user message in a thread ────
-// Keeps the extra Gemini call (and its cost/latency) infrequent rather than
-// firing on every single turn.
 const MEMORY_EXTRACTION_EVERY_N_TURNS = 3;
-
-// ── Keywords that signal the student is actually asking about their own
-// progress/profile — only then do we surface Student Context to the model.
-// Otherwise it gets injected into unrelated answers (e.g. quote explanations)
-// and the model narrates it back as filler ("keep that streak going!").
 const PROGRESS_QUERY_PATTERN =
   /\b(my progress|my streak|how am i doing|weak (area|topic|subject)s?|where (do|should) i (focus|improve)|study plan|revision plan|my (score|performance)|am i ready|target year|how far am i)\b/i;
 
-/**
- * Builds a short "Student Context" block from the user's profile + saved
- * progress. Only returns non-empty when the current message is actually
- * about the student's own progress/profile — for everything else (e.g.
- * "explain this quote", "what is Article 21") this stays empty so the model
- * doesn't drag personal stats into unrelated answers.
- */
+
 function buildStudentContext(user, userData, currentMessage) {
   const isProgressQuery = PROGRESS_QUERY_PATTERN.test(currentMessage || "");
   if (!isProgressQuery) return "";
@@ -125,14 +105,7 @@ function deriveTitle(text) {
   return words.length < clean.length ? `${words}…` : words;
 }
 
-/**
- * One-time migration: older deployments stored a single flat conversation in
- * UserData.mentor_chat. The first time a user with leftover data hits the
- * threads system, wrap that old conversation into a real thread so nothing
- * gets silently lost, then stop touching mentor_chat going forward.
- * Mutates `userData` in place; caller is responsible for saving if
- * `migrated` comes back true (or simply overwrites mentor_threads anyway).
- */
+
 function migrateLegacyChat(userData) {
   const existingThreads = Array.isArray(userData.mentor_threads)
     ? userData.mentor_threads
@@ -163,10 +136,6 @@ function migrateLegacyChat(userData) {
   return { threads: [migratedThread], migrated: true };
 }
 
-/**
- * POST /api/evaluate/answer
- * Evaluates a UPSC Mains answer via AI and saves metadata to UserData.
- */
 const evaluateAnswer = async (req, res, next) => {
   try {
     const { question, answer, paper } = req.body;
@@ -202,9 +171,7 @@ Please evaluate this answer according to your mentor framework. Be specific abou
     console.log(`[Evaluation] Processing for user: ${req.user.id}`);
 
     const { result, provider } = await callAIClient(evalPrompt, paper || "GS2");
-    // ── Save evaluation metadata to UserData (Sequelize JSONB) ───────────────
-    // req.user.id = UUID string (set by authMiddleware via Sequelize)
-    const userData = await UserData.findOne({
+      const userData = await UserData.findOne({
       where: { user_id: req.user.id },
     });
     if (userData) {
@@ -237,16 +204,40 @@ Please evaluate this answer according to your mentor framework. Be specific abou
   }
 };
 
-/**
- * POST /api/evaluate/chat
- * Conversational UPSC mentor chat via Gemini — backed by persistent, per-user
- * chat THREADS (UserData.mentor_threads), ChatGPT/Gemini-style. Pass an
- * existing `thread_id` to continue that conversation, or omit it to start a
- * brand-new thread (created lazily on this first message, titled from it).
- * The client may also send an optional `context_hint` describing which part
- * of the app the student is in — folded into the system instruction for
- * this turn only, never stored as a message.
- */
+
+const VALID_NOTE_ACTIONS = new Set(["improve", "mistakes", "revision", "mains"]);
+
+const runNoteAction = async (req, res, next) => {
+  try {
+    const { action } = req.params;
+    if (!VALID_NOTE_ACTIONS.has(action)) {
+      return res.status(400).json({
+        success: false,
+        error: `Unknown notes action "${action}".`,
+      });
+    }
+
+    const { title, topic, content } = req.body;
+    if (!content || content.trim().length < 20) {
+      return res.status(400).json({
+        success: false,
+        error: "Note content is too short for AI to work with (min 20 characters).",
+      });
+    }
+
+    const { result, provider } = await runNotesAction(action, { title, topic, content });
+
+    return res.status(200).json({
+      success: true,
+      provider_used: provider,
+      result,
+    });
+  } catch (err) {
+    console.error(`Notes action "${req.params.action}" crashed:`, err);
+    next(err);
+  }
+};
+
 const chat = async (req, res, next) => {
   try {
     const { message, context_hint, thread_id } = req.body;
@@ -326,12 +317,7 @@ const chat = async (req, res, next) => {
     userData.mentor_threads = threads;
     userData.changed("mentor_threads", true);
     await userData.save();
-
-    // ── Fire-and-forget background memory extraction ─────────────────────────
-    // Doesn't block the response; runs only every Nth user turn in a thread
-    // to keep the extra Gemini call infrequent. Any failure is swallowed —
-    // memory is a nice-to-have, never allowed to affect the chat itself.
-    const userTurnCount = thread.messages.filter(
+  const userTurnCount = thread.messages.filter(
       (m) => m.role === "user",
     ).length;
     if (userTurnCount % MEMORY_EXTRACTION_EVERY_N_TURNS === 0) {
@@ -369,12 +355,6 @@ const chat = async (req, res, next) => {
   }
 };
 
-/**
- * GET /api/evaluate/chat-threads
- * Lightweight list of the student's saved chats (id/title/updatedAt/count)
- * for a ChatGPT-style history dropdown — full messages are fetched
- * separately via GET /chat-threads/:id only when a thread is opened.
- */
 const listChatThreads = async (req, res, next) => {
   try {
     const userData = await UserData.findOne({
@@ -453,5 +433,5 @@ module.exports = {
   listChatThreads,
   getChatThread,
   deleteChatThread,
+  runNoteAction,
 };
-                             

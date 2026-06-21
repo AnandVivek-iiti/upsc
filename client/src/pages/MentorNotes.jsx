@@ -2,10 +2,10 @@ import React, {
   useState, useRef, useEffect, useCallback, useMemo, memo,
 } from "react";
 import {
-  Plus, Search, Trash2, X, ChevronLeft, Clock, Check, Loader2,
+  Plus, Search, Trash2, X, ChevronLeft, Check, Loader2,
   Sparkles, AlertTriangle, Zap, Wand2, Eye, EyeOff, Copy,
   RotateCcw, GraduationCap, LogIn, NotebookPen, BookOpen,
-  ListFilter, PenLine,
+  PenLine, Menu,
 } from "lucide-react";
 import {
   improveNotes, findMistakesInNotes, generateRevisionNotes, convertToMainsFormat,
@@ -18,21 +18,21 @@ const AUTOSAVE_DEBOUNCE_MS = 1400;
 const MIN_CONTENT_FOR_AI = 40;
 
 const TOPICS = [
-  { id: "polity",      label: "Polity",          color: "#f87171" },
-  { id: "history",     label: "History",         color: "#c084fc" },
-  { id: "economy",     label: "Economy",         color: "#34d399" },
-  { id: "geography",   label: "Geography",       color: "#60a5fa" },
-  { id: "sociology",   label: "Sociology",       color: "#5eead4" },
-  { id: "ethics",      label: "Ethics",          color: "#f59e0b" },
-  { id: "environment", label: "Environment",     color: "#84cc16" },
-  { id: "scitech",     label: "Science & Tech",  color: "#f9a8d4" },
+  { id: "polity",      label: "Polity",         color: "#f87171" },
+  { id: "history",     label: "History",        color: "#c084fc" },
+  { id: "economy",     label: "Economy",        color: "#34d399" },
+  { id: "geography",   label: "Geography",      color: "#60a5fa" },
+  { id: "sociology",   label: "Sociology",      color: "#5eead4" },
+  { id: "ethics",      label: "Ethics",         color: "#f59e0b" },
+  { id: "environment", label: "Environment",    color: "#84cc16" },
+  { id: "scitech",     label: "Science & Tech", color: "#f9a8d4" },
 ];
 
 const AI_ACTIONS = [
-  { id: "improve",  label: "Improve Notes",          short: "Improve",  icon: Wand2,          fn: improveNotes,          accent: "#60a5fa" },
-  { id: "mistakes", label: "Find Mistakes",          short: "Mistakes", icon: AlertTriangle,  fn: findMistakesInNotes,   accent: "#f59e0b" },
-  { id: "revision", label: "Generate Revision Notes",short: "Revise",   icon: Zap,            fn: generateRevisionNotes, accent: "#34d399" },
-  { id: "mains",    label: "Convert to Mains Format",short: "Mains",    icon: GraduationCap,  fn: convertToMainsFormat,  accent: "#a78bfa" },
+  { id: "improve",  label: "Improve Notes",           short: "Improve",  icon: Wand2,         fn: improveNotes,          accent: "#60a5fa" },
+  { id: "mistakes", label: "Find Mistakes",           short: "Mistakes", icon: AlertTriangle, fn: findMistakesInNotes,   accent: "#f59e0b" },
+  { id: "revision", label: "Generate Revision Notes", short: "Revise",   icon: Zap,           fn: generateRevisionNotes, accent: "#34d399" },
+  { id: "mains",    label: "Convert to Mains Format", short: "Mains",    icon: GraduationCap, fn: convertToMainsFormat,  accent: "#a78bfa" },
 ];
 
 // ─── Pure helpers ─────────────────────────────────────────────────────────────
@@ -101,7 +101,7 @@ function scoreColor(v) {
   return "#f87171";
 }
 
-// ─── Markdown-lite renderer (reading mode + generic AI results) ──────────────
+// ─── Markdown-lite renderer ────────────────────────────────────────────────────
 
 function inlineFormat(text) {
   if (!text) return null;
@@ -181,6 +181,10 @@ function renderRich(text) {
       i++; continue;
     }
 
+    if (/^###\s/.test(line)) {
+      elements.push(<p key={key()} className="mn-heading2">{line.replace(/^###\s/, "")}</p>);
+      i++; continue;
+    }
     if (/^##\s/.test(line)) {
       elements.push(<p key={key()} className="mn-heading">{line.replace(/^##\s/, "")}</p>);
       i++; continue;
@@ -215,9 +219,6 @@ function renderRich(text) {
 }
 
 // ─── "Find Mistakes" structured-report parser ─────────────────────────────────
-// Expects the AI to answer in a strict label format (see useAI.js prompt). If
-// parsing fails for any reason, callers fall back to rendering the raw text
-// with renderRich() so the feature degrades gracefully instead of breaking.
 
 function parseMistakesReport(raw) {
   if (!raw) return null;
@@ -236,7 +237,12 @@ function parseMistakesReport(raw) {
   const trapsRaw    = section("TRAPS",    ["REVISION:"]);
   const revisionRaw = section("REVISION", []);
 
-  const toList = (block) => block.split("\n").map(l => l.replace(/^[-•*]\s*/, "").trim()).filter(Boolean);
+  // support both semicolon-separated (from useAI) and newline-separated
+  const toList = (block) => {
+    if (!block) return [];
+    if (block.includes(";")) return block.split(";").map(s => s.trim()).filter(Boolean);
+    return block.split("\n").map(l => l.replace(/^[-•*]\s*/, "").trim()).filter(Boolean);
+  };
 
   return {
     knowledge: clampScore(k),
@@ -269,63 +275,111 @@ function mistakesReportToText(report) {
 // ─── Static styles ────────────────────────────────────────────────────────────
 
 const MN_STYLES = `
-@keyframes mn-rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-@keyframes mn-pop  { from { opacity: 0; transform: translateY(16px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
-@keyframes mn-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes mn-rise  { from { opacity: 0; transform: translateY(8px); }             to { opacity: 1; transform: translateY(0); } }
+@keyframes mn-pop   { from { opacity: 0; transform: translateY(16px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+@keyframes mn-fade  { from { opacity: 0; }                                           to { opacity: 1; } }
 @keyframes mn-pulse-dot { 0%,80%,100% { transform: scale(0.6); opacity: 0.5; } 40% { transform: scale(1); opacity: 1; } }
-@keyframes mn-bar-fill { from { width: 0%; } }
+@keyframes mn-bar-fill  { from { width: 0%; } }
 
-.mn-workspace { height: 100dvh; display: flex; flex-direction: column; overflow: hidden; background: var(--bg-base); }
+/* ── Shell: fills whatever container the router gives us ── */
+.mn-workspace {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--bg-base);
+  /* Fill full viewport height when used as a page */
+  height: 100dvh;
+  /* But also expand to parent if embedded */
+  min-height: 0;
+}
 
+/* ── Header ── */
 .mn-header {
-  flex-shrink: 0; display: flex; align-items: center; gap: 10px;
-  padding: 14px 16px; border-bottom: 1px solid var(--bg-border);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--bg-border);
   background: var(--bg-surface);
 }
 .mn-header-icon {
   width: 34px; height: 34px; border-radius: 11px; flex-shrink: 0;
   display: flex; align-items: center; justify-content: center;
-  background: linear-gradient(135deg, var(--accent-gold-dim), rgba(245,158,11,.08));
+  background: var(--accent-gold-dim);
   border: 1px solid rgba(245,158,11,.25); color: var(--accent-gold);
 }
 
+/* ── Body ── */
 .mn-body { flex: 1; display: flex; overflow: hidden; min-height: 0; }
 
-/* Sidebar */
+/* ── Sidebar ── */
 .mn-sidebar {
-  width: 100%; flex-shrink: 0; flex-direction: column; overflow: hidden;
-  border-right: 1px solid var(--bg-border); background: var(--bg-surface);
+  flex-shrink: 0;
+  flex-direction: column;
+  overflow: hidden;
+  border-right: 1px solid var(--bg-border);
+  background: var(--bg-surface);
+  /* default desktop width */
+  width: 288px;
+  transition: width 0.2s ease;
 }
-@media (min-width: 1024px) { .mn-sidebar { width: 300px; } }
+.mn-sidebar.mn-sidebar-collapsed { width: 0; border-right: none; overflow: hidden; }
 
+/* mobile: sidebar takes full width and is toggled */
+@media (max-width: 767px) {
+  .mn-sidebar {
+    position: absolute;
+    inset: 0;
+    width: 100% !important;
+    z-index: 40;
+    display: none;
+  }
+  .mn-sidebar.mn-sidebar-mobile-open {
+    display: flex;
+  }
+}
+@media (min-width: 768px) {
+  .mn-sidebar { display: flex; }
+}
+
+.mn-sidebar-inner { display: flex; flex-direction: column; width: 100%; height: 100%; overflow: hidden; }
+
+/* ── Search ── */
 .mn-search {
   display: flex; align-items: center; gap: 7px;
-  padding: 9px 12px; border-radius: 12px;
+  padding: 8px 11px; border-radius: 12px;
   border: 1px solid var(--bg-border); background: var(--bg-muted);
 }
-.mn-search input { flex: 1; background: transparent; border: none; outline: none; font-size: 13px; color: var(--text-primary); min-width: 0; }
+.mn-search input {
+  flex: 1; background: transparent; border: none; outline: none;
+  font-size: 13px; color: var(--text-primary); min-width: 0;
+  font-family: inherit;
+}
 .mn-search input::placeholder { color: var(--text-muted); }
 
+/* ── Topic rail ── */
 .mn-topic-rail { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 2px; scrollbar-width: none; }
 .mn-topic-rail::-webkit-scrollbar { display: none; }
 
 .mn-chip {
   display: inline-flex; align-items: center; gap: 5px; flex-shrink: 0;
-  padding: 6px 11px; border-radius: 20px; font-size: 11.5px; font-weight: 600;
+  padding: 5px 11px; border-radius: 20px; font-size: 11.5px; font-weight: 600;
   border: 1px solid var(--bg-border); background: var(--bg-muted); color: var(--text-secondary);
-  cursor: pointer; transition: all .15s ease; white-space: nowrap;
-  min-height: 30px;
+  cursor: pointer; transition: all .15s ease; white-space: nowrap; min-height: 28px;
+  font-family: inherit;
 }
 .mn-chip:active { transform: scale(0.96); }
 .mn-chip-dot { width: 7px; height: 7px; border-radius: 999px; flex-shrink: 0; }
 
+/* ── Scroll ── */
 .mn-scroll::-webkit-scrollbar { width: 4px; }
 .mn-scroll::-webkit-scrollbar-thumb { background: var(--bg-border); border-radius: 999px; }
 
-/* Note row */
+/* ── Note row ── */
 .mn-note-row {
   display: flex; align-items: flex-start; gap: 10px;
-  padding: 11px 12px; border-radius: 14px; cursor: pointer;
+  padding: 10px 12px; border-radius: 12px; cursor: pointer;
   border: 1px solid transparent; transition: background-color .15s, border-color .15s;
   min-height: 44px;
 }
@@ -333,132 +387,164 @@ const MN_STYLES = `
 .mn-note-row.active { background: var(--accent-gold-dim); border-color: rgba(245,158,11,.25); }
 .mn-note-bar { width: 3px; align-self: stretch; border-radius: 999px; flex-shrink: 0; min-height: 36px; }
 
-/* Editor pane */
-.mn-editor { flex: 1; min-width: 0; display: flex; flex-direction: column; overflow: hidden; background: var(--bg-base); }
+/* ── Editor pane ── */
+.mn-editor {
+  flex: 1; min-width: 0;
+  display: flex; flex-direction: column;
+  overflow: hidden;
+  background: var(--bg-base);
+}
 
-.mn-toolbar { flex-shrink: 0; border-bottom: 1px solid var(--bg-border); background: var(--bg-surface); }
+/* mobile: editor hidden when sidebar is open */
+@media (max-width: 767px) {
+  .mn-editor.mn-editor-hidden { display: none; }
+}
+
+/* ── Toolbar ── */
+.mn-toolbar {
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--bg-border);
+  background: var(--bg-surface);
+}
 
 .mn-title-input {
   width: 100%; border: none; outline: none; background: transparent;
-  font-size: 21px; font-weight: 700; color: var(--text-primary);
-  line-height: 1.3;
+  font-size: 22px; font-weight: 700; color: var(--text-primary);
+  line-height: 1.3; font-family: inherit;
 }
 .mn-title-input::placeholder { color: var(--text-muted); font-weight: 600; }
 
+/* ── Content area ── */
 .mn-content-area { flex: 1; overflow-y: auto; min-height: 0; }
 
 .mn-textarea {
   width: 100%; border: none; outline: none; resize: none; background: transparent;
-  color: var(--text-primary); font-size: 15.5px; line-height: 1.85;
+  color: var(--text-primary); font-size: 15.5px; line-height: 1.9;
   font-family: inherit;
+  /* Critical: ensure the textarea is always interactive */
+  cursor: text;
+  -webkit-user-select: text;
+  user-select: text;
+  pointer-events: auto;
 }
 .mn-textarea::placeholder { color: var(--text-muted); }
 
-/* Reading mode */
-.mn-reading { max-width: 680px; margin: 0 auto; }
-.mn-reading .mn-para { font-size: 16px; line-height: 1.9; color: var(--text-primary); margin: 10px 0; }
-.mn-reading .mn-heading1 { font-size: 22px; margin-top: 20px; }
-.mn-reading .mn-heading { font-size: 17px; margin-top: 18px; }
+/* ── Reading mode ── */
+.mn-reading { max-width: 720px; margin: 0 auto; }
+.mn-reading .mn-para    { font-size: 16px; line-height: 1.9; color: var(--text-primary); margin: 10px 0; }
+.mn-reading .mn-heading1 { font-size: 22px; margin-top: 22px; }
+.mn-reading .mn-heading  { font-size: 18px; margin-top: 20px; }
+.mn-reading .mn-heading2 { font-size: 15px; margin-top: 14px; }
 
-/* Rich text shared classes */
-.mn-heading { font-size: 13.5px; font-weight: 700; color: var(--accent-gold); margin: 14px 0 5px; letter-spacing: .01em; }
+/* ── Rich text ── */
+.mn-heading  { font-size: 13.5px; font-weight: 700; color: var(--accent-gold); margin: 16px 0 5px; letter-spacing: .01em; }
 .mn-heading:first-child { margin-top: 0; }
-.mn-heading1 { font-size: 15px; font-weight: 800; color: var(--text-primary); margin: 14px 0 6px; border-bottom: 1px solid var(--bg-border); padding-bottom: 5px; }
-.mn-para { margin: 5px 0; color: var(--text-primary); line-height: 1.7; font-size: 13.5px; }
-.mn-divider { border: none; border-top: 1px solid var(--bg-border); margin: 14px 0; }
-.mn-ul, .mn-ol { margin: 6px 0 6px 16px; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+.mn-heading1 { font-size: 15.5px; font-weight: 800; color: var(--text-primary); margin: 16px 0 7px; border-bottom: 1px solid var(--bg-border); padding-bottom: 5px; }
+.mn-heading2 { font-size: 12.5px; font-weight: 700; color: var(--text-secondary); margin: 12px 0 4px; text-transform: uppercase; letter-spacing: .04em; }
+.mn-para     { margin: 6px 0; color: var(--text-primary); line-height: 1.75; font-size: 14px; }
+.mn-divider  { border: none; border-top: 1px solid var(--bg-border); margin: 16px 0; }
+.mn-ul, .mn-ol { margin: 7px 0 7px 18px; padding: 0; display: flex; flex-direction: column; gap: 5px; }
 .mn-ul { list-style: none; }
-.mn-ul li { position: relative; padding-left: 15px; font-size: 13.5px; color: var(--text-primary); line-height: 1.6; }
-.mn-ul li::before { content: "▸"; position: absolute; left: 0; color: var(--accent-gold); font-size: 10px; top: 3px; }
+.mn-ul li { position: relative; padding-left: 16px; font-size: 14px; color: var(--text-primary); line-height: 1.65; }
+.mn-ul li::before { content: "▸"; position: absolute; left: 0; color: var(--accent-gold); font-size: 10px; top: 4px; }
 .mn-ol { list-style: decimal; }
-.mn-ol li { padding-left: 2px; font-size: 13.5px; color: var(--text-primary); line-height: 1.6; }
+.mn-ol li  { padding-left: 3px; font-size: 14px; color: var(--text-primary); line-height: 1.65; }
 .mn-inline-code { background: rgba(245,158,11,.12); color: var(--accent-gold); padding: 1px 5px; border-radius: 5px; font-size: 12px; font-family: monospace; }
 
 .mn-memory-card { border-radius: 14px; overflow: hidden; border: 1px solid rgba(139,92,246,.35); margin: 10px 0; }
-.mn-memory-header { display: flex; align-items: center; gap: 6px; padding: 7px 12px; background: linear-gradient(135deg, rgba(139,92,246,.22), rgba(59,130,246,.13)); font-size: 10px; font-weight: 700; letter-spacing: .06em; color: #a78bfa; text-transform: uppercase; }
-.mn-memory-body { padding: 9px 12px; display: flex; flex-direction: column; gap: 6px; }
-.mn-memory-row { display: flex; gap: 8px; align-items: baseline; padding-bottom: 6px; border-bottom: 1px solid var(--bg-border); }
+.mn-memory-header { display: flex; align-items: center; gap: 6px; padding: 7px 12px; background: rgba(139,92,246,.14); font-size: 10px; font-weight: 700; letter-spacing: .06em; color: #a78bfa; text-transform: uppercase; }
+.mn-memory-body  { padding: 9px 12px; display: flex; flex-direction: column; gap: 6px; }
+.mn-memory-row   { display: flex; gap: 8px; align-items: baseline; padding-bottom: 6px; border-bottom: 1px solid var(--bg-border); }
 .mn-memory-row:last-child { border-bottom: none; padding-bottom: 0; }
-.mn-memory-label { font-size: 11.5px; font-weight: 600; color: #a78bfa; min-width: 88px; flex-shrink: 0; }
-.mn-memory-val { font-size: 12.5px; color: var(--text-primary); }
+.mn-memory-label { font-size: 11.5px; font-weight: 600; color: #a78bfa; min-width: clamp(64px, 20vw, 88px); flex-shrink: 0; }
+.mn-memory-val   { font-size: 12.5px; color: var(--text-primary); }
 
 .mn-callout { display: flex; gap: 8px; align-items: flex-start; padding: 9px 12px; border-radius: 12px; margin: 8px 0; font-size: 13px; }
-.mn-callout-note { background: rgba(59,130,246,.1); border: 1px solid rgba(59,130,246,.25); }
-.mn-callout-tip { background: rgba(16,185,129,.1); border: 1px solid rgba(16,185,129,.25); }
-.mn-callout-important { background: rgba(245,158,11,.1); border: 1px solid rgba(245,158,11,.25); }
-.mn-callout-warn { background: rgba(239,68,68,.1); border: 1px solid rgba(239,68,68,.25); }
+.mn-callout-note      { background: rgba(59,130,246,.1);  border: 1px solid rgba(59,130,246,.25); }
+.mn-callout-tip       { background: rgba(16,185,129,.1);  border: 1px solid rgba(16,185,129,.25); }
+.mn-callout-important { background: rgba(245,158,11,.1);  border: 1px solid rgba(245,158,11,.25); }
+.mn-callout-warn      { background: rgba(239,68,68,.1);   border: 1px solid rgba(239,68,68,.25); }
 .mn-callout-label { font-size: 9px; font-weight: 800; letter-spacing: .06em; padding: 2px 6px; border-radius: 5px; background: currentColor; color: #fff; flex-shrink: 0; align-self: flex-start; margin-top: 1px; opacity: .85; }
 
-/* Save indicator */
-.mn-save-dot { width: 6px; height: 6px; border-radius: 999px; flex-shrink: 0; }
+/* ── Save dot ── */
+.mn-save-dot { width: 6px; height: 6px; border-radius: 999px; flex-shrink: 0; display: inline-block; }
 
-/* AI action rail */
-.mn-ai-rail { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; }
+/* ── AI rail ── */
+.mn-ai-rail { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; padding-bottom: 1px; }
 .mn-ai-rail::-webkit-scrollbar { display: none; }
 .mn-ai-btn {
   display: flex; align-items: center; gap: 7px; flex-shrink: 0;
-  padding: 9px 14px; border-radius: 13px; font-size: 12.5px; font-weight: 600;
+  padding: 9px 14px; border-radius: 12px; font-size: 12.5px; font-weight: 600;
   border: 1px solid var(--bg-border); background: var(--bg-surface); color: var(--text-primary);
-  cursor: pointer; transition: all .15s ease; min-height: 40px;
+  cursor: pointer; transition: all .15s ease; min-height: 40px; font-family: inherit;
 }
-.mn-ai-btn:hover { border-color: var(--ai-accent, var(--accent-blue)); color: var(--ai-accent, var(--accent-blue)); }
+.mn-ai-btn:hover  { border-color: var(--ai-accent, var(--accent-blue)); color: var(--ai-accent, var(--accent-blue)); }
 .mn-ai-btn:active { transform: scale(0.97); }
 .mn-ai-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 .mn-ai-btn:disabled:hover { border-color: var(--bg-border); color: var(--text-primary); }
 
-/* Drawer / modal */
+/* ── Drawer / modal ── */
 .mn-drawer-backdrop {
-  position: fixed; inset: 0; z-index: 9990; background: rgba(0,0,0,0.45);
-  backdrop-filter: blur(2px); animation: mn-fade 160ms ease both;
+  position: fixed; inset: 0; z-index: 9990; background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(3px); animation: mn-fade 180ms ease both;
 }
+/* Mobile: bottom sheet */
 .mn-drawer {
   position: fixed; z-index: 9991; background: var(--bg-surface);
   display: flex; flex-direction: column; overflow: hidden;
   border: 1px solid var(--bg-border);
   left: 0; right: 0; bottom: 0;
-  max-height: 86dvh; border-radius: 22px 22px 0 0;
+  max-height: 88dvh;
+  border-radius: 22px 22px 0 0;
   animation: mn-pop 220ms cubic-bezier(0.22,1,0.36,1) both;
-  box-shadow: var(--shadow-lg);
+  box-shadow: 0 -4px 40px rgba(0,0,0,.18);
 }
+/* Tablet/Desktop: centered modal */
 @media (min-width: 768px) {
   .mn-drawer {
-    left: 50%; right: auto; bottom: auto; top: 50%;
+    left: 50%;
+    right: auto;
+    bottom: auto;
+    top: 50%;
     transform: translate(-50%, -50%);
-    width: min(620px, calc(100vw - 48px));
-    max-height: 80dvh; border-radius: 24px;
+    width: min(660px, calc(100vw - 48px));
+    max-height: min(82dvh, 680px);
+    border-radius: 22px;
+    box-shadow: 0 8px 60px rgba(0,0,0,.28);
   }
 }
 
-.mn-drawer-header { flex-shrink: 0; display: flex; align-items: center; gap: 10px; padding: 16px 18px; border-bottom: 1px solid var(--bg-border); }
-.mn-drawer-body { flex: 1; overflow-y: auto; padding: 16px 18px; min-height: 120px; }
-.mn-drawer-footer { flex-shrink: 0; display: flex; align-items: center; gap: 8px; padding: 12px 18px; border-top: 1px solid var(--bg-border); background: var(--bg-surface); flex-wrap: wrap; }
+.mn-drawer-header { flex-shrink: 0; display: flex; align-items: center; gap: 10px; padding: 16px 20px; border-bottom: 1px solid var(--bg-border); }
+.mn-drawer-body   { flex: 1; overflow-y: auto; padding: 20px; min-height: 120px; }
+.mn-drawer-footer { flex-shrink: 0; display: flex; align-items: center; gap: 8px; padding: 14px 20px; border-top: 1px solid var(--bg-border); background: var(--bg-surface); flex-wrap: wrap; }
 
+/* ── Pill buttons ── */
 .mn-pill-btn {
   display: inline-flex; align-items: center; gap: 6px;
-  padding: 9px 14px; border-radius: 11px; font-size: 12.5px; font-weight: 600;
+  padding: 9px 15px; border-radius: 11px; font-size: 12.5px; font-weight: 600;
   border: 1px solid var(--bg-border); background: var(--bg-muted); color: var(--text-primary);
-  cursor: pointer; transition: all .15s ease; min-height: 40px;
+  cursor: pointer; transition: all .15s ease; min-height: 38px; font-family: inherit;
 }
-.mn-pill-btn:hover { background: var(--bg-border); }
+.mn-pill-btn:hover  { background: var(--bg-border); }
 .mn-pill-btn:active { transform: scale(0.97); }
 .mn-pill-btn-primary { background: var(--accent-blue); color: #fff; border-color: transparent; }
-.mn-pill-btn-primary:hover { background: #2563eb; opacity: 1; }
+.mn-pill-btn-primary:hover { background: #2563eb; }
 .mn-pill-btn-armed { background: var(--accent-red); color: #fff; border-color: transparent; }
 
-/* Score bars */
-.mn-score-row { display: flex; align-items: center; gap: 10px; margin-bottom: 11px; }
-.mn-score-label { width: 132px; flex-shrink: 0; font-size: 12px; font-weight: 600; color: var(--text-secondary); }
-.mn-score-track { flex: 1; height: 7px; border-radius: 999px; background: var(--bg-muted); overflow: hidden; }
-.mn-score-fill { height: 100%; border-radius: 999px; animation: mn-bar-fill 600ms cubic-bezier(.22,1,.36,1) both; }
-.mn-score-val { width: 34px; flex-shrink: 0; text-align: right; font-size: 12px; font-weight: 700; font-family: monospace; }
+/* ── Score bars ── */
+.mn-score-row   { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; flex-wrap: nowrap; }
+.mn-score-label { min-width: 136px; flex-shrink: 0; font-size: 12px; font-weight: 600; color: var(--text-secondary); line-height: 1.3; }
+.mn-score-track { flex: 1; min-width: 40px; height: 7px; border-radius: 999px; background: var(--bg-muted); overflow: hidden; }
+.mn-score-fill  { height: 100%; border-radius: 999px; animation: mn-bar-fill 600ms cubic-bezier(.22,1,.36,1) both; }
+.mn-score-val   { width: 34px; flex-shrink: 0; text-align: right; font-size: 12px; font-weight: 700; font-family: monospace; }
 
 .mn-revision-box {
-  border-radius: 16px; padding: 14px 16px; margin-top: 6px;
-  background: linear-gradient(135deg, var(--accent-gold-dim), rgba(245,158,11,.04));
+  border-radius: 14px; padding: 14px 16px; margin-top: 6px;
+  background: var(--accent-gold-dim);
   border: 1px solid rgba(245,158,11,.3);
 }
 
-/* Buttons / icon buttons */
+/* ── Icon buttons ── */
 .mn-icon-btn {
   display: inline-flex; align-items: center; justify-content: center;
   width: 36px; height: 36px; border-radius: 11px; flex-shrink: 0;
@@ -467,15 +553,40 @@ const MN_STYLES = `
 }
 .mn-icon-btn:hover { background: var(--bg-muted); color: var(--text-primary); }
 
-/* Empty states */
+/* ── Empty states ── */
 .mn-empty { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; height: 100%; padding: 32px 20px; gap: 16px; }
-.mn-empty-icon { width: 64px; height: 64px; border-radius: 20px; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, var(--accent-gold-dim), rgba(167,139,250,.12)); border: 1px solid rgba(245,158,11,.2); }
+.mn-empty-icon { width: 64px; height: 64px; border-radius: 20px; display: flex; align-items: center; justify-content: center; background: var(--accent-gold-dim); border: 1px solid rgba(245,158,11,.2); }
 
-@media (max-width: 1023px) {
-  .mn-mobile-ai-bar {
-    position: sticky; bottom: 0; z-index: 5;
-    padding: 10px 14px calc(10px + var(--safe-bottom,0px));
-    background: var(--bg-surface); border-top: 1px solid var(--bg-border);
+/* ── Mobile bottom AI bar ── */
+@media (max-width: 767px) {
+  .mn-ai-section {
+    position: sticky;
+    bottom: 0;
+    z-index: 5;
+    padding: 10px 14px calc(10px + env(safe-area-inset-bottom, 0px));
+    background: var(--bg-surface);
+    border-top: 1px solid var(--bg-border);
+  }
+}
+@media (min-width: 768px) {
+  .mn-ai-section {
+    padding: 12px 24px 16px;
+    border-top: 1px solid var(--bg-border);
+    background: var(--bg-surface);
+  }
+}
+
+/* ── Mobile overlay backdrop for sidebar ── */
+.mn-sidebar-backdrop {
+  display: none;
+}
+@media (max-width: 767px) {
+  .mn-sidebar-backdrop {
+    display: block;
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: 39;
   }
 }
 `;
@@ -535,7 +646,7 @@ const EmptyNotesList = memo(function EmptyNotesList({ onCreate, filtered }) {
       <div>
         <p className="text-[14px] font-bold text-text-primary">{filtered ? "No notes match" : "No notes yet"}</p>
         <p className="text-[12px] text-text-muted mt-1 max-w-[220px]">
-          {filtered ? "Try a different search or topic filter." : "Start your first set of UPSC notes — organised by topic, saved automatically."}
+          {filtered ? "Try a different search or topic filter." : "Start your first UPSC notes — organised by topic, saved automatically."}
         </p>
       </div>
       {!filtered && (
@@ -552,8 +663,8 @@ const EmptyEditor = memo(function EmptyEditor({ onCreate }) {
     <div className="mn-empty" style={{ height: "100%" }}>
       <div className="mn-empty-icon"><BookOpen size={26} style={{ color: "var(--accent-gold)" }} /></div>
       <div>
-        <p className="font-display text-[19px] font-bold text-text-primary">Your second brain for UPSC</p>
-        <p className="text-[13px] text-text-muted mt-2 max-w-[320px] leading-relaxed">
+        <p className="font-display text-[20px] font-bold text-text-primary">Your second brain for UPSC</p>
+        <p className="text-[13.5px] text-text-muted mt-2 max-w-[340px] leading-relaxed">
           Capture concepts in your own words, tag them by subject, then let your AI mentor polish, audit and convert them — right when you need it.
         </p>
       </div>
@@ -569,18 +680,16 @@ const EmptyEditor = memo(function EmptyEditor({ onCreate }) {
 const NoteRow = memo(function NoteRow({ note, active, onSelect, onDelete }) {
   const [confirm, setConfirm] = useState(false);
   const meta = topicMeta(note.topic);
-  const select = useCallback(() => onSelect(note.id), [onSelect, note.id]);
+  const select    = useCallback(() => onSelect(note.id), [onSelect, note.id]);
   const askConfirm = useCallback(e => { e.stopPropagation(); setConfirm(true); }, []);
-  const cancel = useCallback(e => { e.stopPropagation(); setConfirm(false); }, []);
+  const cancel    = useCallback(e => { e.stopPropagation(); setConfirm(false); }, []);
   const confirmDel = useCallback(e => { e.stopPropagation(); onDelete(note.id); }, [onDelete, note.id]);
 
   return (
     <div onClick={select} className={`mn-note-row ${active ? "active" : ""}`}>
       <div className="mn-note-bar" style={{ background: meta ? meta.color : "var(--bg-border)" }} />
       <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2">
-          <p className="text-[13px] font-semibold text-text-primary truncate flex-1">{note.title || "Untitled note"}</p>
-        </div>
+        <p className="text-[13px] font-semibold text-text-primary truncate">{note.title || "Untitled note"}</p>
         <p className="text-[11.5px] text-text-muted mt-0.5 truncate">{snippet(note.content)}</p>
         <div className="flex items-center gap-2 mt-1.5">
           {meta && <span className="text-[10px] font-mono font-semibold" style={{ color: meta.color }}>{meta.label}</span>}
@@ -590,7 +699,7 @@ const NoteRow = memo(function NoteRow({ note, active, onSelect, onDelete }) {
       {confirm ? (
         <div className="flex gap-1 shrink-0 items-center">
           <button onClick={confirmDel} className="text-[10px] font-mono px-2 py-1 rounded-lg bg-red-500/15 text-red-400 font-semibold">Delete</button>
-          <button onClick={cancel} className="text-[10px] font-mono px-2 py-1 rounded-lg bg-bg-muted text-text-muted">Cancel</button>
+          <button onClick={cancel}    className="text-[10px] font-mono px-2 py-1 rounded-lg bg-bg-muted text-text-muted">Cancel</button>
         </div>
       ) : (
         <button onClick={askConfirm} className="mn-icon-btn shrink-0" style={{ width: 30, height: 30 }} aria-label="Delete note">
@@ -603,7 +712,7 @@ const NoteRow = memo(function NoteRow({ note, active, onSelect, onDelete }) {
 
 const Sidebar = memo(function Sidebar({
   notes, activeId, onSelect, onDelete, onCreate, search, onSearchChange,
-  topicFilter, onTopicFilter, paneVisible,
+  topicFilter, onTopicFilter, isOpen, onClose,
 }) {
   const filtered = useMemo(() => {
     let list = notes;
@@ -617,33 +726,45 @@ const Sidebar = memo(function Sidebar({
   }, [notes, search, topicFilter]);
 
   return (
-    <div className={`mn-sidebar ${paneVisible ? "flex" : "hidden"} lg:flex`}>
-      <div className="p-3 border-b border-bg-border shrink-0 space-y-2.5">
-        <div className="flex items-center justify-between gap-2">
-          <h2 className="font-display text-[15px] font-bold text-text-primary">Notes</h2>
-          <button onClick={onCreate} className="mn-icon-btn" style={{ background: "var(--accent-gold-dim)", color: "var(--accent-gold)" }} aria-label="New note">
-            <Plus size={17} />
-          </button>
-        </div>
-        <div className="mn-search">
-          <Search size={13} className="shrink-0" style={{ color: "var(--text-muted)" }} />
-          <input value={search} onChange={onSearchChange} placeholder="Search your notes…" />
-        </div>
-        <div className="mn-topic-rail">
-          <TopicChip topic={{ color: "var(--text-muted)", label: "All" }} active={!topicFilter} onClick={() => onTopicFilter(null)} />
-          {TOPICS.map(t => (
-            <TopicChip key={t.id} topic={t} active={topicFilter === t.id} onClick={() => onTopicFilter(t.id)} />
-          ))}
+    <>
+      {/* Mobile backdrop — tapping it closes the sidebar */}
+      {isOpen && <div className="mn-sidebar-backdrop" onClick={onClose} />}
+      <div className={`mn-sidebar ${isOpen ? "mn-sidebar-mobile-open" : ""}`}>
+        <div className="mn-sidebar-inner">
+          <div className="p-3 border-b border-bg-border shrink-0 space-y-2.5">
+            <div className="flex items-center justify-between gap-2">
+              <h2 className="font-display text-[15px] font-bold text-text-primary">Notes</h2>
+              <div className="flex items-center gap-1">
+                {/* Close button — only visible on mobile */}
+                <button onClick={onClose} className="mn-icon-btn md:hidden" aria-label="Close notes list">
+                  <X size={16} />
+                </button>
+                <button onClick={onCreate} className="mn-icon-btn" style={{ background: "var(--accent-gold-dim)", color: "var(--accent-gold)" }} aria-label="New note">
+                  <Plus size={17} />
+                </button>
+              </div>
+            </div>
+            <div className="mn-search">
+              <Search size={13} className="shrink-0" style={{ color: "var(--text-muted)" }} />
+              <input value={search} onChange={onSearchChange} placeholder="Search your notes…" />
+            </div>
+            <div className="mn-topic-rail">
+              <TopicChip topic={{ color: "var(--text-muted)", label: "All" }} active={!topicFilter} onClick={() => onTopicFilter(null)} />
+              {TOPICS.map(t => (
+                <TopicChip key={t.id} topic={t} active={topicFilter === t.id} onClick={() => onTopicFilter(t.id)} />
+              ))}
+            </div>
+          </div>
+          <div className="flex-1 overflow-y-auto mn-scroll px-2 py-2 space-y-0.5">
+            {filtered.length === 0
+              ? <EmptyNotesList onCreate={onCreate} filtered={!!search.trim() || !!topicFilter} />
+              : filtered.map(n => (
+                <NoteRow key={n.id} note={n} active={n.id === activeId} onSelect={onSelect} onDelete={onDelete} />
+              ))}
+          </div>
         </div>
       </div>
-      <div className="flex-1 overflow-y-auto mn-scroll px-2 py-2 pb-bottom-nav lg:pb-2 space-y-1">
-        {filtered.length === 0
-          ? <EmptyNotesList onCreate={onCreate} filtered={!!search.trim() || !!topicFilter} />
-          : filtered.map(n => (
-            <NoteRow key={n.id} note={n} active={n.id === activeId} onSelect={onSelect} onDelete={onDelete} />
-          ))}
-      </div>
-    </div>
+    </>
   );
 });
 
@@ -654,16 +775,16 @@ const MistakesScorecard = memo(function MistakesScorecard({ report }) {
     <div className="space-y-5">
       <div>
         <ScoreBar label="Knowledge Accuracy" value={report.knowledge} />
-        <ScoreBar label="Conceptual Clarity" value={report.clarity} />
-        <ScoreBar label="Retention Potential" value={report.retention} />
+        <ScoreBar label="Conceptual Clarity"  value={report.clarity} />
+        <ScoreBar label="Retention Potential"  value={report.retention} />
       </div>
 
       {report.missing.length > 0 && (
         <div>
-          <p className="text-[11.5px] font-bold uppercase tracking-wide text-text-muted mb-2">Important Missing Points</p>
-          <div className="space-y-1.5">
+          <p className="text-[11.5px] font-bold uppercase tracking-wide text-text-muted mb-2.5">Important Missing Points</p>
+          <div className="space-y-2">
             {report.missing.map((m, i) => (
-              <div key={i} className="flex items-start gap-2 text-[13px] text-text-primary">
+              <div key={i} className="flex items-start gap-2 text-[13.5px] text-text-primary">
                 <AlertTriangle size={13} className="shrink-0 mt-0.5" style={{ color: "#f59e0b" }} />
                 <span>{m}</span>
               </div>
@@ -674,10 +795,10 @@ const MistakesScorecard = memo(function MistakesScorecard({ report }) {
 
       {report.traps.length > 0 && (
         <div>
-          <p className="text-[11.5px] font-bold uppercase tracking-wide text-text-muted mb-2">Memory Traps</p>
-          <div className="space-y-1.5">
+          <p className="text-[11.5px] font-bold uppercase tracking-wide text-text-muted mb-2.5">Memory Traps</p>
+          <div className="space-y-2">
             {report.traps.map((t, i) => (
-              <div key={i} className="flex items-start gap-2 text-[13px] font-mono text-text-primary px-2.5 py-1.5 rounded-lg" style={{ background: "rgba(239,68,68,.07)", border: "1px solid rgba(239,68,68,.18)" }}>
+              <div key={i} className="flex items-start gap-2 text-[13.5px] font-mono text-text-primary px-3 py-2 rounded-lg" style={{ background: "rgba(239,68,68,.07)", border: "1px solid rgba(239,68,68,.18)" }}>
                 <Zap size={12} className="shrink-0 mt-0.5" style={{ color: "#f87171" }} />
                 <span>{t}</span>
               </div>
@@ -690,7 +811,7 @@ const MistakesScorecard = memo(function MistakesScorecard({ report }) {
         <div>
           <p className="text-[11.5px] font-bold uppercase tracking-wide text-text-muted mb-2">30 Second Revision</p>
           <div className="mn-revision-box">
-            <p className="text-[13.5px] leading-relaxed text-text-primary">{report.revision}</p>
+            <p className="text-[14px] leading-relaxed text-text-primary">{report.revision}</p>
           </div>
         </div>
       )}
@@ -701,19 +822,19 @@ const MistakesScorecard = memo(function MistakesScorecard({ report }) {
 const AIResultBody = memo(function AIResultBody({ actionId, loading, error, result }) {
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center gap-3 py-10">
+      <div className="flex flex-col items-center justify-center gap-3 py-12">
         <div className="flex gap-1.5">
           {[0, 1, 2].map(i => (
             <div key={i} className="w-2 h-2 rounded-full" style={{ background: "var(--accent-blue)", animation: `mn-pulse-dot 1.1s ${i * 0.15}s infinite ease-in-out` }} />
           ))}
         </div>
-        <p className="text-[12px] font-mono text-text-muted">Reading your notes…</p>
+        <p className="text-[12px] font-mono text-text-muted">AI Mentor reading your notes…</p>
       </div>
     );
   }
   if (error) {
     return (
-      <div className="text-[12px] font-mono px-3 py-3 rounded-xl" style={{ color: "#fca5a5", background: "rgba(248,113,113,.08)", border: "0.5px solid rgba(248,113,113,.25)" }}>
+      <div className="text-[13px] font-mono px-4 py-3 rounded-xl" style={{ color: "#fca5a5", background: "rgba(248,113,113,.08)", border: "0.5px solid rgba(248,113,113,.25)" }}>
         {error}
       </div>
     );
@@ -723,17 +844,16 @@ const AIResultBody = memo(function AIResultBody({ actionId, loading, error, resu
   if (actionId === "mistakes") {
     const report = parseMistakesReport(result);
     if (report) return <MistakesScorecard report={report} />;
+    // fallback: render raw if parsing fails
   }
   return <div>{renderRich(result)}</div>;
 });
 
 // ─── AI result drawer ─────────────────────────────────────────────────────────
 
-function AIDrawer({
-  open, action, loading, error, result, onClose, onRegenerate, onApply, onAppendRecap,
-}) {
+function AIDrawer({ open, action, loading, error, result, onClose, onRegenerate, onApply, onAppendRecap }) {
   const [copied, setCopied] = useState(false);
-  const [armed, setArmed] = useState(false);
+  const [armed,  setArmed]  = useState(false);
   const armTimer = useRef(null);
 
   useEffect(() => { setCopied(false); setArmed(false); }, [result, open]);
@@ -743,7 +863,9 @@ function AIDrawer({
   const Icon = action.icon;
 
   const copyText = () => {
-    const text = action.id === "mistakes" ? (parseMistakesReport(result) ? mistakesReportToText(parseMistakesReport(result)) : result) : result;
+    const text = action.id === "mistakes"
+      ? (parseMistakesReport(result) ? mistakesReportToText(parseMistakesReport(result)) : result)
+      : result;
     if (!text) return;
     navigator.clipboard?.writeText(text).then(() => {
       setCopied(true);
@@ -762,7 +884,7 @@ function AIDrawer({
     onApply();
   };
 
-  const canApply = ["improve", "revision", "mains"].includes(action.id) && !!result && !loading && !error;
+  const canApply       = ["improve", "revision", "mains"].includes(action.id) && !!result && !loading && !error;
   const canAppendRecap = action.id === "mistakes" && !!result && !loading && !error && !!parseMistakesReport(result);
 
   return (
@@ -770,7 +892,7 @@ function AIDrawer({
       <div className="mn-drawer-backdrop" onClick={onClose} />
       <div className="mn-drawer" role="dialog" aria-modal="true" aria-label={action.label}>
         <div className="mn-drawer-header">
-          <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0" style={{ background: `${action.accent}1f`, color: action.accent }}>
+          <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0" style={{ background: `${action.accent}22`, color: action.accent }}>
             <Icon size={16} />
           </div>
           <div className="flex-1 min-w-0">
@@ -788,7 +910,7 @@ function AIDrawer({
           <div className="mn-drawer-footer">
             <button onClick={copyText} className="mn-pill-btn">
               {copied ? <Check size={14} style={{ color: "#34d399" }} /> : <Copy size={14} />}
-              {copied ? "Copied" : "Copy"}
+              {copied ? "Copied!" : "Copy"}
             </button>
             <button onClick={onRegenerate} className="mn-pill-btn">
               <RotateCcw size={14} /> Regenerate
@@ -810,7 +932,7 @@ function AIDrawer({
   );
 }
 
-// ─── Sign-in gate (for AI actions only — notes work fully offline) ───────────
+// ─── Sign-in gate ─────────────────────────────────────────────────────────────
 
 const SignInGate = memo(function SignInGate({ onClose }) {
   return (
@@ -826,11 +948,11 @@ const SignInGate = memo(function SignInGate({ onClose }) {
           </div>
           <button onClick={onClose} className="mn-icon-btn" aria-label="Close"><X size={17} /></button>
         </div>
-        <div className="mn-drawer-body flex flex-col items-center text-center gap-3 py-8">
-          <p className="text-[13px] text-text-secondary max-w-[300px]">
-            Your notes stay saved on this device either way. Sign in to let your AI mentor improve, audit and reformat them.
+        <div className="mn-drawer-body flex flex-col items-center text-center gap-4 py-10">
+          <p className="text-[13.5px] text-text-secondary max-w-[300px] leading-relaxed">
+            Your notes stay saved on this device either way. Sign in to let your AI mentor improve, audit and reformat them — with full UPSC-level depth.
           </p>
-          <div className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-[11px] font-mono" style={{ background: "var(--accent-blue-dim)", color: "var(--accent-blue)" }}>
+          <div className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-[11.5px] font-mono" style={{ background: "var(--accent-blue-dim)", color: "var(--accent-blue)" }}>
             <LogIn size={12} /> Tap your profile to sign in
           </div>
         </div>
@@ -842,32 +964,35 @@ const SignInGate = memo(function SignInGate({ onClose }) {
 // ─── Main component ───────────────────────────────────────────────────────────
 
 export default function MentorNotes({ isLoggedIn = false, contextHint = "Notes section" }) {
-  const [notes, setNotes] = useState(() => loadNotesFromStorage());
-  const [activeId, setActiveId] = useState(null);
-  const [search, setSearch] = useState("");
-  const [topicFilter, setTopicFilter] = useState(null);
-  const [mobilePane, setMobilePane] = useState("list"); // "list" | "editor"
-  const [readingMode, setReadingMode] = useState(false);
+  const [notes,         setNotes]         = useState(() => loadNotesFromStorage());
+  const [activeId,      setActiveId]      = useState(null);
+  const [search,        setSearch]        = useState("");
+  const [topicFilter,   setTopicFilter]   = useState(null);
+  // Mobile: sidebar is an overlay, toggled by hamburger
+  const [sidebarOpen,   setSidebarOpen]   = useState(false);
+  // Desktop: sidebar can be collapsed
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [readingMode,   setReadingMode]   = useState(false);
 
-  const [draft, setDraft] = useState({ title: "", topic: null, content: "" });
-  const [saveStatus, setSaveStatus] = useState("idle"); // idle | saving | saved
-  const [lastSavedAt, setLastSavedAt] = useState(null);
+  const [draft,         setDraft]         = useState({ title: "", topic: null, content: "" });
+  const [saveStatus,    setSaveStatus]    = useState("idle");
+  const [lastSavedAt,   setLastSavedAt]   = useState(null);
 
-  const [drawerOpen, setDrawerOpen] = useState(false);
-  const [activeAction, setActiveAction] = useState(null);
-  const [aiLoading, setAiLoading] = useState(false);
-  const [aiError, setAiError] = useState(null);
-  const [aiResult, setAiResult] = useState(null);
+  const [drawerOpen,    setDrawerOpen]    = useState(false);
+  const [activeAction,  setActiveAction]  = useState(null);
+  const [aiLoading,     setAiLoading]     = useState(false);
+  const [aiError,       setAiError]       = useState(null);
+  const [aiResult,      setAiResult]      = useState(null);
   const [signInGateOpen, setSignInGateOpen] = useState(false);
 
-  const saveTimer = useRef(null);
+  const saveTimer   = useRef(null);
   const textareaRef = useRef(null);
-  const titleRef = useRef(null);
+  const titleRef    = useRef(null);
   const skipNextSave = useRef(true);
 
   const activeNote = useMemo(() => notes.find(n => n.id === activeId) || null, [notes, activeId]);
 
-  // ── Load draft whenever the active note changes ──────────────────────────
+  // ── Load draft on note switch ─────────────────────────────────────────────
   useEffect(() => {
     skipNextSave.current = true;
     if (activeNote) {
@@ -879,27 +1004,28 @@ export default function MentorNotes({ isLoggedIn = false, contextHint = "Notes s
       setSaveStatus("idle");
       setLastSavedAt(null);
     }
+    setReadingMode(false);
   }, [activeId]); // eslint-disable-line
 
-  // ── Auto-resize the textarea ──────────────────────────────────────────────
+  // ── Auto-resize textarea ──────────────────────────────────────────────────
   useEffect(() => {
     const el = textareaRef.current;
     if (!el) return;
+    // Reset then grow to content
     el.style.height = "auto";
-    el.style.height = `${el.scrollHeight}px`;
+    el.style.height = `${Math.max(el.scrollHeight, 320)}px`;
   }, [draft.content, readingMode]);
 
   // ── Auto-save (debounced) ─────────────────────────────────────────────────
   const persistDraft = useCallback((id, nextDraft) => {
-    setSaveStatus("saving");
+    const now = new Date().toISOString();
     setNotes(prev => {
-      const now = new Date().toISOString();
       const updated = prev.map(n => n.id === id ? { ...n, ...nextDraft, updatedAt: now } : n);
       persistNotesToStorage(updated);
-      setLastSavedAt(now);
       return updated;
     });
     setSaveStatus("saved");
+    setLastSavedAt(now);
   }, []);
 
   useEffect(() => {
@@ -911,9 +1037,10 @@ export default function MentorNotes({ isLoggedIn = false, contextHint = "Notes s
     return () => clearTimeout(saveTimer.current);
   }, [draft, activeId, persistDraft]);
 
-  // Flush on unmount / tab switch so nothing is lost
   useEffect(() => {
-    const flush = () => { if (activeId) { clearTimeout(saveTimer.current); persistDraft(activeId, draft); } };
+    const flush = () => {
+      if (activeId) { clearTimeout(saveTimer.current); persistDraft(activeId, draft); }
+    };
     document.addEventListener("visibilitychange", flush);
     return () => { document.removeEventListener("visibilitychange", flush); flush(); };
   }, [activeId, draft, persistDraft]); // eslint-disable-line
@@ -922,37 +1049,25 @@ export default function MentorNotes({ isLoggedIn = false, contextHint = "Notes s
   const handleCreate = useCallback(() => {
     const now = new Date().toISOString();
     const note = { id: uid(), title: "", topic: topicFilter || null, content: "", createdAt: now, updatedAt: now };
-    setNotes(prev => {
-      const updated = [note, ...prev];
-      persistNotesToStorage(updated);
-      return updated;
-    });
+    setNotes(prev => { const u = [note, ...prev]; persistNotesToStorage(u); return u; });
     setActiveId(note.id);
-    setMobilePane("editor");
-    setReadingMode(false);
+    setSidebarOpen(false); // close mobile sidebar
     setTimeout(() => titleRef.current?.focus(), 80);
   }, [topicFilter]);
 
   const handleSelect = useCallback((id) => {
     setActiveId(id);
-    setMobilePane("editor");
-    setReadingMode(false);
+    setSidebarOpen(false); // close mobile sidebar on selection
   }, []);
 
   const handleDelete = useCallback((id) => {
-    setNotes(prev => {
-      const updated = prev.filter(n => n.id !== id);
-      persistNotesToStorage(updated);
-      return updated;
-    });
+    setNotes(prev => { const u = prev.filter(n => n.id !== id); persistNotesToStorage(u); return u; });
     setActiveId(prev => (prev === id ? null : prev));
   }, []);
 
-  const handleBackToList = useCallback(() => setMobilePane("list"), []);
-
   // ── Draft field handlers ──────────────────────────────────────────────────
-  const setTitle = useCallback((title) => setDraft(d => ({ ...d, title })), []);
-  const setTopic = useCallback((topic) => setDraft(d => ({ ...d, topic })), []);
+  const setTitle   = useCallback((title)   => setDraft(d => ({ ...d, title })),   []);
+  const setTopic   = useCallback((topic)   => setDraft(d => ({ ...d, topic })),   []);
   const setContent = useCallback((content) => setDraft(d => ({ ...d, content })), []);
 
   // ── AI actions ─────────────────────────────────────────────────────────────
@@ -964,7 +1079,11 @@ export default function MentorNotes({ isLoggedIn = false, contextHint = "Notes s
     setAiError(null);
     setAiResult(null);
     try {
-      const res = await action.fn({ title: draft.title, topic: topicMeta(draft.topic)?.label, content: draft.content });
+      const res = await action.fn({
+        title:   draft.title,
+        topic:   topicMeta(draft.topic)?.label,
+        content: draft.content,
+      });
       setAiResult(res);
     } catch (e) {
       setAiError(e.message || "Something went wrong. Try again.");
@@ -979,39 +1098,89 @@ export default function MentorNotes({ isLoggedIn = false, contextHint = "Notes s
     if (!aiResult) return;
     setContent(aiResult);
     setDrawerOpen(false);
+    // Force textarea resize after apply
+    setTimeout(() => {
+      const el = textareaRef.current;
+      if (el) { el.style.height = "auto"; el.style.height = `${el.scrollHeight}px`; }
+    }, 50);
   }, [aiResult, setContent]);
 
   const handleAppendRecap = useCallback(() => {
     const report = parseMistakesReport(aiResult);
     if (!report) return;
-    const block = `\n\n---\n## AI Review — ${new Date().toLocaleDateString(undefined, { month: "short", day: "numeric" })}\n**Scores:** Knowledge ${report.knowledge}/10 · Clarity ${report.clarity}/10 · Retention ${report.retention}/10\n\n**Missing Points**\n${report.missing.map(m => `- ${m}`).join("\n")}\n\n**Memory Traps**\n${report.traps.map(t => `- ${t}`).join("\n")}\n\n**30 Second Revision**\n${report.revision}\n`;
+    const block = [
+      "",
+      "",
+      "---",
+      `## AI Review — ${new Date().toLocaleDateString(undefined, { month: "short", day: "numeric" })}`,
+      `**Scores:** Knowledge ${report.knowledge}/10 · Clarity ${report.clarity}/10 · Retention ${report.retention}/10`,
+      "",
+      "**Missing Points**",
+      ...report.missing.map(m => `- ${m}`),
+      "",
+      "**Memory Traps**",
+      ...report.traps.map(t => `- ${t}`),
+      "",
+      "**30 Second Revision**",
+      report.revision,
+      "",
+    ].join("\n");
     setDraft(d => ({ ...d, content: `${d.content}${block}` }));
     setDrawerOpen(false);
   }, [aiResult]);
 
-  // ── Render ───────────────────────────────────────────────────────────────
-
+  // ── Derived ────────────────────────────────────────────────────────────────
   const aiDisabled = draft.content.trim().length < MIN_CONTENT_FOR_AI;
-  const meta = topicMeta(draft.topic);
+  const meta       = topicMeta(draft.topic);
 
   return (
     <>
       <style>{MN_STYLES}</style>
       <div className="mn-workspace">
+
+        {/* ── Header ── */}
         <div className="mn-header">
+          {/* Hamburger — mobile only */}
+          <button
+            className="mn-icon-btn md:hidden"
+            onClick={() => setSidebarOpen(v => !v)}
+            aria-label="Toggle notes list"
+          >
+            <Menu size={18} />
+          </button>
+
+          {/* Toggle sidebar — desktop only */}
+          <button
+            className="mn-icon-btn hidden md:inline-flex"
+            onClick={() => setSidebarCollapsed(v => !v)}
+            aria-label="Toggle sidebar"
+            title="Toggle sidebar"
+          >
+            <Menu size={17} />
+          </button>
+
           <div className="mn-header-icon"><NotebookPen size={17} /></div>
           <div className="flex-1 min-w-0">
             <p className="text-[13.5px] font-bold text-text-primary leading-tight">Mentor Notes</p>
             <p className="text-[10px] font-mono text-text-muted">Write once. Revise fast.</p>
           </div>
-          {mobilePane === "editor" && activeNote && (
-            <button onClick={() => setReadingMode(v => !v)} className="mn-icon-btn lg:hidden" aria-label="Toggle reading mode">
-              {readingMode ? <EyeOff size={17} /> : <Eye size={17} />}
+
+          {activeNote && (
+            <button
+              onClick={() => setReadingMode(v => !v)}
+              className="mn-icon-btn"
+              aria-label="Toggle reading mode"
+              title={readingMode ? "Edit mode" : "Reading mode"}
+            >
+              {readingMode ? <PenLine size={17} /> : <Eye size={17} />}
             </button>
           )}
         </div>
 
-        <div className="mn-body">
+        {/* ── Body ── */}
+        <div className="mn-body" style={{ position: "relative" }}>
+
+          {/* Sidebar */}
           <Sidebar
             notes={notes}
             activeId={activeId}
@@ -1019,27 +1188,39 @@ export default function MentorNotes({ isLoggedIn = false, contextHint = "Notes s
             onDelete={handleDelete}
             onCreate={handleCreate}
             search={search}
-            onSearchChange={(e) => setSearch(e.target.value)}
+            onSearchChange={e => setSearch(e.target.value)}
             topicFilter={topicFilter}
             onTopicFilter={setTopicFilter}
-            paneVisible={mobilePane === "list"}
+            isOpen={sidebarOpen}
+            onClose={() => setSidebarOpen(false)}
           />
 
-          <div className={`mn-editor ${mobilePane === "editor" ? "flex" : "hidden"} lg:flex`}>
+          {/* Desktop sidebar collapse wrapper */}
+          {/* Note: the sidebar itself is toggled via mn-sidebar-collapsed class */}
+          {/* We apply it to the sidebar via sidebarCollapsed state — handled inside Sidebar via CSS */}
+
+          {/* Editor */}
+          <div className={`mn-editor ${sidebarOpen ? "mn-editor-hidden" : ""}`}>
             {!activeNote ? (
               <EmptyEditor onCreate={handleCreate} />
             ) : (
               <>
+                {/* Toolbar */}
                 <div className="mn-toolbar">
-                  <div className="px-4 pt-3.5 pb-3 flex items-start gap-2">
-                    <button onClick={handleBackToList} className="mn-icon-btn lg:hidden shrink-0 -ml-1.5" aria-label="Back to notes">
+                  <div className="px-4 sm:px-6 pt-4 pb-3 flex items-start gap-2">
+                    {/* Mobile back chevron */}
+                    <button
+                      onClick={() => setSidebarOpen(true)}
+                      className="mn-icon-btn md:hidden shrink-0 -ml-1"
+                      aria-label="Open notes list"
+                    >
                       <ChevronLeft size={19} />
                     </button>
                     <div className="flex-1 min-w-0">
                       <input
                         ref={titleRef}
                         value={draft.title}
-                        onChange={(e) => setTitle(e.target.value)}
+                        onChange={e => setTitle(e.target.value)}
                         placeholder="Untitled note"
                         className="mn-title-input"
                         aria-label="Note title"
@@ -1049,24 +1230,25 @@ export default function MentorNotes({ isLoggedIn = false, contextHint = "Notes s
                         <span className="text-[11px] font-mono text-text-muted">· {wordCount(draft.content)} words</span>
                       </div>
                     </div>
-                    <button onClick={() => setReadingMode(v => !v)} className="mn-icon-btn hidden lg:inline-flex" aria-label="Toggle reading mode" title="Reading mode">
-                      {readingMode ? <PenLine size={17} /> : <Eye size={17} />}
-                    </button>
                   </div>
 
-                  {!readingMode && (
-                    <div className="px-4 pb-3">
-                      <div className="mn-topic-rail">
-                        <TopicChip topic={{ color: "var(--text-muted)", label: "No topic" }} active={!draft.topic} onClick={() => setTopic(null)} />
-                        {TOPICS.map(t => (
-                          <TopicChip key={t.id} topic={t} active={draft.topic === t.id} onClick={() => setTopic(t.id)} />
-                        ))}
-                      </div>
+                  {/* Topic chips — always shown in toolbar (not mode-gated) */}
+                  <div className="px-4 sm:px-6 pb-3">
+                    <div className="mn-topic-rail">
+                      <TopicChip
+                        topic={{ color: "var(--text-muted)", label: "No topic" }}
+                        active={!draft.topic}
+                        onClick={() => setTopic(null)}
+                      />
+                      {TOPICS.map(t => (
+                        <TopicChip key={t.id} topic={t} active={draft.topic === t.id} onClick={() => setTopic(t.id)} />
+                      ))}
                     </div>
-                  )}
+                  </div>
                 </div>
 
-                <div className="mn-content-area mn-scroll px-4 sm:px-6 py-5 pb-bottom-nav lg:pb-5">
+                {/* Content area */}
+                <div className="mn-content-area mn-scroll px-4 sm:px-6 py-5">
                   {readingMode ? (
                     <div className="mn-reading" style={{ animation: "mn-rise 200ms ease both" }}>
                       {meta && (
@@ -1074,27 +1256,33 @@ export default function MentorNotes({ isLoggedIn = false, contextHint = "Notes s
                           <span className="mn-chip-dot" style={{ background: meta.color }} /> {meta.label}
                         </span>
                       )}
-                      <h1 className="font-display text-[26px] font-bold text-text-primary leading-tight mb-4">{draft.title || "Untitled note"}</h1>
-                      {draft.content.trim() ? renderRich(draft.content) : (
-                        <p className="text-[13px] text-text-muted font-mono">This note is empty. Switch back to writing mode to add content.</p>
-                      )}
+                      <h1 className="font-display text-[28px] font-bold text-text-primary leading-tight mb-5">
+                        {draft.title || "Untitled note"}
+                      </h1>
+                      {draft.content.trim()
+                        ? renderRich(draft.content)
+                        : <p className="text-[13px] text-text-muted font-mono">No content yet. Switch to write mode to add notes.</p>
+                      }
                     </div>
                   ) : (
                     <textarea
                       ref={textareaRef}
                       value={draft.content}
-                      onChange={(e) => setContent(e.target.value)}
-                      placeholder="Start writing — concepts, dates, articles, your own words…"
+                      onChange={e => setContent(e.target.value)}
+                      placeholder={"Start writing — concepts, dates, judgements, your own words…\n\nSupports markdown: ## Heading, - bullet, **bold**, `code`"}
                       className="mn-textarea"
-                      style={{ minHeight: "40vh" }}
+                      style={{ minHeight: "320px" }}
                       aria-label="Note content"
+                      // Explicit pointer-events to ensure clicks land on the textarea
+                      onFocus={() => {/* just to ensure it's focusable */}}
                     />
                   )}
                 </div>
 
+                {/* AI actions */}
                 {!readingMode && (
-                  <div className="mn-toolbar mn-mobile-ai-bar lg:static lg:border-t-0 lg:px-4 lg:pb-4 lg:pt-0" style={{ borderTop: "1px solid var(--bg-border)" }}>
-                    <div className="mn-ai-rail px-1 lg:px-0 pt-0 lg:pt-3">
+                  <div className="mn-ai-section">
+                    <div className="mn-ai-rail">
                       {AI_ACTIONS.map(action => {
                         const Icon = action.icon;
                         return (
@@ -1104,7 +1292,7 @@ export default function MentorNotes({ isLoggedIn = false, contextHint = "Notes s
                             disabled={aiDisabled}
                             className="mn-ai-btn"
                             style={{ "--ai-accent": action.accent }}
-                            title={aiDisabled ? "Write a few more sentences first" : action.label}
+                            title={aiDisabled ? `Write at least ${MIN_CONTENT_FOR_AI} characters to enable AI` : action.label}
                           >
                             <Icon size={14} style={{ color: action.accent }} />
                             <span className="hidden sm:inline">{action.label}</span>
@@ -1121,6 +1309,7 @@ export default function MentorNotes({ isLoggedIn = false, contextHint = "Notes s
         </div>
       </div>
 
+      {/* AI Drawer */}
       {drawerOpen && (
         <AIDrawer
           open={drawerOpen}
@@ -1135,6 +1324,7 @@ export default function MentorNotes({ isLoggedIn = false, contextHint = "Notes s
         />
       )}
 
+      {/* Sign-in gate */}
       {signInGateOpen && <SignInGate onClose={() => setSignInGateOpen(false)} />}
     </>
   );

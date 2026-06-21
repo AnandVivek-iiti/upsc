@@ -20,18 +20,6 @@ const STARTER_QUESTIONS = [
   "3-month revision plan for GS3?",
 ];
 
-// System prompt injected with every chatWithMentor call
-// (pass as contextHint or embed in your hook — shown here as reference)
-export const MENTOR_SYSTEM_PROMPT = `You are a sharp UPSC mentor. Rules:
-- NEVER open with "You are brilliant/analytical" or any flattery.
-- Answer ONLY what is asked. No background history unless asked.
-- Use rich markdown: ## headings, **bold**, bullet lists, numbered lists.
-- For comparisons → use a markdown table.
-- For key terms / dates → wrap in a :::memory block ::: section.
-- For step-by-step answers → use numbered list.
-- For quotes → give only the quote + author name, no history.
-- Keep answers concise but complete. No padding.`;
-
 // ─── Pure helpers ─────────────────────────────────────────────────────────────
 
 function relativeTime(iso) {
@@ -325,7 +313,7 @@ const AMC_STYLES = `
 /* Workspace */
 .amc-workspace {
   display: flex; flex-direction: column;
-  height: 100dvh; overflow: hidden;
+  height: 100vh; height: 100dvh; overflow: hidden;
   background: var(--bg-surface);
 }
 .amc-workspace-body { flex: 1; display: flex; overflow: hidden; }
@@ -346,11 +334,19 @@ const AMC_STYLES = `
 }
 .amc-icon-btn:hover { background: rgba(255,255,255,0.15); }
 
+/* Mobile history toggle — only relevant once the sidebar collapses off-canvas */
+.amc-mobile-history-btn { display: none; }
+@media (max-width: 540px) { .amc-mobile-history-btn { display: inline-flex; } }
+
 /* Scrollbar */
 .amc-scroll::-webkit-scrollbar { width: 3px; }
 .amc-scroll::-webkit-scrollbar-thumb { background: var(--bg-border); border-radius: 999px; }
 
-/* Sidebar — fixed width, never covers more than 42% */
+/* Sidebar — fixed width, never covers more than 42% on larger screens.
+   Below 540px there's no room for a permanent column, so it becomes a
+   slide-in overlay toggled via the history button in the header instead
+   of just disappearing (which used to leave mobile users with no way to
+   browse, search, or delete past chats). */
 .amc-fs-sidebar {
   width: clamp(180px, 28vw, 260px);
   max-width: 42%;
@@ -359,7 +355,26 @@ const AMC_STYLES = `
   display: flex; flex-direction: column; overflow: hidden;
   background: var(--bg-surface);
 }
-@media (max-width: 540px) { .amc-fs-sidebar { display: none; } }
+@media (max-width: 540px) {
+  .amc-fs-sidebar {
+    position: fixed; inset: 0; z-index: 10001;
+    width: 100%; max-width: 100%;
+    border-right: none;
+    transform: translateX(-100%);
+    transition: transform 200ms ease;
+  }
+  .amc-fs-sidebar.amc-sidebar-mobile-open { transform: translateX(0); }
+}
+.amc-sidebar-backdrop {
+  display: none;
+}
+@media (max-width: 540px) {
+  .amc-sidebar-backdrop.amc-sidebar-mobile-open {
+    display: block;
+    position: fixed; inset: 0; z-index: 10000;
+    background: rgba(0,0,0,0.45);
+  }
+}
 
 /* Sidebar search */
 .amc-search {
@@ -477,7 +492,7 @@ const AMC_STYLES = `
 .amc-memory-row:last-child { border-bottom: none; padding-bottom: 0; }
 .amc-memory-label {
   font-size: 11px; font-weight: 600; color: #a78bfa;
-  min-width: 80px; flex-shrink: 0;
+  min-width: clamp(56px, 24vw, 80px); flex-shrink: 0;
 }
 .amc-memory-val { font-size: 12px; color: var(--text-primary); }
 
@@ -754,6 +769,7 @@ const ThreadRow = memo(function ThreadRow({ thread, active, onSelect, onDelete }
 
 const HistorySidebar = memo(function HistorySidebar({
   threads, threadsLoading, threadId, onSelect, onDelete, onNew, search, onSearchChange,
+  mobileOpen = false, onCloseMobile,
 }) {
   const filtered = useMemo(() => {
     if (!search.trim()) return threads;
@@ -761,35 +777,59 @@ const HistorySidebar = memo(function HistorySidebar({
     return threads.filter(t => (t.title || "new chat").toLowerCase().includes(s));
   }, [threads, search]);
 
+  const handleSelect = useCallback((id) => {
+    onSelect(id);
+    onCloseMobile?.();
+  }, [onSelect, onCloseMobile]);
+
+  const handleNew = useCallback(() => {
+    onNew();
+    onCloseMobile?.();
+  }, [onNew, onCloseMobile]);
+
   return (
-    <div className="amc-fs-sidebar">
-      <div className="p-3 border-b border-bg-border shrink-0 space-y-2">
-        <button onClick={onNew}
-          className="w-full flex items-center justify-center gap-1.5 px-2 py-2 rounded-xl text-[12px] font-semibold"
-          style={{ border: "1px solid rgba(59,130,246,.3)", color: "var(--accent-blue)", background: "var(--accent-blue-dim)" }}>
-          <Plus size={13} /> New chat
-        </button>
-        <div className="amc-search">
-          <Search size={12} className="shrink-0" style={{ color: "var(--text-muted)" }} />
-          <input value={search} onChange={onSearchChange} placeholder="Search…" />
+    <>
+      <div
+        className={`amc-sidebar-backdrop ${mobileOpen ? "amc-sidebar-mobile-open" : ""}`}
+        onClick={onCloseMobile}
+      />
+      <div className={`amc-fs-sidebar ${mobileOpen ? "amc-sidebar-mobile-open" : ""}`}>
+        <div className="p-3 border-b border-bg-border shrink-0 space-y-2">
+          <div className="flex items-center gap-2">
+            <button onClick={handleNew}
+              className="flex-1 flex items-center justify-center gap-1.5 px-2 py-2 rounded-xl text-[12px] font-semibold"
+              style={{ border: "1px solid rgba(59,130,246,.3)", color: "var(--accent-blue)", background: "var(--accent-blue-dim)" }}>
+              <Plus size={13} /> New chat
+            </button>
+            {onCloseMobile && (
+              <button onClick={onCloseMobile} className="amc-icon-btn sm:hidden"
+                style={{ color: "var(--text-muted)" }} aria-label="Close history">
+                <X size={16} />
+              </button>
+            )}
+          </div>
+          <div className="amc-search">
+            <Search size={12} className="shrink-0" style={{ color: "var(--text-muted)" }} />
+            <input value={search} onChange={onSearchChange} placeholder="Search…" />
+          </div>
+        </div>
+        <div className="flex-1 overflow-y-auto amc-scroll px-2 py-2 space-y-0.5">
+          {threadsLoading && (
+            <div className="flex justify-center py-6">
+              <Loader2 size={14} className="animate-spin" style={{ color: "var(--accent-blue)" }} />
+            </div>
+          )}
+          {!threadsLoading && filtered.length === 0 && (
+            <p className="text-[11px] font-mono text-text-muted text-center py-6 px-2">
+              {search.trim() ? "No chats match." : "No saved chats yet."}
+            </p>
+          )}
+          {filtered.map(t => (
+            <ThreadRow key={t.id} thread={t} active={t.id === threadId} onSelect={handleSelect} onDelete={onDelete} />
+          ))}
         </div>
       </div>
-      <div className="flex-1 overflow-y-auto amc-scroll px-2 py-2 space-y-0.5">
-        {threadsLoading && (
-          <div className="flex justify-center py-6">
-            <Loader2 size={14} className="animate-spin" style={{ color: "var(--accent-blue)" }} />
-          </div>
-        )}
-        {!threadsLoading && filtered.length === 0 && (
-          <p className="text-[11px] font-mono text-text-muted text-center py-6 px-2">
-            {search.trim() ? "No chats match." : "No saved chats yet."}
-          </p>
-        )}
-        {filtered.map(t => (
-          <ThreadRow key={t.id} thread={t} active={t.id === threadId} onSelect={onSelect} onDelete={onDelete} />
-        ))}
-      </div>
-    </div>
+    </>
   );
 });
 
@@ -973,6 +1013,7 @@ export default function AIMentorChat({
   const [threadsLoading, setThreadsLoading] = useState(false);
   const [threadLoading, setThreadLoading]   = useState(false);
   const [historySearch, setHistorySearch]   = useState("");
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
   const bottomRef       = useRef(null);
   const panelRef        = useRef(null);
@@ -1177,7 +1218,9 @@ export default function AIMentorChat({
     threads, threadsLoading, threadId,
     onSelect: openThread, onDelete: handleDeleteThread,
     onNew: newChat, search: historySearch, onSearchChange: handleSearchChange,
+    mobileOpen: mobileSidebarOpen, onCloseMobile: () => setMobileSidebarOpen(false),
   };
+  const toggleMobileSidebar = useCallback(() => setMobileSidebarOpen(v => !v), []);
 
   // ── Workspace (compact === false) ─────────────────────────────────────────
   if (!compact) {
@@ -1194,6 +1237,9 @@ export default function AIMentorChat({
               <p className="text-[13px] font-semibold leading-tight truncate">{activeTitle || "UPSC AI Mentor"}</p>
               <p className="text-[10px] opacity-70 font-mono">Point-to-point answers</p>
             </div>
+            <button onClick={toggleMobileSidebar} className="amc-icon-btn amc-mobile-history-btn" aria-label="Chat history">
+              <MessageSquare size={16} />
+            </button>
             <button onClick={newChat} className="amc-icon-btn"><Plus size={16} /></button>
           </div>
           <div className="amc-workspace-body">
@@ -1217,7 +1263,7 @@ export default function AIMentorChat({
             style={fullScreen
               ? {
                   position: "fixed", inset: 0, borderRadius: 0,
-                  zIndex: 9998, height: "100dvh", animation: "none",
+                  zIndex: 9998, animation: "none",
                   display: "flex", flexDirection: "row",
                 }
               : {
@@ -1239,6 +1285,11 @@ export default function AIMentorChat({
                   <p className="text-[10px] opacity-70 font-mono">Point-to-point answers</p>
                 </div>
                 <button onClick={newChat} className="amc-icon-btn"><Plus size={16} /></button>
+                {fullScreen && (
+                  <button onClick={toggleMobileSidebar} className="amc-icon-btn amc-mobile-history-btn" aria-label="Chat history">
+                    <MessageSquare size={15} />
+                  </button>
+                )}
                 <button onClick={toggleFullScreen} className="amc-icon-btn">
                   {fullScreen ? <Minimize2 size={15} /> : <Maximize2 size={15} />}
                 </button>

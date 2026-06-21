@@ -1,7 +1,6 @@
 // // ai-client.js
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 const OpenAI = require("openai");
-const Anthropic = require("@anthropic-ai/sdk");
 const Groq = require("groq-sdk");
 const {
   GS1_SYSTEM_INSTRUCTION,
@@ -10,6 +9,17 @@ const {
   GS4_SYSTEM_INSTRUCTION,
   ESSAY_SYSTEM_INSTRUCTION,
 } = require("./systemInstructions");
+const { TEST_ANALYSIS_SYSTEM_INSTRUCTION } = require("./testInstructions");
+const {
+  CHAT_SYSTEM_INSTRUCTION,
+  MEMORY_EXTRACTION_SYSTEM_INSTRUCTION,
+} = require("./mentorInstructions");
+const {
+  NOTES_IMPROVE_SYSTEM_INSTRUCTION,
+  NOTES_MISTAKES_SYSTEM_INSTRUCTION,
+  NOTES_REVISION_SYSTEM_INSTRUCTION,
+  NOTES_MAINS_SYSTEM_INSTRUCTION,
+} = require("./notesInstructions");
 
 function getSystemInstruction(paper) {
   switch ((paper || "").toUpperCase()) {
@@ -33,90 +43,7 @@ function getSystemInstruction(paper) {
   }
 }
 
-// ── Separate system instruction for the conversational AI Mentor chat ───────
-// Rewritten to kill flattery/padding and force structured, scannable,
-// question-specific output that the frontend's markdown renderer can turn
-// into headings, tables, bullet lists, and memory cards.
-const CHAT_SYSTEM_INSTRUCTION = `You are a UPSC Civil Services mentor. You answer ONLY what was asked — nothing more.
 
-HARD RULES — violating any of these is a failure:
-
-1. NEVER open with praise, flattery, or hype. Banned openers include (but are not limited to): "That's an excellent choice", "Great question", "You're doing amazing", "Excellent choice of quote", "Diving into X is exactly the kind of...". Start directly with the answer/content.
-
-2. NEVER reference the student's background, streak, progress percentage, or weak areas unless the question is directly about their progress or they explicitly ask for personalized advice. Do not say "for someone from an engineering background" or "keep that streak going" as filler. Student Context (if provided below) is for YOUR calibration only — use it to silently adjust depth and terminology, never narrate it back to them.
-
-3. NEVER end with generic motivational closers like "Keep up the great work!", "You're making excellent progress!", "Don't worry, we'll build that up!". End when the answer ends.
-
-4. For quote-explanation questions: give ONLY (a) one-line meaning, (b) how to deploy it in an answer/essay, (c) one example application. Do NOT give the philosopher's biography, historical era, or "context behind the quote" unless explicitly asked for history.
-
-5. Be point-to-point. Default to bullet points and short lines over paragraphs. Use full prose paragraphs only when the question genuinely requires connected reasoning (e.g. "explain how X causes Y").
-
-6. ALWAYS format using this markdown vocabulary so it renders correctly:
-   - "## Heading" for section headers when the answer has 2+ distinct parts
-   - "- item" for bullet lists
-   - "1. item" for sequential/step-by-step lists
-   - "**bold**" for key terms, article numbers, keywords examiners look for
-   - Markdown tables (pipe syntax with a |---|---| separator row) whenever comparing 2+ things (committees, articles, schemes, concepts)
-   - A ":::memory ... :::" block for any answer containing facts worth memorizing (dates, article numbers, committee names, definitions). Format each line inside as "Label: value". Use this for quote attributions, key facts, and revision-worthy data — NOT for general explanation.
-   - "> text" blockquote ONLY for the actual quote being discussed, never for your own commentary
-   - "[!TIP] text" for a single high-value exam tip, when relevant
-
-7. Quote questions specifically: structure as:
-   > the quote
-   :::memory
-   Author: name
-   Use case: GS paper / essay theme
-   :::
-   ## How to use it
-   - 2-3 bullets max on deployment in an answer
-
-8. No code blocks, no JSON output in chat.
-
-9. Default answer length: short. Expand only if the user asks for "detailed", "explain fully", or similar.`;
-
-// ── System instruction for background memory extraction ─────────────────────
-const MEMORY_EXTRACTION_SYSTEM_INSTRUCTION = `You are a background long-term identity memory compilation agent. Your objective is to extract persistent student characteristics from their conversational turns with their UPSC mentor.
-
-You will be supplied with the current snapshot list of memories alongside the latest dialogue exchange.
-
-Your task is to emit an updated, clean, consolidated JSON array of persistent facts. Drop generic conversation, momentary greetings, or standard syllabus score tracks. Capture long-term structural changes: evolving study schedules, deep analytical blindspots, core paper preferences, or persistent stylistic flaws flagged by the evaluator.
-
-Strict Rules:
-- Keep every extracted memory under 20 words as a single declarative statement.
-- Maintain a strict upper boundary of 40 elements total. Prune low-impact, redundant entries first.
-- If the current conversation turn yields no structural long-term insights, return the input array completely unaltered.
-- Output exclusively this exact JSON schema: {"memory": ["fact string 1", "fact string 2"]}`;
-
-// ── System instruction for MCQ Test Series result analysis ──────────────────
-const TEST_ANALYSIS_SYSTEM_INSTRUCTION = `You are a premier UPSC Prelims exam strategist specializing in the diagnostic dissection of multi-topic MCQ test performance matrices. You are provided with a performance payload containing overall scores, accuracy thresholds, and fine-grained topic vectors (correct, incorrect, skipped). You must construct an executive diagnostic blueprint.
-
-Your output must strictly match the following JSON target structure with no preambles, trailing text, or wrapping syntax elements.
-
-{
-  "summary": "Forensic, performance-driven analysis of their test execution strategy and knowledge limits.",
-  "performance_band": "Needs Work",
-  "key_insight": "The core systemic bottleneck identified from accuracy vs attempt metrics.",
-  "strong_topics": [
-    { "topic": "Exact Topic Title", "accuracy": 85, "note": "Clear confirmation of conceptual mastery." }
-  ],
-  "weak_topics": [
-    { "topic": "Exact Topic Title", "accuracy": 32, "note": "Direct diagnosis of knowledge gaps or blind guessing.", "priority": "high" }
-  ],
-  "study_plan": [
-    { "day": "Day 1-2", "focus": "Target structural topic", "tasks": ["Actionable micro-task 1", "Actionable micro-task 2"] }
-  ],
-  "priority_actions": ["Immediate practical operational correction 1", "Immediate practical operational correction 2"],
-  "revision_recommendations": [
-    { "topic": "Target Topic", "difficulty": "hard", "reason": "Justification for immediate placement within a spaced-repetition loop." }
-  ]
-}
-
-Strict Verification Guidelines:
-- "performance_band" values must copy exactly the string parameter supplied by the application router: "Needs Work", "Average", "Good", "Excellent".
-- Filter "weak_topics" to capture areas under 50% accuracy or segments with severe omission rates (skipping entire domains reflects zero baseline confidence). Map priority values cleanly to "high", "medium", or "low".
-- Populate "strong_topics" strictly if accuracy thresholds cross or touch >= 70% based on at least 2 clear attempts. If no items meet this filter, return an empty array.
-- "revision_recommendations" must act as a clear subset of the identified "weak_topics" that require prompt flashcard or active recall deployment, with difficulty values initialized to "hard" (<30% accuracy) or "medium" (30-50% accuracy).`;
-// Robust Helper to clean and parse JSON even if markdown code blocks or trailing commas leak
 function safeJSONParse(rawText) {
   let cleanText = rawText.trim();
 
@@ -200,85 +127,214 @@ async function extractMemory(existingMemory, turnText) {
 // from the topic_breakdown numbers — no AI required. Mirrors the spirit of
 // generateSampleEvaluation above, but for MCQ Test Series results.
 
+// ── OpenRouter model chain ───────────────────────────────────────────────────
+// OpenRouter is the primary provider. It tries a list of models in order —
+// free models first (zero marginal cost), then best-quality paid models as
+// a quality fallback if every free model fails or returns something unusable.
+// Override the whole list via OPENROUTER_MODELS (comma-separated slugs from
+// https://openrouter.ai/models) if you want different models or ordering.
+const DEFAULT_OPENROUTER_FREE_MODELS = [
+  "deepseek/deepseek-chat-v3.1:free",
+  "deepseek/deepseek-r1:free",
+  "meta-llama/llama-3.3-70b-instruct:free",
+  "qwen/qwen-2.5-72b-instruct:free",
+  "google/gemini-2.0-flash-exp:free",
+  "mistralai/mistral-small-3.1-24b-instruct:free",
+];
+const DEFAULT_OPENROUTER_QUALITY_MODELS = [
+  "anthropic/claude-sonnet-4.5",
+  "openai/gpt-4o",
+  "google/gemini-2.5-pro",
+];
+
+function getOpenRouterModelChain() {
+  if (process.env.OPENROUTER_MODELS) {
+    return process.env.OPENROUTER_MODELS.split(",").map((s) => s.trim()).filter(Boolean);
+  }
+  return [...DEFAULT_OPENROUTER_FREE_MODELS, ...DEFAULT_OPENROUTER_QUALITY_MODELS];
+}
+
+function getOpenRouterClient() {
+  return new OpenAI({
+    apiKey: process.env.OPENROUTER_API_KEY,
+    baseURL: "https://openrouter.ai/api/v1",
+    defaultHeaders: {
+      // Optional but recommended by OpenRouter for analytics/rankings.
+      "HTTP-Referer": process.env.OPENROUTER_SITE_URL || "",
+      "X-Title": process.env.OPENROUTER_SITE_NAME || "UPSC AI Mentor",
+    },
+  });
+}
+
+// Builds a plain OpenAI-style chat messages array (system + history + latest
+// user turn) — shared by every provider's chatCall so the mentor chat feature
+// works the same way regardless of which provider answers.
+function toChatMessages(systemInstruction, history, message) {
+  const historyMsgs = (history || []).map((m) => ({
+    role: m.role === "user" ? "user" : "assistant",
+    content: m.content,
+  }));
+  return [
+    { role: "system", content: systemInstruction },
+    ...historyMsgs,
+    { role: "user", content: message },
+  ];
+}
+
 const providers = [
-  // ── PROVIDER 1: Gemini ──────────────
+  // ── PROVIDER 1: OpenRouter (primary) ────────────────────────────────────
+  // Cascades through every model in getOpenRouterModelChain() before giving
+  // up — free models first, then best-quality paid models — so a single
+  // OpenRouter key behaves like its own internal fallback chain.
+  {
+    name: "OpenRouter",
+    isAvailable: () => !!process.env.OPENROUTER_API_KEY,
+    call: async (userPrompt, systemInstruction, mode = "json") => {
+      const openrouter = getOpenRouterClient();
+      const models = getOpenRouterModelChain();
+      const modelErrors = [];
+
+      for (const model of models) {
+        try {
+          const response = await openrouter.chat.completions.create({
+            model,
+            temperature: mode === "text" ? 0.4 : 0.3,
+            max_tokens: 8192,
+            ...(mode === "json" ? { response_format: { type: "json_object" } } : {}),
+            messages: [
+              { role: "system", content: systemInstruction },
+              { role: "user", content: userPrompt },
+            ],
+          });
+          const text = response.choices?.[0]?.message?.content;
+          if (!text || !text.trim()) throw new Error("empty response");
+          console.log(`[OpenRouter] success with model: ${model}`);
+          return mode === "text" ? text : safeJSONParse(text);
+        } catch (err) {
+          const message = err?.message || String(err);
+          console.warn(`[OpenRouter] model "${model}" failed: ${message}`);
+          modelErrors.push(`${model}: ${message}`);
+
+          // Some free models reject strict response_format — retry once
+          // without it, asking for raw JSON in the prompt instead, before
+          // moving on to the next model in the chain.
+          if (mode === "json" && /response_format|json_object|json_validate/i.test(message)) {
+            try {
+              const retryResponse = await openrouter.chat.completions.create({
+                model,
+                temperature: 0.2,
+                max_tokens: 8192,
+                messages: [
+                  {
+                    role: "system",
+                    content: `${systemInstruction}\nRespond with ONLY valid raw JSON — no markdown code fences, no commentary before or after.`,
+                  },
+                  { role: "user", content: userPrompt },
+                ],
+              });
+              const retryText = retryResponse.choices?.[0]?.message?.content;
+              if (retryText && retryText.trim()) {
+                console.log(`[OpenRouter] recovered with model (loose schema): ${model}`);
+                return safeJSONParse(retryText);
+              }
+            } catch (retryErr) {
+              modelErrors.push(`${model} (retry): ${retryErr.message}`);
+            }
+          }
+          // Otherwise just fall through to the next model in the chain.
+        }
+      }
+      throw new Error(`All OpenRouter models failed. ${modelErrors.join(" | ")}`);
+    },
+    chatCall: async (systemInstruction, history, message) => {
+      const openrouter = getOpenRouterClient();
+      const models = getOpenRouterModelChain();
+      const messages = toChatMessages(systemInstruction, history, message);
+      const modelErrors = [];
+
+      for (const model of models) {
+        try {
+          const response = await openrouter.chat.completions.create({
+            model,
+            temperature: 0.5,
+            max_tokens: 1536,
+            messages,
+          });
+          const text = response.choices?.[0]?.message?.content;
+          if (!text || !text.trim()) throw new Error("empty response");
+          console.log(`[OpenRouter:Chat] success with model: ${model}`);
+          return text;
+        } catch (err) {
+          const m = err?.message || String(err);
+          console.warn(`[OpenRouter:Chat] model "${model}" failed: ${m}`);
+          modelErrors.push(`${model}: ${m}`);
+        }
+      }
+      throw new Error(`All OpenRouter models failed. ${modelErrors.join(" | ")}`);
+    },
+  },
+
+  // ── PROVIDER 2: Gemini (fallback) ───────────────────────────────────────
   {
     name: "Gemini",
     isAvailable: () => !!process.env.GEMINI_API_KEY,
-    call: async (userPrompt, systemInstruction) => {
+    call: async (userPrompt, systemInstruction, mode = "json") => {
       const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
       const model = genAI.getGenerativeModel({
         model: "gemini-2.5-flash",
         systemInstruction,
         generationConfig: {
-          temperature: 0.3,
+          temperature: mode === "text" ? 0.4 : 0.3,
           maxOutputTokens: 8192,
-          responseMimeType: "application/json",
+          ...(mode === "json" ? { responseMimeType: "application/json" } : {}),
         },
       });
 
       const result = await model.generateContent(userPrompt);
-      return safeJSONParse(result.response.text());
+      const text = result.response.text();
+      return mode === "text" ? text : safeJSONParse(text);
     },
-  },
-
-  // ── PROVIDER 2: OpenAI (GPT-4o) ───────────
-  {
-    name: "OpenAI",
-    isAvailable: () => !!process.env.OPENAI_API_KEY,
-    call: async (userPrompt, systemInstruction) => {
-      const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-      const response = await openai.chat.completions.create({
-        model: "gpt-4o",
-        temperature: 0.3,
-        maxOutputTokens: 8192,
-        response_format: { type: "json_object" },
-        messages: [
-          { role: "system", content: systemInstruction },
-          { role: "user", content: userPrompt },
-        ],
+    chatCall: async (systemInstruction, history, message) => {
+      const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+      const model = genAI.getGenerativeModel({
+        model: "gemini-2.5-flash",
+        systemInstruction,
+        generationConfig: { temperature: 0.5, maxOutputTokens: 1536 },
       });
-      return safeJSONParse(response.choices[0].message.content);
+      const geminiHistory = (history || []).map((m) => ({
+        role: m.role === "user" ? "user" : "model",
+        parts: [{ text: m.content }],
+      }));
+      const chatSession = model.startChat({ history: geminiHistory });
+      const result = await chatSession.sendMessage(message);
+      return result.response.text();
     },
   },
 
-  // ── PROVIDER 3: Claude ──────────
-  {
-    name: "Claude",
-    isAvailable: () => !!process.env.ANTHROPIC_API_KEY,
-    call: async (userPrompt, systemInstruction) => {
-      const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
-      const response = await client.messages.create({
-        model: "claude-sonnet-4-5",
-        max_tokens: 8192,
-        system: systemInstruction,
-        messages: [{ role: "user", content: userPrompt }],
-      });
-      return safeJSONParse(response.content[0].text);
-    },
-  },
-
-  // ── PROVIDER 4: Groq Cloud ──
+  // ── PROVIDER 3: Groq Cloud (fallback) ───────────────────────────────────
   {
     name: "Groq",
     isAvailable: () => !!process.env.GROQ_API_KEY,
-    call: async (userPrompt, systemInstruction) => {
+    call: async (userPrompt, systemInstruction, mode = "json") => {
       const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+      const wantsJSON = mode !== "text";
 
       try {
         const response = await groq.chat.completions.create({
           model: "llama-3.3-70b-versatile",
           max_tokens: 8192,
-          temperature: 0.2,
-          response_format: { type: "json_object" },
+          temperature: wantsJSON ? 0.2 : 0.4,
+          ...(wantsJSON ? { response_format: { type: "json_object" } } : {}),
           messages: [
             { role: "system", content: systemInstruction },
             { role: "user", content: userPrompt },
           ],
         });
-        return safeJSONParse(response.choices[0].message.content);
+        const text = response.choices[0].message.content;
+        return wantsJSON ? safeJSONParse(text) : text;
       } catch (err) {
         if (
+          wantsJSON &&
           err.status === 400 &&
           err.message.includes("json_validate_failed")
         ) {
@@ -304,65 +360,112 @@ const providers = [
         throw err;
       }
     },
+    chatCall: async (systemInstruction, history, message) => {
+      const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+      const messages = toChatMessages(systemInstruction, history, message);
+      const response = await groq.chat.completions.create({
+        model: "llama-3.3-70b-versatile",
+        max_tokens: 1536,
+        temperature: 0.5,
+        messages,
+      });
+      return response.choices[0].message.content;
+    },
   },
 ];
 
-async function evaluateAnswer(userPrompt, paper) {
-  const availableProviders = providers.filter((p) => p.isAvailable());
-
-  // ── Try all live providers first ──────────────────────────────────────────
-  if (availableProviders.length > 0) {
-    const errors = [];
-    for (const provider of availableProviders) {
-      try {
-        console.log(`[AI Client] Trying provider: ${provider.name}...`);
-        const systemInstruction = getSystemInstruction(paper);
-        const result = await provider.call(userPrompt, systemInstruction);
-        console.log("[AI RAW RESULT]", JSON.stringify(result, null, 2));
-        function normalizeResult(result) {
-          return {
-            score: result.score ?? 0,
-
-            score_rationale: result.score_rationale || result.feedback || "",
-
-            strengths: result.strengths || [],
-
-            weaknesses: result.weaknesses || [],
-
-            topper_answer:
-              result.topper_answer || result.topper_answer_rewrite || "",
-
-            keywords: result.keywords || {
-              present: [],
-              missing: [],
-              bonus: [],
-            },
-
-            structure: result.structure || {},
-            examiner_verdict: result.examiner_verdict || null,
-            topper_comparison: result.topper_comparison || {},
-
-            priority_actions: result.priority_actions || [],
-          };
-        }
-
-        console.log(`[AI Client] Success with: ${provider.name}`);
-        const normalized = normalizeResult(result);
-        return { result: normalized, provider: provider.name };
-        // return { result, provider: provider.name };
-      } catch (err) {
-        const message = `${provider.name} failed: ${err.message}`;
-        console.warn(`[AI Client] ${message}`);
-        errors.push(message);
-      }
-    }
-    if (availableProviders.length === 0) {
-      throw new Error("No AI providers configured.");
-    }
-    throw new Error(`All AI providers failed. ${errors.join(" | ")}`);
-  }
-  throw new Error("No AI providers configured.");
+// Lets callers (e.g. the chat endpoint) fail fast with a clean 503 instead of
+// going through the full provider loop when nothing is configured at all.
+function isAnyProviderAvailable() {
+  return providers.some((p) => p.isAvailable());
 }
+
+// ── Shared multi-provider runner ─────────────────────────────────────────────
+// Every feature (evaluate / test / notes) tries the same provider chain in
+// the same order and needs the same try/log/fallback loop — this used to be
+// duplicated 2x inline; now it's one function all 3 features call.
+async function runWithProviders(userPrompt, systemInstruction, { mode = "json", label = "AI Client" } = {}) {
+  const availableProviders = providers.filter((p) => p.isAvailable());
+  if (availableProviders.length === 0) {
+    throw new Error("No AI providers configured.");
+  }
+
+  const errors = [];
+  for (const provider of availableProviders) {
+    try {
+      console.log(`[${label}] Trying provider: ${provider.name}...`);
+      const result = await provider.call(userPrompt, systemInstruction, mode);
+      console.log(`[${label}] Success with: ${provider.name}`);
+      return { result, provider: provider.name };
+    } catch (err) {
+      const message = `${provider.name} failed: ${err.message}`;
+      console.warn(`[${label}] ${message}`);
+      errors.push(message);
+    }
+  }
+  throw new Error(`All AI providers failed. ${errors.join(" | ")}`);
+}
+
+/**
+ * runMentorChat — same provider chain and fallback philosophy as
+ * runWithProviders, but for multi-turn conversational chat (the mentor chat
+ * feature). Each provider exposes its own chatCall() because Gemini's SDK
+ * wants history in its own {role, parts} shape via startChat(), while
+ * OpenRouter/Groq just want a flat OpenAI-style messages array — this
+ * function hides that difference from the caller.
+ *
+ * @param {string} systemInstruction
+ * @param {{role: string, content: string}[]} history — prior turns in the thread
+ * @param {string} message — the new user message
+ * @returns {Promise<{ response: string, provider: string }>}
+ */
+async function runMentorChat(systemInstruction, history, message) {
+  const availableProviders = providers.filter((p) => p.isAvailable());
+  if (availableProviders.length === 0) {
+    throw new Error("No AI providers configured.");
+  }
+
+  const errors = [];
+  for (const provider of availableProviders) {
+    try {
+      console.log(`[Mentor Chat] Trying provider: ${provider.name}...`);
+      const response = await provider.chatCall(systemInstruction, history, message);
+      console.log(`[Mentor Chat] Success with: ${provider.name}`);
+      return { response, provider: provider.name };
+    } catch (err) {
+      const msg = `${provider.name} failed: ${err.message}`;
+      console.warn(`[Mentor Chat] ${msg}`);
+      errors.push(msg);
+    }
+  }
+  throw new Error(`All AI providers failed. ${errors.join(" | ")}`);
+}
+
+// Normalizes the raw evaluator JSON into the exact shape the frontend expects.
+function normalizeEvaluation(result) {
+  return {
+    score: result.score ?? 0,
+    score_rationale: result.score_rationale || result.feedback || "",
+    strengths: result.strengths || [],
+    weaknesses: result.weaknesses || [],
+    topper_answer: result.topper_answer || result.topper_answer_rewrite || "",
+    keywords: result.keywords || { present: [], missing: [], bonus: [] },
+    structure: result.structure || {},
+    examiner_verdict: result.examiner_verdict || null,
+    topper_comparison: result.topper_comparison || {},
+    priority_actions: result.priority_actions || [],
+  };
+}
+
+async function evaluateAnswer(userPrompt, paper) {
+  const systemInstruction = getSystemInstruction(paper);
+  const { result, provider } = await runWithProviders(userPrompt, systemInstruction, {
+    label: "AI Client",
+  });
+  console.log("[AI RAW RESULT]", JSON.stringify(result, null, 2));
+  return { result: normalizeEvaluation(result), provider };
+}
+
 /**
  * analyzeTestPerformance — runs the MCQ Test Series diagnostic AI.
  * Separate from evaluateAnswer (which is for Mains essays) — same provider
@@ -455,9 +558,69 @@ ${topicLines || "(no topic breakdown provided)"}
 Analyze this performance. Identify genuine strengths, diagnose weak topics with priority for revision, and produce a realistic 7-day study plan targeting the weakest areas first. Be specific and reference the actual numbers above.`;
 }
 
+// ── NOTES FEATURE: Improve / Find Mistakes / Revision / Mains Format ────────
+// Maps each Notes action id (as used by the frontend AI_ACTIONS list in
+// MentorNote.jsx) to its dedicated system instruction from notesInstructions.js.
+const NOTES_SYSTEM_INSTRUCTIONS = {
+  improve: NOTES_IMPROVE_SYSTEM_INSTRUCTION,
+  mistakes: NOTES_MISTAKES_SYSTEM_INSTRUCTION,
+  revision: NOTES_REVISION_SYSTEM_INSTRUCTION,
+  mains: NOTES_MAINS_SYSTEM_INSTRUCTION,
+};
+
+function buildNotesPrompt({ title, topic, content }) {
+  return `**STUDENT NOTE**
+
+Title: ${title?.trim() || "(untitled)"}
+Topic: ${topic?.trim() || "(unspecified)"}
+
+${content.trim()}`;
+}
+
+/**
+ * runNotesAction — single entry point for all 4 Notes AI actions (Improve /
+ * Find Mistakes / Generate Revision Notes / Convert to Mains Format). Each
+ * action gets its own dedicated UPSC-examiner-grade system instruction (see
+ * notesInstructions.js) and runs through the same multi-provider fallback
+ * chain as the Mains evaluator (Gemini → OpenAI → Claude → Groq). Always
+ * requested as plain text/markdown ("mode: text"), never JSON, since every
+ * notes instruction is written to output markdown directly — this is what
+ * lets "Convert to Mains Format" genuinely regenerate a full topper-standard
+ * answer using the model's own UPSC knowledge, not just reformat the note.
+ *
+ * @param {"improve"|"mistakes"|"revision"|"mains"} actionId
+ * @param {{ title?: string, topic?: string, content: string }} payload
+ * @returns {Promise<{ result: string, provider: string }>}
+ */
+async function runNotesAction(actionId, payload) {
+  const systemInstruction = NOTES_SYSTEM_INSTRUCTIONS[actionId];
+  if (!systemInstruction) {
+    throw new Error(`Unknown notes action: "${actionId}"`);
+  }
+
+  const content = (payload?.content || "").trim();
+  if (content.length < 20) {
+    throw new Error("Note content is too short for AI to work with (min 20 characters).");
+  }
+
+  const userPrompt = buildNotesPrompt({
+    title: payload.title,
+    topic: payload.topic,
+    content,
+  });
+
+  const { result, provider } = await runWithProviders(userPrompt, systemInstruction, {
+    mode: "text",
+    label: `Notes:${actionId}`,
+  });
+
+  return { result, provider };
+}
+
 module.exports = {
   evaluateAnswer,
   analyzeTestPerformance,
+  runNotesAction,
   CHAT_SYSTEM_INSTRUCTION,
   TEST_ANALYSIS_SYSTEM_INSTRUCTION,
   extractMemory,
