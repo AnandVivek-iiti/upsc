@@ -4,7 +4,7 @@ import React, {
 import {
   ArrowUp, Sparkles, LogIn, User, Bot, Plus, Trash2, X,
   MessageSquare, Maximize2, Minimize2, Loader2, Search,
-  BookOpen, Zap, Table2, Brain,
+  BookOpen, Zap, Table2, Brain, Copy, Check, RotateCw,
 } from "lucide-react";
 import {
   chatWithMentor, listChatThreads, getChatThread, deleteChatThread,
@@ -533,20 +533,53 @@ const AMC_STYLES = `
   display: flex; align-items: flex-end; gap: 8px;
   padding: 10px 12px; border-radius: 18px;
   border: 1px solid var(--bg-border); background: var(--bg-muted);
+  transition: border-color .15s;
 }
+.amc-input-bar:focus-within { border-color: var(--accent-blue); }
 .amc-send-btn {
   width: 32px; height: 32px; border-radius: 10px; flex-shrink: 0;
   display: flex; align-items: center; justify-content: center;
   background: var(--accent-blue); color: var(--text-inverse);
-  border: none; cursor: pointer; transition: opacity .15s;
+  border: none; cursor: pointer; transition: opacity .15s, transform .1s;
 }
 .amc-send-btn:disabled { opacity: 0.4; cursor: default; }
+.amc-send-btn:not(:disabled):active { transform: scale(0.92); }
+@media (max-width: 640px) {
+  .amc-send-btn { width: 38px; height: 38px; border-radius: 12px; }
+}
 
 /* Read-more */
 .amc-readmore {
   font-size: 11px; font-family: monospace;
   color: var(--accent-blue); background: none; border: none;
   padding: 2px 0; cursor: pointer; align-self: flex-start;
+}
+
+/* Message entrance */
+@keyframes amc-msg-fade-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.amc-msg-enter { animation: amc-msg-fade-in .22s ease-out; }
+
+/* Per-message action row (copy / regenerate) */
+.amc-msg-actions {
+  display: flex; align-items: center; gap: 4px;
+  opacity: 0.55; transition: opacity .15s;
+}
+.amc-bot-card:hover ~ .amc-msg-actions,
+.amc-msg-actions:hover { opacity: 1; }
+.amc-msg-action-btn {
+  display: flex; align-items: center; gap: 4px;
+  font-size: 10.5px; font-family: monospace; font-weight: 500;
+  color: var(--text-muted); background: none; border: none;
+  padding: 4px 6px; border-radius: 6px; cursor: pointer;
+  transition: color .15s, background .15s;
+}
+.amc-msg-action-btn:hover { color: var(--accent-blue); background: var(--accent-blue-dim); }
+@media (max-width: 640px) {
+  .amc-msg-actions { opacity: 0.75; }
+  .amc-msg-action-btn { padding: 6px 8px; }
 }
 `;
 
@@ -566,10 +599,18 @@ const QuoteCard = memo(function QuoteCard({ text, src }) {
 
 const COLLAPSE_LIMIT = 900; // chars before collapsing bot replies
 
-const Message = memo(function Message({ msg }) {
+const Message = memo(function Message({ msg, onRegenerate }) {
   const isUser = msg.role === "user";
   const [expanded, setExpanded] = useState(false);
+  const [copied, setCopied] = useState(false);
   const toggle = useCallback(() => setExpanded(v => !v), []);
+
+  const handleCopy = useCallback(() => {
+    navigator.clipboard?.writeText(msg.content).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1600);
+    }).catch(() => {});
+  }, [msg.content]);
 
   if (isUser) {
     return (
@@ -595,14 +636,14 @@ const Message = memo(function Message({ msg }) {
     : msg.content;
 
   return (
-    <div className="flex gap-2 items-start">
+    <div className="flex gap-2 items-start amc-msg-enter">
       <div
         className="w-7 h-7 rounded-full flex items-center justify-center shrink-0 mt-1 border"
         style={{ background: "var(--bg-muted)", borderColor: "var(--bg-border)" }}
       >
         <Bot size={12} className="text-text-muted" />
       </div>
-      <div className="flex flex-col gap-2 min-w-0" style={{ maxWidth: "92%" }}>
+      <div className="flex flex-col gap-1.5 min-w-0" style={{ maxWidth: "92%" }}>
         <div className="amc-bot-card">
           {renderMarkdown(displayText)}
           {isLong && !expanded && (
@@ -617,6 +658,18 @@ const Message = memo(function Message({ msg }) {
         {isLong && expanded && (
           <button onClick={toggle} className="amc-readmore">Show less ↑</button>
         )}
+        <div className="amc-msg-actions">
+          <button onClick={handleCopy} className="amc-msg-action-btn" aria-label="Copy response">
+            {copied ? <Check size={12} /> : <Copy size={12} />}
+            {copied ? "Copied" : "Copy"}
+          </button>
+          {onRegenerate && (
+            <button onClick={onRegenerate} className="amc-msg-action-btn" aria-label="Regenerate response">
+              <RotateCw size={12} />
+              Regenerate
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -745,7 +798,7 @@ const HistorySidebar = memo(function HistorySidebar({
 const STARTER_ICONS = [BookOpen, Zap, Table2, Brain, Sparkles];
 
 const ChatMessages = memo(function ChatMessages({
-  messages, sending, error, threadLoading, isEmpty, starterCount, onStarterClick, bottomRef,
+  messages, sending, error, threadLoading, isEmpty, starterCount, onStarterClick, bottomRef, onRegenerate,
 }) {
   if (threadLoading) {
     return (
@@ -783,9 +836,21 @@ const ChatMessages = memo(function ChatMessages({
     );
   }
 
+  const lastBotIdx = useMemo(() => {
+    for (let i = messages.length - 1; i >= 0; i--) {
+      if (messages[i].role !== "user") return i;
+    }
+    return -1;
+  }, [messages]);
+
   return (
     <div className="flex-1 overflow-y-auto amc-scroll px-4 py-4 space-y-4">
-      {messages.map((m, i) => <Message key={i} msg={m} />)}
+      {messages.map((m, i) => {
+        const isLastBot = m.role !== "user" && i === lastBotIdx && !sending;
+        return (
+          <Message key={i} msg={m} onRegenerate={isLastBot ? onRegenerate : null} />
+        );
+      })}
       {sending && <ThinkingDots />}
       {error && <ErrorBanner error={error} />}
       <div ref={bottomRef} />
@@ -819,8 +884,11 @@ const ChatInputWithRef = memo(React.forwardRef(function ChatInputWithRef(
   useEffect(() => {
     const el = textareaRef.current;
     if (!el) return;
+    const MAX_PX = window.innerWidth < 640 ? 160 : 200;
     el.style.height = "auto";
-    el.style.height = Math.min(el.scrollHeight, 120) + "px";
+    const next = Math.min(el.scrollHeight, MAX_PX);
+    el.style.height = next + "px";
+    el.style.overflowY = el.scrollHeight > MAX_PX ? "auto" : "hidden";
   }, [input]);
 
   const handleChange = useCallback(e => setInput(e.target.value), []);
@@ -833,8 +901,14 @@ const ChatInputWithRef = memo(React.forwardRef(function ChatInputWithRef(
     requestAnimationFrame(() => textareaRef.current?.focus());
   }, [input, sending, onSend]);
 
+  // Enter alone inserts a newline (default textarea behavior — just let it
+  // through). Ctrl+Enter (Cmd+Enter on Mac) sends, since multi-line notes-style
+  // messages are now common and accidental sends on Enter were disruptive.
   const handleKey = useCallback(e => {
-    if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleSend(); }
+    if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
+      e.preventDefault();
+      handleSend();
+    }
   }, [handleSend]);
 
   return (
@@ -845,12 +919,12 @@ const ChatInputWithRef = memo(React.forwardRef(function ChatInputWithRef(
           value={input}
           onChange={handleChange}
           onKeyDown={handleKey}
-          placeholder="Ask anything…"
+          placeholder="Ask anything… (Ctrl+Enter to send)"
           rows={1}
-          style={{ minHeight: 22, maxHeight: 120 }}
+          style={{ minHeight: 22 }}
           className="flex-1 bg-transparent text-[13px] text-text-primary focus:outline-none placeholder:text-text-muted resize-none"
         />
-        <button onClick={handleSend} disabled={!input.trim() || sending} className="amc-send-btn">
+        <button onClick={handleSend} disabled={!input.trim() || sending} className="amc-send-btn" aria-label="Send message">
           {sending ? <Loader2 size={14} className="animate-spin" /> : <ArrowUp size={14} />}
         </button>
       </div>
@@ -1023,6 +1097,36 @@ export default function AIMentorChat({
     }
   }, [contextHint, threadId, loadThreads]);
 
+  // Drops the trailing assistant reply and re-asks the last user message —
+  // used by the "regenerate" button on bot messages. Does NOT touch or
+  // duplicate the user bubble itself.
+  const regenerate = useCallback(async () => {
+    if (isSendingRef.current) return;
+    setMessages(prev => {
+      let lastUserIdx = -1;
+      for (let i = prev.length - 1; i >= 0; i--) {
+        if (prev[i].role === "user") { lastUserIdx = i; break; }
+      }
+      if (lastUserIdx === -1) return prev;
+
+      const lastUserMsg = prev[lastUserIdx].content;
+      const trimmed = prev.slice(0, lastUserIdx + 1);
+
+      setError(null);
+      setSending(true);
+      isSendingRef.current = true;
+
+      chatWithMentor({ message: lastUserMsg, contextHint, threadId })
+        .then(res => {
+          if (res.title) setActiveTitle(res.title);
+          setMessages(p => [...p, { role: "assistant", content: res.response }]);
+        })
+        .catch(e => setError(e.message))
+        .finally(() => { setSending(false); isSendingRef.current = false;
+                        return trimmed;
+    });
+  }, [contextHint, threadId]);
+
   const handleSearchChange = useCallback(e => setHistorySearch(e.target.value), []);
   const closeAll           = useCallback(() => { setOpen(false); setFullScreen(false); }, []);
   const toggleFullScreen   = useCallback(() => setFullScreen(v => !v), []);
@@ -1037,6 +1141,7 @@ export default function AIMentorChat({
         threadLoading={threadLoading} isEmpty={isEmpty}
         starterCount={fullScreen ? 5 : 3}
         onStarterClick={send} bottomRef={bottomRef}
+        onRegenerate={regenerate}
       />
       <ChatInputWithRef ref={inputRef} onSend={send} sending={sending} />
     </>
@@ -1124,4 +1229,4 @@ export default function AIMentorChat({
       </div>
     </>
   );
-}
+  }
