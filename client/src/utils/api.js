@@ -168,3 +168,6 @@ export function openNote(note) {
   window.open(target, "_blank", "noopener,noreferrer");
   return target;
 }
+export async function submitFeedback(payload) {
+  return apiFetch("/feedback", { method: "POST", body: JSON.stringify(payload) });
+}
