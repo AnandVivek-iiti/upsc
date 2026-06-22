@@ -25,6 +25,8 @@ import {
   BookOpenCheck,
   FlaskConical,
   Rocket,
+    Rocket,
+  MessageSquarePlus,  
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { SYLLABUS, PAPER_ORDER, getPct } from "../data/PYQs/syllabusData";
@@ -99,9 +101,36 @@ function CollapsibleSection({ title, icon: Icon, children, defaultOpen = true, t
 }
 function ActionHub({ onNavigate }) {
   const [grown, setGrown] = useState(false);
+  // Expose global opener
   useEffect(() => {
-    const t = setTimeout(() => setGrown(true), 100);
-    return () => clearTimeout(t);
+    window.openFeedbackModal = () => {
+      setStep(0);
+      setForm({ rating: 0, useful: "", confusing: "", improvement: "", wouldRecommend: null, allowReply: false });
+      setIsOpen(true);
+    };
+    return () => delete window.openFeedbackModal;
+  }, []);
+
+  // Auto-trigger based on usage counters
+  useEffect(() => {
+    const checkTriggers = () => {
+      const notesCount = parseInt(localStorage.getItem("feedback_notes_auditor") || "0");
+      const mentorCount = parseInt(localStorage.getItem("feedback_ai_mentor") || "0");
+      const studyDone = localStorage.getItem("feedback_study_session_completed") === "true";
+
+      let trigger = null;
+      if (notesCount >= 3) trigger = "notes_auditor";
+      else if (mentorCount >= 5) trigger = "ai_mentor";
+      else if (studyDone) trigger = "study_session";
+
+      if (trigger && !localStorage.getItem(`feedback_shown_${trigger}`)) {
+        setForm((prev) => ({ ...prev, feature: trigger }));
+        setIsOpen(true);
+        localStorage.setItem(`feedback_shown_${trigger}`, "true");
+      }
+    };
+    const timer = setTimeout(checkTriggers, 1000);
+    return () => clearTimeout(timer);
   }, []);
 
   const actions = [
@@ -1371,7 +1400,7 @@ export default function Dashboard({
         <AIRevisionPanel onNavigate={onNavigate} isLoggedIn={isLoggedIn} />
       )}
 
-      {/* ── Question Statistics (moved to the bottom) ── */}
+      {/* ── Question Statistics ── */}
       {isMobile ? (
         <CollapsibleSection title="Question Statistics" defaultOpen={false} tight>
           <QuestionStatsPanel />
@@ -1379,6 +1408,29 @@ export default function Dashboard({
       ) : (
         <QuestionStatsPanel />
       )}
+
+      {/* ── Feedback ── */}
+      <div className="glass-panel p-4 sm:p-5 flex items-center justify-between gap-4">
+        <div>
+          <p className="text-sm font-display font-semibold text-text-primary">
+            How's your experience?
+          </p>
+          <p className="text-xs font-mono text-text-muted mt-0.5">
+            Help us improve UPSC Mentor — takes 30 seconds.
+          </p>
+        </div>
+        <button
+          onClick={() => window.openFeedbackModal?.()}
+          className="flex items-center gap-2 px-4 py-2 rounded-xl border border-accent-gold/40 bg-accent-gold/10 text-accent-gold text-sm font-semibold hover:bg-accent-gold/20 transition-all shrink-0"
+        >
+          <MessageSquarePlus size={15} />
+          Feedback
+        </button>
+      </div>
+
+    </div>
+  );
+}
     </div>
   );
 }
