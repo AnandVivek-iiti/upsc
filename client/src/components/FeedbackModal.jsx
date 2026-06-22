@@ -2,12 +2,12 @@ import { useState, useEffect } from "react";
 import { X, Star, CheckCircle2 } from "lucide-react";
 import { submitFeedback } from "../utils/api";
 
-const FEATURE_MAP = {
-  notes_auditor: "notes_auditor",
-  ai_mentor: "ai_mentor",
-  study_session: "study_timer",
-};
-
+// ─── FeedbackModal ─────────────────────────────────────────────────────────────
+// Owns all feedback state. Registers two globals on mount:
+//   window.openFeedbackModal()          — called by the Dashboard feedback button
+//   window.incrementFeedbackCounter(type) — called by feature pages (notes_auditor, ai_mentor)
+//   window.completeStudySession()        — called when a study session finishes
+// Auto-triggers the modal based on usage counters stored in localStorage.
 export default function FeedbackModal({ isLoggedIn, user }) {
   const [isOpen, setIsOpen] = useState(false);
   const [step, setStep] = useState(0);
@@ -18,9 +18,50 @@ export default function FeedbackModal({ isLoggedIn, user }) {
     improvement: "",
     wouldRecommend: null,
     allowReply: false,
+    feature: "",
   });
   const [submitting, setSubmitting] = useState(false);
 
+  // ── Helper to open/reset the modal ──────────────────────────────────────────
+  const openModal = (feature = "general") => {
+    setStep(0);
+    setForm({
+      rating: 0,
+      useful: "",
+      confusing: "",
+      improvement: "",
+      wouldRecommend: null,
+      allowReply: false,
+      feature,
+    });
+    setIsOpen(true);
+  };
+
+  // ── Register globals ─────────────────────────────────────────────────────────
+  // window.openFeedbackModal() → used by the Dashboard "Feedback" button
+  // window.incrementFeedbackCounter(type) → call from feature pages
+  // window.completeStudySession() → call when study session ends
+  useEffect(() => {
+    window.openFeedbackModal = () => openModal("general");
+
+    window.incrementFeedbackCounter = (type) => {
+      const key = `feedback_${type}`;
+      const current = parseInt(localStorage.getItem(key) || "0");
+      localStorage.setItem(key, String(current + 1));
+    };
+
+    window.completeStudySession = () => {
+      localStorage.setItem("feedback_study_session_completed", "true");
+    };
+
+    return () => {
+      delete window.openFeedbackModal;
+      delete window.incrementFeedbackCounter;
+      delete window.completeStudySession;
+    };
+  }, []);
+
+  // ── Auto-trigger based on usage counters ─────────────────────────────────────
   useEffect(() => {
     const checkTriggers = () => {
       const notesCount = parseInt(localStorage.getItem("feedback_notes_auditor") || "0");
@@ -33,9 +74,8 @@ export default function FeedbackModal({ isLoggedIn, user }) {
       else if (studyDone) trigger = "study_session";
 
       if (trigger && !localStorage.getItem(`feedback_shown_${trigger}`)) {
-        setForm((prev) => ({ ...prev, feature: trigger }));
-        setIsOpen(true);
         localStorage.setItem(`feedback_shown_${trigger}`, "true");
+        openModal(trigger);
       }
     };
 
@@ -43,21 +83,7 @@ export default function FeedbackModal({ isLoggedIn, user }) {
     return () => clearTimeout(timer);
   }, []);
 
-  useEffect(() => {
-    window.incrementFeedbackCounter = (type) => {
-      const key = `feedback_${type}`;
-      const current = parseInt(localStorage.getItem(key) || "0");
-      localStorage.setItem(key, String(current + 1));
-    };
-    window.completeStudySession = () => {
-      localStorage.setItem("feedback_study_session_completed", "true");
-    };
-    return () => {
-      delete window.incrementFeedbackCounter;
-      delete window.completeStudySession;
-    };
-  }, []);
-
+  // ── Submit ────────────────────────────────────────────────────────────────────
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
@@ -90,6 +116,7 @@ export default function FeedbackModal({ isLoggedIn, user }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
       <div className="bg-bg-surface border border-bg-border rounded-2xl max-w-lg w-full shadow-2xl animate-scale-in max-h-[90vh] overflow-y-auto">
+        {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-bg-border">
           <h2 className="text-lg font-display font-semibold text-text-primary">
             {step === 0 ? "Quick Question" : "Thank You!"}
@@ -109,6 +136,7 @@ export default function FeedbackModal({ isLoggedIn, user }) {
                 We'd love to hear from you – your feedback helps us build a better workspace.
               </p>
 
+              {/* Star rating */}
               <div>
                 <label className="block text-sm font-medium text-text-primary mb-1">
                   How likely are you to recommend UPSC Mentor to a friend?
@@ -131,6 +159,7 @@ export default function FeedbackModal({ isLoggedIn, user }) {
                 </div>
               </div>
 
+              {/* What was useful */}
               <div>
                 <label className="block text-sm font-medium text-text-primary mb-1">
                   1. What did you find most useful?
@@ -144,6 +173,7 @@ export default function FeedbackModal({ isLoggedIn, user }) {
                 />
               </div>
 
+              {/* What was confusing */}
               <div>
                 <label className="block text-sm font-medium text-text-primary mb-1">
                   2. What confused you?
@@ -157,6 +187,7 @@ export default function FeedbackModal({ isLoggedIn, user }) {
                 />
               </div>
 
+              {/* Improvement */}
               <div>
                 <label className="block text-sm font-medium text-text-primary mb-1">
                   3. What feature should be improved?
@@ -170,6 +201,7 @@ export default function FeedbackModal({ isLoggedIn, user }) {
                 />
               </div>
 
+              {/* Would recommend */}
               <div>
                 <label className="block text-sm font-medium text-text-primary mb-1">
                   Would you recommend UPSC Mentor to another aspirant?
@@ -189,7 +221,7 @@ export default function FeedbackModal({ isLoggedIn, user }) {
                       className={`px-4 py-2 rounded-xl border text-sm transition-all ${
                         (opt === "Yes" && form.wouldRecommend === true) ||
                         (opt === "No" && form.wouldRecommend === false) ||
-                        (opt === "Maybe" && form.wouldRecommend === null)
+                        (opt === "Maybe" && form.wouldRecommend === null && form.rating > 0)
                           ? "border-accent-gold bg-accent-gold/10 text-accent-gold"
                           : "border-bg-border text-text-muted hover:border-text-muted"
                       }`}
@@ -200,6 +232,7 @@ export default function FeedbackModal({ isLoggedIn, user }) {
                 </div>
               </div>
 
+              {/* Allow reply */}
               <label className="flex items-center gap-2 text-sm text-text-secondary cursor-pointer">
                 <input
                   type="checkbox"
@@ -212,6 +245,7 @@ export default function FeedbackModal({ isLoggedIn, user }) {
                 You can reply to this feedback if you'd like (optional)
               </label>
 
+              {/* Actions */}
               <div className="flex gap-3 pt-2">
                 <button
                   type="button"
@@ -230,6 +264,7 @@ export default function FeedbackModal({ isLoggedIn, user }) {
               </div>
             </form>
           ) : (
+            /* Success state */
             <div className="text-center py-8 space-y-3">
               <div className="w-16 h-16 rounded-full bg-accent-green/10 flex items-center justify-center mx-auto">
                 <CheckCircle2 size={32} className="text-accent-green" />
