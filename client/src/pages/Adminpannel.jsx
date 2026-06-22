@@ -5,13 +5,11 @@ import {
   AlertCircle, Trash2, CheckCircle2, Loader2, TrendingUp, TrendingDown,
   Flame, Clock, BookOpen, Brain, FileText, Target,
   ArrowUp, ArrowDown, Minus, X, Calendar, UserCheck,
+  GitBranch, Compass, Lightbulb, User, Zap, AlertTriangle, MessageCircle, Star, ThumbsUp,
+  Layers, Info,
 } from "lucide-react";
 import {
-  downloadOverviewReport,
-  downloadUsersReport,
-  downloadAnalyticsReport,
-  downloadActivityReport,
-  downloadRetentionReport,
+  downloadFullReport,
 } from "../utils/adminReports";
 
 const BASE = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
@@ -167,18 +165,18 @@ const EVENT_LABELS = {
 // ═══════════════════════════════════════════════════════════════════════════════
 // OVERVIEW TAB
 // ═══════════════════════════════════════════════════════════════════════════════
-function OverviewTab({ metrics, loading, onRefresh }) {
+function OverviewTab({ metrics, insights, loading, onRefresh }) {
   if (loading && !metrics) return <LoadSpinner />;
   if (!metrics) return <p className="text-sm text-text-muted py-8 text-center">No metrics available.</p>;
 
   const { users = {}, engagement = {}, activity = {}, trends = {} } = metrics;
+  const topInsights = insights?.slice(0, 3) || [];
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <SectionHead title="User Growth" />
         <div className="flex items-center gap-2">
-          <DownloadBtn onClick={() => downloadOverviewReport(metrics)} />
           <button onClick={onRefresh} disabled={loading}
             className="flex items-center gap-1.5 text-xs text-text-muted hover:text-text-primary font-mono transition-colors">
             <RefreshCw size={12} className={loading ? "animate-spin" : ""} />
@@ -187,7 +185,6 @@ function OverviewTab({ metrics, loading, onRefresh }) {
         </div>
       </div>
 
-      {/* Row 1 — User Growth */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
         <MetricCard icon={Users} label="Total Users" value={users.total} iconColor="#60a5fa" delta={trends.total_delta} />
         <MetricCard icon={UserCheck} label="Today Signups" value={users.todaySignups} iconColor="#4ade80" delta={trends.signup_delta} />
@@ -196,7 +193,6 @@ function OverviewTab({ metrics, loading, onRefresh }) {
         <MetricCard icon={TrendingUp} label="MAU" value={users.mau} iconColor="#f97316" />
       </div>
 
-      {/* Row 2 — Feature Adoption Funnel Summary */}
       <div>
         <SectionHead title="Feature Adoption" />
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
@@ -210,7 +206,6 @@ function OverviewTab({ metrics, loading, onRefresh }) {
         </div>
       </div>
 
-      {/* Row 3 — Engagement */}
       <div>
         <SectionHead title="Engagement" />
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
@@ -222,7 +217,6 @@ function OverviewTab({ metrics, loading, onRefresh }) {
         </div>
       </div>
 
-      {/* Row 4 — Activity Counts */}
       <div>
         <SectionHead title="Activity" />
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
@@ -232,6 +226,34 @@ function OverviewTab({ metrics, loading, onRefresh }) {
           <MetricCard icon={Brain} label="AI Conversations" value={activity.aiMentorConversations} iconColor="#a78bfa" accent />
         </div>
       </div>
+
+      {topInsights.length > 0 && (
+        <div>
+          <SectionHead title="Top Insights" />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {topInsights.map((insight, i) => (
+              <div key={insight.id || i} className="bg-bg-surface border border-bg-border rounded-2xl p-4 flex flex-col gap-2">
+                <div className="flex items-center gap-2">
+                  {insight.type === "positive" ? (
+                    <Zap size={16} className="text-accent-green" />
+                  ) : insight.type === "warning" ? (
+                    <AlertTriangle size={16} className="text-accent-gold" />
+                  ) : (
+                    <Info size={16} className="text-text-muted" />
+                  )}
+                  <span className="text-xs font-mono font-semibold text-text-primary">{insight.title}</span>
+                </div>
+                <p className="text-xs text-text-secondary leading-relaxed">{insight.body}</p>
+                {insight.feature && (
+                  <span className="text-[10px] font-mono text-accent-blue bg-accent-blue/10 px-2 py-0.5 rounded-full self-start">
+                    {insight.feature}
+                  </span>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -239,10 +261,11 @@ function OverviewTab({ metrics, loading, onRefresh }) {
 // ═══════════════════════════════════════════════════════════════════════════════
 // USERS TAB
 // ═══════════════════════════════════════════════════════════════════════════════
-function UsersTab({ users, usersTotal, userPage, loading, onPageChange, onSortChange, sortBy, sortDir, onDelete }) {
+function UsersTab({ users, usersTotal, userPage, loading, onPageChange, onSortChange, sortBy, sortDir, onDelete, onUserClick }) {
   const [showEmails, setShowEmails] = useState(false);
   const [pendingDelete, setPendingDelete] = useState(null);
-
+  const [feedbackStats, setFeedbackStats] = useState(null);
+  const [feedbackList, setFeedbackList] = useState([]);
   const COLS = [
     { key: "name", label: "Name" },
     { key: "email", label: "Email" },
@@ -263,7 +286,18 @@ function UsersTab({ users, usersTotal, userPage, loading, onPageChange, onSortCh
     if (!email) return "—";
     return email.replace(/(.{2}).*(@.*)/, "$1••••$2");
   };
-
+  const fetchFeedback = useCallback(async () => {
+    load("feedback", true);
+    try {
+      const [statsRes, listRes] = await Promise.all([
+        adminFetch("/feedback/admin/stats"),
+        adminFetch("/feedback/admin/list?limit=20"),
+      ]);
+      setFeedbackStats(statsRes.stats);
+      setFeedbackList(listRes.feedback || []);
+    } catch (e) { notify(e.message, "error"); }
+    finally { load("feedback", false); }
+  }, []);
   const totalPages = Math.ceil(usersTotal / 20);
 
   return (
@@ -271,7 +305,6 @@ function UsersTab({ users, usersTotal, userPage, loading, onPageChange, onSortCh
       <div className="flex items-center justify-between mb-4">
         <SectionHead title={`Users (${usersTotal})`} />
         <div className="flex items-center gap-2">
-          <DownloadBtn onClick={() => downloadUsersReport(users, usersTotal)} />
           <button onClick={() => setShowEmails(v => !v)}
             className="flex items-center gap-1.5 text-xs text-text-muted hover:text-text-primary font-mono transition-colors">
             {showEmails ? <EyeOff size={12} /> : <Eye size={12} />}
@@ -285,10 +318,8 @@ function UsersTab({ users, usersTotal, userPage, loading, onPageChange, onSortCh
           <div className="overflow-x-auto">
             <table className="w-full text-sm min-w-[900px]">
               <thead>
-
                 <tr className="border-b border-bg-border bg-bg-muted/40">
                   {COLS.map(c => (
-
                     <th key={c.key}
                       onClick={() => onSortChange(c.key)}
                       className="text-left px-3 py-3 text-[10px] font-mono text-text-muted uppercase tracking-wider cursor-pointer hover:text-text-primary transition-colors whitespace-nowrap select-none">
@@ -307,8 +338,9 @@ function UsersTab({ users, usersTotal, userPage, loading, onPageChange, onSortCh
                 {users.map((u, i) => (
                   <tr
                     key={u.id}
-                    className={`group border-b border-bg-border/40 hover:bg-bg-muted/30 transition-colors
-  ${i % 2 === 0 ? "" : "bg-bg-muted/10"}`}
+                    className={`group border-b border-bg-border/40 hover:bg-bg-muted/30 transition-colors cursor-pointer
+                      ${i % 2 === 0 ? "" : "bg-bg-muted/10"}`}
+                    onClick={() => onUserClick(u.id)}
                   >
                     <td className="px-3 py-2.5 font-medium text-text-primary whitespace-nowrap">{u.name || "—"}</td>
                     <td className="px-3 py-2.5 text-text-secondary font-mono text-xs whitespace-nowrap">
@@ -341,7 +373,7 @@ function UsersTab({ users, usersTotal, userPage, loading, onPageChange, onSortCh
                     <td className="px-3 py-2.5 text-right">
                       <span className="font-mono text-xs font-bold text-accent-gold">{u.engagement_score ?? "—"}</span>
                     </td>
-                    <td className="px-2 py-2.5">
+                    <td className="px-2 py-2.5" onClick={(e) => e.stopPropagation()}>
                       {pendingDelete === u.id ? (
                         <span className="flex items-center gap-1.5 justify-end">
                           <button
@@ -353,7 +385,6 @@ function UsersTab({ users, usersTotal, userPage, loading, onPageChange, onSortCh
                           >
                             Yes
                           </button>
-
                           <button
                             onClick={() => setPendingDelete(null)}
                             className="text-[10px] font-mono text-text-muted hover:text-text-primary px-1.5 py-0.5 rounded transition-colors"
@@ -401,19 +432,16 @@ function UsersTab({ users, usersTotal, userPage, loading, onPageChange, onSortCh
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// ANALYTICS TAB — Funnel + Feature Usage
+// ANALYTICS TAB
 // ═══════════════════════════════════════════════════════════════════════════════
 function AnalyticsTab({ funnel, features, loading }) {
   if (loading && !funnel) return <LoadSpinner />;
 
   return (
     <div className="space-y-8">
-      {/* Tab-level download button */}
       <div className="flex justify-end -mb-4">
-        <DownloadBtn onClick={() => downloadAnalyticsReport(funnel, features)} />
       </div>
 
-      {/* Activation Funnel */}
       <div>
         <SectionHead title="Activation Funnel" />
         {funnel?.length ? (
@@ -465,7 +493,6 @@ function AnalyticsTab({ funnel, features, loading }) {
         )}
       </div>
 
-      {/* Feature Usage */}
       <div>
         <SectionHead title="Feature Engagement (ranked)" />
         {features?.length ? (
@@ -538,7 +565,6 @@ function ActivityTab({ events, loading, onRefresh }) {
       <div className="flex items-center justify-between mb-4">
         <SectionHead title="Activity Feed (latest 50)" />
         <div className="flex items-center gap-2">
-          <DownloadBtn onClick={() => downloadActivityReport(events)} />
           <button onClick={onRefresh} disabled={loading}
             className="flex items-center gap-1.5 text-xs text-text-muted hover:text-text-primary font-mono transition-colors">
             <RefreshCw size={12} className={loading ? "animate-spin" : ""} />
@@ -597,12 +623,9 @@ function RetentionTab({ retention, cohort, churnList, loading }) {
 
   return (
     <div className="space-y-8">
-      {/* Tab-level download button */}
       <div className="flex justify-end -mb-4">
-        <DownloadBtn onClick={() => downloadRetentionReport(retention, cohort, churnList)} />
       </div>
 
-      {/* D1 / D7 / D30 summary */}
       <div>
         <SectionHead title="Retention Rates" />
         <div className="grid grid-cols-3 gap-4">
@@ -623,7 +646,6 @@ function RetentionTab({ retention, cohort, churnList, loading }) {
         </div>
       </div>
 
-      {/* Weekly Cohort Table */}
       <div>
         <SectionHead title="Weekly Cohort Retention" />
         {cohort?.length ? (
@@ -666,7 +688,6 @@ function RetentionTab({ retention, cohort, churnList, loading }) {
         )}
       </div>
 
-      {/* Churn Risk List */}
       <div>
         <SectionHead title="Churn Risk · Not seen in 7+ days" />
         {churnList?.length ? (
@@ -711,12 +732,504 @@ function RetentionTab({ retention, cohort, churnList, loading }) {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
+// JOURNEY TAB
+// ═══════════════════════════════════════════════════════════════════════════════
+function JourneyTab({ journeyData, loading }) {
+  if (loading && !journeyData) return <LoadSpinner />;
+  if (!journeyData) return <p className="text-sm text-text-muted py-8 text-center">No journey data yet.</p>;
+
+  const { firstFeatureRanked = [], journeyRows = [] } = journeyData;
+
+  return (
+    <div className="space-y-8">
+      <SectionHead title="First Feature Discovery & Return Rates" />
+      {firstFeatureRanked.length ? (
+        <div className="bg-bg-surface border border-bg-border rounded-2xl overflow-hidden">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-bg-border bg-bg-muted/40">
+                <th className="text-left px-4 py-3 text-[10px] font-mono text-text-muted uppercase tracking-wider">Feature</th>
+                <th className="text-left px-4 py-3 text-[10px] font-mono text-text-muted uppercase tracking-wider">First‑time Users</th>
+                <th className="text-left px-4 py-3 text-[10px] font-mono text-text-muted uppercase tracking-wider">% of Total</th>
+                <th className="text-left px-4 py-3 text-[10px] font-mono text-text-muted uppercase tracking-wider">Return Rate (D1)</th>
+              </tr>
+            </thead>
+            <tbody>
+              {firstFeatureRanked.map((item) => (
+                <tr key={item.feature} className="border-b border-bg-border/40 hover:bg-bg-muted/20 transition-colors">
+                  <td className="px-4 py-2.5 font-medium text-text-primary">{item.feature}</td>
+                  <td className="px-4 py-2.5 font-mono text-sm text-text-secondary">{item.count}</td>
+                  <td className="px-4 py-2.5 font-mono text-sm text-text-secondary">{item.pct}%</td>
+                  <td className="px-4 py-2.5 font-mono text-sm">
+                    <span className={item.returnRate >= 60 ? "text-accent-green" : item.returnRate >= 30 ? "text-accent-gold" : "text-accent-red"}>
+                      {item.returnRate}%
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ) : (
+        <p className="text-sm text-text-muted py-6 text-center">No first‑feature data yet.</p>
+      )}
+
+      <SectionHead title="Recent User Journeys (last 200)" />
+      {journeyRows.length ? (
+        <div className="bg-bg-surface border border-bg-border rounded-2xl overflow-hidden max-h-96 overflow-y-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-bg-border bg-bg-muted/40 sticky top-0">
+                <th className="text-left px-4 py-2 text-[10px] font-mono text-text-muted uppercase tracking-wider">User</th>
+                <th className="text-left px-4 py-2 text-[10px] font-mono text-text-muted uppercase tracking-wider">Signed Up</th>
+                <th className="text-left px-4 py-2 text-[10px] font-mono text-text-muted uppercase tracking-wider">First Feature</th>
+                <th className="text-left px-4 py-2 text-[10px] font-mono text-text-muted uppercase tracking-wider">Second Feature</th>
+                <th className="text-left px-4 py-2 text-[10px] font-mono text-text-muted uppercase tracking-wider">Most Used</th>
+                <th className="text-left px-4 py-2 text-[10px] font-mono text-text-muted uppercase tracking-wider">Returned?</th>
+              </tr>
+            </thead>
+            <tbody>
+              {journeyRows.map((row) => (
+                <tr key={row.user_id} className="border-b border-bg-border/40 hover:bg-bg-muted/20 transition-colors">
+                  <td className="px-4 py-2 font-medium text-text-primary">{row.name}</td>
+                  <td className="px-4 py-2 font-mono text-xs text-text-muted">{relTime(row.signed_up)}</td>
+                  <td className="px-4 py-2 font-mono text-xs text-accent-blue">{row.first_feature || "—"}</td>
+                  <td className="px-4 py-2 font-mono text-xs text-text-muted">{row.second_feature || "—"}</td>
+                  <td className="px-4 py-2 font-mono text-xs text-text-muted">{row.most_used_feature || "—"}</td>
+                  <td className="px-4 py-2">
+                    {row.returned_next_day ? (
+                      <CheckCircle2 size={14} className="text-accent-green" />
+                    ) : (
+                      <X size={14} className="text-accent-red" />
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ) : (
+        <p className="text-sm text-text-muted py-6 text-center">No recent journeys.</p>
+      )}
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// SEGMENTS TAB
+// ═══════════════════════════════════════════════════════════════════════════════
+function SegmentsTab({ segments, loading }) {
+  if (loading && !segments) return <LoadSpinner />;
+  if (!segments) return <p className="text-sm text-text-muted py-8 text-center">No segment data yet.</p>;
+
+  const { powerUsers, atRisk, dormant, newUsers, total } = segments;
+
+  const renderSegment = (title, data, color, Icon) => (
+    <div className="bg-bg-surface border border-bg-border rounded-2xl p-4">
+      <div className="flex items-center gap-2 mb-2">
+        <Icon size={14} style={{ color }} />
+        <h3 className="text-sm font-semibold text-text-primary">{title}</h3>
+        <span className="ml-auto text-xs font-mono text-text-muted">{data.count} users</span>
+      </div>
+      {data.users?.length ? (
+        <div className="space-y-1 max-h-48 overflow-y-auto">
+          {data.users.map((u) => (
+            <div key={u.id} className="flex justify-between items-center text-xs border-b border-bg-border/30 py-1">
+              <span className="text-text-primary">{u.name}</span>
+              <span className="font-mono text-text-muted">{relTime(u.last_active)}</span>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <p className="text-xs text-text-muted">No users in this segment.</p>
+      )}
+    </div>
+  );
+
+  return (
+    <div className="space-y-4">
+      <SectionHead title={`User Segments (${total} total)`} />
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {renderSegment("Power Users", powerUsers, "#4ade80", Zap)}
+        {renderSegment("At Risk", atRisk, "#fbbf24", AlertTriangle)}
+        {renderSegment("Dormant", dormant, "#f87171", X)}
+        {renderSegment("New Users", newUsers, "#60a5fa", User)}
+      </div>
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// DISCOVERY TAB
+// ═══════════════════════════════════════════════════════════════════════════════
+function DiscoveryTab({ discovery, loading }) {
+  if (loading && !discovery) return <LoadSpinner />;
+  if (!discovery) return <p className="text-sm text-text-muted py-8 text-center">No discovery data yet.</p>;
+
+  const { firstFeatureDist = {}, retentionByFeature = [], ignoredFeatures = [], causeOfReturn = [] } = discovery;
+
+  return (
+    <div className="space-y-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div>
+          <SectionHead title="First Feature Distribution" />
+          <div className="bg-bg-surface border border-bg-border rounded-2xl p-4">
+            {Object.keys(firstFeatureDist).length ? (
+              <div className="space-y-2">
+                {Object.entries(firstFeatureDist)
+                  .sort((a, b) => b[1] - a[1])
+                  .map(([feature, count]) => (
+                    <div key={feature} className="flex items-center gap-2">
+                      <span className="text-sm font-medium text-text-primary w-32 truncate">{feature}</span>
+                      <div className="flex-1 h-2 bg-bg-muted rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-accent-blue/70 rounded-full"
+                          style={{ width: `${(count / Math.max(...Object.values(firstFeatureDist))) * 100}%` }}
+                        />
+                      </div>
+                      <span className="text-xs font-mono text-text-muted w-10 text-right">{count}</span>
+                    </div>
+                  ))}
+              </div>
+            ) : (
+              <p className="text-sm text-text-muted">No data.</p>
+            )}
+          </div>
+        </div>
+
+        <div>
+          <SectionHead title="Retention Rate by Feature (D1)" />
+          <div className="bg-bg-surface border border-bg-border rounded-2xl p-4 max-h-64 overflow-y-auto">
+            {retentionByFeature.length ? (
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-bg-border">
+                    <th className="text-left text-[10px] font-mono text-text-muted uppercase py-1">Feature</th>
+                    <th className="text-right text-[10px] font-mono text-text-muted uppercase py-1">Return Rate</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {retentionByFeature.map((item) => (
+                    <tr key={item.feature} className="border-b border-bg-border/30">
+                      <td className="py-1 text-text-primary">{item.feature}</td>
+                      <td className="py-1 text-right font-mono">
+                        <span className={item.returnRate >= 60 ? "text-accent-green" : item.returnRate >= 30 ? "text-accent-gold" : "text-accent-red"}>
+                          {item.returnRate}%
+                        </span>
+                        <span className="text-[10px] text-text-muted ml-1">({item.usersWhoReturned}/{item.totalUsersOfFeature})</span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            ) : (
+              <p className="text-sm text-text-muted">No data.</p>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <SectionHead title="Ignored Features (<10% adoption)" />
+          <div className="bg-bg-surface border border-bg-border rounded-2xl p-4">
+            {ignoredFeatures.length ? (
+              <ul className="list-disc list-inside space-y-1">
+                {ignoredFeatures.map((f) => (
+                  <li key={f} className="text-sm text-text-secondary">{f}</li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-sm text-accent-green">No ignored features – all are being adopted.</p>
+            )}
+          </div>
+        </div>
+
+        <div>
+          <SectionHead title="Features that drive return visits" />
+          <div className="bg-bg-surface border border-bg-border rounded-2xl p-4">
+            {causeOfReturn.length ? (
+              <ul className="space-y-2">
+                {causeOfReturn.map((item) => (
+                  <li key={item.feature} className="flex justify-between items-center border-b border-bg-border/30 py-1">
+                    <span className="text-sm text-text-primary">{item.feature}</span>
+                    <span className="text-xs font-mono text-text-muted">{item.count} users</span>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-sm text-text-muted">No data yet.</p>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// INSIGHTS TAB
+// ═══════════════════════════════════════════════════════════════════════════════
+function InsightsTab({ insights, loading }) {
+  if (loading && !insights) return <LoadSpinner />;
+  if (!insights?.length) return <p className="text-sm text-text-muted py-8 text-center">No insights generated yet.</p>;
+
+  return (
+    <div className="space-y-4">
+      <SectionHead title="Founder Insights" />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {insights.map((insight, i) => {
+          const Icon = insight.type === "positive" ? Zap : insight.type === "warning" ? AlertTriangle : Info;
+          const color = insight.type === "positive" ? "text-accent-green" : insight.type === "warning" ? "text-accent-gold" : "text-text-muted";
+          return (
+            <div key={insight.id || i} className="bg-bg-surface border border-bg-border rounded-2xl p-5 flex flex-col gap-2">
+              <div className="flex items-start gap-3">
+                <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 mt-0.5" style={{ background: `${color}15` }}>
+                  <Icon size={14} className={color} />
+                </div>
+                <div>
+                  <h3 className="text-sm font-semibold text-text-primary">{insight.title}</h3>
+                  <p className="text-xs text-text-secondary mt-1 leading-relaxed">{insight.body}</p>
+                  {insight.feature && (
+                    <span className="inline-block mt-2 text-[10px] font-mono bg-accent-blue/10 text-accent-blue px-2 py-0.5 rounded-full">
+                      {insight.feature}
+                    </span>
+                  )}
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+// ─── FEEDBACK TAB ──────────────────────────────────────────────────────────
+function FeedbackTab({ stats, feedbackList, loading, onRefresh, onExport }) {
+  if (loading && !stats) return <LoadSpinner />;
+  if (!stats) return <p className="text-sm text-text-muted py-8 text-center">No feedback data yet.</p>;
+
+  const { total, avgRating, recommendRate, featureStats, mostRequested } = stats;
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <SectionHead title="Feedback Analytics" />
+        <div className="flex items-center gap-2">
+          <button onClick={onRefresh} disabled={loading}
+            className="flex items-center gap-1.5 text-xs text-text-muted hover:text-text-primary font-mono transition-colors">
+            <RefreshCw size={12} className={loading ? "animate-spin" : ""} />
+            Refresh
+          </button>
+        </div>
+      </div>
+
+      {/* Stats cards */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <MetricCard icon={MessageCircle} label="Total Feedback" value={total} iconColor="#60a5fa" />
+        <MetricCard icon={Star} label="Avg Rating" value={avgRating ? avgRating.toFixed(1) : "—"} iconColor="#f59e0b" />
+        <MetricCard icon={ThumbsUp} label="Would Recommend" value={`${recommendRate}%`} iconColor="#4ade80" />
+        <MetricCard icon={TrendingUp} label="Best Feature" value={featureStats?.[0]?.feature || "—"} iconColor="#a78bfa" />
+      </div>
+
+      {/* Feature satisfaction */}
+      <div>
+        <SectionHead title="Feature Satisfaction" />
+        <div className="bg-bg-surface border border-bg-border rounded-2xl p-4">
+          {featureStats?.length ? (
+            <div className="space-y-2">
+              {featureStats.map((f) => (
+                <div key={f.feature} className="flex items-center gap-2">
+                  <span className="text-sm font-medium text-text-primary w-32 truncate">{f.feature}</span>
+                  <div className="flex-1 h-2 bg-bg-muted rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-accent-blue/70 rounded-full"
+                      style={{ width: `${(f.avgRating / 5) * 100}%` }}
+                    />
+                  </div>
+                  <span className="text-xs font-mono text-text-muted w-16 text-right">
+                    {f.avgRating ? f.avgRating.toFixed(1) : "—"} ★
+                  </span>
+                  <span className="text-[10px] font-mono text-text-muted w-12 text-right">({f.count})</span>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-sm text-text-muted">No feature data yet.</p>
+          )}
+        </div>
+      </div>
+
+      {/* Most requested */}
+      <div>
+        <SectionHead title="Most Requested Features" />
+        <div className="bg-bg-surface border border-bg-border rounded-2xl p-4">
+          {mostRequested?.length ? (
+            <ul className="space-y-1">
+              {mostRequested.map((item) => (
+                <li key={item.feature} className="flex justify-between items-center border-b border-bg-border/30 py-1">
+                  <span className="text-sm text-text-primary">{item.feature}</span>
+                  <span className="text-xs font-mono text-text-muted">{item.count} requests</span>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-sm text-text-muted">No requests yet.</p>
+          )}
+        </div>
+      </div>
+
+      {/* Recent feedback feed */}
+      <div>
+        <SectionHead title="Recent Feedback" />
+        <div className="bg-bg-surface border border-bg-border rounded-2xl divide-y divide-bg-border/50 max-h-96 overflow-y-auto">
+          {feedbackList?.length ? (
+            feedbackList.map((fb) => (
+              <div key={fb.id} className="px-4 py-3 hover:bg-bg-muted/20 transition-colors">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="font-mono text-xs text-accent-gold">
+                        {fb.rating ? "★".repeat(fb.rating) : "—"}
+                      </span>
+                      <span className="text-xs font-mono text-text-muted bg-bg-muted px-1.5 py-0.5 rounded">
+                        {fb.feature}
+                      </span>
+                      <span className="text-xs text-text-muted">
+                        {fb.User?.name || "Anonymous"}
+                      </span>
+                      {fb.wouldRecommend !== null && (
+                        <span className={`text-xs font-mono ${fb.wouldRecommend ? "text-accent-green" : "text-accent-red"}`}>
+                          {fb.wouldRecommend ? "👍" : "👎"}
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-sm text-text-secondary mt-1 line-clamp-2">
+                      {fb.feedbackText?.slice(0, 180) || "No text"}
+                    </p>
+                  </div>
+                  <span className="text-[11px] font-mono text-text-muted shrink-0">
+                    {relTime(fb.createdAt)}
+                  </span>
+                </div>
+              </div>
+            ))
+          ) : (
+            <div className="py-10 text-center text-text-muted">No feedback yet.</div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+// ═══════════════════════════════════════════════════════════════════════════════
+// USER PROFILE MODAL
+// ═══════════════════════════════════════════════════════════════════════════════
+function UserProfileModal({ userId, onClose }) {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    if (!userId) return;
+    setLoading(true);
+    adminFetch(`/sessions/${userId}`)
+      .then(res => setData(res))
+      .catch(err => setError(err.message))
+      .finally(() => setLoading(false));
+  }, [userId]);
+
+  if (!userId) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+      <div className="bg-bg-surface border border-bg-border rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
+        <div className="sticky top-0 bg-bg-surface border-b border-bg-border px-6 py-4 flex items-center justify-between z-10">
+          <h2 className="text-base font-display font-bold text-text-primary">User Profile</h2>
+          <button onClick={onClose} className="p-1 rounded-lg hover:bg-bg-muted transition-colors">
+            <X size={18} className="text-text-muted" />
+          </button>
+        </div>
+
+        {loading ? (
+          <LoadSpinner />
+        ) : error ? (
+          <div className="p-6 text-center text-accent-red">{error}</div>
+        ) : data ? (
+          <div className="p-6 space-y-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div><p className="text-[10px] font-mono text-text-muted uppercase">Name</p><p className="text-sm font-medium text-text-primary">{data.user?.name || "—"}</p></div>
+              <div><p className="text-[10px] font-mono text-text-muted uppercase">Email</p><p className="text-sm font-mono text-text-secondary">{data.user?.email || "—"}</p></div>
+              <div><p className="text-[10px] font-mono text-text-muted uppercase">Streak</p><p className="text-sm font-mono text-accent-gold">{data.user?.streak || 0}</p></div>
+              <div><p className="text-[10px] font-mono text-text-muted uppercase">Longest Streak</p><p className="text-sm font-mono text-text-secondary">{data.user?.longestStreak || 0}</p></div>
+              <div><p className="text-[10px] font-mono text-text-muted uppercase">Study Hours</p><p className="text-sm font-mono text-text-secondary">{data.user?.totalStudyHours || 0}h</p></div>
+              <div><p className="text-[10px] font-mono text-text-muted uppercase">Sessions</p><p className="text-sm font-mono text-text-secondary">{data.user?.totalSessions || 0}</p></div>
+              <div><p className="text-[10px] font-mono text-text-muted uppercase">Days Active</p><p className="text-sm font-mono text-text-secondary">{data.user?.daysActive || 0}</p></div>
+              <div><p className="text-[10px] font-mono text-text-muted uppercase">Returned Next Day</p><p className="text-sm font-mono">{data.user?.returnedNextDay ? <CheckCircle2 size={16} className="text-accent-green" /> : <X size={16} className="text-accent-red" />}</p></div>
+              <div><p className="text-[10px] font-mono text-text-muted uppercase">First Feature</p><p className="text-sm font-mono text-accent-blue">{data.user?.firstFeatureUsed || "—"}</p></div>
+              <div><p className="text-[10px] font-mono text-text-muted uppercase">First Feature At</p><p className="text-sm font-mono text-text-muted">{data.user?.firstFeatureAt ? relTime(data.user.firstFeatureAt) : "—"}</p></div>
+              <div><p className="text-[10px] font-mono text-text-muted uppercase">Last Active</p><p className="text-sm font-mono text-text-muted">{data.user?.lastActiveAt ? relTime(data.user.lastActiveAt) : "—"}</p></div>
+              <div><p className="text-[10px] font-mono text-text-muted uppercase">Joined</p><p className="text-sm font-mono text-text-muted">{data.user?.joinedAt ? relTime(data.user.joinedAt) : "—"}</p></div>
+            </div>
+
+            <div>
+              <h3 className="text-xs font-mono font-semibold text-text-muted uppercase tracking-wider mb-2">Features Used</h3>
+              <div className="flex flex-wrap gap-2">
+                {data.user?.featuresUsed?.length ? (
+                  data.user.featuresUsed.map((f) => (
+                    <span key={f.name} className="text-xs bg-bg-muted border border-bg-border px-2 py-1 rounded-full flex items-center gap-1">
+                      {f.name} <span className="font-mono text-text-muted">×{f.count}</span>
+                    </span>
+                  ))
+                ) : (
+                  <span className="text-xs text-text-muted">No features used.</span>
+                )}
+              </div>
+            </div>
+
+            <div>
+              <h3 className="text-xs font-mono font-semibold text-text-muted uppercase tracking-wider mb-2">Session Timeline ({data.sessions?.length || 0} sessions)</h3>
+              <div className="space-y-4 max-h-96 overflow-y-auto">
+                {data.sessions?.map((session, idx) => (
+                  <div key={idx} className="bg-bg-muted/30 border border-bg-border rounded-xl p-4">
+                    <div className="flex items-center justify-between text-xs text-text-muted mb-2">
+                      <span className="font-mono">{new Date(session.startedAt).toLocaleString()}</span>
+                      <span>{session.durationMin}m · {session.eventCount} events</span>
+                    </div>
+                    <div className="space-y-1">
+                      {session.events.map((ev) => {
+                        const meta = EVENT_LABELS[ev.eventType] || { label: ev.eventType, icon: Activity, color: "#94a3b8" };
+                        const Icon = meta.icon;
+                        return (
+                          <div key={ev.id} className="flex items-start gap-2 text-sm">
+                            <span className="text-[10px] font-mono text-text-muted w-16 shrink-0">{new Date(ev.timestamp).toLocaleTimeString()}</span>
+                            <div className="w-5 h-5 rounded-full flex items-center justify-center shrink-0" style={{ background: `${meta.color}15` }}>
+                              <Icon size={10} style={{ color: meta.color }} />
+                            </div>
+                            <span className="text-text-secondary">{meta.label}</span>
+                            {ev.featureName && <span className="text-text-muted text-xs font-mono">· {ev.featureName}</span>}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
+                {!data.sessions?.length && <p className="text-sm text-text-muted">No sessions recorded.</p>}
+              </div>
+            </div>
+          </div>
+        ) : null}
+      </div>
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
 // MAIN ADMIN PANEL
 // ═══════════════════════════════════════════════════════════════════════════════
 export default function AdminPanel() {
   const [tab, setTab] = useState("overview");
 
-  // Data state
   const [metrics, setMetrics] = useState(null);
   const [users, setUsers] = useState([]);
   const [usersTotal, setUsersTotal] = useState(0);
@@ -730,7 +1243,14 @@ export default function AdminPanel() {
   const [cohort, setCohort] = useState(null);
   const [churnList, setChurnList] = useState(null);
 
-  // Loading state per section
+  const [journeyData, setJourneyData] = useState(null);
+  const [segments, setSegments] = useState(null);
+  const [discovery, setDiscovery] = useState(null);
+  const [insights, setInsights] = useState(null);
+  const [feedbackStats, setFeedbackStats] = useState(null);
+  const [feedbackList, setFeedbackList] = useState([]);
+  const [profileUserId, setProfileUserId] = useState(null);
+
   const [loading, setLoading] = useState({});
   const [toast, setToast] = useState(null);
 
@@ -791,16 +1311,69 @@ export default function AdminPanel() {
     finally { load("retention", false); }
   }, []);
 
+  const fetchJourney = useCallback(async () => {
+    load("journey", true);
+    try {
+      const d = await adminFetch("/journey");
+      setJourneyData(d);
+    } catch (e) { notify(e.message, "error"); }
+    finally { load("journey", false); }
+  }, []);
+
+  const fetchSegments = useCallback(async () => {
+    load("segments", true);
+    try {
+      const d = await adminFetch("/segments");
+      setSegments(d);
+    } catch (e) { notify(e.message, "error"); }
+    finally { load("segments", false); }
+  }, []);
+
+  const fetchDiscovery = useCallback(async () => {
+    load("discovery", true);
+    try {
+      const d = await adminFetch("/discovery");
+      setDiscovery(d);
+    } catch (e) { notify(e.message, "error"); }
+    finally { load("discovery", false); }
+  }, []);
+
+  const fetchInsights = useCallback(async () => {
+    load("insights", true);
+    try {
+      const d = await adminFetch("/insights");
+      setInsights(d.insights || []);
+    } catch (e) { notify(e.message, "error"); }
+    finally { load("insights", false); }
+  }, []);
+  const fetchFeedback = useCallback(async () => {
+    load("feedback", true);
+    try {
+      const [statsRes, listRes] = await Promise.all([
+        adminFetch("/feedback/admin/stats"),
+        adminFetch("/feedback/admin/list?limit=20"),
+      ]);
+      setFeedbackStats(statsRes.stats);
+      setFeedbackList(listRes.feedback || []);
+    } catch (e) { notify(e.message, "error"); }
+    finally { load("feedback", false); }
+  }, []);
   // ── Tab-driven lazy loading ────────────────────────────────────────────────
   useEffect(() => {
     fetchMetrics();
-  }, [fetchMetrics]);
+    fetchInsights(); // always pre-fetch for overview widget
+  }, [fetchMetrics, fetchInsights]);
 
   useEffect(() => {
     if (tab === "Users" && users.length === 0) fetchUsers(1);
     if (tab === "analytics" && funnel === null) fetchAnalytics();
     if (tab === "activity" && events === null) fetchActivity();
     if (tab === "retention" && retention === null) fetchRetention();
+    if (tab === "journey" && journeyData === null) fetchJourney();
+    if (tab === "segments" && segments === null) fetchSegments();
+    if (tab === "discovery" && discovery === null) fetchDiscovery();
+    if (tab === "feedback" && feedbackStats === null) fetchFeedback();
+    // insights already loaded
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tab]);
 
@@ -812,7 +1385,7 @@ export default function AdminPanel() {
     fetchUsers(1, col, newDir);
   }, [sortBy, sortDir, fetchUsers]);
 
-const handleDelete = useCallback(async (userId) => {
+  const handleDelete = useCallback(async (userId) => {
     try {
       await adminFetch(`/users/${userId}`, { method: "DELETE" });
       setUsers(prev => prev.filter(u => u.id !== userId));
@@ -821,6 +1394,14 @@ const handleDelete = useCallback(async (userId) => {
     } catch (e) {
       notify(e.message, "error");
     }
+  }, []);
+
+  const openProfile = useCallback((userId) => {
+    setProfileUserId(userId);
+  }, []);
+
+  const closeProfile = useCallback(() => {
+    setProfileUserId(null);
   }, []);
 
   // ── Admin guard ────────────────────────────────────────────────────────────
@@ -847,22 +1428,50 @@ const handleDelete = useCallback(async (userId) => {
     { id: "analytics", label: "Analytics", icon: TrendingUp },
     { id: "activity", label: "Activity", icon: Activity },
     { id: "retention", label: "Retention", icon: Calendar },
+    { id: "journey", label: "Journey", icon: GitBranch },
+    { id: "segments", label: "Segments", icon: Layers },
+    { id: "discovery", label: "Discovery", icon: Compass },
+    { id: "insights", label: "Insights", icon: Lightbulb },
+    { id: "feedback", label: "Feedback", icon: MessageCircle }
   ];
 
   return (
     <div className="px-4 sm:px-6 lg:px-8 py-6 max-w-7xl mx-auto">
-      {/* Header */}
-      <div className="flex items-center gap-3 mb-6">
-        <div className="w-9 h-9 rounded-xl bg-accent-red/10 border border-accent-red/20 flex items-center justify-center shrink-0">
-          <Shield size={16} className="text-accent-red" />
+      <div className="flex items-center justify-between gap-3 mb-6">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-xl bg-accent-red/10 border border-accent-red/20 flex items-center justify-center shrink-0">
+            <Shield size={16} className="text-accent-red" />
+          </div>
+          <div>
+            <h1 className="text-base font-display font-bold text-text-primary">Admin Panel</h1>
+            <p className="text-xs text-text-muted font-mono">Logged in as {storedUser.email}</p>
+          </div>
         </div>
-        <div>
-          <h1 className="text-base font-display font-bold text-text-primary">Admin Panel</h1>
-          <p className="text-xs text-text-muted font-mono">Logged in as {storedUser.email}</p>
-        </div>
+        <button
+          onClick={() => downloadFullReport({
+            metrics,
+            users,
+            usersTotal,
+            funnel,
+            features,
+            events,
+            retention,
+            cohort,
+            churnList,
+            journeyData,
+            segments,
+            discovery,
+            insights,
+            feedbackStats,
+            feedbackList,
+          })}
+          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-accent-gold/10 border border-accent-gold/30 text-accent-gold hover:bg-accent-gold/20 transition-colors text-sm font-mono"
+        >
+          <Download size={14} />
+          Download Full Report
+        </button>
       </div>
 
-      {/* Tab bar */}
       <div className="flex gap-1 p-1 bg-bg-muted border border-bg-border rounded-xl mb-6 w-fit overflow-x-auto">
         {TABS.map(({ id, label, icon: Icon }) => (
           <button key={id} onClick={() => setTab(id)}
@@ -877,11 +1486,9 @@ const handleDelete = useCallback(async (userId) => {
         ))}
       </div>
 
-      {/* Tab content */}
       {tab === "overview" && (
-        <OverviewTab metrics={metrics} loading={loading.metrics} onRefresh={fetchMetrics} />
+        <OverviewTab metrics={metrics} insights={insights} loading={loading.metrics} onRefresh={fetchMetrics} />
       )}
-
       {tab === "Users" && (
         <UsersTab
           users={users}
@@ -893,35 +1500,42 @@ const handleDelete = useCallback(async (userId) => {
           sortBy={sortBy}
           sortDir={sortDir}
           onDelete={handleDelete}
+          onUserClick={openProfile}
         />
       )}
-
       {tab === "analytics" && (
-        <AnalyticsTab
-          funnel={funnel}
-          features={features}
-          loading={loading.analytics}
-        />
+        <AnalyticsTab funnel={funnel} features={features} loading={loading.analytics} />
       )}
-
       {tab === "activity" && (
-        <ActivityTab
-          events={events}
-          loading={loading.activity}
-          onRefresh={fetchActivity}
-        />
+        <ActivityTab events={events} loading={loading.activity} onRefresh={fetchActivity} />
       )}
-
       {tab === "retention" && (
-        <RetentionTab
-          retention={retention}
-          cohort={cohort}
-          churnList={churnList}
-          loading={loading.retention}
+        <RetentionTab retention={retention} cohort={cohort} churnList={churnList} loading={loading.retention} />
+      )}
+      {tab === "journey" && (
+        <JourneyTab journeyData={journeyData} loading={loading.journey} />
+      )}
+      {tab === "segments" && (
+        <SegmentsTab segments={segments} loading={loading.segments} />
+      )}
+      {tab === "discovery" && (
+        <DiscoveryTab discovery={discovery} loading={loading.discovery} />
+      )}
+      {tab === "insights" && (
+        <InsightsTab insights={insights} loading={loading.insights} />
+      )}
+      {tab === "feedback" && (
+        <FeedbackTab
+          stats={feedbackStats}
+          feedbackList={feedbackList}
+          loading={loading.feedback}
+          onRefresh={fetchFeedback}
         />
       )}
+      {profileUserId && (
+        <UserProfileModal userId={profileUserId} onClose={closeProfile} />
+      )}
 
-      {/* Toast */}
       {toast && <Toast msg={toast.msg} type={toast.type} onClose={() => setToast(null)} />}
     </div>
   );

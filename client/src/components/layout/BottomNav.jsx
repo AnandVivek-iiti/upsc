@@ -1,25 +1,27 @@
 import { useState, useRef, useEffect, useMemo } from "react";
 import {
-  LayoutDashboard, BookOpen, PenTool, PenLine, Target,
+  LayoutDashboard, BookOpen, PenTool, PenLine,
   Library, MoreHorizontal, X, Moon, Sun, LogOut, LogIn,
-  User, Flame, Shield, Sparkles, NotebookPen,
+  User, Flame, Shield, Sparkles, NotebookPen, Archive,
 } from "lucide-react";
 import { AvatarCircle } from "../../pages/ProfilePage";
 
-// ─── Primary nav (shown in the bar) ───────────────────────────────────────────
+// ─── Primary nav (shown in the bar) ──
 const PRIMARY_NAV = [
   { id: "dashboard",  label: "Home",     icon: LayoutDashboard },
-  { id: "syllabus",   label: "Syllabus", icon: BookOpen },
   { id: "mains",      label: "Mains",    icon: PenTool },
   { id: "pre",        label: "Prelims",  icon: PenLine },
-  { id: "topic-wise", label: "Topics",   icon: Target },
+  { id: "pyq-vault",  label: "Vault",    icon: Archive },
+  { id: "notes",      label: "Notes",    icon: NotebookPen },
+
 ];
 
-// ─── "More" drawer items ───────────────────────────────────────────────────────
+// ─── "More" drawer items ──
 const MORE_NAV = [
-  { id: "resources", label: "Resources", icon: Library },
-  { id: "notes",      label: "Notes",     icon: NotebookPen },
-  { id: "ai-mentor",  label: "AI Mentor", icon: Sparkles },
+  { id: "syllabus",   label: "Syllabus", icon: BookOpen },
+
+  { id: "resources",  label: "Resources",icon: Library },
+  { id: "ai-mentor",  label: "AI Mentor",icon: Sparkles },
 ];
 
 export default function BottomNav({
@@ -38,7 +40,6 @@ export default function BottomNav({
   const [moreOpen, setMoreOpen] = useState(false);
   const drawerRef = useRef(null);
 
-  // Close drawer on outside tap
   useEffect(() => {
     if (!moreOpen) return;
     const handler = (e) => {
@@ -53,7 +54,6 @@ export default function BottomNav({
   const streak = userData?.profile?.streak || 0;
   const isAdmin = useMemo(() => {
     if (user?.role === "admin") return true;
-    if (user) return false; // we have a user object and it says non-admin
     try {
       const stored = JSON.parse(localStorage.getItem("upsc_user") || "{}");
       return stored?.role === "admin";
@@ -88,7 +88,6 @@ export default function BottomNav({
           className="lg:hidden fixed bottom-[calc(var(--bottom-nav-h)+var(--safe-bottom))] left-3 right-3 z-50 glass-panel p-4 animate-slide-up"
           style={{ borderRadius: "20px" }}
         >
-          {/* Header */}
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2.5">
               {userName ? (
@@ -115,7 +114,6 @@ export default function BottomNav({
             </button>
           </div>
 
-          {/* More nav items */}
           <div className="grid grid-cols-2 gap-2 mb-4">
             {MORE_NAV.map(({ id, label, icon: Icon }) => {
               const active = activeView === id;
@@ -136,7 +134,6 @@ export default function BottomNav({
               );
             })}
 
-            {/* Profile button */}
             {isLoggedIn && (
               <button
                 onClick={() => handleNav("profile")}
@@ -152,7 +149,6 @@ export default function BottomNav({
               </button>
             )}
 
-            {/* Admin (if admin) */}
             {isAdmin && (
               <button
                 onClick={() => handleNav("admin")}
@@ -169,9 +165,7 @@ export default function BottomNav({
             )}
           </div>
 
-          {/* Divider */}
           <div className="border-t border-bg-border pt-3 flex items-center justify-between gap-3">
-            {/* Theme toggle */}
             <button
               onClick={onToggleTheme}
               className="flex items-center gap-2 px-3 py-2 rounded-xl bg-bg-muted text-text-secondary hover:text-text-primary transition-colors text-sm font-medium flex-1"
@@ -180,7 +174,6 @@ export default function BottomNav({
               {theme === "dark" ? "Light mode" : "Dark mode"}
             </button>
 
-            {/* Auth */}
             {isLoggedIn ? (
               <button
                 onClick={() => { onLogout?.(); setMoreOpen(false); }}

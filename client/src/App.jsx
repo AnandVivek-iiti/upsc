@@ -4,12 +4,13 @@ import Dashboard from "./pages/Dashboard";
 import SyllabusTracker from "./pages/SyllabusTracker";
 import MainsGrind from "./pages/MainsGrind";
 import PrelimsGrind from "./pages/PrelimsGrind";
+import PyqVault from "./pages/PyqVault";               // ← new
 import Footer from "./components/layout/Footer";
 import { useUserData } from "./hooks/useUserData";
 import { AlertCircle } from "lucide-react";
 import HeroBanner from "./pages/Hero";
 import LandingHero from "./pages/LandingHero";
-import Topicwise from "./pages/Topicwise";
+// import Topicwise from "./pages/Topicwise";          // removed
 import AuthPage from "./pages/AuthPage";
 import { useAuth } from "./hooks/useAuth";
 import Adminpannel from "./pages/Adminpannel.jsx";
@@ -22,6 +23,7 @@ import AIMentorWorkspace from "./pages/AIMentorWorkspace.jsx";
 import AIMentorChat from "./pages/AI/AIMentorChat";
 import MentorNotes from "./pages/MentorNotes.jsx";
 import TestSeriesPage from "./pages/Testseriespage";
+import FeedbackModal from "./components/FeedbackModal";
 
 // ─── Splash Screen ────────────────────────────────────────────────────────────
 function SplashScreen() {
@@ -135,15 +137,13 @@ export default function App() {
   const [activeView, setActiveView] = useState("dashboard");
   const [workspaceQuestion, setWorkspaceQuestion] = useState(null);
   const [previousView, setPreviousView] = useState("dashboard");
-  const [aiMentorPrefill, setAiMentorPrefill] = useState(""); // ← quote prefill
-  // "landing" = hero page, "auth" = actual sign-in/up form
+  const [aiMentorPrefill, setAiMentorPrefill] = useState("");
   const [authStage, setAuthStage] = useState("landing");
   const [theme, setTheme] = useState(() => {
     if (typeof window === "undefined") return "light";
     return localStorage.getItem("upsc-theme") || "light";
   });
 
-  // ─── Track mobile breakpoint (lg = 1024px) ─────────────────────────────────
   const [isMobile, setIsMobile] = useState(() => {
     if (typeof window === "undefined") return false;
     return window.innerWidth < 1024;
@@ -187,7 +187,6 @@ export default function App() {
   const handleNavigateProfile = () => handleViewChange("profile");
   const handleProfileUpdate = () => refetch?.();
 
-  // ── Quote click: open AI Mentor with pre-filled prompt ────────────────────
   const handleQuoteClick = (quote) => {
     setAiMentorPrefill(
       `Tell me more about this quote by ${quote.src}: "${quote.text}" — its historical context, deeper philosophical meaning, and how I can use it effectively in a UPSC essay or GS answer.`
@@ -199,11 +198,6 @@ export default function App() {
   if (loading && !userData && (user || token)) return <LoadingScreen />;
 
   const userName = userData?.profile?.name || user?.name || "";
-  // The dedicated full-page AI Mentor workspace is its own self-contained
-  // screen (header, sidebar, chat). The floating chat bubble must NOT also
-  // render on top of it — that was stacking two separate mentor UIs and
-  // covering the workspace's own controls. Notes gets the same distraction-free
-  // treatment since it's also an immersive, full-page writing surface.
   const isWorkspace = activeView === "ai-mentor" || activeView === "notes";
 
   return (
@@ -228,8 +222,6 @@ export default function App() {
       <main className="lg:ml-[var(--sidebar-width,14rem)] min-h-[100dvh]">
         <div className="flex min-h-[100dvh] flex-col">
           <div className="flex-1 pb-bottom-nav lg:pb-0">
-            {/* HeroBanner — hidden on the full-page AI Mentor workspace, which
-                owns its own header */}
             {!isWorkspace && (
               <HeroBanner
                 examDate={userData?.profile?.examDate || null}
@@ -270,13 +262,8 @@ export default function App() {
                 />
               )}
               {activeView === "pre" && <PrelimsGrind isLoggedIn={!!user && !!token} />}
-              {activeView === "topic-wise" && (
-                <Topicwise
-                  onSyllabusUpdate={updateProgress}
-                  onBulkSyllabusUpdate={bulkUpdateProgress}
-                  serverAttempts={userData?.question_attempts || []}
-                  isLoggedIn={!!user && !!token}
-                />
+              {activeView === "pyq-vault" && (
+                <PyqVault isLoggedIn={!!user && !!token} />
               )}
               {activeView === "admin" && <Adminpannel />}
               {activeView === "resources" && (
@@ -287,7 +274,6 @@ export default function App() {
                   serverAttempts={userData?.question_attempts || []}
                 />
               )}
-              {/* ── Test Series ── */}
               {activeView === "test-series" && (
                 <TestSeriesPage
                   user={user}
@@ -313,8 +299,6 @@ export default function App() {
                   }}
                 />
               )}
-
-              {/* ── AI Mentor full page — receives prefill from quote click ── */}
               {activeView === "ai-mentor" && (
                 <AIMentorWorkspace
                   isLoggedIn={!!user && !!token}
@@ -322,8 +306,6 @@ export default function App() {
                   onClearPrefill={() => setAiMentorPrefill("")}
                 />
               )}
-
-              {/* ── Mentor Notes — full-bleed notes + AI writing surface ── */}
               {activeView === "notes" && (
                 <MentorNotes
                   isLoggedIn={!!user && !!token}
@@ -335,7 +317,6 @@ export default function App() {
             <PWAInstallPrompt />
           </div>
 
-          {/* ── Footer: Show on desktop for Notes, otherwise only when not in workspace ── */}
           { (!isWorkspace || (activeView === "notes" && !isMobile)) && <Footer /> }
         </div>
       </main>
@@ -361,6 +342,7 @@ export default function App() {
         onNavigateProfile={handleNavigateProfile}
         userName={userName}
       />
+      <FeedbackModal isLoggedIn={!!user && !!token} user={user} />
     </div>
   );
 }

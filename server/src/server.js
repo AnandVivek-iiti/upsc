@@ -9,7 +9,7 @@ const VisitorLog = require("./models/VisitorLog");
 
 // ── Import all models so Sequelize registers them before sync ─────────────────
 require("./models/User");
-require("./models/UserData");    
+require("./models/UserData");
 require("./models/TestAttempt");
 require("./models/UserEvents");
 require("./models/DailyActiveUsers");
@@ -23,7 +23,7 @@ const evaluateRoutes  = require("./routes/evaluateRoutes");
 const adminRoutes     = require("./routes/adminRoutes");
 const testRoutes      = require("./routes/testRoutes");
 const notesRoutes     = require("./routes/notesRoutes");
-
+const feedbackRoutes = require("./routes/feedbackRoutes");
 const { initSocket } = require("./socket/socketManager");
 
 // ─── Build Express app ────────────────────────────────────────────────────────
@@ -83,6 +83,7 @@ app.use("/api/evaluate",  evaluateRoutes);
 app.use("/api/admin",     adminRoutes);
 app.use("/api/tests",     testRoutes);
 app.use("/api/notes",     notesRoutes);
+app.use("/api/feedback", feedbackRoutes);
 
 // ─── 404 & Error Handlers ─────────────────────────────────────────────────────
 app.use(notFound);

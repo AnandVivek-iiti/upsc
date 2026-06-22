@@ -9,18 +9,28 @@ const {
   getRetention,
   recordEvent,
   deleteUser,
+  getJourney,
+  getUserSessions,
+  getSegments,
+  getDiscovery,
+  getInsights,
 } = require("../controllers/adminController");
 const { protect, adminOnly } = require("../middleware/authMiddleware");
 
 // All admin routes require auth + admin role
 router.use(protect, adminOnly);
 
-router.get("/metrics",   getMetrics);
-router.get("/users",     listUsers);
-router.get("/funnel",    getFunnel);
-router.get("/features",  getFeatureAnalytics);
-router.get("/activity",  getActivity);
+router.get("/metrics", getMetrics);
+router.get("/users", listUsers);
+router.get("/funnel", getFunnel);
+router.get("/features", getFeatureAnalytics);
+router.get("/activity", getActivity);
 router.get("/retention", getRetention);
-router.post("/events",   recordEvent);
+router.post("/events", recordEvent);
 router.delete("/users/:id", deleteUser);
+router.get("/journey", getJourney);
+router.get("/sessions/:userId", getUserSessions);
+router.get("/segments", getSegments);
+router.get("/discovery", getDiscovery);
+router.get("/insights", getInsights);
 module.exports = router;
