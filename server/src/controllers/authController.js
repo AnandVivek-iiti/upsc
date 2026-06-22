@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 const { UserData } = require("../models/UserData");
+const trackEvent = require("../utils/trackEvent");
 
 const signToken = (id) =>
   jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -79,6 +80,7 @@ const register = async (req, res, next) => {
 
     // ── Seed UserData row for this user ───────────────────────────────────────
     await UserData.seedForUser(user.id);
+    trackEvent(user.id, "day_return").catch(() => {}); // day-0 engagement signal
 
     const token = signToken(user.id);
     res.status(201).json({ success: true, token, user: formatUser(user) });
@@ -196,6 +198,7 @@ const googleAuth = async (req, res, next) => {
         });
         // Seed UserData for new Google user
         await UserData.seedForUser(user.id);
+        trackEvent(user.id, "day_return").catch(() => {}); // day-0 engagement signal
       }
     } else if (!user.avatar && avatar) {
       // Update avatar if missing

@@ -2,11 +2,13 @@ const User = require("../models/User");
 const { UserData } = require("../models/UserData");
 const { getISTDateString } = require("../utils/dateUtils");
 const { emitToUser } = require("../socket/socketManager");
+const trackEvent = require("../utils/trackEvent");
 
 // ─── GET /api/dashboard ────────────────────────────────────────────────────────
 // Returns profile + daily logs + answers + spaced_repetition + question_attempts.
 const getUserData = async (req, res, next) => {
   try {
+    trackEvent(req.user.id, "dashboard_visit").catch(() => {}); // fire-and-forget
     const userData = await UserData.findOne({ where: { user_id: req.user.id } });
 
     if (!userData) {
@@ -80,6 +82,7 @@ const updateModuleProgress = async (req, res, next) => {
     userData.changed("syllabus_progress", true);
     await userData.save();
 
+    trackEvent(req.user.id, "syllabus_tracked", "Syllabus Tracker", { topic: moduleName }).catch(() => {});
     emitToUser(req.user.id, "dashboard:syllabus-updated", { syllabus_progress: sp });
 
     res.json({

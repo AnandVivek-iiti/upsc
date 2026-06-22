@@ -35,6 +35,7 @@ const VisitorLog = sequelize.define(
     },
   },
   {
+    tableName: "visitor_logs", // production table is lowercase/underscored — Sequelize would default to "VisitorLogs"
     timestamps: false,
     underscored: true,
   }

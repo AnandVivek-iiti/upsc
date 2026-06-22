@@ -1,4 +1,4 @@
-const { Sequelize } = require("sequelize");  // ← this line is missing
+const { Sequelize } = require("sequelize");
 
 const sequelize = new Sequelize(process.env.DATABASE_URL, {
   dialect: "postgres",
@@ -21,7 +21,16 @@ const connectDB = async () => {
   try {
     await sequelize.authenticate();
     console.log("✅ PostgreSQL Connected");
-    await sequelize.sync({ alter: true });
+
+    // sync() with no options:
+    //   • Creates tables that don't exist yet  ✓
+    //   • Skips tables that already exist      ✓  (safe for production)
+    //   • Does NOT drop/recreate anything      ✓
+    //
+    // Use { alter: true } only locally when you need to add a column to an
+    // existing table — it breaks on fresh DBs because ALTER TABLE requires
+    // the table to already exist.
+    await sequelize.sync();
     console.log("✅ Database synced");
   } catch (error) {
     console.error("❌ PostgreSQL connection failed:", error.message);

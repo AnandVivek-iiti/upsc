@@ -85,6 +85,7 @@ const User = sequelize.define(
     },
   },
   {
+    tableName: "users", // production table is lowercase "users" — without this Sequelize defaults to "Users"
     timestamps: true,
     underscored: true,
     hooks: {

@@ -3,22 +3,23 @@ const router = express.Router();
 const {
   getMetrics,
   listUsers,
-  getFeatures,
-  createFeature,
-  updateFeature,
-  deleteFeature,
+  getFunnel,
+  getFeatureAnalytics,
+  getActivity,
+  getRetention,
+  recordEvent,
 } = require("../controllers/adminController");
 const { protect, adminOnly } = require("../middleware/authMiddleware");
 
 // All admin routes require auth + admin role
 router.use(protect, adminOnly);
 
-router.get("/metrics", getMetrics);
-router.get("/users", listUsers);
-
-router.get("/features", getFeatures);
-router.post("/features", createFeature);
-router.patch("/features/:id", updateFeature);
-router.delete("/features/:id", deleteFeature);
+router.get("/metrics",   getMetrics);
+router.get("/users",     listUsers);
+router.get("/funnel",    getFunnel);
+router.get("/features",  getFeatureAnalytics);  
+router.get("/activity",  getActivity);
+router.get("/retention", getRetention);
+router.post("/events",   recordEvent);
 
 module.exports = router;

@@ -1,5 +1,6 @@
-console.log("✅ notesController loaded");
+
 const { runNotesAction } = require("../config/ai-client");
+const trackEvent = require("../utils/trackEvent");
 
 // Single factory shared by all 4 notes actions — validates input, calls the
 // matching AI prompt via runNotesAction, and normalizes the response shape
@@ -22,6 +23,10 @@ function makeNotesHandler(actionId) {
         content,
       });
 
+      trackEvent(req.user.id, "notes_audited", "Notes Auditor", {
+        action: actionId,
+      }).catch(() => {});
+
       return res.status(200).json({
         success: true,
         provider_used: provider,
@@ -33,7 +38,6 @@ function makeNotesHandler(actionId) {
     }
   };
 }
-console.log("✅ notesRoutes loaded");
 exports.improveNotes = makeNotesHandler("improve");
 exports.findMistakes = makeNotesHandler("mistakes");
 exports.revisionNotes = makeNotesHandler("revision");

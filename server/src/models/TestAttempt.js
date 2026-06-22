@@ -90,6 +90,7 @@ const TestAttempt = sequelize.define(
     completed_at: { type: DataTypes.DATE, defaultValue: DataTypes.NOW },
   },
   {
+    tableName: "test_attempts", // production table is lowercase/underscored — Sequelize would default to "TestAttempts"
     timestamps: true,
     underscored: true,
     indexes: [

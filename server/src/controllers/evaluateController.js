@@ -6,6 +6,7 @@ const {
   isAnyProviderAvailable,
 } = require("../config/ai-client");
 const { UserData } = require("../models/UserData");
+const trackEvent = require("../utils/trackEvent");
 const MAX_HISTORY_MESSAGES = 60;
 
 const MAX_THREADS = 50;
@@ -192,6 +193,11 @@ Please evaluate this answer according to your mentor framework. Be specific abou
       await userData.save();
     }
 
+    trackEvent(req.user.id, "answer_evaluated", "AI Evaluator", {
+      subject: paper || "GS2",
+      score: result?.score ?? null,
+    }).catch(() => {});
+
     return res.status(200).json({
       success: true,
       provider_used: provider,
@@ -276,6 +282,9 @@ const chat = async (req, res, next) => {
     userData.mentor_threads = threads;
     userData.changed("mentor_threads", true);
     await userData.save();
+
+    trackEvent(req.user.id, "mentor_open", "AI Mentor").catch(() => {});
+
   const userTurnCount = thread.messages.filter(
       (m) => m.role === "user",
     ).length;

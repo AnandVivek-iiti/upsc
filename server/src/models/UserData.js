@@ -78,7 +78,7 @@ const UserData = sequelize.define(
       defaultValue: [],
     },
   },
-  { timestamps: true, underscored: true }
+  { tableName: "user_data", timestamps: true, underscored: true }
 );
 
 const SyllabusModule = sequelize.define(
@@ -116,7 +116,7 @@ const SyllabusModule = sequelize.define(
       defaultValue: "pending",
     },
   },
-  { timestamps: false, underscored: true }
+  { tableName: "syllabus_modules", timestamps: false, underscored: true }
 );
 
 // ─── Answer ───────────────────────────────────────────────────────────────────
@@ -137,7 +137,7 @@ const Answer = sequelize.define(
     evaluation: { type: DataTypes.TEXT },
     word_count: { type: DataTypes.INTEGER },
   },
-  { timestamps: false, underscored: true }
+  { tableName: "answers", timestamps: false, underscored: true }
 );
 
 // ─── DailyLog ─────────────────────────────────────────────────────────────────
@@ -159,7 +159,7 @@ const DailyLog = sequelize.define(
     notes: { type: DataTypes.TEXT, defaultValue: "" },
     logged_at: { type: DataTypes.DATE, defaultValue: DataTypes.NOW },
   },
-  { timestamps: false, underscored: true }
+  { tableName: "daily_logs", timestamps: false, underscored: true }
 );
 
 // ─── SpacedRepItem ────────────────────────────────────────────────────────────
@@ -184,7 +184,7 @@ const SpacedRepItem = sequelize.define(
     review_count: { type: DataTypes.INTEGER, defaultValue: 0 },
     interval_days: { type: DataTypes.INTEGER, defaultValue: 3 },
   },
-  { timestamps: false, underscored: true }
+  { tableName: "spaced_rep_items", timestamps: false, underscored: true }
 );
 
 // ─── Associations ─────────────────────────────────────────────────────────────

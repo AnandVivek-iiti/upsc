@@ -1,6 +1,7 @@
 const TestAttempt = require("../models/TestAttempt");
 const { UserData } = require("../models/UserData");
 const { analyzeTestPerformance } = require("../config/ai-client");
+const trackEvent = require("../utils/trackEvent");
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -120,6 +121,8 @@ const submitTest = async (req, res, next) => {
       topic_breakdown,
       ai_analysis_status: "processing",
     });
+
+    trackEvent(req.user.id, "test_attempted", "Mock Tests", { test_id: attempt.id }).catch(() => {});
 
     // ── Run AI analysis (has built-in offline fallback, so this is safe) ───
     let analysis = null;
