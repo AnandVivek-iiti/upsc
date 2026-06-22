@@ -524,6 +524,28 @@ const getRetention = async (req, res, next) => {
     next(err);
   }
 };
+// ─── DELETE /api/admin/users/:id ──────────────────────────────────────────────
+const deleteUser = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    // Only allow deleting role=user — protects admin accounts
+    const target = await User.findOne({ where: { id, role: "user" } });
+    if (!target)
+      return res.status(404).json({ success: false, error: "User not found or not deletable." });
+
+    // Cascade: wipe dependent rows first to avoid FK constraint errors
+    await Promise.all([
+      UserEvents.destroy({ where: { user_id: id } }),
+      UserData.destroy({ where: { user_id: id } }),
+    ]);
+    await target.destroy();
+
+    res.json({ success: true });
+  } catch (err) {
+    next(err);
+  }
+};
 
 // ─── POST /api/admin/events ───────────────────────────────────────────────────
 // Internal — called by app code to record a user action.
@@ -548,4 +570,5 @@ module.exports = {
   getActivity,
   getRetention,
   recordEvent,
+  deleteUser,
 };

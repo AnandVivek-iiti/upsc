@@ -1,11 +1,18 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import {
-  Users, BarChart2, Shield, RefreshCw,
+  Users, BarChart2, Shield, RefreshCw, Download,
   ChevronLeft, ChevronRight, Eye, EyeOff, Activity,
-  AlertCircle, CheckCircle2, Loader2, TrendingUp, TrendingDown,
+  AlertCircle, Trash2, CheckCircle2, Loader2, TrendingUp, TrendingDown,
   Flame, Clock, BookOpen, Brain, FileText, Target,
   ArrowUp, ArrowDown, Minus, X, Calendar, UserCheck,
 } from "lucide-react";
+import {
+  downloadOverviewReport,
+  downloadUsersReport,
+  downloadAnalyticsReport,
+  downloadActivityReport,
+  downloadRetentionReport,
+} from "../utils/adminReports";
 
 const BASE = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
@@ -69,7 +76,7 @@ function TrendChip({ delta }) {
     <span className={`inline-flex items-center gap-0.5 text-[10px] font-mono px-1.5 py-0.5 rounded-full
       ${flat ? "text-text-muted bg-bg-muted"
         : up ? "text-accent-green bg-accent-green/10"
-        : "text-accent-red bg-accent-red/10"}`}>
+          : "text-accent-red bg-accent-red/10"}`}>
       {flat ? <Minus size={9} /> : up ? <ArrowUp size={9} /> : <ArrowDown size={9} />}
       {flat ? "flat" : `${Math.abs(delta)}`}
     </span>
@@ -118,6 +125,21 @@ function LoadSpinner() {
   );
 }
 
+// ─── Download PDF button ──────────────────────────────────────────────────────
+function DownloadBtn({ onClick, label = "PDF" }) {
+  return (
+    <button
+      onClick={onClick}
+      className="flex items-center gap-1.5 text-xs font-mono text-accent-blue hover:text-text-primary
+        transition-colors px-2.5 py-1.5 rounded-lg border border-accent-blue/20
+        hover:border-accent-blue/50 bg-accent-blue/5 hover:bg-accent-blue/10"
+    >
+      <Download size={11} />
+      {label}
+    </button>
+  );
+}
+
 // ─── Retention heat-map cell ──────────────────────────────────────────────────
 function RetentionCell({ pct }) {
   if (pct === undefined || pct === null) return <td className="px-3 py-2 text-center text-text-muted/30 text-xs">—</td>;
@@ -132,14 +154,14 @@ function RetentionCell({ pct }) {
 // ─── Event type → human label ─────────────────────────────────────────────────
 const EVENT_LABELS = {
   dashboard_visit: { label: "visited dashboard", icon: BarChart2, color: "#60a5fa" },
-  timer_start:     { label: "started study timer", icon: Clock, color: "#4ade80" },
-  mentor_open:     { label: "opened AI Mentor", icon: Brain, color: "#a78bfa" },
-  answer_evaluated:{ label: "evaluated an answer", icon: FileText, color: "#f59e0b" },
-  notes_audited:   { label: "audited notes", icon: BookOpen, color: "#34d399" },
-  test_attempted:  { label: "attempted a mock test", icon: Target, color: "#f97316" },
-  pyq_used:        { label: "practiced PYQs", icon: Activity, color: "#22d3ee" },
-  syllabus_tracked:{ label: "updated syllabus", icon: CheckCircle2, color: "#4ade80" },
-  day_return:      { label: "returned to study", icon: Flame, color: "#fb923c" },
+  timer_start: { label: "started study timer", icon: Clock, color: "#4ade80" },
+  mentor_open: { label: "opened AI Mentor", icon: Brain, color: "#a78bfa" },
+  answer_evaluated: { label: "evaluated an answer", icon: FileText, color: "#f59e0b" },
+  notes_audited: { label: "audited notes", icon: BookOpen, color: "#34d399" },
+  test_attempted: { label: "attempted a mock test", icon: Target, color: "#f97316" },
+  pyq_used: { label: "practiced PYQs", icon: Activity, color: "#22d3ee" },
+  syllabus_tracked: { label: "updated syllabus", icon: CheckCircle2, color: "#4ade80" },
+  day_return: { label: "returned to study", icon: Flame, color: "#fb923c" },
 };
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -155,32 +177,35 @@ function OverviewTab({ metrics, loading, onRefresh }) {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <SectionHead title="User Growth" />
-        <button onClick={onRefresh} disabled={loading}
-          className="flex items-center gap-1.5 text-xs text-text-muted hover:text-text-primary font-mono transition-colors">
-          <RefreshCw size={12} className={loading ? "animate-spin" : ""} />
-          Refresh
-        </button>
+        <div className="flex items-center gap-2">
+          <DownloadBtn onClick={() => downloadOverviewReport(metrics)} />
+          <button onClick={onRefresh} disabled={loading}
+            className="flex items-center gap-1.5 text-xs text-text-muted hover:text-text-primary font-mono transition-colors">
+            <RefreshCw size={12} className={loading ? "animate-spin" : ""} />
+            Refresh
+          </button>
+        </div>
       </div>
 
       {/* Row 1 — User Growth */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-        <MetricCard icon={Users}      label="Total Users"    value={users.total}        iconColor="#60a5fa" delta={trends.total_delta} />
-        <MetricCard icon={UserCheck}  label="Today Signups"  value={users.todaySignups} iconColor="#4ade80" delta={trends.signup_delta} />
-        <MetricCard icon={Activity}   label="DAU"            value={users.dau}          iconColor="#f59e0b" delta={trends.dau_delta} accent />
-        <MetricCard icon={Calendar}   label="WAU"            value={users.wau}          iconColor="#a78bfa" />
-        <MetricCard icon={TrendingUp} label="MAU"            value={users.mau}          iconColor="#f97316" />
+        <MetricCard icon={Users} label="Total Users" value={users.total} iconColor="#60a5fa" delta={trends.total_delta} />
+        <MetricCard icon={UserCheck} label="Today Signups" value={users.todaySignups} iconColor="#4ade80" delta={trends.signup_delta} />
+        <MetricCard icon={Activity} label="DAU" value={users.dau} iconColor="#f59e0b" delta={trends.dau_delta} accent />
+        <MetricCard icon={Calendar} label="WAU" value={users.wau} iconColor="#a78bfa" />
+        <MetricCard icon={TrendingUp} label="MAU" value={users.mau} iconColor="#f97316" />
       </div>
 
       {/* Row 2 — Feature Adoption Funnel Summary */}
       <div>
         <SectionHead title="Feature Adoption" />
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-          <MetricCard icon={Users}       label="Registered"     value={users.total}              iconColor="#60a5fa" />
-          <MetricCard icon={Activity}    label="Used Any Feature" value={users.usedAnyFeature}   iconColor="#4ade80"
+          <MetricCard icon={Users} label="Registered" value={users.total} iconColor="#60a5fa" />
+          <MetricCard icon={Activity} label="Used Any Feature" value={users.usedAnyFeature} iconColor="#4ade80"
             sub={users.total ? `${Math.round((users.usedAnyFeature / users.total) * 100)}% of users` : undefined} />
-          <MetricCard icon={TrendingUp}  label="Used 3+ Features" value={users.used3PlusFeatures} iconColor="#f59e0b"
+          <MetricCard icon={TrendingUp} label="Used 3+ Features" value={users.used3PlusFeatures} iconColor="#f59e0b"
             sub={users.total ? `${Math.round((users.used3PlusFeatures / users.total) * 100)}% of users` : undefined} />
-          <MetricCard icon={Target}      label="Used 5+ Features" value={users.used5PlusFeatures} iconColor="#a78bfa" accent
+          <MetricCard icon={Target} label="Used 5+ Features" value={users.used5PlusFeatures} iconColor="#a78bfa" accent
             sub={users.total ? `${Math.round((users.used5PlusFeatures / users.total) * 100)}% of users` : undefined} />
         </div>
       </div>
@@ -189,11 +214,11 @@ function OverviewTab({ metrics, loading, onRefresh }) {
       <div>
         <SectionHead title="Engagement" />
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-          <MetricCard icon={Calendar}   label="Retention D1"     value={engagement.retentionD1 !== undefined ? `${engagement.retentionD1}%` : "—"} iconColor="#4ade80" />
-          <MetricCard icon={Calendar}   label="Retention D7"     value={engagement.retentionD7 !== undefined ? `${engagement.retentionD7}%` : "—"} iconColor="#f59e0b" />
-          <MetricCard icon={Clock}      label="Avg Study/Day"    value={engagement.avgStudyHours !== undefined ? `${engagement.avgStudyHours}h` : "—"} iconColor="#60a5fa" />
-          <MetricCard icon={Clock}      label="Total Study Hrs"  value={fmtNum(engagement.totalStudyHours)} iconColor="#a78bfa" />
-          <MetricCard icon={Flame}      label="Active Streaks"   value={users.activeStreakUsers} iconColor="#fb923c" />
+          <MetricCard icon={Calendar} label="Retention D1" value={engagement.retentionD1 !== undefined ? `${engagement.retentionD1}%` : "—"} iconColor="#4ade80" />
+          <MetricCard icon={Calendar} label="Retention D7" value={engagement.retentionD7 !== undefined ? `${engagement.retentionD7}%` : "—"} iconColor="#f59e0b" />
+          <MetricCard icon={Clock} label="Avg Study/Day" value={engagement.avgStudyHours !== undefined ? `${engagement.avgStudyHours}h` : "—"} iconColor="#60a5fa" />
+          <MetricCard icon={Clock} label="Total Study Hrs" value={fmtNum(engagement.totalStudyHours)} iconColor="#a78bfa" />
+          <MetricCard icon={Flame} label="Active Streaks" value={users.activeStreakUsers} iconColor="#fb923c" />
         </div>
       </div>
 
@@ -201,10 +226,10 @@ function OverviewTab({ metrics, loading, onRefresh }) {
       <div>
         <SectionHead title="Activity" />
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-          <MetricCard icon={FileText}  label="Answers Evaluated"   value={activity.answersEvaluated}     iconColor="#f59e0b" />
-          <MetricCard icon={BookOpen}  label="Notes Audited"        value={activity.notesAudited}         iconColor="#34d399" />
-          <MetricCard icon={Target}    label="Tests Attempted"      value={activity.testsAttempted}       iconColor="#f97316" />
-          <MetricCard icon={Brain}     label="AI Conversations"     value={activity.aiMentorConversations} iconColor="#a78bfa" accent />
+          <MetricCard icon={FileText} label="Answers Evaluated" value={activity.answersEvaluated} iconColor="#f59e0b" />
+          <MetricCard icon={BookOpen} label="Notes Audited" value={activity.notesAudited} iconColor="#34d399" />
+          <MetricCard icon={Target} label="Tests Attempted" value={activity.testsAttempted} iconColor="#f97316" />
+          <MetricCard icon={Brain} label="AI Conversations" value={activity.aiMentorConversations} iconColor="#a78bfa" accent />
         </div>
       </div>
     </div>
@@ -214,23 +239,24 @@ function OverviewTab({ metrics, loading, onRefresh }) {
 // ═══════════════════════════════════════════════════════════════════════════════
 // USERS TAB
 // ═══════════════════════════════════════════════════════════════════════════════
-function UsersTab({ users, usersTotal, userPage, loading, onPageChange, onSortChange, sortBy, sortDir }) {
+function UsersTab({ users, usersTotal, userPage, loading, onPageChange, onSortChange, sortBy, sortDir, onDelete }) {
   const [showEmails, setShowEmails] = useState(false);
+  const [pendingDelete, setPendingDelete] = useState(null);
 
   const COLS = [
-    { key: "name",             label: "Name"            },
-    { key: "email",            label: "Email"           },
-    { key: "streak",           label: "Streak 🔥"       },
-    { key: "longest_streak",   label: "Best Streak"     },
-    { key: "total_study_hours",label: "Study Hrs"       },
-    { key: "answers_evaluated",label: "Answers"         },
-    { key: "notes_audited",    label: "Notes"           },
-    { key: "tests_attempted",  label: "Tests"           },
-    { key: "days_active",      label: "Days Active"     },
-    { key: "features_used",    label: "Features"        },
-    { key: "last_active",      label: "Last Active"     },
-    { key: "registration_date",label: "Joined"          },
-    { key: "engagement_score", label: "Score"           },
+    { key: "name", label: "Name" },
+    { key: "email", label: "Email" },
+    { key: "streak", label: "Streak 🔥" },
+    { key: "longest_streak", label: "Best Streak" },
+    { key: "total_study_hours", label: "Study Hrs" },
+    { key: "answers_evaluated", label: "Answers" },
+    { key: "notes_audited", label: "Notes" },
+    { key: "tests_attempted", label: "Tests" },
+    { key: "days_active", label: "Days Active" },
+    { key: "features_used", label: "Features" },
+    { key: "last_active", label: "Last Active" },
+    { key: "registration_date", label: "Joined" },
+    { key: "engagement_score", label: "Score" },
   ];
 
   const maskEmail = (email) => {
@@ -244,11 +270,14 @@ function UsersTab({ users, usersTotal, userPage, loading, onPageChange, onSortCh
     <div>
       <div className="flex items-center justify-between mb-4">
         <SectionHead title={`Users (${usersTotal})`} />
-        <button onClick={() => setShowEmails(v => !v)}
-          className="flex items-center gap-1.5 text-xs text-text-muted hover:text-text-primary font-mono transition-colors">
-          {showEmails ? <EyeOff size={12} /> : <Eye size={12} />}
-          {showEmails ? "Mask emails" : "Show emails"}
-        </button>
+        <div className="flex items-center gap-2">
+          <DownloadBtn onClick={() => downloadUsersReport(users, usersTotal)} />
+          <button onClick={() => setShowEmails(v => !v)}
+            className="flex items-center gap-1.5 text-xs text-text-muted hover:text-text-primary font-mono transition-colors">
+            {showEmails ? <EyeOff size={12} /> : <Eye size={12} />}
+            {showEmails ? "Mask emails" : "Show emails"}
+          </button>
+        </div>
       </div>
 
       {loading && users.length === 0 ? <LoadSpinner /> : (
@@ -256,8 +285,10 @@ function UsersTab({ users, usersTotal, userPage, loading, onPageChange, onSortCh
           <div className="overflow-x-auto">
             <table className="w-full text-sm min-w-[900px]">
               <thead>
+
                 <tr className="border-b border-bg-border bg-bg-muted/40">
                   {COLS.map(c => (
+
                     <th key={c.key}
                       onClick={() => onSortChange(c.key)}
                       className="text-left px-3 py-3 text-[10px] font-mono text-text-muted uppercase tracking-wider cursor-pointer hover:text-text-primary transition-colors whitespace-nowrap select-none">
@@ -269,12 +300,16 @@ function UsersTab({ users, usersTotal, userPage, loading, onPageChange, onSortCh
                       </span>
                     </th>
                   ))}
+                  <th className="w-10 px-3 py-3" />
                 </tr>
               </thead>
               <tbody>
                 {users.map((u, i) => (
-                  <tr key={u.id} className={`border-b border-bg-border/40 hover:bg-bg-muted/30 transition-colors
-                    ${i % 2 === 0 ? "" : "bg-bg-muted/10"}`}>
+                  <tr
+                    key={u.id}
+                    className={`group border-b border-bg-border/40 hover:bg-bg-muted/30 transition-colors
+  ${i % 2 === 0 ? "" : "bg-bg-muted/10"}`}
+                  >
                     <td className="px-3 py-2.5 font-medium text-text-primary whitespace-nowrap">{u.name || "—"}</td>
                     <td className="px-3 py-2.5 text-text-secondary font-mono text-xs whitespace-nowrap">
                       {showEmails ? u.email : maskEmail(u.email)}
@@ -305,6 +340,35 @@ function UsersTab({ users, usersTotal, userPage, loading, onPageChange, onSortCh
                     </td>
                     <td className="px-3 py-2.5 text-right">
                       <span className="font-mono text-xs font-bold text-accent-gold">{u.engagement_score ?? "—"}</span>
+                    </td>
+                    <td className="px-2 py-2.5">
+                      {pendingDelete === u.id ? (
+                        <span className="flex items-center gap-1.5 justify-end">
+                          <button
+                            onClick={() => {
+                              onDelete(u.id);
+                              setPendingDelete(null);
+                            }}
+                            className="text-[10px] font-mono text-accent-red hover:text-black bg-accent-red/10 hover:bg-accent-red/30 border border-accent-red/30 px-1.5 py-0.5 rounded transition-colors"
+                          >
+                            Yes
+                          </button>
+
+                          <button
+                            onClick={() => setPendingDelete(null)}
+                            className="text-[10px] font-mono text-text-muted hover:text-text-primary px-1.5 py-0.5 rounded transition-colors"
+                          >
+                            No
+                          </button>
+                        </span>
+                      ) : (
+                        <button
+                          onClick={() => setPendingDelete(u.id)}
+                          className="opacity-0 group-hover:opacity-100 flex items-center justify-center p-1 rounded hover:bg-accent-red/10 text-text-muted hover:text-accent-red transition-all"
+                        >
+                          <Trash2 size={12} />
+                        </button>
+                      )}
                     </td>
                   </tr>
                 ))}
@@ -344,6 +408,11 @@ function AnalyticsTab({ funnel, features, loading }) {
 
   return (
     <div className="space-y-8">
+      {/* Tab-level download button */}
+      <div className="flex justify-end -mb-4">
+        <DownloadBtn onClick={() => downloadAnalyticsReport(funnel, features)} />
+      </div>
+
       {/* Activation Funnel */}
       <div>
         <SectionHead title="Activation Funnel" />
@@ -377,10 +446,10 @@ function AnalyticsTab({ funnel, features, loading }) {
                         background: isFirst
                           ? "linear-gradient(90deg, #60a5fa, #818cf8)"
                           : step.pctOfTotal >= 60
-                          ? "linear-gradient(90deg, #4ade80, #34d399)"
-                          : step.pctOfTotal >= 30
-                          ? "linear-gradient(90deg, #fbbf24, #f59e0b)"
-                          : "linear-gradient(90deg, #fb923c, #ef4444)",
+                            ? "linear-gradient(90deg, #4ade80, #34d399)"
+                            : step.pctOfTotal >= 30
+                              ? "linear-gradient(90deg, #fbbf24, #f59e0b)"
+                              : "linear-gradient(90deg, #fb923c, #ef4444)",
                       }}
                     />
                     <span className="absolute inset-0 flex items-center px-3 text-[11px] font-mono text-white/80">
@@ -468,11 +537,14 @@ function ActivityTab({ events, loading, onRefresh }) {
     <div>
       <div className="flex items-center justify-between mb-4">
         <SectionHead title="Activity Feed (latest 50)" />
-        <button onClick={onRefresh} disabled={loading}
-          className="flex items-center gap-1.5 text-xs text-text-muted hover:text-text-primary font-mono transition-colors">
-          <RefreshCw size={12} className={loading ? "animate-spin" : ""} />
-          Auto-refreshes every 60s
-        </button>
+        <div className="flex items-center gap-2">
+          <DownloadBtn onClick={() => downloadActivityReport(events)} />
+          <button onClick={onRefresh} disabled={loading}
+            className="flex items-center gap-1.5 text-xs text-text-muted hover:text-text-primary font-mono transition-colors">
+            <RefreshCw size={12} className={loading ? "animate-spin" : ""} />
+            Auto-refreshes every 60s
+          </button>
+        </div>
       </div>
 
       {events?.length ? (
@@ -525,6 +597,11 @@ function RetentionTab({ retention, cohort, churnList, loading }) {
 
   return (
     <div className="space-y-8">
+      {/* Tab-level download button */}
+      <div className="flex justify-end -mb-4">
+        <DownloadBtn onClick={() => downloadRetentionReport(retention, cohort, churnList)} />
+      </div>
+
       {/* D1 / D7 / D30 summary */}
       <div>
         <SectionHead title="Retention Rates" />
@@ -532,7 +609,7 @@ function RetentionTab({ retention, cohort, churnList, loading }) {
           {[
             { label: "Day 1", value: retention?.d1, sub: "Returned day after signup" },
             { label: "Day 7", value: retention?.d7, sub: "Returned within first week" },
-            { label: "Day 30",value: retention?.d30,sub: "Returned within first month" },
+            { label: "Day 30", value: retention?.d30, sub: "Returned within first month" },
           ].map(({ label, value, sub }) => {
             const color = value >= 40 ? "#4ade80" : value >= 15 ? "#fbbf24" : "#f87171";
             return (
@@ -640,25 +717,25 @@ export default function AdminPanel() {
   const [tab, setTab] = useState("overview");
 
   // Data state
-  const [metrics,    setMetrics]    = useState(null);
-  const [users,      setUsers]      = useState([]);
+  const [metrics, setMetrics] = useState(null);
+  const [users, setUsers] = useState([]);
   const [usersTotal, setUsersTotal] = useState(0);
-  const [userPage,   setUserPage]   = useState(1);
-  const [sortBy,     setSortBy]     = useState("engagement_score");
-  const [sortDir,    setSortDir]    = useState("desc");
-  const [funnel,     setFunnel]     = useState(null);
-  const [features,   setFeatures]   = useState(null);
-  const [events,     setEvents]     = useState(null);
-  const [retention,  setRetention]  = useState(null);
-  const [cohort,     setCohort]     = useState(null);
-  const [churnList,  setChurnList]  = useState(null);
+  const [userPage, setUserPage] = useState(1);
+  const [sortBy, setSortBy] = useState("engagement_score");
+  const [sortDir, setSortDir] = useState("desc");
+  const [funnel, setFunnel] = useState(null);
+  const [features, setFeatures] = useState(null);
+  const [events, setEvents] = useState(null);
+  const [retention, setRetention] = useState(null);
+  const [cohort, setCohort] = useState(null);
+  const [churnList, setChurnList] = useState(null);
 
   // Loading state per section
   const [loading, setLoading] = useState({});
-  const [toast,   setToast]   = useState(null);
+  const [toast, setToast] = useState(null);
 
   const notify = (msg, type = "ok") => setToast({ msg, type });
-  const load   = (key, val)        => setLoading(prev => ({ ...prev, [key]: val }));
+  const load = (key, val) => setLoading(prev => ({ ...prev, [key]: val }));
 
   // ── Fetch functions ────────────────────────────────────────────────────────
   const fetchMetrics = useCallback(async () => {
@@ -720,11 +797,11 @@ export default function AdminPanel() {
   }, [fetchMetrics]);
 
   useEffect(() => {
-    if (tab === "Users"     && users.length === 0)     fetchUsers(1);
-    if (tab === "analytics" && funnel === null)         fetchAnalytics();
-    if (tab === "activity"  && events === null)         fetchActivity();
-    if (tab === "retention" && retention === null)      fetchRetention();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    if (tab === "Users" && users.length === 0) fetchUsers(1);
+    if (tab === "analytics" && funnel === null) fetchAnalytics();
+    if (tab === "activity" && events === null) fetchActivity();
+    if (tab === "retention" && retention === null) fetchRetention();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tab]);
 
   // ── Sort handler ───────────────────────────────────────────────────────────
@@ -734,6 +811,17 @@ export default function AdminPanel() {
     setSortDir(newDir);
     fetchUsers(1, col, newDir);
   }, [sortBy, sortDir, fetchUsers]);
+
+const handleDelete = useCallback(async (userId) => {
+    try {
+      await adminFetch(`/users/${userId}`, { method: "DELETE" });
+      setUsers(prev => prev.filter(u => u.id !== userId));
+      setUsersTotal(prev => prev - 1);
+      notify("User deleted.");
+    } catch (e) {
+      notify(e.message, "error");
+    }
+  }, []);
 
   // ── Admin guard ────────────────────────────────────────────────────────────
   const storedUser = (() => {
@@ -754,11 +842,11 @@ export default function AdminPanel() {
   }
 
   const TABS = [
-    { id: "overview",  label: "Overview",  icon: BarChart2  },
-    { id: "Users",     label: "Users",     icon: Users      },
+    { id: "overview", label: "Overview", icon: BarChart2 },
+    { id: "Users", label: "Users", icon: Users },
     { id: "analytics", label: "Analytics", icon: TrendingUp },
-    { id: "activity",  label: "Activity",  icon: Activity   },
-    { id: "retention", label: "Retention", icon: Calendar   },
+    { id: "activity", label: "Activity", icon: Activity },
+    { id: "retention", label: "Retention", icon: Calendar },
   ];
 
   return (
@@ -804,6 +892,7 @@ export default function AdminPanel() {
           onSortChange={handleSort}
           sortBy={sortBy}
           sortDir={sortDir}
+          onDelete={handleDelete}
         />
       )}
 
