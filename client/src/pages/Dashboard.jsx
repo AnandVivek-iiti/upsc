@@ -25,7 +25,6 @@ import {
   BookOpenCheck,
   FlaskConical,
   Rocket,
-    Rocket,
   MessageSquarePlus,  
 } from "lucide-react";
 import { useState, useEffect } from "react";
