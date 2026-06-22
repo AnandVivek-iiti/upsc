@@ -1,10 +1,3 @@
-// ─── Test Series Page ─────────────────────────────────────────────────────────
-// Full quiz interface: timer, score calculator, correct/wrong/accuracy display
-// Theme-aware using CSS custom properties from index.css
-// Enhanced with question attempt tracking for unified analytics
-// Dynamically loads ALL Testseries_t*_data.js files — just add a new file
-// (export either an array TEST_TXX = [...] or a single object TEST_TXX = {...})
-// and it will appear automatically. Fully responsive for mobile/app use.
 
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useQuestionAttempts } from "../hooks/useQuestionAttempts";
@@ -31,13 +24,6 @@ import {
   RefreshCw,
   BookMarked,
 } from "lucide-react";
-
-// ─── Dynamic Test Loader ──────────────────────────────────────────────────────
-// Picks up every ../data/Test/Testseries_t*_data.js file automatically.
-// Each file can export its test data either as:
-//   export const TEST_TXX = [ {...}, {...} ]   (array of tests)
-//   export const TEST_TXX = { ... }            (single test object)
-// Both shapes are normalized into one flat array. No manual import edits needed.
 const TEST_MODULES = import.meta.glob("../data/Test/Testseries_t*_data.js", { eager: true });
 
 function loadAllTests() {

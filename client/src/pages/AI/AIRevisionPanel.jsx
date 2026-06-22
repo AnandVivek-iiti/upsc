@@ -1,18 +1,9 @@
-
 import { useState, useEffect, useCallback } from "react";
 import {
-    Brain, Clock, CheckCircle2, Plus, RefreshCw, LogIn,
-    Calendar, AlertCircle, Flame, BookOpen,
+    Brain, Clock, CheckCircle2, RefreshCw, LogIn,
+    Calendar, AlertCircle, Flame, BookOpen, Target, Zap,
 } from "lucide-react";
-import { getSpacedRepetition, addToRevisionQueue } from "../../hooks/useAI";
-
-const DIFFICULTY_OPTIONS = [
-    { value: "hard", label: "Hard", color: "var(--accent-red)", days: 1 },
-    { value: "medium", label: "Medium", color: "var(--accent-gold)", days: 3 },
-    { value: "easy", label: "Easy", color: "var(--accent-green)", days: 7 },
-];
-
-const PAPER_OPTIONS = ["GS1", "GS2", "GS3", "GS4", "Essay", "CSAT", "General"];
+import { getSpacedRepetition } from "../../hooks/useAI";
 
 function daysBetween(dateStr) {
     const today = new Date().toISOString().split("T")[0];
@@ -29,6 +20,7 @@ function ReviewItem({ item, onDone }) {
     return (
         <div className={`flex items-center gap-3 py-2.5 border-b border-bg-border last:border-0 transition-opacity ${done ? "opacity-40" : ""}`}>
             <button
+                type="button"
                 onClick={() => { setDone(true); onDone?.(item); }}
                 className={`w-5 h-5 rounded-full flex items-center justify-center shrink-0 border transition-all ${done ? "bg-accent-green border-accent-green/50" : "border-bg-border hover:border-accent-gold/50"
                     }`}>
@@ -67,16 +59,10 @@ function ReviewItem({ item, onDone }) {
     );
 }
 
-export default function AIRevisionPanel({ isLoggedIn, compact = false }) {
+export default function AIRevisionPanel({ isLoggedIn, compact = false, onNavigate }) {
     const [items, setItems] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
-    const [addOpen, setAddOpen] = useState(false);
-    const [topic, setTopic] = useState("");
-    const [paper, setPaper] = useState("GS2");
-    const [diff, setDiff] = useState("medium");
-    const [adding, setAdding] = useState(false);
-    const [addMsg, setAddMsg] = useState(null);
 
     const load = useCallback(async () => {
         if (!isLoggedIn) return;
@@ -92,21 +78,6 @@ export default function AIRevisionPanel({ isLoggedIn, compact = false }) {
     }, [isLoggedIn]);
 
     useEffect(() => { load(); }, [load]);
-
-    const handleAdd = async () => {
-        if (!topic.trim()) return;
-        setAdding(true); setAddMsg(null);
-        try {
-            const res = await addToRevisionQueue({ topic: topic.trim(), paper, difficulty: diff });
-            setAddMsg(`Added "${res.item.topic}" — next review in ${res.item.interval_days}d`);
-            setTopic(""); setAddOpen(false);
-            load();
-        } catch (e) {
-            setAddMsg(e.message);
-        } finally {
-            setAdding(false);
-        }
-    };
 
     if (!isLoggedIn) {
         return (
@@ -124,6 +95,16 @@ export default function AIRevisionPanel({ isLoggedIn, compact = false }) {
     const dueToday = items.filter(i => daysBetween(i.next_review) === 0);
     const upcoming = items.filter(i => daysBetween(i.next_review) > 0);
 
+    const hasItems = items.length > 0;
+
+    const handleNavigate = (view) => {
+        if (typeof onNavigate === 'function') {
+            onNavigate(view);
+        } else {
+            console.warn('onNavigate is not a function', onNavigate);
+        }
+    };
+
     return (
         <div className="glass-panel overflow-hidden">
             {/* Header */}
@@ -140,56 +121,10 @@ export default function AIRevisionPanel({ isLoggedIn, compact = false }) {
                         </p>
                     </div>
                 </div>
-                <div className="flex items-center gap-2">
-                    <button onClick={load} className="btn-ghost p-1.5 rounded-lg" title="Refresh">
-                        <RefreshCw size={12} className={loading ? "animate-spin text-accent-gold" : "text-text-muted"} />
-                    </button>
-                    <button onClick={() => setAddOpen(v => !v)}
-                        className="flex items-center gap-1 text-xs font-mono px-2.5 py-1.5 rounded-lg transition-all"
-                        style={{ background: "var(--accent-gold)", color: "var(--bg-base)" }}>
-                        <Plus size={11} /> Add Topic
-                    </button>
-                </div>
+                <button type="button" onClick={load} className="btn-ghost p-1.5 rounded-lg" title="Refresh">
+                    <RefreshCw size={12} className={loading ? "animate-spin text-accent-gold" : "text-text-muted"} />
+                </button>
             </div>
-
-            {/* Add form */}
-            {addOpen && (
-                <div className="px-4 py-3 border-b border-bg-border bg-bg-muted space-y-3">
-                    <input
-                        value={topic} onChange={e => setTopic(e.target.value)}
-                        placeholder="Topic name (e.g. Governor's Role, MSP, GS4 Ethics)"
-                        className="w-full bg-bg-base border border-bg-border rounded-xl px-3 py-2 text-sm text-text-primary
-                       focus:outline-none focus:border-accent-gold/40 transition-colors placeholder:text-text-muted"
-                    />
-                    <div className="flex gap-2 flex-wrap">
-                        <select value={paper} onChange={e => setPaper(e.target.value)}
-                            className="bg-bg-base border border-bg-border rounded-lg px-2 py-1.5 text-xs font-mono text-text-primary focus:outline-none">
-                            {PAPER_OPTIONS.map(p => <option key={p} value={p}>{p}</option>)}
-                        </select>
-                        <div className="flex gap-1">
-                            {DIFFICULTY_OPTIONS.map(d => (
-                                <button key={d.value} onClick={() => setDiff(d.value)}
-                                    className="px-2.5 py-1.5 rounded-lg text-xs font-mono transition-all border"
-                                    style={diff === d.value
-                                        ? { background: `${d.color}20`, color: d.color, borderColor: `${d.color}40` }
-                                        : { borderColor: "var(--bg-border)", color: "var(--text-muted)" }}>
-                                    {d.label} ({d.days}d)
-                                </button>
-                            ))}
-                        </div>
-                        <button onClick={handleAdd} disabled={!topic.trim() || adding}
-                            className="btn-primary flex items-center gap-1 text-xs px-3 py-1.5 ml-auto">
-                            {adding ? <RefreshCw size={11} className="animate-spin" /> : <Plus size={11} />}
-                            {adding ? "Adding…" : "Add"}
-                        </button>
-                    </div>
-                    {addMsg && (
-                        <p className="text-[11px] font-mono" style={{ color: addMsg.includes("Added") ? "var(--accent-green)" : "var(--accent-red)" }}>
-                            {addMsg}
-                        </p>
-                    )}
-                </div>
-            )}
 
             {/* Error */}
             {error && (
@@ -207,45 +142,95 @@ export default function AIRevisionPanel({ isLoggedIn, compact = false }) {
                     </div>
                 )}
 
-                {!loading && items.length === 0 && (
-                    <div className="text-center py-8 space-y-2">
-                        <BookOpen size={28} className="mx-auto text-text-muted opacity-40" />
-                        <p className="text-sm text-text-muted">No topics in queue yet.</p>
-                        <p className="text-xs font-mono text-text-muted">Add topics above to start spaced repetition.</p>
+                {!loading && !hasItems && (
+                    <div className="text-center py-8 space-y-4">
+                        <Brain size={32} className="mx-auto text-text-muted opacity-30" />
+                        <p className="text-sm text-text-primary font-medium">No revision topics yet</p>
+                        <p className="text-xs text-text-muted max-w-xs mx-auto">
+                            The AI will automatically add topics based on your performance in <strong>Topicwise</strong> practice and <strong>Test Series</strong>.
+                        </p>
+                        <div className="flex flex-col sm:flex-row gap-2 justify-center mt-2">
+                            <button
+                                type="button"
+                                onClick={() => handleNavigate("topic-wise")}
+                                className="flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-sm font-mono transition-all"
+                                style={{ background: "var(--accent-gold)", color: "var(--bg-base)" }}
+                            >
+                                <Target size={14} /> Go to Topicwise
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => handleNavigate("test-series")}
+                                className="flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-sm font-mono transition-all border"
+                                style={{ borderColor: "var(--accent-gold)", color: "var(--accent-gold)" }}
+                            >
+                                <Zap size={14} /> Take Test Series
+                            </button>
+                        </div>
+                        <p className="text-[10px] font-mono text-text-muted/60 italic">
+                            Practice questions → AI detects weak areas → auto‑scheduled revisions
+                        </p>
                     </div>
                 )}
 
-                {overdue.length > 0 && (
-                    <div className="mt-3">
-                        <div className="flex items-center gap-1.5 mb-2">
-                            <Flame size={12} className="text-accent-red" />
-                            <p className="text-[10px] font-mono text-text-muted uppercase tracking-wider">Overdue ({overdue.length})</p>
-                        </div>
-                        {overdue.map(item => <ReviewItem key={item.id} item={item} />)}
-                    </div>
-                )}
-
-                {dueToday.length > 0 && (
-                    <div className="mt-3">
-                        <div className="flex items-center gap-1.5 mb-2">
-                            <Calendar size={12} className="text-accent-gold" />
-                            <p className="text-[10px] font-mono text-text-muted uppercase tracking-wider">Due Today ({dueToday.length})</p>
-                        </div>
-                        {dueToday.map(item => <ReviewItem key={item.id} item={item} />)}
-                    </div>
-                )}
-
-                {!compact && upcoming.length > 0 && (
-                    <div className="mt-3">
-                        <div className="flex items-center gap-1.5 mb-2">
-                            <Clock size={12} className="text-text-muted" />
-                            <p className="text-[10px] font-mono text-text-muted uppercase tracking-wider">Upcoming ({upcoming.length})</p>
-                        </div>
-                        {upcoming.slice(0, 5).map(item => <ReviewItem key={item.id} item={item} />)}
-                        {upcoming.length > 5 && (
-                            <p className="text-[10px] font-mono text-text-muted text-center py-2">+{upcoming.length - 5} more upcoming</p>
+                {hasItems && (
+                    <>
+                        {overdue.length > 0 && (
+                            <div className="mt-3">
+                                <div className="flex items-center gap-1.5 mb-2">
+                                    <Flame size={12} className="text-accent-red" />
+                                    <p className="text-[10px] font-mono text-text-muted uppercase tracking-wider">Overdue ({overdue.length})</p>
+                                </div>
+                                {overdue.map(item => <ReviewItem key={item.id} item={item} />)}
+                            </div>
                         )}
-                    </div>
+
+                        {dueToday.length > 0 && (
+                            <div className="mt-3">
+                                <div className="flex items-center gap-1.5 mb-2">
+                                    <Calendar size={12} className="text-accent-gold" />
+                                    <p className="text-[10px] font-mono text-text-muted uppercase tracking-wider">Due Today ({dueToday.length})</p>
+                                </div>
+                                {dueToday.map(item => <ReviewItem key={item.id} item={item} />)}
+                            </div>
+                        )}
+
+                        {!compact && upcoming.length > 0 && (
+                            <div className="mt-3">
+                                <div className="flex items-center gap-1.5 mb-2">
+                                    <Clock size={12} className="text-text-muted" />
+                                    <p className="text-[10px] font-mono text-text-muted uppercase tracking-wider">Upcoming ({upcoming.length})</p>
+                                </div>
+                                {upcoming.slice(0, 5).map(item => <ReviewItem key={item.id} item={item} />)}
+                                {upcoming.length > 5 && (
+                                    <p className="text-[10px] font-mono text-text-muted text-center py-2">+{upcoming.length - 5} more upcoming</p>
+                                )}
+                            </div>
+                        )}
+
+                        {/* Small hint to add more via practice */}
+                        <div className="mt-4 pt-3 border-t border-bg-border/50 text-center">
+                            <p className="text-[10px] font-mono text-text-muted">
+                                <span className="opacity-60">Want more topics? </span>
+                                <button
+                                    type="button"
+                                    onClick={() => handleNavigate("topic-wise")}
+                                    className="text-accent-gold hover:underline"
+                                >
+                                    Practice Topicwise
+                                </button>
+                                <span className="opacity-60"> or </span>
+                                <button
+                                    type="button"
+                                    onClick={() => handleNavigate("test-series")}
+                                    className="text-accent-gold hover:underline"
+                                >
+                                    take a Test
+                                </button>
+                                <span className="opacity-60"> — AI will add them automatically.</span>
+                            </p>
+                        </div>
+                    </>
                 )}
             </div>
         </div>

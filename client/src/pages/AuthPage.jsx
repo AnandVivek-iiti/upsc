@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import {
   Eye, EyeOff, ArrowRight, Loader2, AlertCircle,
   CheckCircle2, User, Mail, Lock, Target, Clock, BookOpen,
@@ -168,10 +168,12 @@ export default function AuthPage({ onAuthSuccess, onBack }) {
   const [mode, setMode] = useState("login");
   const [signupStep, setSignupStep] = useState(0);
   const [loading, setLoading] = useState(false);
-  const [googleLoading, setGoogleLoading] = useState(false); // ← Google
+  const [googleLoading, setGoogleLoading] = useState(false);
   const [globalError, setGlobalError] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
   const [fieldErrors, setFieldErrors] = useState({});
+  // Google SDK ready state
+  const [googleSdkReady, setGoogleSdkReady] = useState(false);
 
   const [loginForm, setLoginForm] = useState({ email: "", password: "" });
   const [signupForm, setSignupForm] = useState({
@@ -185,45 +187,105 @@ export default function AuthPage({ onAuthSuccess, onBack }) {
   });
 
   const BASE = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
-  const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || ""; // ← Google
+  const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || "";
   const clearErrors = () => { setFieldErrors({}); setGlobalError(""); };
 
   // ─── Google Identity Services ──────────────────────────────────────────────
-  const googleBtnRef = useRef(null);
+  const googleContainerRef = useRef(null);
+  const resizeObserverRef = useRef(null);
 
+  // Load the Google SDK script
   useEffect(() => {
     if (!GOOGLE_CLIENT_ID) return;
     const scriptId = "google-gsi-script";
-    if (document.getElementById(scriptId)) { initGoogleButton(); return; }
+    if (document.getElementById(scriptId)) {
+      // Script already loaded, check if ready
+      if (window.google?.accounts?.id) {
+        setGoogleSdkReady(true);
+      } else {
+        // Script present but not initialised yet – wait for onload
+        const script = document.getElementById(scriptId);
+        script.onload = () => {
+          if (window.google?.accounts?.id) setGoogleSdkReady(true);
+        };
+      }
+      return;
+    }
     const script = document.createElement("script");
     script.id = scriptId;
     script.src = "https://accounts.google.com/gsi/client";
     script.async = true;
     script.defer = true;
-    script.onload = initGoogleButton;
+    script.onload = () => {
+      if (window.google?.accounts?.id) setGoogleSdkReady(true);
+    };
     document.head.appendChild(script);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+
+    return () => {
+      // Cleanup if needed
+    };
   }, [GOOGLE_CLIENT_ID]);
 
-  useEffect(() => {
-    if (window.google && GOOGLE_CLIENT_ID) initGoogleButton();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mode]);
-
-  function initGoogleButton() {
-    if (!window.google?.accounts?.id || !googleBtnRef.current) return;
-    window.google.accounts.id.initialize({
-      client_id: GOOGLE_CLIENT_ID,
-      callback: handleGoogleCredential,
-    });
-    window.google.accounts.id.renderButton(googleBtnRef.current, {
+  // Render Google button when SDK is ready and container exists
+  const renderGoogleButton = useCallback((containerWidth) => {
+    if (!googleSdkReady || !window.google?.accounts?.id || !googleContainerRef.current) return;
+    // Clear container before re-rendering
+    googleContainerRef.current.innerHTML = '';
+    window.google.accounts.id.renderButton(googleContainerRef.current, {
       theme: "outline",
       size: "large",
-      width: googleBtnRef.current.offsetWidth || 400,
+      width: Math.min(containerWidth, 400), // cap at 400px, but containerWidth is usually smaller on mobile
       text: mode === "login" ? "signin_with" : "signup_with",
       logo_alignment: "left",
     });
-  }
+  }, [googleSdkReady, mode]);
+
+  // Initialize button and set up ResizeObserver on the parent container
+  useEffect(() => {
+    if (!googleSdkReady || !GOOGLE_CLIENT_ID || !googleContainerRef.current) return;
+
+    // Get parent element width (the card or wrapper)
+    const parent = googleContainerRef.current.parentElement;
+    if (!parent) return;
+
+    const getWidth = () => {
+      // Get the actual client width of the parent (which is the card)
+      const width = parent.clientWidth;
+      // Ensure we have a positive number, and cap at 400px (max width for Google button)
+      return Math.min(width > 0 ? width : 400, 400);
+    };
+
+    // Initial render
+    const initialWidth = getWidth();
+    renderGoogleButton(initialWidth);
+
+    // Set up ResizeObserver to re-render on size change
+    if (window.ResizeObserver) {
+      resizeObserverRef.current = new ResizeObserver(() => {
+        const newWidth = getWidth();
+        renderGoogleButton(newWidth);
+      });
+      resizeObserverRef.current.observe(parent);
+    }
+
+    return () => {
+      if (resizeObserverRef.current) {
+        resizeObserverRef.current.disconnect();
+        resizeObserverRef.current = null;
+      }
+    };
+  }, [googleSdkReady, GOOGLE_CLIENT_ID, renderGoogleButton]);
+
+  // Re-render when mode changes (signin vs signup text)
+  useEffect(() => {
+    if (!googleSdkReady || !GOOGLE_CLIENT_ID || !googleContainerRef.current) return;
+    // Re-render with current width
+    const parent = googleContainerRef.current.parentElement;
+    if (parent) {
+      const width = Math.min(parent.clientWidth, 400);
+      renderGoogleButton(width);
+    }
+  }, [mode, googleSdkReady, GOOGLE_CLIENT_ID, renderGoogleButton]);
 
   async function handleGoogleCredential(response) {
     clearErrors();
@@ -246,6 +308,17 @@ export default function AuthPage({ onAuthSuccess, onBack }) {
       setGoogleLoading(false);
     }
   }
+
+  // Initialize Google OAuth client
+  useEffect(() => {
+    if (!googleSdkReady || !window.google?.accounts?.id || !GOOGLE_CLIENT_ID) return;
+    window.google.accounts.id.initialize({
+      client_id: GOOGLE_CLIENT_ID,
+      callback: handleGoogleCredential,
+    });
+    // The button will be rendered by the ResizeObserver effect above.
+    // But we might need to re-initialize if client ID changes? Not needed.
+  }, [googleSdkReady, GOOGLE_CLIENT_ID]);
 
   const switchMode = (m) => {
     setMode(m);
@@ -340,6 +413,39 @@ export default function AuthPage({ onAuthSuccess, onBack }) {
       <div className="flex-1 h-px bg-bg-border" />
     </div>
   );
+
+  // ─── Google Button Skeleton ──────────────────────────────────────────────
+  const GoogleButtonSkeleton = () => (
+    <div className="w-full overflow-hidden rounded-xl">
+      <div className="w-full h-[44px] bg-bg-muted animate-pulse rounded-xl border border-bg-border flex items-center justify-center">
+        <div className="w-5 h-5 rounded-full bg-bg-border/60" />
+        <div className="w-24 h-3 bg-bg-border/60 rounded ml-2" />
+      </div>
+    </div>
+  );
+
+  // ─── Render Google button wrapper ────────────────────────────────────────
+  const renderGoogleButtonWrapper = () => {
+    if (!GOOGLE_CLIENT_ID) return null;
+
+    if (googleLoading) {
+      return (
+        <div className="flex items-center justify-center gap-2 py-3 rounded-xl border border-bg-border text-base text-text-muted">
+          <Loader2 size={16} className="animate-spin" /> Signing in with Google…
+        </div>
+      );
+    }
+
+    if (!googleSdkReady) {
+      return <GoogleButtonSkeleton />;
+    }
+
+    return (
+      <div className="w-full overflow-hidden rounded-xl">
+        <div ref={googleContainerRef} className="w-full" />
+      </div>
+    );
+  };
 
   return (
     <div
@@ -479,20 +585,8 @@ export default function AuthPage({ onAuthSuccess, onBack }) {
         {/* ── LOGIN ── */}
         {mode === "login" && (
           <div className="space-y-5">
-
-            {/* ── Google button ── */}
-            {GOOGLE_CLIENT_ID && (
-              <>
-                {googleLoading ? (
-                  <div className="flex items-center justify-center gap-2 py-3 rounded-xl border border-bg-border text-base text-text-muted">
-                    <Loader2 size={16} className="animate-spin" /> Signing in with Google…
-                  </div>
-                ) : (
-                  <div ref={googleBtnRef} className="w-full flex justify-center" />
-                )}
-                <Divider />
-              </>
-            )}
+            {renderGoogleButtonWrapper()}
+            {GOOGLE_CLIENT_ID && <Divider />}
 
             <Field label="Email address" type="email" value={loginForm.email}
               onChange={lf("email")} error={fieldErrors.email} icon={Mail} autoComplete="email" />
@@ -519,20 +613,8 @@ export default function AuthPage({ onAuthSuccess, onBack }) {
         {/* ── SIGNUP STEP 0 ── */}
         {mode === "signup" && signupStep === 0 && (
           <div className="space-y-5">
-
-            {/* ── Google button ── */}
-            {GOOGLE_CLIENT_ID && (
-              <>
-                {googleLoading ? (
-                  <div className="flex items-center justify-center gap-2 py-3 rounded-xl border border-bg-border text-base text-text-muted">
-                    <Loader2 size={16} className="animate-spin" /> Signing up with Google…
-                  </div>
-                ) : (
-                  <div ref={googleBtnRef} className="w-full flex justify-center" />
-                )}
-                <Divider />
-              </>
-            )}
+            {renderGoogleButtonWrapper()}
+            {GOOGLE_CLIENT_ID && <Divider />}
 
             <Field label="Full name" value={signupForm.name} onChange={sf("name")}
               error={fieldErrors.name} icon={User} autoComplete="name"

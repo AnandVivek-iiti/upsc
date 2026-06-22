@@ -5,8 +5,6 @@ import {
   Plus,
   BookMarked,
   Brain,
-  Newspaper,
-  PenLine,
   ListChecks,
   BarChart2,
   X,
@@ -22,6 +20,11 @@ import {
   ChevronUp,
   ChevronLeft,
   ChevronRight,
+  ArrowRight,
+  FileSearch,
+  BookOpenCheck,
+  FlaskConical,
+  Rocket,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { SYLLABUS, PAPER_ORDER, getPct } from "../data/PYQs/syllabusData";
@@ -42,7 +45,6 @@ function fmtTime(secs) {
   const s = secs % 60;
   return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
 }
-// Formats seconds as "1h 28m" (or "28m" if under an hour) for display cards
 function fmtHM(secs) {
   const h = Math.floor(secs / 3600);
   const m = Math.floor((secs % 3600) / 60);
@@ -54,8 +56,6 @@ function pad2(n) {
 }
 
 // ─── Modern chart palette ────────────────────────────────────────────────────
-// Shared across StudyChart / PaperProgress / StudyTimer so every "chart" in the
-// dashboard reads as part of the same visual language.
 const CHART_COLORS = {
   goalMet:    { solid: "#10b981", grad: "linear-gradient(180deg, #34d399 0%, #059669 100%)", glow: "rgba(16,185,129,0.4)" },
   inProgress: { solid: "#6366f1", grad: "linear-gradient(180deg, #818cf8 0%, #4f46e5 100%)", glow: "rgba(99,102,241,0.4)" },
@@ -64,10 +64,6 @@ const CHART_COLORS = {
 };
 
 // ─── Collapsible Section Wrapper ───────────────────────────────────────────────
-// overflow is only ever hidden while the panel is collapsed — once open, nothing
-// inside (pie charts, tooltips, table overflow) gets clipped. `tight` shrinks the
-// inner horizontal padding for panels (like Question Stats) that need every extra
-// pixel of width on mobile.
 function CollapsibleSection({ title, icon: Icon, children, defaultOpen = true, tight = false }) {
   const [isOpen, setIsOpen] = useState(defaultOpen);
 
@@ -101,8 +97,144 @@ function CollapsibleSection({ title, icon: Icon, children, defaultOpen = true, t
     </div>
   );
 }
+function ActionHub({ onNavigate }) {
+  const [grown, setGrown] = useState(false);
+  useEffect(() => {
+    const t = setTimeout(() => setGrown(true), 100);
+    return () => clearTimeout(t);
+  }, []);
+
+  const actions = [
+    {
+      icon: Rocket,
+      iconColor: "#f59e0b",
+      gradFrom: "rgba(245,158,11,0.12)",
+      gradTo:   "rgba(245,158,11,0.04)",
+      border:   "rgba(245,158,11,0.25)",
+      glow:     "rgba(245,158,11,0.15)",
+      title: "Answer Evaluation",
+      desc: "Evaluate your GS/Mains answer in seconds. Get score, strengths, weaknesses, keyword coverage, structural feedback and a topper-style rewritten answer.",
+      cta: "Evaluate Answer",
+      view: "topic-wise",
+    },
+    {
+      icon: FileSearch,
+      iconColor: "#818cf8",
+      gradFrom: "rgba(99,102,241,0.12)",
+      gradTo:   "rgba(99,102,241,0.04)",
+      border:   "rgba(99,102,241,0.25)",
+      glow:     "rgba(99,102,241,0.15)",
+      title: "Audit Notes",
+      desc: "Check gaps in your notes instantly. Get missing points, memory traps, 30-second revision cards and improved notes.",
+      cta: "Audit Notes",
+        view: "notes",
+    },
+    {
+      icon: BookOpenCheck,
+      iconColor: "#34d399",
+      gradFrom: "rgba(16,185,129,0.12)",
+      gradTo:   "rgba(16,185,129,0.04)",
+      border:   "rgba(16,185,129,0.25)",
+      glow:     "rgba(16,185,129,0.15)",
+      title: "Topic-wise Practice",
+      desc: "Practice PYQs topic-wise and automatically update syllabus progress when questions are completed.",
+      cta: "Practice Questions",
+        view: "topic-wise",
+    },
+    {
+      icon: FlaskConical,
+      iconColor: "#f472b6",
+      gradFrom: "rgba(236,72,153,0.12)",
+      gradTo:   "rgba(236,72,153,0.04)",
+      border:   "rgba(236,72,153,0.25)",
+      glow:     "rgba(236,72,153,0.15)",
+      title: "Mock Test Series",
+      desc: "Attempt a timed UPSC test. After completion: analyze performance, identify weak areas, and push weak topics into the AI Revision Queue automatically.",
+      cta: "Start Test",
+      view: "test-series",
+    },
+  ];
+
+  return (
+    <div className="glass-panel p-3 sm:p-5 space-y-3 sm:space-y-4">
+      {/* Section header */}
+      <div className="flex items-center gap-2">
+        <Rocket size={14} className="text-accent-gold shrink-0" />
+        <div>
+          <h3 className="text-sm sm:text-base font-display font-bold text-text-primary leading-tight">
+            Start Studying
+          </h3>
+          <p className="text-[10px] sm:text-xs font-mono text-text-muted mt-0.5">
+            Choose what you want to work on right now.
+          </p>
+        </div>
+      </div>
+
+      {/* 2×2 on desktop, single column on mobile */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
+        {actions.map(({ icon: Icon, iconColor, gradFrom, gradTo, border, glow, title, desc, cta, view }, i) => (
+          <div
+            key={title}
+            className="relative rounded-xl p-3.5 sm:p-4 flex flex-col gap-2.5 sm:gap-3 cursor-pointer group
+                       transition-all duration-300 ease-out hover:-translate-y-0.5 active:scale-[0.98]"
+            style={{
+              background: `linear-gradient(135deg, ${gradFrom} 0%, ${gradTo} 100%)`,
+              border: `1px solid ${border}`,
+              boxShadow: `0 2px 16px ${glow}`,
+              opacity: grown ? 1 : 0,
+              transform: grown ? "translateY(0)" : "translateY(14px)",
+              transition: `opacity 0.45s ease ${i * 80}ms, transform 0.45s ease ${i * 80}ms, box-shadow 0.2s ease, translate 0.2s ease`,
+            }}
+            onClick={() => onNavigate?.(view)}
+          >
+            {/* Subtle hover glow overlay */}
+            <div
+              className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+              style={{ background: `radial-gradient(ellipse at 30% 30%, ${gradFrom} 0%, transparent 70%)` }}
+            />
+
+            {/* Icon + title row */}
+            <div className="flex items-center gap-2.5 relative z-10">
+              <div
+                className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg flex items-center justify-center shrink-0"
+                style={{ background: `${iconColor}20`, border: `1px solid ${iconColor}30` }}
+              >
+                <Icon size={16} style={{ color: iconColor }} />
+              </div>
+              <h4 className="text-sm sm:text-[15px] font-display font-bold text-text-primary leading-tight">
+                {title}
+              </h4>
+            </div>
+
+            {/* Description */}
+            <p className="text-[11px] sm:text-xs font-mono text-text-secondary leading-relaxed relative z-10">
+              {desc}
+            </p>
+
+            {/* CTA button */}
+            <button
+              className="relative z-10 flex items-center justify-center gap-1.5 w-full py-2 sm:py-2.5 rounded-lg
+                         text-[11px] sm:text-xs font-semibold font-mono transition-all duration-200
+                         group-hover:gap-2.5"
+              style={{
+                background: `${iconColor}18`,
+                border: `1px solid ${iconColor}35`,
+                color: iconColor,
+              }}
+              onClick={(e) => { e.stopPropagation(); onNavigate?.(view); }}
+            >
+              {cta}
+              <ArrowRight size={12} className="transition-transform duration-200 group-hover:translate-x-0.5" />
+            </button>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ─── StudyTimer ───────────────────────────────────────────────────────────────
 function StudyTimer({ onLogHours, onSynced, targetHours = 8, serverHours = 0, dataReady = false, userId = null }) {
-  // Initialise directly from the singleton so we never show stale values
   const [elapsed, setElapsed] = useState(timerStore.elapsed);
   const [running, setRunning] = useState(timerStore.running);
   const [remote, setRemote] = useState(timerStore.remote);
@@ -110,7 +242,6 @@ function StudyTimer({ onLogHours, onSynced, targetHours = 8, serverHours = 0, da
   const [isCompact, setIsCompact] = useState(false);
   const [ringGrown, setRingGrown] = useState(false);
 
-  // ── Responsive breakpoint detection ─────────────────────────────────────────
   useEffect(() => {
     const checkSize = () => setIsCompact(window.innerWidth < 380);
     checkSize();
@@ -118,15 +249,12 @@ function StudyTimer({ onLogHours, onSynced, targetHours = 8, serverHours = 0, da
     return () => window.removeEventListener("resize", checkSize);
   }, []);
 
-  // ── Grow the ring + hour blocks in from zero on first paint ────────────────
   useEffect(() => {
     const t = setTimeout(() => setRingGrown(true), 150);
     return () => clearTimeout(t);
   }, []);
 
-  // ── Subscribe to store ticks ──────────────────────────────────────────────
   useEffect(() => {
-    // Immediately sync state in case the timer was already running
     setElapsed(timerStore.elapsed);
     setRunning(timerStore.running);
 
@@ -138,10 +266,10 @@ function StudyTimer({ onLogHours, onSynced, targetHours = 8, serverHours = 0, da
     return unsub;
   }, []);
 
-  // ── Scope the singleton to this user (resets local state on user switch) ──
   useEffect(() => {
     timerStore.setUser(userId);
   }, [userId]);
+
   useEffect(() => {
     timerStore.setSyncHandler(async (hours) => {
       setSyncState("syncing");
@@ -163,12 +291,10 @@ function StudyTimer({ onLogHours, onSynced, targetHours = 8, serverHours = 0, da
     timerStore.autoStart();
   }, [dataReady, serverHours]);
 
-  // ── Controls ──────────────────────────────────────────────────────────────
   const handleStart = () => timerStore.start();
   const handlePause = () => timerStore.pause();
   const handleReset = () => timerStore.reset();
 
-  // ── Derived display values ────────────────────────────────────────────────
   const TARGET_SECS = targetHours * 3600;
   const progress    = Math.min(elapsed / TARGET_SECS, 1);
   const R           = isCompact ? 45 : 54;
@@ -183,12 +309,10 @@ function StudyTimer({ onLogHours, onSynced, targetHours = 8, serverHours = 0, da
 
   return (
     <div className="glass-panel p-3 sm:p-5">
-      {/* Header row */}
       <div className="flex items-center gap-2 mb-3 sm:mb-4">
         <Timer size={14} className="text-accent-gold shrink-0" />
         <h3 className="text-sm font-display font-semibold text-text-primary">Study Timer</h3>
 
-        {/* Sync indicator */}
         <span className="flex items-center gap-1 ml-1 sm:ml-2">
           {syncState === "syncing" && <Cloud size={11} className="text-text-muted animate-pulse" />}
           {syncState === "synced"  && <Cloud size={11} className="text-accent-green" />}
@@ -207,7 +331,6 @@ function StudyTimer({ onLogHours, onSynced, targetHours = 8, serverHours = 0, da
           </span>
         </span>
 
-        {/* Cross-device live indicator */}
         {remote.active && (
           <span className="label-tag text-[10px] sm:text-xs text-accent-blue border-accent-blue/30 bg-accent-blue/10 flex items-center gap-1">
             <span className="w-1.5 h-1.5 rounded-full bg-accent-blue animate-pulse" />
@@ -215,7 +338,6 @@ function StudyTimer({ onLogHours, onSynced, targetHours = 8, serverHours = 0, da
           </span>
         )}
 
-        {/* Status badge */}
         <span
           className="label-tag ml-auto text-[10px] sm:text-xs"
           style={{
@@ -229,7 +351,6 @@ function StudyTimer({ onLogHours, onSynced, targetHours = 8, serverHours = 0, da
       </div>
 
       <div className={`flex ${isCompact ? 'flex-col' : 'flex-col sm:flex-row'} items-center gap-4 sm:gap-6`}>
-        {/* Circular progress ring */}
         <div className="relative shrink-0" style={{ width: SVG_SIZE, height: SVG_SIZE }}>
           <svg width={SVG_SIZE} height={SVG_SIZE} viewBox={`0 0 ${SVG_SIZE} ${SVG_SIZE}`}>
             <circle
@@ -259,7 +380,6 @@ function StudyTimer({ onLogHours, onSynced, targetHours = 8, serverHours = 0, da
         </div>
 
         <div className="flex flex-col gap-2.5 sm:gap-3 flex-1 w-full">
-          {/* Mini stats */}
           <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
             {[
               { label: "Today",  val: fmtHM(elapsed) },
@@ -273,7 +393,6 @@ function StudyTimer({ onLogHours, onSynced, targetHours = 8, serverHours = 0, da
             ))}
           </div>
 
-          {/* Hour blocks */}
           <div>
             <p className="text-[10px] font-mono text-text-muted mb-1 sm:mb-1.5 uppercase tracking-wider">
               Hours completed
@@ -317,7 +436,6 @@ function StudyTimer({ onLogHours, onSynced, targetHours = 8, serverHours = 0, da
             </div>
           </div>
 
-          {/* Controls */}
           <div className="flex gap-2">
             {!running ? (
               <button
@@ -349,6 +467,7 @@ function StudyTimer({ onLogHours, onSynced, targetHours = 8, serverHours = 0, da
     </div>
   );
 }
+
 // ─── StudyChart ────────────────────────────────────────────────────────────────
 function StudyChart({ logs = [], targetHours = 8 }) {
   const [view, setView] = useState("weekly");
@@ -368,8 +487,6 @@ function StudyChart({ logs = [], targetHours = 8 }) {
     if (view !== "yearly") setYearOffset(0);
   }, [view]);
 
-  // ── "Grow in" animation — replays whenever the view or navigated period
-  // changes, so bars/cells always feel alive rather than just popping in. ─────
   const [grown, setGrown] = useState(false);
   useEffect(() => {
     setGrown(false);
@@ -438,7 +555,6 @@ function StudyChart({ logs = [], targetHours = 8 }) {
   const monthTotal    = parseFloat(elapsedDays.reduce((s, d) => s + d.hours, 0).toFixed(1));
   const monthAvg      = studiedCount ? parseFloat((monthTotal / studiedCount).toFixed(1)) : 0;
 
-  // ── Weekly axis scale ───────────────────────────────────────────────────────
   const dataMax  = Math.max(...weeklyData.map((d) => d.hours), 0);
   const scaleMax = Math.max(targetHours, Math.ceil(dataMax) || 1);
   const TICKS    = 5;
@@ -447,7 +563,6 @@ function StudyChart({ logs = [], targetHours = 8 }) {
   );
   const AXIS_W = "w-7 sm:w-8";
 
-  // ── Weekly summary stats (mirrors the monthly summary cards) ────────────────
   const weekStudiedCount = weeklyData.filter((d) => d.hours > 0).length;
   const weekMetCount     = weeklyData.filter((d) => d.hours >= targetHours).length;
   const weekTotal        = parseFloat(weeklyData.reduce((s, d) => s + d.hours, 0).toFixed(1));
@@ -459,14 +574,12 @@ function StudyChart({ logs = [], targetHours = 8 }) {
     { label: "Avg/Day",  val: `${weekAvg}h`,                            icon: TrendingUp,  color: "#3b82f6" },
   ];
 
-  // ── Monthly summary card styling (mirrors the weekly chart's accent colors) ─
   const monthStats = [
     { label: "Total",    val: `${monthTotal}h`,                     icon: Clock,       color: "#C9A84C" },
     { label: "Days Hit", val: `${metCount}/${elapsedDays.length}`,  icon: CheckCircle, color: "#22c55e" },
     { label: "Avg/Day",  val: `${monthAvg}h`,                       icon: TrendingUp,  color: "#3b82f6" },
   ];
 
-  // ── Yearly data — totals per month for the navigated year ───────────────────
   const yearlyData = (() => {
     const MONTH_FULL = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
     const serverTodayHours    = logs.find((l) => l.date === todayStr)?.hours || 0;
@@ -481,7 +594,6 @@ function StudyChart({ logs = [], targetHours = 8 }) {
 
       const isCurrentMonthCell = viewedYear === todayY && m === todayM - 1;
       if (isCurrentMonthCell) {
-        // logs already include today's server-saved hours; swap in the live value
         total = total - serverTodayHours + effectiveTodayHours;
       }
 
@@ -512,7 +624,6 @@ function StudyChart({ logs = [], targetHours = 8 }) {
     { label: "Avg/Month",  val: `${yearAvg}h`,                                                          icon: TrendingUp,  color: "#3b82f6" },
   ];
 
-  // ── Yearly axis scale ────────────────────────────────────────────────────────
   const yearDataMax  = Math.max(...yearlyData.map((d) => d.hours), 0);
   const yearScaleMax = Math.max(Math.ceil(yearDataMax / 5) * 5, 5);
   const yearTicks = Array.from({ length: TICKS }, (_, i) =>
@@ -628,7 +739,6 @@ function StudyChart({ logs = [], targetHours = 8 }) {
             </span>
           </div>
 
-          {/* Week summary — same accent-tinted cards as the monthly/yearly views */}
           <div className="grid grid-cols-3 gap-1.5 sm:gap-2 pt-1">
             {weekStats.map(({ label, val, icon: Icon, color }, i) => (
               <div
@@ -660,12 +770,10 @@ function StudyChart({ logs = [], targetHours = 8 }) {
         </div>
       ) : view === "monthly" ? (
         <div className="space-y-2.5 sm:space-y-3">
-          {/* Month navigation — pill bar, matches the weekly view-toggle weight */}
           <div className="flex items-center justify-between bg-bg-muted rounded-lg p-1 sm:p-1.5">
             <button
               onClick={() => setMonthOffset((o) => o - 1)}
               className="p-1.5 sm:p-2 rounded-md border border-transparent hover:border-accent-gold/30 hover:bg-bg-surface transition-colors"
-              title="Previous month"
             >
               <ChevronLeft size={15} />
             </button>
@@ -678,13 +786,11 @@ function StudyChart({ logs = [], targetHours = 8 }) {
               className={`p-1.5 sm:p-2 rounded-md border border-transparent transition-colors ${
                 isCurrentMonth ? "opacity-30 cursor-not-allowed" : "hover:border-accent-gold/30 hover:bg-bg-surface"
               }`}
-              title="Next month"
             >
               <ChevronRight size={15} />
             </button>
           </div>
 
-          {/* Month summary — accent-tinted, icon + bold value, fills the card */}
           <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
             {monthStats.map(({ label, val, icon: Icon, color }, i) => (
               <div
@@ -700,34 +806,23 @@ function StudyChart({ logs = [], targetHours = 8 }) {
               >
                 <div className="flex items-center gap-1">
                   <Icon size={11} style={{ color }} />
-                  <span
-                    className="text-[9px] sm:text-[10px] font-mono uppercase tracking-wider font-semibold"
-                    style={{ color }}
-                  >
+                  <span className="text-[9px] sm:text-[10px] font-mono uppercase tracking-wider font-semibold" style={{ color }}>
                     {label}
                   </span>
                 </div>
-                <p className="text-lg sm:text-2xl font-display font-bold text-text-primary leading-none">
-                  {val}
-                </p>
+                <p className="text-lg sm:text-2xl font-display font-bold text-text-primary leading-none">{val}</p>
               </div>
             ))}
           </div>
 
-          {/* Weekday header */}
           <div className="grid grid-cols-7 gap-1.5 sm:gap-2 text-center">
             {["S", "M", "T", "W", "T", "F", "S"].map((d, i) => (
-              <span key={i} className="text-[9px] sm:text-[11px] font-mono text-text-muted">
-                {d}
-              </span>
+              <span key={i} className="text-[9px] sm:text-[11px] font-mono text-text-muted">{d}</span>
             ))}
           </div>
 
-          {/* Calendar grid */}
           <div className="grid grid-cols-7 gap-1.5 sm:gap-2">
-            {Array.from({ length: firstWeekday }, (_, i) => (
-              <div key={`pad-${i}`} />
-            ))}
+            {Array.from({ length: firstWeekday }, (_, i) => <div key={`pad-${i}`} />)}
             {monthDays.map((d, i) => {
               const palette = d.isToday
                 ? CHART_COLORS.today
@@ -755,23 +850,13 @@ function StudyChart({ logs = [], targetHours = 8 }) {
                     transitionDelay: `${Math.min(i, 30) * 12}ms`,
                   }}
                 >
-                  <span
-                    className={`text-[11px] sm:text-sm font-mono leading-none font-bold ${
-                      d.isFuture
-                        ? "text-text-muted/30"
-                        : palette
-                        ? "text-white"
-                        : "text-text-secondary"
-                    }`}
-                  >
+                  <span className={`text-[11px] sm:text-sm font-mono leading-none font-bold ${
+                    d.isFuture ? "text-text-muted/30" : palette ? "text-white" : "text-text-secondary"
+                  }`}>
                     {d.day}
                   </span>
                   {!d.isFuture && d.hours > 0 && (
-                    <span
-                      className={`text-[9px] sm:text-[11px] font-mono leading-none ${
-                        palette ? "text-white/85" : "text-text-muted"
-                      }`}
-                    >
+                    <span className={`text-[9px] sm:text-[11px] font-mono leading-none ${palette ? "text-white/85" : "text-text-muted"}`}>
                       {d.hours}h
                     </span>
                   )}
@@ -781,30 +866,19 @@ function StudyChart({ logs = [], targetHours = 8 }) {
             })}
           </div>
 
-          {/* Legend */}
           <div className="flex flex-wrap items-center gap-x-2 sm:gap-x-3 gap-y-1 text-[9px] sm:text-[10px] font-mono text-text-muted">
-            <span className="flex items-center gap-1">
-              <span className="inline-block w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-sm" style={{ background: CHART_COLORS.goalMet.grad }} /> Goal met
-            </span>
-            <span className="flex items-center gap-1">
-              <span className="inline-block w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-sm" style={{ background: CHART_COLORS.inProgress.grad }} /> Studied
-            </span>
-            <span className="flex items-center gap-1">
-              <span className="inline-block w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-sm" style={{ background: CHART_COLORS.today.grad }} /> Today
-            </span>
-            <span className="flex items-center gap-1">
-              <span className="inline-block w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-sm bg-gray-700/20 border border-gray-600/30" /> No study
-            </span>
+            <span className="flex items-center gap-1"><span className="inline-block w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-sm" style={{ background: CHART_COLORS.goalMet.grad }} /> Goal met</span>
+            <span className="flex items-center gap-1"><span className="inline-block w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-sm" style={{ background: CHART_COLORS.inProgress.grad }} /> Studied</span>
+            <span className="flex items-center gap-1"><span className="inline-block w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-sm" style={{ background: CHART_COLORS.today.grad }} /> Today</span>
+            <span className="flex items-center gap-1"><span className="inline-block w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-sm bg-gray-700/20 border border-gray-600/30" /> No study</span>
           </div>
         </div>
       ) : (
         <div className="space-y-2.5 sm:space-y-3">
-          {/* Year navigation — same pill bar weight as week/month toggles */}
           <div className="flex items-center justify-between bg-bg-muted rounded-lg p-1 sm:p-1.5">
             <button
               onClick={() => setYearOffset((o) => o - 1)}
               className="p-1.5 sm:p-2 rounded-md border border-transparent hover:border-accent-gold/30 hover:bg-bg-surface transition-colors"
-              title="Previous year"
             >
               <ChevronLeft size={15} />
             </button>
@@ -817,13 +891,11 @@ function StudyChart({ logs = [], targetHours = 8 }) {
               className={`p-1.5 sm:p-2 rounded-md border border-transparent transition-colors ${
                 isCurrentYear ? "opacity-30 cursor-not-allowed" : "hover:border-accent-gold/30 hover:bg-bg-surface"
               }`}
-              title="Next year"
             >
               <ChevronRight size={15} />
             </button>
           </div>
 
-          {/* Year summary */}
           <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
             {yearStats.map(({ label, val, icon: Icon, color }, i) => (
               <div
@@ -839,27 +911,17 @@ function StudyChart({ logs = [], targetHours = 8 }) {
               >
                 <div className="flex items-center gap-1">
                   <Icon size={11} style={{ color }} />
-                  <span
-                    className="text-[9px] sm:text-[10px] font-mono uppercase tracking-wider font-semibold"
-                    style={{ color }}
-                  >
-                    {label}
-                  </span>
+                  <span className="text-[9px] sm:text-[10px] font-mono uppercase tracking-wider font-semibold" style={{ color }}>{label}</span>
                 </div>
-                <p className="text-base sm:text-2xl font-display font-bold text-text-primary leading-none truncate max-w-full">
-                  {val}
-                </p>
+                <p className="text-base sm:text-2xl font-display font-bold text-text-primary leading-none truncate max-w-full">{val}</p>
               </div>
             ))}
           </div>
 
-          {/* Bar chart — 12 months */}
           <div className="flex">
             <div className={`${AXIS_W} shrink-0 flex flex-col justify-between h-36 sm:h-44 pr-1 sm:pr-1.5 text-right`}>
               {yearTicks.map((t) => (
-                <span key={t} className="text-[9px] sm:text-[10px] font-mono text-text-muted leading-none">
-                  {t}h
-                </span>
+                <span key={t} className="text-[9px] sm:text-[10px] font-mono text-text-muted leading-none">{t}h</span>
               ))}
             </div>
             <div className="relative flex-1 h-36 sm:h-44 border-l border-b border-bg-border">
@@ -874,11 +936,7 @@ function StudyChart({ logs = [], targetHours = 8 }) {
                 {yearlyData.map((d, i) => {
                   const pct = Math.min((d.hours / yearScaleMax) * 100, 100);
                   const isBest = bestMonth.hours > 0 && d.label === bestMonth.label && !d.isCurrent;
-                  const palette = d.isCurrent
-                    ? CHART_COLORS.today
-                    : isBest
-                    ? CHART_COLORS.best
-                    : CHART_COLORS.inProgress;
+                  const palette = d.isCurrent ? CHART_COLORS.today : isBest ? CHART_COLORS.best : CHART_COLORS.inProgress;
                   return (
                     <div key={i} className="flex-1 h-full flex items-end justify-center">
                       {!d.isFuture && d.hours > 0 && (
@@ -916,27 +974,19 @@ function StudyChart({ logs = [], targetHours = 8 }) {
             </div>
           </div>
 
-          {/* Legend */}
           <div className="flex flex-wrap items-center justify-center gap-x-3 sm:gap-x-4 gap-y-1 text-[9px] sm:text-[10px] font-mono text-text-muted pt-1">
-            <span className="flex items-center gap-1">
-              <span className="inline-block w-2 h-2 rounded-sm" style={{ background: CHART_COLORS.inProgress.grad }} /> Monthly hours
-            </span>
-            <span className="flex items-center gap-1">
-              <span className="inline-block w-2 h-2 rounded-sm" style={{ background: CHART_COLORS.best.grad }} /> Best month
-            </span>
-            <span className="flex items-center gap-1">
-              <span className="inline-block w-2 h-2 rounded-sm" style={{ background: CHART_COLORS.today.grad }} /> Current month
-            </span>
+            <span className="flex items-center gap-1"><span className="inline-block w-2 h-2 rounded-sm" style={{ background: CHART_COLORS.inProgress.grad }} /> Monthly hours</span>
+            <span className="flex items-center gap-1"><span className="inline-block w-2 h-2 rounded-sm" style={{ background: CHART_COLORS.best.grad }} /> Best month</span>
+            <span className="flex items-center gap-1"><span className="inline-block w-2 h-2 rounded-sm" style={{ background: CHART_COLORS.today.grad }} /> Current month</span>
           </div>
         </div>
       )}
     </div>
   );
 }
+
 // ─── StatCard ──────────────────────────────────────────────────────────────────
 function StatCard({ icon: Icon, label, value, sub, accent = false, iconColor, delay = 0 }) {
-  // Grows in (fade + slide-up) shortly after mount, staggered by `delay`, so the
-  // whole stat row feels like it's "filling in" when the dashboard opens.
   const [grown, setGrown] = useState(false);
   useEffect(() => {
     const t = setTimeout(() => setGrown(true), 120 + delay);
@@ -1015,9 +1065,7 @@ function TodayPlanner() {
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") add();
-          }}
+          onKeyDown={(e) => { if (e.key === "Enter") add(); }}
           placeholder="Add a task..."
           className="flex-1 min-w-0 bg-bg-muted border border-bg-border rounded-lg px-2.5 sm:px-3 py-2 text-text-primary text-xs sm:text-sm focus:outline-none focus:border-accent-gold/50 transition-colors"
         />
@@ -1034,22 +1082,16 @@ function TodayPlanner() {
           {tasks.map((t, i) => (
             <div key={i} className="flex items-center gap-2 group py-1">
               <button
-                onClick={() =>
-                  save(tasks.map((x, j) => (j === i ? { ...x, done: !x.done } : x)))
-                }
+                onClick={() => save(tasks.map((x, j) => (j === i ? { ...x, done: !x.done } : x)))}
                 className={`w-3.5 h-3.5 sm:w-4 sm:h-4 rounded border shrink-0 flex items-center justify-center transition-colors ${
-                  t.done
-                    ? "bg-accent-green border-accent-green/60"
-                    : "border-bg-border hover:border-accent-gold/40"
+                  t.done ? "bg-accent-green border-accent-green/60" : "border-bg-border hover:border-accent-gold/40"
                 }`}
               >
                 {t.done && <CheckCircle size={10} className="text-white" />}
               </button>
-              <span
-                className={`text-[11px] sm:text-xs flex-1 min-w-0 leading-tight ${
-                  t.done ? "line-through text-text-muted" : "text-text-secondary"
-                }`}
-              >
+              <span className={`text-[11px] sm:text-xs flex-1 min-w-0 leading-tight ${
+                t.done ? "line-through text-text-muted" : "text-text-secondary"
+              }`}>
                 {t.text}
               </span>
               <button
@@ -1066,207 +1108,7 @@ function TodayPlanner() {
   );
 }
 
-// ─── CurrentAffairsLog ─────────────────────────────────────────────────────────
-const CA_CATS = [
-  "Polity",
-  "Economy",
-  "Environment",
-  "Science & Tech",
-  "International",
-  "Society",
-  "Security",
-  "Geography",
-];
-
-function CurrentAffairsLog() {
-  const SK = "upsc-ca-log";
-  const [entries, setEntries] = useState(() => {
-    try {
-      return JSON.parse(localStorage.getItem(SK) || "[]");
-    } catch {
-      return [];
-    }
-  });
-  const [topic, setTopic]   = useState("");
-  const [cat, setCat]       = useState(CA_CATS[0]);
-  const [adding, setAdding] = useState(false);
-
-  const save = (next) => {
-    setEntries(next);
-    localStorage.setItem(SK, JSON.stringify(next));
-  };
-  const add = () => {
-    if (!topic.trim()) return;
-    save([{ topic: topic.trim(), category: cat, date: todayKey() }, ...entries]);
-    setTopic("");
-    setAdding(false);
-  };
-
-  return (
-    <div className="glass-panel p-3 sm:p-4 space-y-2.5 sm:space-y-3">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Newspaper size={14} className="text-accent-blue shrink-0" />
-          <h3 className="text-xs sm:text-sm font-display font-semibold text-text-primary">Current Affairs</h3>
-        </div>
-        <button
-          onClick={() => setAdding((v) => !v)}
-          className="btn-ghost border border-bg-border text-[11px] sm:text-xs px-2.5 py-1.5"
-        >
-          {adding ? "Cancel" : "+ Add"}
-        </button>
-      </div>
-      {adding && (
-        <div className="flex flex-col gap-2">
-          <select
-            value={cat}
-            onChange={(e) => setCat(e.target.value)}
-            className="bg-bg-muted border border-bg-border rounded-lg px-2 py-1.5 text-text-primary text-xs focus:outline-none focus:border-accent-gold/50 w-full sm:w-auto"
-          >
-            {CA_CATS.map((c) => (
-              <option key={c}>{c}</option>
-            ))}
-          </select>
-          <div className="flex gap-2">
-            <input
-              autoFocus
-              type="text"
-              value={topic}
-              onChange={(e) => setTopic(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") add();
-              }}
-              placeholder="Topic / headline..."
-              className="flex-1 min-w-0 bg-bg-muted border border-bg-border rounded-lg px-2.5 sm:px-3 py-1.5 text-text-primary text-xs sm:text-sm focus:outline-none focus:border-accent-gold/50"
-            />
-            <button onClick={add} className="btn-primary text-xs px-3">
-              Save
-            </button>
-          </div>
-        </div>
-      )}
-      {entries.length === 0 ? (
-        <p className="text-[11px] sm:text-xs text-text-muted font-mono">Log news topics you've covered today.</p>
-      ) : (
-        <div className="space-y-1.5">
-          {entries.slice(0, 6).map((e, i) => (
-            <div key={i} className="flex items-center gap-2 text-[11px] sm:text-xs py-1">
-              <span className="label-tag text-[10px] sm:text-xs text-accent-blue border-accent-blue/30 bg-accent-blue/10 shrink-0 hidden sm:inline">
-                {e.category}
-              </span>
-              <span className="text-text-secondary flex-1 truncate min-w-0">{e.topic}</span>
-              <span className="font-mono text-text-muted shrink-0 text-[10px] sm:text-xs">{e.date}</span>
-            </div>
-          ))}
-          {entries.length > 6 && (
-            <p className="text-[10px] sm:text-[11px] font-mono text-text-muted">+{entries.length - 6} more</p>
-          )}
-        </div>
-      )}
-    </div>
-  );
-}
-
-// ─── AnswerWritingTracker ──────────────────────────────────────────────────────
-function AnswerWritingTracker() {
-  const SK = "upsc-answer-log";
-  const PAPERS = ["Essay", "GS1", "GS2", "GS3", "GS4", "Optional"];
-  const [logs, setLogs] = useState(() => {
-    try {
-      return JSON.parse(localStorage.getItem(SK) || "[]");
-    } catch {
-      return [];
-    }
-  });
-  const [q, setQ]           = useState("");
-  const [paper, setPaper]   = useState("GS1");
-  const [adding, setAdding] = useState(false);
-
-  const save = (next) => {
-    setLogs(next);
-    localStorage.setItem(SK, JSON.stringify(next));
-  };
-  const add = () => {
-    if (!q.trim()) return;
-    save([{ question: q.trim(), paper, date: todayKey(), wordCount: 0 }, ...logs]);
-    setQ("");
-    setAdding(false);
-  };
-
-  const thisWeek = logs.filter((l) => (new Date() - new Date(l.date)) / 86400000 <= 7).length;
-  return (
-    <div className="glass-panel p-3 sm:p-4 space-y-2.5 sm:space-y-3">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <PenLine size={14} className="text-accent-purple shrink-0" />
-          <h3 className="text-xs sm:text-sm font-display font-semibold text-text-primary">Answer Writing</h3>
-          <span className="label-tag text-[10px] sm:text-xs text-accent-purple border-accent-purple/30 bg-accent-purple/10">
-            {thisWeek}/wk
-          </span>
-        </div>
-        <button
-          onClick={() => setAdding((v) => !v)}
-          className="btn-ghost border border-bg-border text-[11px] sm:text-xs px-2.5 py-1.5"
-        >
-          {adding ? "Cancel" : "+ Log"}
-        </button>
-      </div>
-      {adding && (
-        <div className="flex flex-col gap-2">
-          <select
-            value={paper}
-            onChange={(e) => setPaper(e.target.value)}
-            className="bg-bg-muted border border-bg-border rounded-lg px-2 py-1.5 text-text-primary text-xs focus:outline-none focus:border-accent-gold/50 w-full sm:w-auto"
-          >
-            {PAPERS.map((p) => (
-              <option key={p}>{p}</option>
-            ))}
-          </select>
-          <div className="flex gap-2">
-            <input
-              autoFocus
-              type="text"
-              value={q}
-              onChange={(e) => setQ(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") add();
-              }}
-              placeholder="Question or topic answered..."
-              className="flex-1 min-w-0 bg-bg-muted border border-bg-border rounded-lg px-2.5 sm:px-3 py-1.5 text-text-primary text-xs sm:text-sm focus:outline-none focus:border-accent-gold/50"
-            />
-            <button onClick={add} className="btn-primary text-xs px-3">
-              Save
-            </button>
-          </div>
-        </div>
-      )}
-      {logs.length === 0 ? (
-        <p className="text-[11px] sm:text-xs text-text-muted font-mono">
-          Track every answer you write. Aim for 2–3 daily.
-        </p>
-      ) : (
-        <div className="space-y-1.5 max-h-36 overflow-y-auto pr-1">
-          {logs.slice(0, 5).map((l, i) => (
-            <div key={i} className="flex items-center gap-2 text-[11px] sm:text-xs py-1">
-              <span className="label-tag text-[10px] sm:text-xs text-accent-purple border-accent-purple/30 bg-accent-purple/10 shrink-0">
-                {l.paper}
-              </span>
-              <span className="text-text-secondary flex-1 truncate min-w-0">{l.question}</span>
-              <span className="font-mono text-text-muted shrink-0 text-[10px] sm:text-xs">{l.date}</span>
-            </div>
-          ))}
-          {logs.length > 5 && (
-            <p className="text-[10px] sm:text-[11px] font-mono text-text-muted">
-              +{logs.length - 5} more answers
-            </p>
-          )}
-        </div>
-      )}
-    </div>
-  );
-}
-
-// ─── PaperProgress ─────────────────────────────────────────────────────────────
+// ─── PaperProgress ────────────────────────────────────────────────────────────
 function PaperProgress({ syllabusData }) {
   const rows = [];
   for (const stage of ["prelims", "mains"]) {
@@ -1284,7 +1126,6 @@ function PaperProgress({ syllabusData }) {
     }
   }
 
-  // ── Grow the bars in from zero on first paint ───────────────────────────────
   const [grown, setGrown] = useState(false);
   useEffect(() => {
     const t = setTimeout(() => setGrown(true), 120);
@@ -1342,13 +1183,12 @@ export default function Dashboard({
   isLoggedIn = false,
   onNavigateAuth,
   onNavigateProfile,
+  onNavigate,
 }) {
-  // Derive stable user ID for scoping timer data
   const userId = user?.id || user?._id || null;
   if (!user) return <AuthGate feature="Dashboard" onNavigateAuth={onNavigateAuth} />;
 
   const [timerHours, setTimerHours] = useState(0);
-
   const [isMobile, setIsMobile] = useState(false);
   const [progressGrown, setProgressGrown] = useState(false);
 
@@ -1359,7 +1199,6 @@ export default function Dashboard({
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
-  // ── Grow the overall coverage bar in from zero on first paint ───────────────
   useEffect(() => {
     const t = setTimeout(() => setProgressGrown(true), 200);
     return () => clearTimeout(t);
@@ -1388,7 +1227,6 @@ export default function Dashboard({
           </p>
         </div>
 
-        {/* Profile button — responsive */}
         {userName && (
           <button
             onClick={onNavigateProfile}
@@ -1476,17 +1314,17 @@ export default function Dashboard({
             : "Advanced stage. Revision and PYQ analysis."}
         </p>
       </div>
-<br/>
-      {/* ── Question Stats (conditionally collapsible on mobile) ── */}
+
+      {/* ── ACTION HUB — primary study actions ── */}
       {isMobile ? (
-        <CollapsibleSection title="Question Statistics" defaultOpen={false} tight>
-          <QuestionStatsPanel />
+        <CollapsibleSection title="Start Studying" icon={Rocket} defaultOpen={true}>
+          <ActionHub onNavigate={onNavigate} />
         </CollapsibleSection>
       ) : (
-        <QuestionStatsPanel />
+        <ActionHub onNavigate={onNavigate} />
       )}
 
-      {/* ── Study Timer (persists across view changes via timerStore) ── */}
+      {/* ── Study Timer ── */}
       <StudyTimer
         onLogHours={onLogHours}
         onSynced={setTimerHours}
@@ -1496,32 +1334,13 @@ export default function Dashboard({
         userId={userId}
       />
 
-      {/* ── Tasks + Current Affairs ── */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-2 sm:gap-3">
-        {isMobile ? (
-          <>
-            <CollapsibleSection title="Today's Tasks" icon={ListChecks} defaultOpen={true}>
-              <TodayPlanner />
-            </CollapsibleSection>
-            <CollapsibleSection title="Current Affairs" icon={Newspaper} defaultOpen={false}>
-              <CurrentAffairsLog />
-            </CollapsibleSection>
-          </>
-        ) : (
-          <>
-            <TodayPlanner />
-            <CurrentAffairsLog />
-          </>
-        )}
-      </div>
-
-      {/* ── Answer Writing ── */}
+      {/* ── Today's Tasks ── */}
       {isMobile ? (
-        <CollapsibleSection title="Answer Writing" icon={PenLine} defaultOpen={false}>
-          <AnswerWritingTracker />
+        <CollapsibleSection title="Today's Tasks" icon={ListChecks} defaultOpen={true}>
+          <TodayPlanner />
         </CollapsibleSection>
       ) : (
-        <AnswerWritingTracker />
+        <TodayPlanner />
       )}
 
       {/* ── Study Chart + Paper Coverage ── */}
@@ -1543,15 +1362,23 @@ export default function Dashboard({
         )}
       </div>
 
-      {/* ── AI Spaced Repetition (real backend) ── */}
+      {/* ── AI Spaced Repetition ── */}
       {isMobile ? (
         <CollapsibleSection title="AI Revision Queue" icon={Brain} defaultOpen={false}>
-          <AIRevisionPanel isLoggedIn={isLoggedIn} compact={true} />
+          <AIRevisionPanel onNavigate={onNavigate} isLoggedIn={isLoggedIn} compact={true} />
         </CollapsibleSection>
       ) : (
-        <AIRevisionPanel isLoggedIn={isLoggedIn} />
+        <AIRevisionPanel onNavigate={onNavigate} isLoggedIn={isLoggedIn} />
       )}
 
+      {/* ── Question Statistics (moved to the bottom) ── */}
+      {isMobile ? (
+        <CollapsibleSection title="Question Statistics" defaultOpen={false} tight>
+          <QuestionStatsPanel />
+        </CollapsibleSection>
+      ) : (
+        <QuestionStatsPanel />
+      )}
     </div>
   );
 }

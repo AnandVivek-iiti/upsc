@@ -3,7 +3,6 @@ import {
   User, Mail, Calendar, Clock, Target, Flame, Trophy,
   Edit3, Save, X, Loader2, CheckCircle2, AlertCircle,
   TrendingUp, Shield, KeyRound, Eye, EyeOff, ArrowLeft,
-  BookOpen, Zap,
 } from "lucide-react";
 
 // ─── Avatar initials ──────────────────────────────────────────────────────────
@@ -56,7 +55,7 @@ function authHeaders(token) {
   return { "Content-Type": "application/json", Authorization: `Bearer ${token}` };
 }
 
-// ─── Sub-components (enhanced spacing & fonts) ───────────────────────────────
+// ─── Sub-components ───────────────────────────────────────────────────────────
 function InfoRow({ icon: Icon, label, value, accent }) {
   return (
     <div className="flex items-center gap-4 py-3 border-b border-bg-border last:border-0">
@@ -116,6 +115,7 @@ function SelectField({ label, icon: Icon, value, onChange, children }) {
   );
 }
 
+// ─── StatPill — used for the 4 primary stat cards only ───────────────────────
 function StatPill({ icon: Icon, label, value, color }) {
   return (
     <div className="glass-panel p-4 sm:p-5 flex flex-col items-center gap-2 text-center hover:scale-[1.02] transition-transform duration-200">
@@ -130,7 +130,8 @@ function Toast({ msg }) {
   if (!msg) return null;
   const ok = msg === "saved";
   return (
-    <div className={`flex items-center gap-3 px-5 py-3 rounded-xl border text-sm font-mono ${ok ? "bg-green-500/10 border-green-500/30 text-green-400"
+    <div className={`flex items-center gap-3 px-5 py-3 rounded-xl border text-sm font-mono ${ok
+        ? "bg-green-500/10 border-green-500/30 text-green-400"
         : "bg-red-500/10 border-red-500/30 text-red-400"
       }`}>
       {ok
@@ -156,28 +157,7 @@ export default function ProfilePage({ token, onBack, onProfileUpdate, userData =
   });
   const [passForm, setPassForm] = useState({ current: "", next: "", confirm: "" });
 
-  // ── Progress values derived from synced userData ────────────────────────────
-  const overallCoverage = userData
-    ? (() => {
-        let total = 0, count = 0;
-        for (const stage of Object.values(userData.syllabus || {})) {
-          for (const paper of Object.values(stage)) {
-            for (const mod of Object.values(paper.modules || {})) {
-              total += mod.progress || 0;
-              count++;
-            }
-          }
-        }
-        return count > 0 ? Math.round(total / count) : 0;
-      })()
-    : 0;
-  // question_attempts = all MCQ/PYQ attempts (synced from server)
-  // answers = written mains answers
-  const totalAnswered = (userData?.question_attempts?.length || 0) + (userData?.answers?.length || 0);
-  const totalMCQCorrect = (userData?.question_attempts || []).filter(a => a.result === "correct").length;
-  const mcqAccuracy = totalAnswered > 0
-    ? Math.round((totalMCQCorrect / Math.max(userData?.question_attempts?.length || 1, 1)) * 100)
-    : 0;
+  // ── Today's study hours from daily_logs ──────────────────────────────────
   const todayStudyHours = userData
     ? (() => {
         const today = new Date().toISOString().split("T")[0];
@@ -225,7 +205,7 @@ export default function ProfilePage({ token, onBack, onProfileUpdate, userData =
     return e;
   };
 
-  // ── Save profile — hits PATCH /dashboard/profile (our new endpoint) ───────
+  // ── Save profile ──────────────────────────────────────────────────────────
   const saveProfile = async () => {
     const errs = validateProfile();
     if (Object.keys(errs).length) { setFieldErrs(errs); return; }
@@ -344,7 +324,7 @@ export default function ProfilePage({ token, onBack, onProfileUpdate, userData =
   // ── Render ────────────────────────────────────────────────────────────────
   return (
     <div className="animate-fade-in min-h-screen">
-      {/* ─── Theme‑aware, responsive header ─── */}
+      {/* ─── Header ─── */}
       <div className="w-full px-5 sm:px-8 md:px-10 lg:px-14 py-6 sm:py-8 md:py-10 border-b border-bg-border bg-bg-primary/40 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5 sm:gap-6">
@@ -399,24 +379,22 @@ export default function ProfilePage({ token, onBack, onProfileUpdate, userData =
         </div>
       </div>
 
-      {/* Page body — enhanced spacing everywhere */}
+      {/* Page body */}
       <div className="w-full px-5 sm:px-8 md:px-10 lg:px-14 py-8 sm:py-10 max-w-7xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
 
-          {/* ── Left column: stats + account info ── */}
+          {/* ── Left column: stats + study stats card ── */}
           <div className="space-y-6 sm:space-y-7">
 
-            {/* Stat pills — larger touch targets */}
-            <div className="grid grid-cols-3 lg:grid-cols-2 gap-3 sm:gap-4">
-              <StatPill icon={Flame} label="Streak" value={`${p.streak || 0}d`} color="#fb923c" />
-              <StatPill icon={Trophy} label="Best" value={`${p.longest_streak || 0}d`} color="#fbbf24" />
-              <StatPill icon={Clock} label="Target" value={`${p.daily_target_hours || 8}h/d`} color="#60a5fa" />
-              <StatPill icon={TrendingUp} label="Coverage" value={`${overallCoverage}%`} color="#4ade80" />
-              <StatPill icon={BookOpen} label="Answered" value={`${totalAnswered}`} color="#a78bfa" />
-              <StatPill icon={Zap} label="Today" value={`${todayStudyHours}h`} color="#f59e0b" />
+            {/* ── 4 primary stat pills: Streak, Best Streak, Daily Target, Today's Hours ── */}
+            <div className="grid grid-cols-2 gap-3 sm:gap-4">
+              <StatPill icon={Flame}   label="Streak"       value={`${p.streak || 0}d`}                color="#fb923c" />
+              <StatPill icon={Trophy}  label="Best Streak"  value={`${p.longest_streak || 0}d`}        color="#fbbf24" />
+              <StatPill icon={Clock}   label="Daily Target" value={`${p.daily_target_hours || 8}h/d`}  color="#60a5fa" />
+              <StatPill icon={TrendingUp} label="Today"     value={`${todayStudyHours}h`}              color="#f59e0b" />
             </div>
 
-            {/* Study stats card — bigger padding, larger text */}
+            {/* ── Study stats card — clean, essential metrics only ── */}
             <div className="glass-panel p-5 sm:p-6 rounded-2xl">
               <div className="flex items-center gap-3 mb-5">
                 <TrendingUp size={16} className="text-accent-green" />
@@ -424,14 +402,26 @@ export default function ProfilePage({ token, onBack, onProfileUpdate, userData =
               </div>
               <div className="space-y-1">
                 {[
-                  { label: "Longest streak", value: `${p.longest_streak || 0} days`, color: "#fbbf24" },
-                  { label: "Target year", value: `CSE ${p.target_year || "—"}`, color: "var(--text-primary)" },
                   {
-                    label: "Days to exam", value: daysLeft != null ? `${daysLeft}d` : "—",
-                    color: daysLeft != null && daysLeft <= 90 ? "#f87171" : "#4ade80"
+                    label: "Longest streak",
+                    value: `${p.longest_streak || 0} days`,
+                    color: "#fbbf24",
                   },
-                  { label: "MCQ Accuracy", value: `${mcqAccuracy}%`, color: "#4ade80" },
-                  { label: "Role", value: profile?.role === "admin" ? "Admin" : "Student", color: "#a78bfa" },
+                  {
+                    label: "Target year",
+                    value: `CSE ${p.target_year || "—"}`,
+                    color: "var(--text-primary)",
+                  },
+                  {
+                    label: "Days to exam",
+                    value: daysLeft != null ? `${daysLeft}d` : "—",
+                    color: daysLeft != null && daysLeft <= 90 ? "#f87171" : "#4ade80",
+                  },
+                  {
+                    label: "Role",
+                    value: profile?.role === "admin" ? "Admin" : "Student",
+                    color: "#a78bfa",
+                  },
                 ].map(({ label, value, color }) => (
                   <div key={label} className="flex justify-between items-center py-3 border-b border-bg-border last:border-0">
                     <span className="text-sm font-mono text-text-muted">{label}</span>
@@ -440,8 +430,6 @@ export default function ProfilePage({ token, onBack, onProfileUpdate, userData =
                 ))}
               </div>
             </div>
-
-
           </div>
 
           {/* ── Right column: edit panels ── */}
@@ -466,12 +454,12 @@ export default function ProfilePage({ token, onBack, onProfileUpdate, userData =
 
               {section !== "edit" ? (
                 <div className="space-y-1">
-                  <InfoRow icon={User} label="Full Name" value={profile?.name} accent="var(--accent-gold,#f59e0b)" />
-                  <InfoRow icon={Mail} label="Email" value={profile?.email} />
-                  <InfoRow icon={Target} label="Target Year" value={`CSE ${p.target_year}`} accent="#60a5fa" />
-                  <InfoRow icon={Calendar} label="Exam Date" value={examDisplay} accent="#4ade80" />
-                  <InfoRow icon={Clock} label="Daily Study Target" value={`${p.daily_target_hours || 8} hours / day`} accent="#a78bfa" />
-                  <InfoRow icon={BookOpen} label="Member Since" value={memberSince} />
+                  <InfoRow icon={User}     label="Full Name"          value={profile?.name}                              accent="var(--accent-gold,#f59e0b)" />
+                  <InfoRow icon={Mail}     label="Email"              value={profile?.email} />
+                  <InfoRow icon={Target}   label="Target Year"        value={`CSE ${p.target_year}`}                     accent="#60a5fa" />
+                  <InfoRow icon={Calendar} label="Exam Date"          value={examDisplay}                                accent="#4ade80" />
+                  <InfoRow icon={Clock}    label="Daily Study Target" value={`${p.daily_target_hours || 8} hours / day`} accent="#a78bfa" />
+                  <InfoRow icon={User}     label="Member Since"       value={memberSince} />
                 </div>
               ) : (
                 <div className="space-y-5 sm:space-y-6">

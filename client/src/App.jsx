@@ -8,6 +8,7 @@ import Footer from "./components/layout/Footer";
 import { useUserData } from "./hooks/useUserData";
 import { AlertCircle } from "lucide-react";
 import HeroBanner from "./pages/Hero";
+import LandingHero from "./pages/LandingHero";
 import Topicwise from "./pages/Topicwise";
 import AuthPage from "./pages/AuthPage";
 import { useAuth } from "./hooks/useAuth";
@@ -20,6 +21,7 @@ import BottomNav from "./components/layout/BottomNav.jsx";
 import AIMentorWorkspace from "./pages/AIMentorWorkspace.jsx";
 import AIMentorChat from "./pages/AI/AIMentorChat";
 import MentorNotes from "./pages/MentorNotes.jsx";
+import TestSeriesPage from "./pages/Testseriespage";
 
 // ─── Splash Screen ────────────────────────────────────────────────────────────
 function SplashScreen() {
@@ -134,10 +136,24 @@ export default function App() {
   const [workspaceQuestion, setWorkspaceQuestion] = useState(null);
   const [previousView, setPreviousView] = useState("dashboard");
   const [aiMentorPrefill, setAiMentorPrefill] = useState(""); // ← quote prefill
+  // "landing" = hero page, "auth" = actual sign-in/up form
+  const [authStage, setAuthStage] = useState("landing");
   const [theme, setTheme] = useState(() => {
     if (typeof window === "undefined") return "light";
     return localStorage.getItem("upsc-theme") || "light";
   });
+
+  // ─── Track mobile breakpoint (lg = 1024px) ─────────────────────────────────
+  const [isMobile, setIsMobile] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return window.innerWidth < 1024;
+  });
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 1024);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const {
     data: userData,
@@ -236,6 +252,7 @@ export default function App() {
                   isLoggedIn={!!user && !!token}
                   onNavigateAuth={() => setActiveView("auth")}
                   onNavigateProfile={handleNavigateProfile}
+                  onNavigate={handleViewChange}
                 />
               )}
               {activeView === "syllabus" && (
@@ -267,6 +284,15 @@ export default function App() {
                   user={user}
                   updateProgress={updateProgress}
                   bulkUpdateProgress={bulkUpdateProgress}
+                  serverAttempts={userData?.question_attempts || []}
+                />
+              )}
+              {/* ── Test Series ── */}
+              {activeView === "test-series" && (
+                <TestSeriesPage
+                  user={user}
+                  onSyllabusUpdate={updateProgress}
+                  onBulkSyllabusUpdate={bulkUpdateProgress}
                   serverAttempts={userData?.question_attempts || []}
                 />
               )}
@@ -308,7 +334,9 @@ export default function App() {
 
             <PWAInstallPrompt />
           </div>
-          {!isWorkspace && <Footer />}
+
+          {/* ── Footer: Show on desktop for Notes, otherwise only when not in workspace ── */}
+          { (!isWorkspace || (activeView === "notes" && !isMobile)) && <Footer /> }
         </div>
       </main>
 

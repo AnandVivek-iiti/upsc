@@ -1,10 +1,7 @@
-// ─── Resource Library ─────────────────────────────────────────────────────────
-// Four sections: NCERT Books · My Notes · Reference Books · YouTube Classes
 
 import { useState, useMemo } from "react";
 import TestSeriesPage from "./Testseriespage";
-import MentorNotes from "./MentorNotes"; // adjust path if MentorNotes.jsx lives elsewhere
-
+import MentorNotes from "./MentorNotes"; 
 import {
   NCERT_BOOKS, SUBJECTS, SUBJECT_PAPER_MAP, NCERT_LAST_UPDATED,
 } from "../data/Resources/ncert_data";
