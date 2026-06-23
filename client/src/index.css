@@ -55,7 +55,6 @@
     --safe-left:   env(safe-area-inset-left, 0px);
     --safe-right:  env(safe-area-inset-right, 0px);
 
-    /* Bottom nav height for mobile content offset */
     --bottom-nav-h: 64px;
   }
 
@@ -205,12 +204,10 @@
   .pr-safe  { padding-right: var(--safe-right); }
   .mb-safe  { margin-bottom: var(--safe-bottom); }
 
-  /* Mobile bottom nav offset */
   .pb-bottom-nav { padding-bottom: calc(var(--bottom-nav-h) + var(--safe-bottom) + 8px); }
 }
 
 @layer components {
-  /* ── Panels ── */
   .glass-panel {
     @apply bg-bg-surface border border-bg-border rounded-xl;
     box-shadow: var(--shadow-md);
@@ -225,7 +222,6 @@
     border-radius: 10px;
   }
 
-  /* ── Buttons ── */
   .btn-primary {
     @apply font-body font-semibold text-base px-5 py-3 rounded-xl transition-all duration-150 active:scale-[0.97]
            disabled:opacity-40 disabled:cursor-not-allowed;
@@ -259,12 +255,10 @@
     background: var(--bg-muted);
   }
 
-  /* ── Label / Badge ── */
   .label-tag {
     @apply text-xs font-mono font-medium px-2 py-0.5 rounded border;
   }
 
-  /* ── Status badges ── */
   .status-done {
     background: var(--status-done-bg);
     color: var(--status-done-text);
@@ -286,7 +280,6 @@
     border: 0.5px solid var(--status-pend-border);
   }
 
-  /* ── Progress bars ── */
   .progress-track {
     background: var(--bg-muted);
     border-radius: 999px;
@@ -298,7 +291,6 @@
     transition: width 0.55s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
 
-  /* ── Markdown / eval content ── */
   .eval-content strong {
     color: var(--accent-gold);
     font-weight: 600;
@@ -320,7 +312,6 @@
     overflow-x: auto;
   }
 
-  /* ── Stream cursor ── */
   .stream-cursor::after {
     content: "▋";
     animation: blink 1s step-end infinite;
@@ -328,7 +319,6 @@
     margin-left: 1px;
   }
 
-  /* ── Bottom nav bar (mobile) ── */
   .bottom-nav {
     position: fixed;
     bottom: 0;
@@ -344,7 +334,6 @@
     box-shadow: 0 -8px 32px rgba(0,0,0,0.08);
   }
 
-  /* ── Mobile nav item ── */
   .bottom-nav-item {
     @apply flex flex-col items-center justify-center gap-1 flex-1 h-full
            transition-all duration-200 relative;
@@ -370,13 +359,11 @@
     border-radius: 0 0 4px 4px;
   }
 
-  /* ── Sidebar overlay ── */
   .sidebar-overlay {
     @apply fixed inset-0 z-40 bg-black/50 backdrop-blur-sm;
   }
 }
 
-/* ── Animations ── */
 @keyframes float {
   0%, 100% { transform: translateY(0px); }
   50%       { transform: translateY(-5px); }
@@ -427,7 +414,6 @@
 .animate-slide-right { animation: slide-in-right 260ms cubic-bezier(0.22, 1, 0.36, 1) both; }
 .animate-scale-in   { animation: scale-in 240ms cubic-bezier(0.22, 1, 0.36, 1) both; }
 
-/* Staggered children */
 .stagger-1 { animation-delay: 60ms; }
 .stagger-2 { animation-delay: 120ms; }
 .stagger-3 { animation-delay: 180ms; }
@@ -452,7 +438,6 @@
 }
 .animate-pulse-soft { animation: pulse-soft 2s ease-in-out infinite; }
 
-/* Floating / ring logo effects */
 .logo-float { animation: logoFloat 4s ease-in-out infinite; }
 .logo-ring {
   border: 1px solid rgba(245, 158, 11, 0.25);
@@ -471,16 +456,35 @@
   padding-top: max(12px, var(--safe-top));
 }
 
-/* Prevent layout jumps during nav transitions */
 .page-transition {
   animation: fade-in 200ms ease-out both;
 }
 
-/* Active nav bounce */
 .nav-active-bounce {
   animation: nav-bounce 0.35s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .mn-workspace * {
   overflow-wrap: break-word;
   word-break: break-word;
+}
+
+.st-progress-track {
+  background: var(--bg-muted);
+  border-radius: 999px;
+  overflow: hidden;
+  height: 6px;
+}
+.st-progress-fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.4s ease;
+}
+
+@media (max-width: 640px) {
+  .st-progress-track {
+    height: 10px !important;
+  }
+  .st-progress-track .st-progress-fill {
+    height: 100% !important;
+  }
 }

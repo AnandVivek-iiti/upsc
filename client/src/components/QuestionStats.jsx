@@ -740,7 +740,7 @@ export default function QuestionStats() {
         <div style={{ fontSize: 56, marginBottom: 16 }}>📊</div>
         <div style={{ fontSize: 26, fontWeight: 600, fontFamily: SERIF, marginBottom: 10 }}>No Attempts Yet</div>
         <div style={{ fontSize: 14, color: "var(--text-muted)", fontFamily: MONO, lineHeight: 1.8, maxWidth: 440, margin: "0 auto" }}>
-          Answer questions in Topic-wise PYQs or take a Test Series.
+          Answer questions in pre or mainsGrind PYQs or take a Test Series.
           <br />Every answer gets tracked here automatically.
         </div>
       </div>

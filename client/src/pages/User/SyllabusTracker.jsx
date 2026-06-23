@@ -61,22 +61,29 @@ function StatusIcon({ status, onClick }) {
 
 // ─── ProgressBar ─────────────────────────────────────────────────────────────
 
-function ProgressBar({ value, color, height = 6 }) {
+function ProgressBar({ value, color, height = 6, className = "" }) {
   return (
-    <div style={{
-      flex: 1,
-      height,
-      background: "var(--bg-muted)",
-      borderRadius: height,
-      overflow: "hidden",
-    }}>
-      <div style={{
-        width: `${value}%`,
-        height: "100%",
-        background: color,
-        borderRadius: height,
-        transition: "width .4s ease",
-      }} />
+    <div
+      className={`st-progress-track ${className}`}
+      style={{
+        flex: 1,
+        height,
+        background: "var(--bg-muted)",
+        borderRadius: 999,
+        overflow: "hidden",
+        minWidth: 0,
+      }}
+    >
+      <div
+        className="st-progress-fill"
+        style={{
+          width: `${Math.min(100, Math.max(0, value))}%`,
+          height: "100%",
+          background: color,
+          borderRadius: 999,
+          transition: "width .4s ease",
+        }}
+      />
     </div>
   );
 }
@@ -154,7 +161,7 @@ function ModuleRow({ name, mod, color, onCycleStatus, onSetProgress }) {
             ))}
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <ProgressBar value={mod.progress} color={color} height={4} />
+            <ProgressBar value={mod.progress} color={color} height={6} />
             <span style={{
               fontSize: 12,
               color: "var(--text-muted)",
@@ -304,7 +311,7 @@ function PaperCard({ paperId, paper, isOpen, onToggle, onCycleStatus, onSetProgr
 
       {/* Progress bar */}
       <div style={{ padding: "0 20px 12px" }}>
-        <ProgressBar value={pct} color={paper.color} height={5} />
+        <ProgressBar value={pct} color={paper.color} height={8} />
       </div>
 
       {/* Module rows */}
@@ -364,21 +371,15 @@ function StageCoverageBar({ label, papers, paperOrder }) {
 }
 
 // ─── Main SyllabusTracker Component ──────────────────────────────────────────
-// Props:
-//   userData        — from useUserData; used to seed progress from backend on first load
-//   onUpdateProgress — callback to persist progress back to backend (optional if not logged in)
 
 export default function SyllabusTracker({ userData, onUpdateProgress, isLoggedIn = false }) {
-  // Always start from the static syllabus structure (syllabusData.js)
   const [data,       setData]       = useState(deepClone(SYLLABUS));
   const [stage,      setStage]      = useState("prelims");
   const [openPapers, setOpenPapers] = useState({ GS1: true });
 
-  // Once user data arrives from backend, merge their saved progress onto the static structure.
-  // If user is not logged in, the static zero-progress state is shown — no problem.
   useEffect(() => {
     if (userData?.syllabus) {
-      setData(deepClone(userData.syllabus)); // already merged by useUserData hook
+      setData(deepClone(userData.syllabus));
     }
   }, [userData?.syllabus]);
 
@@ -395,7 +396,6 @@ export default function SyllabusTracker({ userData, onUpdateProgress, isLoggedIn
       if (mod.status === "done")     mod.progress = 100;
       else if (mod.status === "pending")  mod.progress = 0;
       else if (mod.status === "revision" && mod.progress === 100) mod.progress = 70;
-      // Persist to backend (only if logged in — hook handles auth check)
       onUpdateProgress?.(stage_, paperId, modName, mod.progress, mod.status);
       return next;
     });
@@ -414,7 +414,6 @@ export default function SyllabusTracker({ userData, onUpdateProgress, isLoggedIn
     });
   }, [onUpdateProgress]);
 
-  // Global stats
   const allMods       = [...getAllModules(data, "prelims"), ...getAllModules(data, "mains")];
   const totalMods     = allMods.length;
   const overall       = totalMods ? Math.round(allMods.reduce((s, m) => s + m.progress, 0) / totalMods) : 0;
@@ -440,6 +439,19 @@ export default function SyllabusTracker({ userData, onUpdateProgress, isLoggedIn
         .st-root { box-sizing: border-box; }
         .st-root *, .st-root *::before, .st-root *::after { box-sizing: border-box; }
 
+        /* Progress bar – default heights */
+        .st-progress-track {
+          background: var(--bg-muted);
+          border-radius: 999px;
+          overflow: hidden;
+          height: 6px; /* fallback, overridden by inline style */
+        }
+        .st-progress-fill {
+          height: 100%;
+          border-radius: 999px;
+          transition: width 0.4s ease;
+        }
+
         @media (max-width: 640px) {
           .st-root { padding: 16px 12px !important; }
           .st-topbar { flex-direction: column !important; align-items: flex-start !important; gap: 16px !important; margin-bottom: 24px !important; }
@@ -456,6 +468,14 @@ export default function SyllabusTracker({ userData, onUpdateProgress, isLoggedIn
           .st-module-row { flex-direction: column !important; gap: 8px !important; padding: 12px 14px !important; }
           .st-module-actions { width: 100% !important; justify-content: space-between !important; padding-top: 0 !important; }
           .st-ai-grid { grid-template-columns: 1fr !important; }
+
+          /* Make progress bars thicker on mobile */
+          .st-progress-track {
+            height: 10px !important;  /* override inline height for all tracks */
+          }
+          .st-progress-track .st-progress-fill {
+            height: 100% !important;
+          }
         }
 
         @media (max-width: 420px) {

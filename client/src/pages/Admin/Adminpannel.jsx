@@ -54,13 +54,13 @@ function Toast({ msg, type, onClose }) {
     return () => clearTimeout(t);
   }, [onClose]);
   return (
-    <div className={`fixed bottom-6 right-6 z-50 flex items-center gap-2 px-4 py-3 rounded-xl shadow-xl text-sm font-mono
+    <div className={`fixed bottom-4 right-4 z-50 flex items-center gap-2 px-3 py-2.5 rounded-xl shadow-xl text-xs font-mono max-w-[90vw]
       ${type === "error"
         ? "bg-accent-red/10 border border-accent-red/30 text-accent-red"
         : "bg-accent-green/10 border border-accent-green/30 text-accent-green"}`}>
       {type === "error" ? <AlertCircle size={14} /> : <CheckCircle2 size={14} />}
-      {msg}
-      <button onClick={onClose} className="ml-2 opacity-60 hover:opacity-100"><X size={12} /></button>
+      <span className="truncate">{msg}</span>
+      <button onClick={onClose} className="ml-1 opacity-60 hover:opacity-100 shrink-0"><X size={12} /></button>
     </div>
   );
 }
@@ -84,21 +84,21 @@ function TrendChip({ delta }) {
 // ─── Metric card ──────────────────────────────────────────────────────────────
 function MetricCard({ icon: Icon, label, value, sub, iconColor, delta, accent }) {
   return (
-    <div className={`bg-bg-surface border rounded-2xl p-4 sm:p-5 flex flex-col gap-2
+    <div className={`bg-bg-surface border rounded-2xl p-3 sm:p-4 md:p-5 flex flex-col gap-1.5
       ${accent ? "border-accent-gold/30" : "border-bg-border"}`}>
-      <div className="flex items-start justify-between gap-2">
-        <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
+      <div className="flex items-start justify-between gap-1">
+        <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center shrink-0"
           style={{ background: `${iconColor}15`, border: `1px solid ${iconColor}25` }}>
-          <Icon size={16} style={{ color: iconColor }} />
+          <Icon size={14} style={{ color: iconColor }} />
         </div>
         <TrendChip delta={delta} />
       </div>
       <div>
-        <p className="text-[11px] font-mono text-text-muted uppercase tracking-wider">{label}</p>
-        <p className={`text-2xl font-display font-bold mt-0.5 ${accent ? "text-accent-gold" : "text-text-primary"}`}>
+        <p className="text-[10px] font-mono text-text-muted uppercase tracking-wider">{label}</p>
+        <p className={`text-lg sm:text-2xl font-display font-bold mt-0.5 ${accent ? "text-accent-gold" : "text-text-primary"}`}>
           {fmtNum(value)}
         </p>
-        {sub && <p className="text-[11px] text-text-muted mt-0.5">{sub}</p>}
+        {sub && <p className="text-[10px] text-text-muted mt-0.5">{sub}</p>}
       </div>
     </div>
   );
@@ -107,8 +107,8 @@ function MetricCard({ icon: Icon, label, value, sub, iconColor, delta, accent })
 // ─── Section heading ──────────────────────────────────────────────────────────
 function SectionHead({ title, action }) {
   return (
-    <div className="flex items-center justify-between mb-4">
-      <h2 className="text-xs font-mono font-semibold text-text-muted uppercase tracking-widest">{title}</h2>
+    <div className="flex items-center justify-between mb-3 sm:mb-4">
+      <h2 className="text-[10px] sm:text-xs font-mono font-semibold text-text-muted uppercase tracking-widest">{title}</h2>
       {action}
     </div>
   );
@@ -140,10 +140,10 @@ function DownloadBtn({ onClick, label = "PDF" }) {
 
 // ─── Retention heat-map cell ──────────────────────────────────────────────────
 function RetentionCell({ pct }) {
-  if (pct === undefined || pct === null) return <td className="px-3 py-2 text-center text-text-muted/30 text-xs">—</td>;
+  if (pct === undefined || pct === null) return <td className="px-2 sm:px-3 py-2 text-center text-text-muted/30 text-xs">—</td>;
   const color = pct >= 60 ? "#4ade80" : pct >= 30 ? "#fbbf24" : pct >= 10 ? "#fb923c" : "#f87171";
   return (
-    <td className="px-3 py-2 text-center">
+    <td className="px-2 sm:px-3 py-2 text-center">
       <span className="text-xs font-mono font-bold" style={{ color }}>{pct}%</span>
     </td>
   );
@@ -174,18 +174,16 @@ function OverviewTab({ metrics, insights, loading, onRefresh }) {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-wrap gap-2">
         <SectionHead title="User Growth" />
-        <div className="flex items-center gap-2">
-          <button onClick={onRefresh} disabled={loading}
-            className="flex items-center gap-1.5 text-xs text-text-muted hover:text-text-primary font-mono transition-colors">
-            <RefreshCw size={12} className={loading ? "animate-spin" : ""} />
-            Refresh
-          </button>
-        </div>
+        <button onClick={onRefresh} disabled={loading}
+          className="flex items-center gap-1.5 text-xs text-text-muted hover:text-text-primary font-mono transition-colors shrink-0">
+          <RefreshCw size={12} className={loading ? "animate-spin" : ""} />
+          <span className="hidden xs:inline">Refresh</span>
+        </button>
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-3">
         <MetricCard icon={Users} label="Total Users" value={users.total} iconColor="#60a5fa" delta={trends.total_delta} />
         <MetricCard icon={UserCheck} label="Today Signups" value={users.todaySignups} iconColor="#4ade80" delta={trends.signup_delta} />
         <MetricCard icon={Activity} label="DAU" value={users.dau} iconColor="#f59e0b" delta={trends.dau_delta} accent />
@@ -195,7 +193,7 @@ function OverviewTab({ metrics, insights, loading, onRefresh }) {
 
       <div>
         <SectionHead title="Feature Adoption" />
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
           <MetricCard icon={Users} label="Registered" value={users.total} iconColor="#60a5fa" />
           <MetricCard icon={Activity} label="Used Any Feature" value={users.usedAnyFeature} iconColor="#4ade80"
             sub={users.total ? `${Math.round((users.usedAnyFeature / users.total) * 100)}% of users` : undefined} />
@@ -208,7 +206,7 @@ function OverviewTab({ metrics, insights, loading, onRefresh }) {
 
       <div>
         <SectionHead title="Engagement" />
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-3">
           <MetricCard icon={Calendar} label="Retention D1" value={engagement.retentionD1 !== undefined ? `${engagement.retentionD1}%` : "—"} iconColor="#4ade80" />
           <MetricCard icon={Calendar} label="Retention D7" value={engagement.retentionD7 !== undefined ? `${engagement.retentionD7}%` : "—"} iconColor="#f59e0b" />
           <MetricCard icon={Clock} label="Avg Study/Day" value={engagement.avgStudyHours !== undefined ? `${engagement.avgStudyHours}h` : "—"} iconColor="#60a5fa" />
@@ -219,7 +217,7 @@ function OverviewTab({ metrics, insights, loading, onRefresh }) {
 
       <div>
         <SectionHead title="Activity" />
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
           <MetricCard icon={FileText} label="Answers Evaluated" value={activity.answersEvaluated} iconColor="#f59e0b" />
           <MetricCard icon={BookOpen} label="Notes Audited" value={activity.notesAudited} iconColor="#34d399" />
           <MetricCard icon={Target} label="Tests Attempted" value={activity.testsAttempted} iconColor="#f97316" />
@@ -291,27 +289,25 @@ function UsersTab({ users, usersTotal, userPage, loading, onPageChange, onSortCh
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
         <SectionHead title={`Users (${usersTotal})`} />
-        <div className="flex items-center gap-2">
-          <button onClick={() => setShowEmails(v => !v)}
-            className="flex items-center gap-1.5 text-xs text-text-muted hover:text-text-primary font-mono transition-colors">
-            {showEmails ? <EyeOff size={12} /> : <Eye size={12} />}
-            {showEmails ? "Mask emails" : "Show emails"}
-          </button>
-        </div>
+        <button onClick={() => setShowEmails(v => !v)}
+          className="flex items-center gap-1.5 text-xs text-text-muted hover:text-text-primary font-mono transition-colors shrink-0">
+          {showEmails ? <EyeOff size={12} /> : <Eye size={12} />}
+          <span className="hidden xs:inline">{showEmails ? "Mask emails" : "Show emails"}</span>
+        </button>
       </div>
 
       {loading && users.length === 0 ? <LoadSpinner /> : (
         <div className="bg-bg-surface border border-bg-border rounded-2xl overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="w-full text-sm min-w-[900px]">
+            <table className="w-full text-sm min-w-[700px] lg:min-w-[900px]">
               <thead>
                 <tr className="border-b border-bg-border bg-bg-muted/40">
                   {COLS.map(c => (
                     <th key={c.key}
                       onClick={() => onSortChange(c.key)}
-                      className="text-left px-3 py-3 text-[10px] font-mono text-text-muted uppercase tracking-wider cursor-pointer hover:text-text-primary transition-colors whitespace-nowrap select-none">
+                      className="text-left px-2 sm:px-3 py-2.5 sm:py-3 text-[10px] font-mono text-text-muted uppercase tracking-wider cursor-pointer hover:text-text-primary transition-colors whitespace-nowrap select-none">
                       <span className="flex items-center gap-1">
                         {c.label}
                         {sortBy === c.key && (
@@ -320,7 +316,7 @@ function UsersTab({ users, usersTotal, userPage, loading, onPageChange, onSortCh
                       </span>
                     </th>
                   ))}
-                  <th className="w-10 px-3 py-3" />
+                  <th className="w-10 px-2 sm:px-3 py-2.5 sm:py-3" />
                 </tr>
               </thead>
               <tbody>
@@ -331,40 +327,40 @@ function UsersTab({ users, usersTotal, userPage, loading, onPageChange, onSortCh
                       ${i % 2 === 0 ? "" : "bg-bg-muted/10"}`}
                     onClick={() => onUserClick(u.id)}
                   >
-                    <td className="px-3 py-2.5 font-medium text-text-primary whitespace-nowrap">{u.name || "—"}</td>
-                    <td className="px-3 py-2.5 text-text-secondary font-mono text-xs whitespace-nowrap">
+                    <td className="px-2 sm:px-3 py-2 font-medium text-text-primary whitespace-nowrap">{u.name || "—"}</td>
+                    <td className="px-2 sm:px-3 py-2 text-text-secondary font-mono text-xs whitespace-nowrap">
                       {showEmails ? u.email : maskEmail(u.email)}
                     </td>
-                    <td className="px-3 py-2.5 text-center">
+                    <td className="px-2 sm:px-3 py-2 text-center">
                       {(u.streak || 0) > 0
                         ? <span className="text-accent-gold font-mono font-bold">{u.streak}</span>
                         : <span className="text-text-muted">—</span>}
                     </td>
-                    <td className="px-3 py-2.5 text-center text-text-secondary font-mono text-xs">{u.longest_streak || "—"}</td>
-                    <td className="px-3 py-2.5 text-center text-text-secondary font-mono text-xs">
+                    <td className="px-2 sm:px-3 py-2 text-center text-text-secondary font-mono text-xs">{u.longest_streak || "—"}</td>
+                    <td className="px-2 sm:px-3 py-2 text-center text-text-secondary font-mono text-xs">
                       {u.total_study_hours ? `${parseFloat(u.total_study_hours).toFixed(1)}h` : "—"}
                     </td>
-                    <td className="px-3 py-2.5 text-center text-text-secondary font-mono text-xs">{u.answers_evaluated ?? "—"}</td>
-                    <td className="px-3 py-2.5 text-center text-text-secondary font-mono text-xs">{u.notes_audited ?? "—"}</td>
-                    <td className="px-3 py-2.5 text-center text-text-secondary font-mono text-xs">{u.tests_attempted ?? "—"}</td>
-                    <td className="px-3 py-2.5 text-center text-text-secondary font-mono text-xs">{u.days_active ?? "—"}</td>
-                    <td className="px-3 py-2.5 text-center">
+                    <td className="px-2 sm:px-3 py-2 text-center text-text-secondary font-mono text-xs">{u.answers_evaluated ?? "—"}</td>
+                    <td className="px-2 sm:px-3 py-2 text-center text-text-secondary font-mono text-xs">{u.notes_audited ?? "—"}</td>
+                    <td className="px-2 sm:px-3 py-2 text-center text-text-secondary font-mono text-xs">{u.tests_attempted ?? "—"}</td>
+                    <td className="px-2 sm:px-3 py-2 text-center text-text-secondary font-mono text-xs">{u.days_active ?? "—"}</td>
+                    <td className="px-2 sm:px-3 py-2 text-center">
                       {u.features_used !== undefined
                         ? <span className="font-mono text-xs text-accent-blue">{u.features_used}/7</span>
                         : <span className="text-text-muted text-xs">—</span>}
                     </td>
-                    <td className="px-3 py-2.5 text-text-muted font-mono text-xs whitespace-nowrap">{relTime(u.last_active)}</td>
-                    <td className="px-3 py-2.5 text-text-muted font-mono text-xs whitespace-nowrap">
+                    <td className="px-2 sm:px-3 py-2 text-text-muted font-mono text-xs whitespace-nowrap">{relTime(u.last_active)}</td>
+                    <td className="px-2 sm:px-3 py-2 text-text-muted font-mono text-xs whitespace-nowrap">
                       {u.registration_date
                         ? new Date(u.registration_date).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "2-digit" })
                         : "—"}
                     </td>
-                    <td className="px-3 py-2.5 text-right">
+                    <td className="px-2 sm:px-3 py-2 text-right">
                       <span className="font-mono text-xs font-bold text-accent-gold">{u.engagement_score ?? "—"}</span>
                     </td>
-                    <td className="px-2 py-2.5" onClick={(e) => e.stopPropagation()}>
+                    <td className="px-1 sm:px-2 py-2" onClick={(e) => e.stopPropagation()}>
                       {pendingDelete === u.id ? (
-                        <span className="flex items-center gap-1.5 justify-end">
+                        <span className="flex items-center gap-1 justify-end">
                           <button
                             onClick={() => {
                               onDelete(u.id);
@@ -400,7 +396,7 @@ function UsersTab({ users, usersTotal, userPage, loading, onPageChange, onSortCh
           </div>
 
           {totalPages > 1 && (
-            <div className="flex items-center justify-between px-4 py-3 border-t border-bg-border">
+            <div className="flex flex-wrap items-center justify-between px-3 sm:px-4 py-3 border-t border-bg-border gap-2">
               <p className="text-xs text-text-muted font-mono">Page {userPage} of {totalPages} · {usersTotal} users</p>
               <div className="flex gap-2">
                 <button disabled={userPage <= 1} onClick={() => onPageChange(userPage - 1)}
@@ -428,31 +424,26 @@ function AnalyticsTab({ funnel, features, loading }) {
 
   return (
     <div className="space-y-8">
-      <div className="flex justify-end -mb-4">
-      </div>
-
       <div>
         <SectionHead title="Activation Funnel" />
         {funnel?.length ? (
-          <div className="bg-bg-surface border border-bg-border rounded-2xl p-5 space-y-4">
+          <div className="bg-bg-surface border border-bg-border rounded-2xl p-4 sm:p-5 space-y-4">
             {funnel.map((step, i) => {
               const barW = Math.max(step.pctOfTotal, 2);
               const isFirst = i === 0;
               return (
                 <div key={step.step}>
-                  <div className="flex items-center justify-between mb-1 gap-2">
+                  <div className="flex items-center justify-between mb-1 gap-2 flex-wrap">
                     <div className="flex items-center gap-2 min-w-0">
                       <span className="text-[10px] font-mono text-text-muted w-4 shrink-0">{step.step}</span>
                       <span className="text-sm text-text-primary truncate">{step.label}</span>
                     </div>
-                    <div className="flex items-center gap-3 shrink-0">
+                    <div className="flex items-center gap-2 shrink-0">
                       {!isFirst && step.dropOffPct > 0 && (
-                        <span className="text-[10px] font-mono text-accent-red">
-                          −{step.dropOffPct}% drop
-                        </span>
+                        <span className="text-[10px] font-mono text-accent-red">−{step.dropOffPct}%</span>
                       )}
-                      <span className="text-xs font-mono font-bold text-text-primary w-8 text-right">{step.count}</span>
-                      <span className="text-[10px] font-mono text-text-muted w-8 text-right">{step.pctOfTotal}%</span>
+                      <span className="text-xs font-mono font-bold text-text-primary w-7 sm:w-8 text-right">{step.count}</span>
+                      <span className="text-[10px] font-mono text-text-muted w-7 sm:w-8 text-right">{step.pctOfTotal}%</span>
                     </div>
                   </div>
                   <div className="h-7 rounded-lg overflow-hidden bg-bg-muted relative">
@@ -469,7 +460,7 @@ function AnalyticsTab({ funnel, features, loading }) {
                               : "linear-gradient(90deg, #fb923c, #ef4444)",
                       }}
                     />
-                    <span className="absolute inset-0 flex items-center px-3 text-[11px] font-mono text-white/80">
+                    <span className="absolute inset-0 flex items-center px-3 text-[11px] font-mono text-white/80 truncate">
                       {step.label}
                     </span>
                   </div>
@@ -486,47 +477,49 @@ function AnalyticsTab({ funnel, features, loading }) {
         <SectionHead title="Feature Engagement (ranked)" />
         {features?.length ? (
           <div className="bg-bg-surface border border-bg-border rounded-2xl overflow-hidden">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-bg-border bg-bg-muted/40">
-                  {["#", "Feature", "Unique Users", "Total Uses", "Avg / User", "Score", "Last Used", "Top Users"].map(h => (
-                    <th key={h} className="text-left px-4 py-3 text-[10px] font-mono text-text-muted uppercase tracking-wider whitespace-nowrap">{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {features.map((f, i) => (
-                  <tr key={f.name} className={`border-b border-bg-border/40 hover:bg-bg-muted/20 transition-colors`}>
-                    <td className="px-4 py-3 text-[11px] font-mono text-text-muted">{i + 1}</td>
-                    <td className="px-4 py-3 font-medium text-text-primary whitespace-nowrap">{f.name}</td>
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm font-mono font-bold text-accent-blue">{f.uniqueUsers}</span>
-                        <div className="h-1.5 w-16 bg-bg-muted rounded-full overflow-hidden">
-                          <div className="h-full bg-accent-blue/60 rounded-full"
-                            style={{ width: `${features[0]?.uniqueUsers > 0 ? (f.uniqueUsers / features[0].uniqueUsers) * 100 : 0}%` }} />
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-4 py-3 font-mono text-sm text-text-secondary">{f.totalUses}</td>
-                    <td className="px-4 py-3 font-mono text-xs text-text-muted">{f.avgUsagePerUser}×</td>
-                    <td className="px-4 py-3">
-                      <span className="text-xs font-mono font-bold text-accent-gold">{f.engagementScore}</span>
-                    </td>
-                    <td className="px-4 py-3 text-xs font-mono text-text-muted whitespace-nowrap">{relTime(f.lastUsed)}</td>
-                    <td className="px-4 py-3">
-                      <div className="flex gap-1 flex-wrap">
-                        {(f.topUsers || []).map((u, j) => (
-                          <span key={j} className="text-[10px] font-mono bg-bg-muted border border-bg-border rounded px-1.5 py-0.5 text-text-muted truncate max-w-[80px]" title={u.name}>
-                            {u.name?.split(" ")[0] || "—"}
-                          </span>
-                        ))}
-                      </div>
-                    </td>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm min-w-[700px]">
+                <thead>
+                  <tr className="border-b border-bg-border bg-bg-muted/40">
+                    {["#", "Feature", "Unique Users", "Total Uses", "Avg / User", "Score", "Last Used", "Top Users"].map(h => (
+                      <th key={h} className="text-left px-2 sm:px-4 py-2.5 sm:py-3 text-[10px] font-mono text-text-muted uppercase tracking-wider whitespace-nowrap">{h}</th>
+                    ))}
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {features.map((f, i) => (
+                    <tr key={f.name} className={`border-b border-bg-border/40 hover:bg-bg-muted/20 transition-colors`}>
+                      <td className="px-2 sm:px-4 py-2 sm:py-3 text-[11px] font-mono text-text-muted">{i + 1}</td>
+                      <td className="px-2 sm:px-4 py-2 sm:py-3 font-medium text-text-primary whitespace-nowrap">{f.name}</td>
+                      <td className="px-2 sm:px-4 py-2 sm:py-3">
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm font-mono font-bold text-accent-blue">{f.uniqueUsers}</span>
+                          <div className="h-1.5 w-12 sm:w-16 bg-bg-muted rounded-full overflow-hidden hidden sm:block">
+                            <div className="h-full bg-accent-blue/60 rounded-full"
+                              style={{ width: `${features[0]?.uniqueUsers > 0 ? (f.uniqueUsers / features[0].uniqueUsers) * 100 : 0}%` }} />
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-2 sm:px-4 py-2 sm:py-3 font-mono text-sm text-text-secondary">{f.totalUses}</td>
+                      <td className="px-2 sm:px-4 py-2 sm:py-3 font-mono text-xs text-text-muted">{f.avgUsagePerUser}×</td>
+                      <td className="px-2 sm:px-4 py-2 sm:py-3">
+                        <span className="text-xs font-mono font-bold text-accent-gold">{f.engagementScore}</span>
+                      </td>
+                      <td className="px-2 sm:px-4 py-2 sm:py-3 text-xs font-mono text-text-muted whitespace-nowrap">{relTime(f.lastUsed)}</td>
+                      <td className="px-2 sm:px-4 py-2 sm:py-3">
+                        <div className="flex gap-1 flex-wrap">
+                          {(f.topUsers || []).slice(0, 3).map((u, j) => (
+                            <span key={j} className="text-[10px] font-mono bg-bg-muted border border-bg-border rounded px-1.5 py-0.5 text-text-muted truncate max-w-[60px] sm:max-w-[80px]" title={u.name}>
+                              {u.name?.split(" ")[0] || "—"}
+                            </span>
+                          ))}
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         ) : (
           <p className="text-sm text-text-muted py-6 text-center">No feature analytics yet.</p>
@@ -551,15 +544,13 @@ function ActivityTab({ events, loading, onRefresh }) {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
         <SectionHead title="Activity Feed (latest 50)" />
-        <div className="flex items-center gap-2">
-          <button onClick={onRefresh} disabled={loading}
-            className="flex items-center gap-1.5 text-xs text-text-muted hover:text-text-primary font-mono transition-colors">
-            <RefreshCw size={12} className={loading ? "animate-spin" : ""} />
-            Auto-refreshes every 60s
-          </button>
-        </div>
+        <button onClick={onRefresh} disabled={loading}
+          className="flex items-center gap-1.5 text-xs text-text-muted hover:text-text-primary font-mono transition-colors shrink-0">
+          <RefreshCw size={12} className={loading ? "animate-spin" : ""} />
+          <span className="hidden xs:inline">Auto-refreshes every 60s</span>
+        </button>
       </div>
 
       {events?.length ? (
@@ -568,17 +559,17 @@ function ActivityTab({ events, loading, onRefresh }) {
             const meta = EVENT_LABELS[ev.event_type] || { label: ev.event_type, icon: Activity, color: "#94a3b8" };
             const Icon = meta.icon;
             return (
-              <div key={ev.id} className="flex items-start gap-3 px-4 py-3 hover:bg-bg-muted/30 transition-colors">
-                <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 mt-0.5"
+              <div key={ev.id} className="flex items-start gap-2 sm:gap-3 px-3 sm:px-4 py-2.5 sm:py-3 hover:bg-bg-muted/30 transition-colors">
+                <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-lg flex items-center justify-center shrink-0 mt-0.5"
                   style={{ background: `${meta.color}15`, border: `1px solid ${meta.color}20` }}>
-                  <Icon size={13} style={{ color: meta.color }} />
+                  <Icon size={12} style={{ color: meta.color }} />
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm text-text-primary">
                     <span className="font-semibold">{ev.user_name || "A user"}</span>
                     {" "}{meta.label}
                     {ev.feature_name && ev.feature_name !== ev.user_name && (
-                      <span className="text-text-muted"> · {ev.feature_name}</span>
+                      <span className="text-text-muted text-xs sm:text-sm"> · {ev.feature_name}</span>
                     )}
                     {ev.metadata?.subject && (
                       <span className="text-accent-gold font-mono text-xs ml-1">({ev.metadata.subject})</span>
@@ -612,12 +603,9 @@ function RetentionTab({ retention, cohort, churnList, loading }) {
 
   return (
     <div className="space-y-8">
-      <div className="flex justify-end -mb-4">
-      </div>
-
       <div>
         <SectionHead title="Retention Rates" />
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
           {[
             { label: "Day 1", value: retention?.d1, sub: "Returned day after signup" },
             { label: "Day 7", value: retention?.d7, sub: "Returned within first week" },
@@ -625,9 +613,9 @@ function RetentionTab({ retention, cohort, churnList, loading }) {
           ].map(({ label, value, sub }) => {
             const color = value >= 40 ? "#4ade80" : value >= 15 ? "#fbbf24" : "#f87171";
             return (
-              <div key={label} className="bg-bg-surface border border-bg-border rounded-2xl p-5 text-center">
+              <div key={label} className="bg-bg-surface border border-bg-border rounded-2xl p-4 sm:p-5 text-center">
                 <p className="text-[11px] font-mono text-text-muted uppercase tracking-wider mb-2">{label}</p>
-                <p className="text-4xl font-display font-bold" style={{ color }}>{value ?? "—"}{value !== undefined ? "%" : ""}</p>
+                <p className="text-3xl sm:text-4xl font-display font-bold" style={{ color }}>{value ?? "—"}{value !== undefined ? "%" : ""}</p>
                 <p className="text-[11px] text-text-muted mt-1">{sub}</p>
               </div>
             );
@@ -640,22 +628,22 @@ function RetentionTab({ retention, cohort, churnList, loading }) {
         {cohort?.length ? (
           <div className="bg-bg-surface border border-bg-border rounded-2xl overflow-hidden">
             <div className="overflow-x-auto">
-              <table className="w-full text-sm">
+              <table className="w-full text-sm min-w-[500px]">
                 <thead>
                   <tr className="border-b border-bg-border bg-bg-muted/40">
-                    <th className="text-left px-4 py-3 text-[10px] font-mono text-text-muted uppercase tracking-wider">Signup Week</th>
-                    <th className="px-3 py-3 text-[10px] font-mono text-text-muted uppercase tracking-wider text-center">Cohort</th>
-                    <th className="px-3 py-3 text-[10px] font-mono text-text-muted uppercase tracking-wider text-center">Week 0</th>
-                    <th className="px-3 py-3 text-[10px] font-mono text-text-muted uppercase tracking-wider text-center">Week 1</th>
-                    <th className="px-3 py-3 text-[10px] font-mono text-text-muted uppercase tracking-wider text-center">Week 2</th>
-                    <th className="px-3 py-3 text-[10px] font-mono text-text-muted uppercase tracking-wider text-center">Week 3</th>
+                    <th className="text-left px-2 sm:px-4 py-2.5 sm:py-3 text-[10px] font-mono text-text-muted uppercase tracking-wider">Signup Week</th>
+                    <th className="px-2 sm:px-3 py-2.5 sm:py-3 text-[10px] font-mono text-text-muted uppercase tracking-wider text-center">Cohort</th>
+                    <th className="px-2 sm:px-3 py-2.5 sm:py-3 text-[10px] font-mono text-text-muted uppercase tracking-wider text-center">Week 0</th>
+                    <th className="px-2 sm:px-3 py-2.5 sm:py-3 text-[10px] font-mono text-text-muted uppercase tracking-wider text-center">Week 1</th>
+                    <th className="px-2 sm:px-3 py-2.5 sm:py-3 text-[10px] font-mono text-text-muted uppercase tracking-wider text-center">Week 2</th>
+                    <th className="px-2 sm:px-3 py-2.5 sm:py-3 text-[10px] font-mono text-text-muted uppercase tracking-wider text-center">Week 3</th>
                   </tr>
                 </thead>
                 <tbody>
                   {cohort.map((row) => (
                     <tr key={row.cohortWeek} className="border-b border-bg-border/40 hover:bg-bg-muted/20 transition-colors">
-                      <td className="px-4 py-2.5 font-mono text-xs text-text-primary">{row.cohortWeek}</td>
-                      <td className="px-3 py-2.5 text-center font-mono text-xs text-text-muted">{row.cohortSize}</td>
+                      <td className="px-2 sm:px-4 py-2 font-mono text-xs text-text-primary">{row.cohortWeek}</td>
+                      <td className="px-2 sm:px-3 py-2 text-center font-mono text-xs text-text-muted">{row.cohortSize}</td>
                       <RetentionCell pct={row.week0} />
                       <RetentionCell pct={row.week1} />
                       <RetentionCell pct={row.week2} />
@@ -665,7 +653,7 @@ function RetentionTab({ retention, cohort, churnList, loading }) {
                 </tbody>
               </table>
             </div>
-            <div className="px-4 py-2 border-t border-bg-border flex items-center gap-4 text-[10px] font-mono text-text-muted">
+            <div className="px-3 sm:px-4 py-2 border-t border-bg-border flex flex-wrap items-center gap-2 sm:gap-4 text-[10px] font-mono text-text-muted">
               <span className="flex items-center gap-1"><span className="inline-block w-2 h-2 rounded-sm bg-[#4ade80]" /> ≥60%</span>
               <span className="flex items-center gap-1"><span className="inline-block w-2 h-2 rounded-sm bg-[#fbbf24]" /> 30–59%</span>
               <span className="flex items-center gap-1"><span className="inline-block w-2 h-2 rounded-sm bg-[#fb923c]" /> 10–29%</span>
@@ -681,33 +669,35 @@ function RetentionTab({ retention, cohort, churnList, loading }) {
         <SectionHead title="Churn Risk · Not seen in 7+ days" />
         {churnList?.length ? (
           <div className="bg-bg-surface border border-bg-border rounded-2xl overflow-hidden">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-bg-border bg-bg-muted/40">
-                  {["Name", "Email (masked)", "Streak", "Last Active"].map(h => (
-                    <th key={h} className="text-left px-4 py-3 text-[10px] font-mono text-text-muted uppercase tracking-wider">{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {churnList.map((u, i) => (
-                  <tr key={u.id} className={`border-b border-bg-border/40 hover:bg-accent-red/5 transition-colors ${i % 2 === 0 ? "" : "bg-bg-muted/10"}`}>
-                    <td className="px-4 py-2.5 font-medium text-text-primary">{u.name}</td>
-                    <td className="px-4 py-2.5 font-mono text-xs text-text-secondary">
-                      {u.email?.replace(/(.{2}).*(@.*)/, "$1••••$2") || "—"}
-                    </td>
-                    <td className="px-4 py-2.5">
-                      {(u.streak || 0) > 0
-                        ? <span className="font-mono text-accent-gold text-xs">{u.streak}🔥</span>
-                        : <span className="text-text-muted text-xs">—</span>}
-                    </td>
-                    <td className="px-4 py-2.5">
-                      <span className="font-mono text-xs text-accent-red">{relTime(u.last_active)}</span>
-                    </td>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm min-w-[400px]">
+                <thead>
+                  <tr className="border-b border-bg-border bg-bg-muted/40">
+                    {["Name", "Email (masked)", "Streak", "Last Active"].map(h => (
+                      <th key={h} className="text-left px-3 sm:px-4 py-2.5 sm:py-3 text-[10px] font-mono text-text-muted uppercase tracking-wider">{h}</th>
+                    ))}
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {churnList.map((u, i) => (
+                    <tr key={u.id} className={`border-b border-bg-border/40 hover:bg-accent-red/5 transition-colors ${i % 2 === 0 ? "" : "bg-bg-muted/10"}`}>
+                      <td className="px-3 sm:px-4 py-2 font-medium text-text-primary">{u.name}</td>
+                      <td className="px-3 sm:px-4 py-2 font-mono text-xs text-text-secondary">
+                        {u.email?.replace(/(.{2}).*(@.*)/, "$1••••$2") || "—"}
+                      </td>
+                      <td className="px-3 sm:px-4 py-2">
+                        {(u.streak || 0) > 0
+                          ? <span className="font-mono text-accent-gold text-xs">{u.streak}🔥</span>
+                          : <span className="text-text-muted text-xs">—</span>}
+                      </td>
+                      <td className="px-3 sm:px-4 py-2">
+                        <span className="font-mono text-xs text-accent-red">{relTime(u.last_active)}</span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         ) : (
           <div className="bg-bg-surface border border-bg-border rounded-2xl py-10 text-center">
@@ -734,30 +724,32 @@ function JourneyTab({ journeyData, loading }) {
       <SectionHead title="First Feature Discovery & Return Rates" />
       {firstFeatureRanked.length ? (
         <div className="bg-bg-surface border border-bg-border rounded-2xl overflow-hidden">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-bg-border bg-bg-muted/40">
-                <th className="text-left px-4 py-3 text-[10px] font-mono text-text-muted uppercase tracking-wider">Feature</th>
-                <th className="text-left px-4 py-3 text-[10px] font-mono text-text-muted uppercase tracking-wider">First‑time Users</th>
-                <th className="text-left px-4 py-3 text-[10px] font-mono text-text-muted uppercase tracking-wider">% of Total</th>
-                <th className="text-left px-4 py-3 text-[10px] font-mono text-text-muted uppercase tracking-wider">Return Rate (D1)</th>
-              </tr>
-            </thead>
-            <tbody>
-              {firstFeatureRanked.map((item) => (
-                <tr key={item.feature} className="border-b border-bg-border/40 hover:bg-bg-muted/20 transition-colors">
-                  <td className="px-4 py-2.5 font-medium text-text-primary">{item.feature}</td>
-                  <td className="px-4 py-2.5 font-mono text-sm text-text-secondary">{item.count}</td>
-                  <td className="px-4 py-2.5 font-mono text-sm text-text-secondary">{item.pct}%</td>
-                  <td className="px-4 py-2.5 font-mono text-sm">
-                    <span className={item.returnRate >= 60 ? "text-accent-green" : item.returnRate >= 30 ? "text-accent-gold" : "text-accent-red"}>
-                      {item.returnRate}%
-                    </span>
-                  </td>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm min-w-[500px]">
+              <thead>
+                <tr className="border-b border-bg-border bg-bg-muted/40">
+                  <th className="text-left px-3 sm:px-4 py-2.5 sm:py-3 text-[10px] font-mono text-text-muted uppercase tracking-wider">Feature</th>
+                  <th className="text-left px-3 sm:px-4 py-2.5 sm:py-3 text-[10px] font-mono text-text-muted uppercase tracking-wider">First‑time Users</th>
+                  <th className="text-left px-3 sm:px-4 py-2.5 sm:py-3 text-[10px] font-mono text-text-muted uppercase tracking-wider">% of Total</th>
+                  <th className="text-left px-3 sm:px-4 py-2.5 sm:py-3 text-[10px] font-mono text-text-muted uppercase tracking-wider">Return Rate (D1)</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {firstFeatureRanked.map((item) => (
+                  <tr key={item.feature} className="border-b border-bg-border/40 hover:bg-bg-muted/20 transition-colors">
+                    <td className="px-3 sm:px-4 py-2 font-medium text-text-primary">{item.feature}</td>
+                    <td className="px-3 sm:px-4 py-2 font-mono text-sm text-text-secondary">{item.count}</td>
+                    <td className="px-3 sm:px-4 py-2 font-mono text-sm text-text-secondary">{item.pct}%</td>
+                    <td className="px-3 sm:px-4 py-2 font-mono text-sm">
+                      <span className={item.returnRate >= 60 ? "text-accent-green" : item.returnRate >= 30 ? "text-accent-gold" : "text-accent-red"}>
+                        {item.returnRate}%
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       ) : (
         <p className="text-sm text-text-muted py-6 text-center">No first‑feature data yet.</p>
@@ -766,36 +758,38 @@ function JourneyTab({ journeyData, loading }) {
       <SectionHead title="Recent User Journeys (last 200)" />
       {journeyRows.length ? (
         <div className="bg-bg-surface border border-bg-border rounded-2xl overflow-hidden max-h-96 overflow-y-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-bg-border bg-bg-muted/40 sticky top-0">
-                <th className="text-left px-4 py-2 text-[10px] font-mono text-text-muted uppercase tracking-wider">User</th>
-                <th className="text-left px-4 py-2 text-[10px] font-mono text-text-muted uppercase tracking-wider">Signed Up</th>
-                <th className="text-left px-4 py-2 text-[10px] font-mono text-text-muted uppercase tracking-wider">First Feature</th>
-                <th className="text-left px-4 py-2 text-[10px] font-mono text-text-muted uppercase tracking-wider">Second Feature</th>
-                <th className="text-left px-4 py-2 text-[10px] font-mono text-text-muted uppercase tracking-wider">Most Used</th>
-                <th className="text-left px-4 py-2 text-[10px] font-mono text-text-muted uppercase tracking-wider">Returned?</th>
-              </tr>
-            </thead>
-            <tbody>
-              {journeyRows.map((row) => (
-                <tr key={row.user_id} className="border-b border-bg-border/40 hover:bg-bg-muted/20 transition-colors">
-                  <td className="px-4 py-2 font-medium text-text-primary">{row.name}</td>
-                  <td className="px-4 py-2 font-mono text-xs text-text-muted">{relTime(row.signed_up)}</td>
-                  <td className="px-4 py-2 font-mono text-xs text-accent-blue">{row.first_feature || "—"}</td>
-                  <td className="px-4 py-2 font-mono text-xs text-text-muted">{row.second_feature || "—"}</td>
-                  <td className="px-4 py-2 font-mono text-xs text-text-muted">{row.most_used_feature || "—"}</td>
-                  <td className="px-4 py-2">
-                    {row.returned_next_day ? (
-                      <CheckCircle2 size={14} className="text-accent-green" />
-                    ) : (
-                      <X size={14} className="text-accent-red" />
-                    )}
-                  </td>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm min-w-[600px]">
+              <thead>
+                <tr className="border-b border-bg-border bg-bg-muted/40 sticky top-0">
+                  <th className="text-left px-3 sm:px-4 py-2 text-[10px] font-mono text-text-muted uppercase tracking-wider">User</th>
+                  <th className="text-left px-3 sm:px-4 py-2 text-[10px] font-mono text-text-muted uppercase tracking-wider">Signed Up</th>
+                  <th className="text-left px-3 sm:px-4 py-2 text-[10px] font-mono text-text-muted uppercase tracking-wider">First Feature</th>
+                  <th className="text-left px-3 sm:px-4 py-2 text-[10px] font-mono text-text-muted uppercase tracking-wider">Second Feature</th>
+                  <th className="text-left px-3 sm:px-4 py-2 text-[10px] font-mono text-text-muted uppercase tracking-wider">Most Used</th>
+                  <th className="text-left px-3 sm:px-4 py-2 text-[10px] font-mono text-text-muted uppercase tracking-wider">Returned?</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {journeyRows.map((row) => (
+                  <tr key={row.user_id} className="border-b border-bg-border/40 hover:bg-bg-muted/20 transition-colors">
+                    <td className="px-3 sm:px-4 py-2 font-medium text-text-primary">{row.name}</td>
+                    <td className="px-3 sm:px-4 py-2 font-mono text-xs text-text-muted">{relTime(row.signed_up)}</td>
+                    <td className="px-3 sm:px-4 py-2 font-mono text-xs text-accent-blue">{row.first_feature || "—"}</td>
+                    <td className="px-3 sm:px-4 py-2 font-mono text-xs text-text-muted">{row.second_feature || "—"}</td>
+                    <td className="px-3 sm:px-4 py-2 font-mono text-xs text-text-muted">{row.most_used_feature || "—"}</td>
+                    <td className="px-3 sm:px-4 py-2">
+                      {row.returned_next_day ? (
+                        <CheckCircle2 size={14} className="text-accent-green" />
+                      ) : (
+                        <X size={14} className="text-accent-red" />
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       ) : (
         <p className="text-sm text-text-muted py-6 text-center">No recent journeys.</p>
@@ -814,7 +808,7 @@ function SegmentsTab({ segments, loading }) {
   const { powerUsers, atRisk, dormant, newUsers, total } = segments;
 
   const renderSegment = (title, data, color, Icon) => (
-    <div className="bg-bg-surface border border-bg-border rounded-2xl p-4">
+    <div className="bg-bg-surface border border-bg-border rounded-2xl p-3 sm:p-4">
       <div className="flex items-center gap-2 mb-2">
         <Icon size={14} style={{ color }} />
         <h3 className="text-sm font-semibold text-text-primary">{title}</h3>
@@ -824,8 +818,8 @@ function SegmentsTab({ segments, loading }) {
         <div className="space-y-1 max-h-48 overflow-y-auto">
           {data.users.map((u) => (
             <div key={u.id} className="flex justify-between items-center text-xs border-b border-bg-border/30 py-1">
-              <span className="text-text-primary">{u.name}</span>
-              <span className="font-mono text-text-muted">{relTime(u.last_active)}</span>
+              <span className="text-text-primary truncate max-w-[60%]">{u.name}</span>
+              <span className="font-mono text-text-muted shrink-0">{relTime(u.last_active)}</span>
             </div>
           ))}
         </div>
@@ -838,7 +832,7 @@ function SegmentsTab({ segments, loading }) {
   return (
     <div className="space-y-4">
       <SectionHead title={`User Segments (${total} total)`} />
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {renderSegment("Power Users", powerUsers, "#4ade80", Zap)}
         {renderSegment("At Risk", atRisk, "#fbbf24", AlertTriangle)}
         {renderSegment("Dormant", dormant, "#f87171", X)}
@@ -869,7 +863,7 @@ function DiscoveryTab({ discovery, loading }) {
                   .sort((a, b) => b[1] - a[1])
                   .map(([feature, count]) => (
                     <div key={feature} className="flex items-center gap-2">
-                      <span className="text-sm font-medium text-text-primary w-32 truncate">{feature}</span>
+                      <span className="text-sm font-medium text-text-primary w-24 sm:w-32 truncate">{feature}</span>
                       <div className="flex-1 h-2 bg-bg-muted rounded-full overflow-hidden">
                         <div
                           className="h-full bg-accent-blue/70 rounded-full"
@@ -900,7 +894,7 @@ function DiscoveryTab({ discovery, loading }) {
                 <tbody>
                   {retentionByFeature.map((item) => (
                     <tr key={item.feature} className="border-b border-bg-border/30">
-                      <td className="py-1 text-text-primary">{item.feature}</td>
+                      <td className="py-1 text-text-primary truncate max-w-[120px]">{item.feature}</td>
                       <td className="py-1 text-right font-mono">
                         <span className={item.returnRate >= 60 ? "text-accent-green" : item.returnRate >= 30 ? "text-accent-gold" : "text-accent-red"}>
                           {item.returnRate}%
@@ -971,10 +965,10 @@ function InsightsTab({ insights, loading }) {
           const Icon = insight.type === "positive" ? Zap : insight.type === "warning" ? AlertTriangle : Info;
           const color = insight.type === "positive" ? "text-accent-green" : insight.type === "warning" ? "text-accent-gold" : "text-text-muted";
           return (
-            <div key={insight.id || i} className="bg-bg-surface border border-bg-border rounded-2xl p-5 flex flex-col gap-2">
+            <div key={insight.id || i} className="bg-bg-surface border border-bg-border rounded-2xl p-4 sm:p-5 flex flex-col gap-2">
               <div className="flex items-start gap-3">
-                <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 mt-0.5" style={{ background: `${color}15` }}>
-                  <Icon size={14} className={color} />
+                <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center shrink-0 mt-0.5" style={{ background: `${color}15` }}>
+                  <Icon size={13} className={color} />
                 </div>
                 <div>
                   <h3 className="text-sm font-semibold text-text-primary">{insight.title}</h3>
@@ -1002,19 +996,16 @@ function FeedbackTab({ stats, feedbackList, loading, onRefresh, onExport }) {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-wrap gap-2">
         <SectionHead title="Feedback Analytics" />
-        <div className="flex items-center gap-2">
-          <button onClick={onRefresh} disabled={loading}
-            className="flex items-center gap-1.5 text-xs text-text-muted hover:text-text-primary font-mono transition-colors">
-            <RefreshCw size={12} className={loading ? "animate-spin" : ""} />
-            Refresh
-          </button>
-        </div>
+        <button onClick={onRefresh} disabled={loading}
+          className="flex items-center gap-1.5 text-xs text-text-muted hover:text-text-primary font-mono transition-colors shrink-0">
+          <RefreshCw size={12} className={loading ? "animate-spin" : ""} />
+          <span className="hidden xs:inline">Refresh</span>
+        </button>
       </div>
 
-      {/* Stats cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3">
         <MetricCard icon={MessageCircle} label="Total Feedback" value={total} iconColor="#60a5fa" />
         <MetricCard
           icon={Star}
@@ -1030,7 +1021,6 @@ function FeedbackTab({ stats, feedbackList, loading, onRefresh, onExport }) {
         <MetricCard icon={TrendingUp} label="Best Feature" value={featureStats?.[0]?.feature || "—"} iconColor="#a78bfa" />
       </div>
 
-      {/* Feature satisfaction */}
       <div>
         <SectionHead title="Feature Satisfaction" />
         <div className="bg-bg-surface border border-bg-border rounded-2xl p-4">
@@ -1038,7 +1028,7 @@ function FeedbackTab({ stats, feedbackList, loading, onRefresh, onExport }) {
             <div className="space-y-2">
               {featureStats.map((f) => (
                 <div key={f.feature} className="flex items-center gap-2">
-                  <span className="text-sm font-medium text-text-primary w-32 truncate">{f.feature}</span>
+                  <span className="text-sm font-medium text-text-primary w-24 sm:w-32 truncate">{f.feature}</span>
                   <div className="flex-1 h-2 bg-bg-muted rounded-full overflow-hidden">
                     <div
                       className="h-full bg-accent-blue/70 rounded-full"
@@ -1060,7 +1050,6 @@ function FeedbackTab({ stats, feedbackList, loading, onRefresh, onExport }) {
         </div>
       </div>
 
-      {/* Most requested */}
       <div>
         <SectionHead title="Most Requested Features" />
         <div className="bg-bg-surface border border-bg-border rounded-2xl p-4">
@@ -1079,13 +1068,12 @@ function FeedbackTab({ stats, feedbackList, loading, onRefresh, onExport }) {
         </div>
       </div>
 
-      {/* Recent feedback feed */}
       <div>
         <SectionHead title="Recent Feedback" />
         <div className="bg-bg-surface border border-bg-border rounded-2xl divide-y divide-bg-border/50 max-h-96 overflow-y-auto">
           {feedbackList?.length ? (
             feedbackList.map((fb) => (
-              <div key={fb.id} className="px-4 py-3 hover:bg-bg-muted/20 transition-colors">
+              <div key={fb.id} className="px-3 sm:px-4 py-2.5 sm:py-3 hover:bg-bg-muted/20 transition-colors">
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
@@ -1095,7 +1083,7 @@ function FeedbackTab({ stats, feedbackList, loading, onRefresh, onExport }) {
                       <span className="text-xs font-mono text-text-muted bg-bg-muted px-1.5 py-0.5 rounded">
                         {fb.feature}
                       </span>
-                      <span className="text-xs text-text-muted">
+                      <span className="text-xs text-text-muted truncate max-w-[80px]">
                         {fb.User?.name || "Anonymous"}
                       </span>
                       {fb.wouldRecommend !== null && (
@@ -1104,7 +1092,7 @@ function FeedbackTab({ stats, feedbackList, loading, onRefresh, onExport }) {
                         </span>
                       )}
                     </div>
-                    <p className="text-sm text-text-secondary mt-1 line-clamp-2">
+                    <p className="text-sm text-text-secondary mt-1 line-clamp-2 break-words">
                       {fb.feedbackText?.slice(0, 180) || "No text"}
                     </p>
                   </div>
@@ -1142,9 +1130,9 @@ function UserProfileModal({ userId, onClose }) {
   if (!userId) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="bg-bg-surface border border-bg-border rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
-        <div className="sticky top-0 bg-bg-surface border-b border-bg-border px-6 py-4 flex items-center justify-between z-10">
+    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4">
+      <div className="bg-bg-surface border border-bg-border rounded-2xl max-w-4xl w-full max-h-[95vh] overflow-y-auto shadow-2xl">
+        <div className="sticky top-0 bg-bg-surface border-b border-bg-border px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between z-10">
           <h2 className="text-base font-display font-bold text-text-primary">User Profile</h2>
           <button onClick={onClose} className="p-1 rounded-lg hover:bg-bg-muted transition-colors">
             <X size={18} className="text-text-muted" />
@@ -1156,17 +1144,17 @@ function UserProfileModal({ userId, onClose }) {
         ) : error ? (
           <div className="p-6 text-center text-accent-red">{error}</div>
         ) : data ? (
-          <div className="p-6 space-y-6">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div><p className="text-[10px] font-mono text-text-muted uppercase">Name</p><p className="text-sm font-medium text-text-primary">{data.user?.name || "—"}</p></div>
-              <div><p className="text-[10px] font-mono text-text-muted uppercase">Email</p><p className="text-sm font-mono text-text-secondary">{data.user?.email || "—"}</p></div>
+          <div className="p-4 sm:p-6 space-y-6">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4">
+              <div><p className="text-[10px] font-mono text-text-muted uppercase">Name</p><p className="text-sm font-medium text-text-primary break-words">{data.user?.name || "—"}</p></div>
+              <div><p className="text-[10px] font-mono text-text-muted uppercase">Email</p><p className="text-sm font-mono text-text-secondary break-all">{data.user?.email || "—"}</p></div>
               <div><p className="text-[10px] font-mono text-text-muted uppercase">Streak</p><p className="text-sm font-mono text-accent-gold">{data.user?.streak || 0}</p></div>
               <div><p className="text-[10px] font-mono text-text-muted uppercase">Longest Streak</p><p className="text-sm font-mono text-text-secondary">{data.user?.longestStreak || 0}</p></div>
               <div><p className="text-[10px] font-mono text-text-muted uppercase">Study Hours</p><p className="text-sm font-mono text-text-secondary">{data.user?.totalStudyHours || 0}h</p></div>
               <div><p className="text-[10px] font-mono text-text-muted uppercase">Sessions</p><p className="text-sm font-mono text-text-secondary">{data.user?.totalSessions || 0}</p></div>
               <div><p className="text-[10px] font-mono text-text-muted uppercase">Days Active</p><p className="text-sm font-mono text-text-secondary">{data.user?.daysActive || 0}</p></div>
               <div><p className="text-[10px] font-mono text-text-muted uppercase">Returned Next Day</p><p className="text-sm font-mono">{data.user?.returnedNextDay ? <CheckCircle2 size={16} className="text-accent-green" /> : <X size={16} className="text-accent-red" />}</p></div>
-              <div><p className="text-[10px] font-mono text-text-muted uppercase">First Feature</p><p className="text-sm font-mono text-accent-blue">{data.user?.firstFeatureUsed || "—"}</p></div>
+              <div><p className="text-[10px] font-mono text-text-muted uppercase">First Feature</p><p className="text-sm font-mono text-accent-blue break-words">{data.user?.firstFeatureUsed || "—"}</p></div>
               <div><p className="text-[10px] font-mono text-text-muted uppercase">First Feature At</p><p className="text-sm font-mono text-text-muted">{data.user?.firstFeatureAt ? relTime(data.user.firstFeatureAt) : "—"}</p></div>
               <div><p className="text-[10px] font-mono text-text-muted uppercase">Last Active</p><p className="text-sm font-mono text-text-muted">{data.user?.lastActiveAt ? relTime(data.user.lastActiveAt) : "—"}</p></div>
               <div><p className="text-[10px] font-mono text-text-muted uppercase">Joined</p><p className="text-sm font-mono text-text-muted">{data.user?.joinedAt ? relTime(data.user.joinedAt) : "—"}</p></div>
@@ -1191,8 +1179,8 @@ function UserProfileModal({ userId, onClose }) {
               <h3 className="text-xs font-mono font-semibold text-text-muted uppercase tracking-wider mb-2">Session Timeline ({data.sessions?.length || 0} sessions)</h3>
               <div className="space-y-4 max-h-96 overflow-y-auto">
                 {data.sessions?.map((session, idx) => (
-                  <div key={idx} className="bg-bg-muted/30 border border-bg-border rounded-xl p-4">
-                    <div className="flex items-center justify-between text-xs text-text-muted mb-2">
+                  <div key={idx} className="bg-bg-muted/30 border border-bg-border rounded-xl p-3 sm:p-4">
+                    <div className="flex flex-wrap items-center justify-between text-xs text-text-muted mb-2 gap-1">
                       <span className="font-mono">{new Date(session.startedAt).toLocaleString()}</span>
                       <span>{session.durationMin}m · {session.eventCount} events</span>
                     </div>
@@ -1206,7 +1194,7 @@ function UserProfileModal({ userId, onClose }) {
                             <div className="w-5 h-5 rounded-full flex items-center justify-center shrink-0" style={{ background: `${meta.color}15` }}>
                               <Icon size={10} style={{ color: meta.color }} />
                             </div>
-                            <span className="text-text-secondary">{meta.label}</span>
+                            <span className="text-text-secondary break-words">{meta.label}</span>
                             {ev.featureName && <span className="text-text-muted text-xs font-mono">· {ev.featureName}</span>}
                           </div>
                         );
@@ -1442,15 +1430,15 @@ const fetchFeedback = useCallback(async () => {
   ];
 
   return (
-    <div className="px-4 sm:px-6 lg:px-8 py-6 max-w-7xl mx-auto">
-      <div className="flex items-center justify-between gap-3 mb-6">
+    <div className="px-3 sm:px-4 lg:px-8 py-4 sm:py-6 max-w-7xl mx-auto">
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-accent-red/10 border border-accent-red/20 flex items-center justify-center shrink-0">
-            <Shield size={16} className="text-accent-red" />
+          <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-accent-red/10 border border-accent-red/20 flex items-center justify-center shrink-0">
+            <Shield size={15} className="text-accent-red" />
           </div>
           <div>
-            <h1 className="text-base font-display font-bold text-text-primary">Admin Panel</h1>
-            <p className="text-xs text-text-muted font-mono">Logged in as {storedUser.email}</p>
+            <h1 className="text-base sm:text-lg font-display font-bold text-text-primary">Admin Panel</h1>
+            <p className="text-[10px] sm:text-xs text-text-muted font-mono truncate max-w-[160px] sm:max-w-full">Logged in as {storedUser.email}</p>
           </div>
         </div>
         <button
@@ -1471,23 +1459,23 @@ const fetchFeedback = useCallback(async () => {
             feedbackStats,
             feedbackList,
           })}
-          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-accent-gold/10 border border-accent-gold/30 text-accent-gold hover:bg-accent-gold/20 transition-colors text-sm font-mono"
+          className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl bg-accent-gold/10 border border-accent-gold/30 text-accent-gold hover:bg-accent-gold/20 transition-colors text-xs sm:text-sm font-mono"
         >
-          <Download size={14} />
-          Download Full Report
+          <Download size={13} />
+          <span className="hidden xs:inline">Download Full Report</span>
         </button>
       </div>
 
-      <div className="flex gap-1 p-1 bg-bg-muted border border-bg-border rounded-xl mb-6 w-fit overflow-x-auto">
+      <div className="flex gap-1 p-1 bg-bg-muted border border-bg-border rounded-xl mb-6 w-fit overflow-x-auto max-w-full">
         {TABS.map(({ id, label, icon: Icon }) => (
           <button key={id} onClick={() => setTab(id)}
-            className={`flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-mono transition-all whitespace-nowrap
+            className={`flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-lg text-[10px] sm:text-sm font-mono transition-all whitespace-nowrap
               ${tab === id
                 ? "bg-bg-surface text-text-primary shadow-sm border border-bg-border"
                 : "text-text-muted hover:text-text-secondary"}`}>
-            <Icon size={13} />
-            <span className="hidden sm:inline">{label}</span>
-            <span className="sm:hidden">{label.slice(0, 3)}</span>
+            <Icon size={12} />
+            <span className="hidden xs:inline">{label}</span>
+            <span className="xs:hidden">{label.slice(0, 4)}</span>
           </button>
         ))}
       </div>
@@ -1541,7 +1529,8 @@ const fetchFeedback = useCallback(async () => {
       {profileUserId && (
         <UserProfileModal userId={profileUserId} onClose={closeProfile} />
       )}
- <AdminStudyAnalytics />
+      <br/>
+      <AdminStudyAnalytics />
       {toast && <Toast msg={toast.msg} type={toast.type} onClose={() => setToast(null)} />}
     </div>
   );
