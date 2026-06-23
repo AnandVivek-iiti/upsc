@@ -38,7 +38,15 @@ async function request(url, options = {}) {
       json?.error ||
       (rawText && rawText.length < 200 ? rawText : null) ||
       `Request failed (${res.status} ${res.statusText || ""})`.trim();
-    throw new Error(message);
+    const err = new Error(message);
+    // Attach any extra flags from the JSON body so callers can branch on them.
+    // e.g. extraction_failed: true  →  AIEvaluatorPanel shows "try a clearer photo"
+    if (json && typeof json === "object") {
+      Object.keys(json).forEach((k) => {
+        if (k !== "error" && k !== "success") err[k] = json[k];
+      });
+    }
+    throw err;
   }
 
   if (json === null) {
@@ -54,6 +62,27 @@ export async function evaluateAnswer({ question, answer, paper }) {
     method: "POST",
     headers: authHeaders(),
     body: JSON.stringify({ question, answer, paper }),
+  });
+}
+
+// ─── POST /api/evaluate/answer (handwritten image) ───────────────────────────
+// Same endpoint — the controller branches on the presence of `image.data`.
+// `image` must be the full data URI from FileReader.readAsDataURL(), e.g.
+// "data:image/jpeg;base64,/9j/4AAQ…"  (JPG · JPEG · PNG · WEBP, max 10 MB).
+//
+// On unreadable handwriting the backend returns HTTP 422 with
+// { success: false, extraction_failed: true }.  The request() helper above
+// attaches all extra JSON fields onto the thrown Error, so callers can do:
+//   catch (e) { if (e.extraction_failed) showClearerPhotoPrompt(); }
+export async function evaluateAnswerImage({ question, paper, image }) {
+  return request(`${BASE}/evaluate/answer`, {
+    method: "POST",
+    headers: authHeaders(),
+    body: JSON.stringify({
+      question,
+      paper,
+      image: { data: image }, // full data URI — parseImageDataUri() on the server splits mimeType + base64
+    }),
   });
 }
 export async function chatWithMentor({ message, contextHint = "", threadId = null }) {

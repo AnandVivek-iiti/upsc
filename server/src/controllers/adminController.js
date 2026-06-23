@@ -33,6 +33,16 @@ const ALL_FEATURES = [
   "PYQs", "Mock Tests", "AI Evaluator",
 ];
 
+// ─── Test-account exclusions ──────────────────────────────────────────────────
+const EXCL_NAMES     = ["admin", "anand vivek"];
+const EXCL_SQL       = EXCL_NAMES.map(n => `'${n}'`).join(", ");
+// For raw SQL where users table is aliased as u:
+const EXCL_USER_COND = `LOWER(u.name) NOT IN (${EXCL_SQL})`;
+// For raw SQL where users table has no alias:
+const EXCL_NAME_COND = `LOWER(name) NOT IN (${EXCL_SQL})`;
+// For UserEvents queries (filter by user_id subquery):
+const EXCL_UID_COND  = `user_id NOT IN (SELECT id FROM "users" WHERE LOWER(name) IN (${EXCL_SQL}))`;
+
 // ─── GET /api/admin/metrics ───────────────────────────────────────────────────
 const getMetrics = async (req, res, next) => {
   try {
@@ -45,35 +55,35 @@ const getMetrics = async (req, res, next) => {
     const mauStart   = daysAgo(30);
 
     const [totalUsers, todaySignups, dauRaw] = await Promise.all([
-      User.count({ where: { role: "user" } }),
-      User.count({ where: { role: "user", createdAt: { [Op.gte]: todayStart } } }),
+      User.count({ where: { role: "user", [Op.and]: sequelize.literal(EXCL_NAME_COND) } }),
+      User.count({ where: { role: "user", createdAt: { [Op.gte]: todayStart }, [Op.and]: sequelize.literal(EXCL_NAME_COND) } }),
       UserEvents.count({
         distinct: true, col: "user_id",
-        where: { created_at: { [Op.gte]: todayStart } },
+        where: { created_at: { [Op.gte]: todayStart }, [Op.and]: sequelize.literal(EXCL_UID_COND) },
       }),
     ]);
 
     const [wauRaw, mauRaw] = await Promise.all([
-      UserEvents.count({ distinct: true, col: "user_id", where: { created_at: { [Op.gte]: wauStart } } }),
-      UserEvents.count({ distinct: true, col: "user_id", where: { created_at: { [Op.gte]: mauStart } } }),
+      UserEvents.count({ distinct: true, col: "user_id", where: { created_at: { [Op.gte]: wauStart }, [Op.and]: sequelize.literal(EXCL_UID_COND) } }),
+      UserEvents.count({ distinct: true, col: "user_id", where: { created_at: { [Op.gte]: mauStart }, [Op.and]: sequelize.literal(EXCL_UID_COND) } }),
     ]);
 
     const [usedAnyFeature, used3Plus, used5Plus] = await Promise.all([
       sequelize.query(
-        `SELECT COUNT(*) AS cnt FROM (SELECT user_id FROM "UserEvents" WHERE feature_name IS NOT NULL GROUP BY user_id HAVING COUNT(DISTINCT feature_name) >= 1) sub`,
+        `SELECT COUNT(*) AS cnt FROM (SELECT user_id FROM "UserEvents" WHERE feature_name IS NOT NULL AND ${EXCL_UID_COND} GROUP BY user_id HAVING COUNT(DISTINCT feature_name) >= 1) sub`,
         { type: QueryTypes.SELECT }
       ).then(r => parseInt(r[0]?.cnt || 0)),
       sequelize.query(
-        `SELECT COUNT(*) AS cnt FROM (SELECT user_id FROM "UserEvents" WHERE feature_name IS NOT NULL GROUP BY user_id HAVING COUNT(DISTINCT feature_name) >= 3) sub`,
+        `SELECT COUNT(*) AS cnt FROM (SELECT user_id FROM "UserEvents" WHERE feature_name IS NOT NULL AND ${EXCL_UID_COND} GROUP BY user_id HAVING COUNT(DISTINCT feature_name) >= 3) sub`,
         { type: QueryTypes.SELECT }
       ).then(r => parseInt(r[0]?.cnt || 0)),
       sequelize.query(
-        `SELECT COUNT(*) AS cnt FROM (SELECT user_id FROM "UserEvents" WHERE feature_name IS NOT NULL GROUP BY user_id HAVING COUNT(DISTINCT feature_name) >= 5) sub`,
+        `SELECT COUNT(*) AS cnt FROM (SELECT user_id FROM "UserEvents" WHERE feature_name IS NOT NULL AND ${EXCL_UID_COND} GROUP BY user_id HAVING COUNT(DISTINCT feature_name) >= 5) sub`,
         { type: QueryTypes.SELECT }
       ).then(r => parseInt(r[0]?.cnt || 0)),
     ]);
 
-    const countEvent = (type) => UserEvents.count({ where: { event_type: type } });
+    const countEvent = (type) => UserEvents.count({ where: { event_type: type, [Op.and]: sequelize.literal(EXCL_UID_COND) } });
     const [answersEvaluated, notesAudited, testsAttempted, aiMentorConversations] = await Promise.all([
       countEvent("answer_evaluated"),
       countEvent("notes_audited"),
@@ -81,7 +91,10 @@ const getMetrics = async (req, res, next) => {
       countEvent("mentor_open"),
     ]);
 
-    const allUD = await UserData.findAll({ attributes: ["daily_logs"] });
+    const allUD = await UserData.findAll({
+      where: { [Op.and]: sequelize.literal(`user_id NOT IN (SELECT id FROM "users" WHERE LOWER(name) IN (${EXCL_SQL}))`) },
+      attributes: ["daily_logs"],
+    });
     let totalStudyHours = 0;
     allUD.forEach((ud) => {
       if (Array.isArray(ud.daily_logs)) {
@@ -89,15 +102,15 @@ const getMetrics = async (req, res, next) => {
       }
     });
     const avgStudyHours = allUD.length > 0 ? parseFloat((totalStudyHours / allUD.length).toFixed(1)) : 0;
-    const activeStreakUsers = await User.count({ where: { role: "user", streak: { [Op.gt]: 0 } } });
+    const activeStreakUsers = await User.count({ where: { role: "user", streak: { [Op.gt]: 0 }, [Op.and]: sequelize.literal(EXCL_NAME_COND) } });
 
     const [d1Rows, d7Rows] = await Promise.all([
       sequelize.query(
-        `SELECT COUNT(DISTINCT ue.user_id) AS cnt FROM "UserEvents" ue JOIN "users" u ON u.id = ue.user_id WHERE ue.event_type = 'day_return' AND ue.created_at <= u.created_at + INTERVAL '2 days'`,
+        `SELECT COUNT(DISTINCT ue.user_id) AS cnt FROM "UserEvents" ue JOIN "users" u ON u.id = ue.user_id WHERE ue.event_type = 'day_return' AND ue.created_at <= u.created_at + INTERVAL '2 days' AND ${EXCL_USER_COND}`,
         { type: QueryTypes.SELECT }
       ),
       sequelize.query(
-        `SELECT COUNT(DISTINCT ue.user_id) AS cnt FROM "UserEvents" ue JOIN "users" u ON u.id = ue.user_id WHERE ue.event_type = 'day_return' AND ue.created_at <= u.created_at + INTERVAL '7 days'`,
+        `SELECT COUNT(DISTINCT ue.user_id) AS cnt FROM "UserEvents" ue JOIN "users" u ON u.id = ue.user_id WHERE ue.event_type = 'day_return' AND ue.created_at <= u.created_at + INTERVAL '7 days' AND ${EXCL_USER_COND}`,
         { type: QueryTypes.SELECT }
       ),
     ]);
@@ -107,7 +120,7 @@ const getMetrics = async (req, res, next) => {
     const yesterdayStart = startOfDay(daysAgo(1));
     const dau_prev = await UserEvents.count({
       distinct: true, col: "user_id",
-      where: { created_at: { [Op.gte]: yesterdayStart, [Op.lt]: todayStart } },
+      where: { created_at: { [Op.gte]: yesterdayStart, [Op.lt]: todayStart }, [Op.and]: sequelize.literal(EXCL_UID_COND) },
     });
 
     const metrics = {
@@ -183,14 +196,14 @@ const listUsers = async (req, res, next) => {
          CROSS JOIN LATERAL jsonb_array_elements(COALESCE(ud.daily_logs, '[]'::jsonb)) AS log
          GROUP BY ud.user_id
        ) daily ON daily.user_id = u.id
-       WHERE u.role = 'user'
+       WHERE u.role = 'user' AND ${EXCL_USER_COND}
        ORDER BY ${sortCol} ${dir}
        LIMIT :limit OFFSET :offset`,
       { replacements: { limit, offset }, type: QueryTypes.SELECT }
     );
 
     const [{ total }] = await sequelize.query(
-      `SELECT COUNT(*) AS total FROM "users" WHERE role = 'user'`,
+      `SELECT COUNT(*) AS total FROM "users" WHERE role = 'user' AND ${EXCL_NAME_COND}`,
       { type: QueryTypes.SELECT }
     );
 
@@ -203,7 +216,7 @@ const listUsers = async (req, res, next) => {
 // ─── GET /api/admin/funnel ────────────────────────────────────────────────────
 const getFunnel = async (req, res, next) => {
   try {
-    const totalUsers = await User.count({ where: { role: "user" } });
+    const totalUsers = await User.count({ where: { role: "user", [Op.and]: sequelize.literal(EXCL_NAME_COND) } });
 
     const steps = [
       { label: "Registered",          event: null },
@@ -216,7 +229,7 @@ const getFunnel = async (req, res, next) => {
 
     const counts = await Promise.all(steps.map(async (s) => {
       if (!s.event) return totalUsers;
-      return UserEvents.count({ distinct: true, col: "user_id", where: { event_type: s.event } });
+      return UserEvents.count({ distinct: true, col: "user_id", where: { event_type: s.event, [Op.and]: sequelize.literal(EXCL_UID_COND) } });
     }));
 
     const funnel = steps.map((s, i) => {
@@ -251,7 +264,7 @@ const getFeatureAnalytics = async (req, res, next) => {
          LEAD(created_at) OVER (PARTITION BY user_id ORDER BY created_at) - created_at
        )) / 60 AS time_diff_minutes
      FROM "UserEvents"
-     WHERE feature_name IS NOT NULL
+     WHERE feature_name IS NOT NULL AND ${EXCL_UID_COND}
    ) sub
    WHERE time_diff_minutes IS NOT NULL
    GROUP BY feature_name`,
@@ -274,7 +287,7 @@ const getFeatureAnalytics = async (req, res, next) => {
           `SELECT u.name, u.email, COUNT(*) AS uses
            FROM "UserEvents" ue
            JOIN "users" u ON u.id = ue.user_id
-           WHERE ue.feature_name = :name
+           WHERE ue.feature_name = :name AND ${EXCL_USER_COND}
            GROUP BY u.id, u.name, u.email
            ORDER BY uses DESC LIMIT 3`,
           { replacements: { name }, type: QueryTypes.SELECT }
@@ -305,6 +318,7 @@ const getActivity = async (req, res, next) => {
       `SELECT ue.id, ue.event_type, ue.feature_name, ue.metadata, ue.created_at, u.name AS user_name
        FROM "UserEvents" ue
        LEFT JOIN "users" u ON u.id = ue.user_id
+       WHERE ue.user_id NOT IN (SELECT id FROM "users" WHERE LOWER(name) IN (${EXCL_SQL}))
        ORDER BY ue.created_at DESC LIMIT 50`,
       { type: QueryTypes.SELECT }
     );
@@ -317,11 +331,12 @@ const getActivity = async (req, res, next) => {
 // ─── GET /api/admin/retention ─────────────────────────────────────────────────
 const getRetention = async (req, res, next) => {
   try {
-    const totalUsers = await User.count({ where: { role: "user" } });
+    const totalUsers = await User.count({ where: { role: "user", [Op.and]: sequelize.literal(EXCL_NAME_COND) } });
 
     const retentionQuery = (days) => sequelize.query(
       `SELECT COUNT(DISTINCT ue.user_id) AS cnt FROM "UserEvents" ue JOIN "users" u ON u.id = ue.user_id
-       WHERE u.role = 'user' AND ue.created_at >= u.created_at + INTERVAL '1 day'
+       WHERE u.role = 'user' AND ${EXCL_USER_COND}
+         AND ue.created_at >= u.created_at + INTERVAL '1 day'
          AND ue.created_at <= u.created_at + INTERVAL '${days + 1} days'`,
       { type: QueryTypes.SELECT }
     ).then(r => parseInt(r[0]?.cnt || 0));
@@ -333,9 +348,11 @@ const getRetention = async (req, res, next) => {
 
     const cohortRows = await sequelize.query(
       `WITH cohorts AS (
-         SELECT id AS user_id, DATE_TRUNC('week', created_at) AS cohort_week FROM "users" WHERE role = 'user'
+         SELECT id AS user_id, DATE_TRUNC('week', created_at) AS cohort_week FROM "users" WHERE role = 'user' AND ${EXCL_NAME_COND}
        ), activity AS (
-         SELECT ue.user_id, DATE_TRUNC('week', ue.created_at) AS active_week FROM "UserEvents" ue GROUP BY ue.user_id, DATE_TRUNC('week', ue.created_at)
+         SELECT ue.user_id, DATE_TRUNC('week', ue.created_at) AS active_week FROM "UserEvents" ue
+         WHERE ue.user_id NOT IN (SELECT id FROM "users" WHERE LOWER(name) IN (${EXCL_SQL}))
+         GROUP BY ue.user_id, DATE_TRUNC('week', ue.created_at)
        )
        SELECT
          TO_CHAR(c.cohort_week, 'YYYY-MM-DD') AS cohort_week,
@@ -362,7 +379,7 @@ const getRetention = async (req, res, next) => {
       `SELECT u.id, u.name, u.email, u.streak, ev.last_active
        FROM "users" u
        LEFT JOIN (SELECT user_id, MAX(created_at) AS last_active FROM "UserEvents" GROUP BY user_id) ev ON ev.user_id = u.id
-       WHERE u.role = 'user' AND (ev.last_active IS NULL OR ev.last_active < NOW() - INTERVAL '7 days')
+       WHERE u.role = 'user' AND ${EXCL_USER_COND} AND (ev.last_active IS NULL OR ev.last_active < NOW() - INTERVAL '7 days')
        ORDER BY ev.last_active ASC NULLS FIRST LIMIT 20`,
       { type: QueryTypes.SELECT }
     );
@@ -414,7 +431,7 @@ const getJourney = async (req, res, next) => {
        LEFT JOIN ordered f2 ON f2.user_id = u.id AND f2.rn = 2
        LEFT JOIN most_used mu ON mu.user_id = u.id
        LEFT JOIN returned r ON r.user_id = u.id
-       WHERE u.role = 'user'
+       WHERE u.role = 'user' AND ${EXCL_USER_COND}
        ORDER BY u.created_at DESC
        LIMIT 200`,
       { type: QueryTypes.SELECT }
@@ -459,7 +476,7 @@ const getUserSessions = async (req, res, next) => {
   try {
     const { userId } = req.params;
 
-    const user = await User.findOne({ where: { id: userId, role: "user" }, attributes: ["id", "name", "email", "streak", "longest_streak", "created_at"] });
+    const user = await User.findOne({ where: { id: userId, role: "user", [Op.and]: sequelize.literal(EXCL_NAME_COND) }, attributes: ["id", "name", "email", "streak", "longest_streak", "created_at"] });
     if (!user) return res.status(404).json({ success: false, error: "User not found." });
 
     // All events for this user, ordered chronologically
@@ -570,7 +587,7 @@ const getSegments = async (req, res, next) => {
          SELECT user_id, MAX(created_at) AS last_active, COUNT(DISTINCT DATE(created_at)) AS days_active
          FROM "UserEvents" GROUP BY user_id
        ) ev ON ev.user_id = u.id
-       WHERE u.role = 'user'`,
+       WHERE u.role = 'user' AND ${EXCL_USER_COND}`,
       { type: QueryTypes.SELECT }
     );
 
@@ -620,6 +637,7 @@ const getDiscovery = async (req, res, next) => {
          (ARRAY_AGG(feature_name ORDER BY created_at ASC) FILTER (WHERE feature_name IS NOT NULL))[1] AS first_feature,
          COUNT(*) AS cnt
        FROM "UserEvents"
+       WHERE ${EXCL_UID_COND}
        GROUP BY user_id`,
       { type: QueryTypes.SELECT }
     );
@@ -637,6 +655,7 @@ const getDiscovery = async (req, res, next) => {
        FROM "UserEvents" ue
        WHERE ue.feature_name IS NOT NULL
          AND ue.user_id IN (SELECT DISTINCT user_id FROM "UserEvents" WHERE event_type = 'day_return')
+         AND ue.user_id NOT IN (SELECT id FROM "users" WHERE LOWER(name) IN (${EXCL_SQL}))
        GROUP BY ue.feature_name
        ORDER BY users_who_returned DESC`,
       { type: QueryTypes.SELECT }
@@ -645,15 +664,15 @@ const getDiscovery = async (req, res, next) => {
     // Total unique users per feature (for rate calculation)
     const featureUserRows = await sequelize.query(
       `SELECT feature_name, COUNT(DISTINCT user_id) AS total_users FROM "UserEvents"
-       WHERE feature_name IS NOT NULL GROUP BY feature_name`,
+       WHERE feature_name IS NOT NULL AND ${EXCL_UID_COND} GROUP BY feature_name`,
       { type: QueryTypes.SELECT }
     );
     const featureTotals = {};
     featureUserRows.forEach((r) => { featureTotals[r.feature_name] = parseInt(r.total_users); });
 
     // Total users who returned
-    const totalReturners = await UserEvents.count({ distinct: true, col: "user_id", where: { event_type: "day_return" } });
-    const totalUsers = await User.count({ where: { role: "user" } });
+    const totalReturners = await UserEvents.count({ distinct: true, col: "user_id", where: { event_type: "day_return", [Op.and]: sequelize.literal(EXCL_UID_COND) } });
+    const totalUsers = await User.count({ where: { role: "user", [Op.and]: sequelize.literal(EXCL_NAME_COND) } });
 
     // Retention rate per feature: among users who used feature X, what % returned?
     const retentionByFeature = returnFeatureRows.map((r) => {
@@ -676,12 +695,15 @@ const getDiscovery = async (req, res, next) => {
     const causeOfReturnRows = await sequelize.query(
       `WITH first_return AS (
          SELECT user_id, MIN(created_at) AS return_at FROM "UserEvents"
-         WHERE event_type = 'day_return' GROUP BY user_id
+         WHERE event_type = 'day_return'
+           AND user_id NOT IN (SELECT id FROM "users" WHERE LOWER(name) IN (${EXCL_SQL}))
+         GROUP BY user_id
        )
        SELECT ue.feature_name, COUNT(DISTINCT ue.user_id) AS cnt
        FROM "UserEvents" ue
        JOIN first_return fr ON fr.user_id = ue.user_id
        WHERE ue.feature_name IS NOT NULL AND ue.created_at < fr.return_at
+         AND ue.user_id NOT IN (SELECT id FROM "users" WHERE LOWER(name) IN (${EXCL_SQL}))
        GROUP BY ue.feature_name ORDER BY cnt DESC LIMIT 5`,
       { type: QueryTypes.SELECT }
     );
@@ -707,7 +729,7 @@ const getInsights = async (req, res, next) => {
     const cached = getCached("insights");
     if (cached) return res.json({ success: true, insights: cached });
 
-    const totalUsers = await User.count({ where: { role: "user" } });
+    const totalUsers = await User.count({ where: { role: "user", [Op.and]: sequelize.literal(EXCL_NAME_COND) } });
     if (totalUsers === 0) return res.json({ success: true, insights: [] });
 
     // Parallel queries for all insight data
@@ -725,17 +747,18 @@ const getInsights = async (req, res, next) => {
          FROM "UserEvents" ue
          WHERE ue.feature_name IS NOT NULL
            AND ue.user_id IN (SELECT DISTINCT user_id FROM "UserEvents" WHERE event_type = 'day_return')
+           AND ue.user_id NOT IN (SELECT id FROM "users" WHERE LOWER(name) IN (${EXCL_SQL}))
          GROUP BY ue.feature_name`,
         { type: QueryTypes.SELECT }
       ),
       // Total unique users per feature
       sequelize.query(
         `SELECT feature_name, COUNT(DISTINCT user_id) AS total FROM "UserEvents"
-         WHERE feature_name IS NOT NULL GROUP BY feature_name`,
+         WHERE feature_name IS NOT NULL AND ${EXCL_UID_COND} GROUP BY feature_name`,
         { type: QueryTypes.SELECT }
       ),
       // Total users who returned at least once
-      UserEvents.count({ distinct: true, col: "user_id", where: { event_type: "day_return" } }),
+      UserEvents.count({ distinct: true, col: "user_id", where: { event_type: "day_return", [Op.and]: sequelize.literal(EXCL_UID_COND) } }),
       // Features with high drop-off: used once by many but rarely again
       sequelize.query(
         `SELECT feature_name,
@@ -743,7 +766,7 @@ const getInsights = async (req, res, next) => {
            COUNT(DISTINCT user_id) AS total
          FROM (
            SELECT user_id, feature_name, COUNT(*) AS use_count
-           FROM "UserEvents" WHERE feature_name IS NOT NULL
+           FROM "UserEvents" WHERE feature_name IS NOT NULL AND ${EXCL_UID_COND}
            GROUP BY user_id, feature_name
          ) sub
          GROUP BY feature_name
@@ -754,14 +777,14 @@ const getInsights = async (req, res, next) => {
       sequelize.query(
         `SELECT AVG(cnt)::numeric(4,1) AS avg_features FROM (
            SELECT user_id, COUNT(DISTINCT feature_name) AS cnt FROM "UserEvents"
-           WHERE feature_name IS NOT NULL GROUP BY user_id
+           WHERE feature_name IS NOT NULL AND ${EXCL_UID_COND} GROUP BY user_id
          ) sub`,
         { type: QueryTypes.SELECT }
       ),
       // Most engaging feature by avg uses per user
       sequelize.query(
         `SELECT feature_name, COUNT(*)::float / COUNT(DISTINCT user_id) AS avg_uses
-         FROM "UserEvents" WHERE feature_name IS NOT NULL
+         FROM "UserEvents" WHERE feature_name IS NOT NULL AND ${EXCL_UID_COND}
          GROUP BY feature_name ORDER BY avg_uses DESC LIMIT 1`,
         { type: QueryTypes.SELECT }
       ),
@@ -860,6 +883,7 @@ const getInsights = async (req, res, next) => {
     const powerUserCount = await sequelize.query(
       `SELECT COUNT(*) AS cnt FROM (
          SELECT user_id FROM "UserEvents"
+         WHERE ${EXCL_UID_COND}
          GROUP BY user_id HAVING COUNT(DISTINCT DATE(created_at)) >= 3
            AND MAX(created_at) >= NOW() - INTERVAL '3 days'
        ) sub`,

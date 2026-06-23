@@ -24,6 +24,7 @@ const adminRoutes     = require("./routes/adminRoutes");
 const testRoutes      = require("./routes/testRoutes");
 const notesRoutes     = require("./routes/notesRoutes");
 const feedbackRoutes = require("./routes/feedbackRoutes");
+const subjectSessionRoutes = require("./routes/subjectSessionRoutes");
 const { initSocket } = require("./socket/socketManager");
 
 // ─── Build Express app ────────────────────────────────────────────────────────
@@ -84,6 +85,7 @@ app.use("/api/admin",     adminRoutes);
 app.use("/api/tests",     testRoutes);
 app.use("/api/notes",     notesRoutes);
 app.use("/api/feedback", feedbackRoutes);
+ app.use("/api/subject-sessions",subjectSessionRoutes);
 
 // ─── 404 & Error Handlers ─────────────────────────────────────────────────────
 app.use(notFound);

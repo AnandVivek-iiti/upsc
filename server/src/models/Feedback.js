@@ -1,5 +1,6 @@
 const { DataTypes } = require("sequelize");
 const { sequelize } = require("../config/db");
+const User = require("./User");
 
 const Feedback = sequelize.define(
   "Feedback",
@@ -11,7 +12,7 @@ const Feedback = sequelize.define(
     },
     userId: {
       type: DataTypes.UUID,
-      allowNull: true, 
+      allowNull: true,
       references: {
         model: "users",
         key: "id",
@@ -86,5 +87,6 @@ const Feedback = sequelize.define(
     ],
   }
 );
+Feedback.belongsTo(User, { foreignKey: "userId" });
 
 module.exports = Feedback;

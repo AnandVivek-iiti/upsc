@@ -1,6 +1,7 @@
-const { Feedback, User } = require("../models/Feedback");
+const { sequelize } = require("../config/db");
+const Feedback = require("../models/Feedback");
+const User = require("../models/User");
 const { Op } = require("sequelize");
-
 // ─── Submit feedback ────────────────────────────────────────────────────────
 exports.submitFeedback = async (req, res) => {
   try {

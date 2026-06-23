@@ -1,7 +1,7 @@
 
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
-import { useQuestionAttempts } from "../hooks/useQuestionAttempts";
-import { submitTestResult } from "../hooks/useAI";
+import { useQuestionAttempts } from "../../hooks/useQuestionAttempts";
+import { submitTestResult } from "../../hooks/useAI";
 
 import {
   Clock,

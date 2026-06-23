@@ -1,45 +1,45 @@
 import { useState, useMemo, useCallback, useEffect } from "react";
 import { Archive, Link2, Sparkles, BookOpen, Library, PenSquare } from "lucide-react";
-import { useRevisionQueue } from "../hooks/useRevisionQueue";
-import { useQuestionAttempts } from "../hooks/useQuestionAttempts";
-import ResourceLibrary from "./ResourceLibrary";
-import AddCustomQuestion from "../components/QuestionStats";
-import AIMentorChat from "./AI/AIMentorChat";
+import { useRevisionQueue } from "../../hooks/useRevisionQueue";
+import { useQuestionAttempts } from "../../hooks/useQuestionAttempts";
+import ResourceLibrary from "../User/ResourceLibrary";
+import AddCustomQuestion from "../../components/QuestionStats";
+import AIMentorChat from "../AI/AIMentorChat";
 
 // ─── MAINS DATA IMPORTS ─────────────────────────────────────────────────────────
-import mainsGS1Data from "../data/Subjectwise/mains/2025/GS1";
-import mainsGS2Data from "../data/Subjectwise/mains/2025/GS2";
-import mainsGS3Data from "../data/Subjectwise/mains/2025/GS3";
-import mainsGS4Data from "../data/Subjectwise/mains/2025/GS4";
-import mainsGS1Data24 from "../data/Subjectwise/mains/2024/GS1";
-import mainsGS2Data24 from "../data/Subjectwise/mains/2024/GS2";
-import mainsGS3Data24 from "../data/Subjectwise/mains/2024/GS3";
-import mainsGS4Data24 from "../data/Subjectwise/mains/2024/GS4";
+import mainsGS1Data from "../../data/Subjectwise/mains/2025/GS1";
+import mainsGS2Data from "../../data/Subjectwise/mains/2025/GS2";
+import mainsGS3Data from "../../data/Subjectwise/mains/2025/GS3";
+import mainsGS4Data from "../../data/Subjectwise/mains/2025/GS4";
+import mainsGS1Data24 from "../../data/Subjectwise/mains/2024/GS1";
+import mainsGS2Data24 from "../../data/Subjectwise/mains/2024/GS2";
+import mainsGS3Data24 from "../../data/Subjectwise/mains/2024/GS3";
+import mainsGS4Data24 from "../../data/Subjectwise/mains/2024/GS4";
 
 // ─── PRELIMS DATA IMPORTS ─────────────────────────────────────────────────────
-import reasoningCSATData    from "../data/Subjectwise/pre/CSAT/reasoningCSATData";
-import ComprehensionPYQData from "../data/Subjectwise/pre/CSAT/ComprehensionPYQData";
-import MathsData            from "../data/Subjectwise/pre/CSAT/Maths";
-import HistoryData          from "../data/Subjectwise/pre/GS/History";
-import ModernHistoryData    from "../data/Subjectwise/pre/GS/Modernhistory";
-import PolityData           from "../data/Subjectwise/pre/GS/Polity";
-import EconomyData          from "../data/Subjectwise/pre/GS/Economy";
-import GeographyData        from "../data/Subjectwise/pre/GS/Geography";
-import EnvEcologyData       from "../data/Subjectwise/pre/GS/envEcology";
-import SciTechData          from "../data/Subjectwise/pre/GS/scienceTechnologyPYQData";
-import ArtCultureData       from "../data/Subjectwise/pre/GS/artCulturePYQData";
-import SocialIssuesData     from "../data/Subjectwise/pre/GS/Socialissues";
-import IRYData              from "../data/Subjectwise/pre/GS/irypyq";
+import reasoningCSATData    from "../../data/Subjectwise/pre/CSAT/reasoningCSATData";
+import ComprehensionPYQData from "../../data/Subjectwise/pre/CSAT/ComprehensionPYQData";
+import MathsData            from "../../data/Subjectwise/pre/CSAT/Maths";
+import HistoryData          from "../../data/Subjectwise/pre/GS/History";
+import ModernHistoryData    from "../../data/Subjectwise/pre/GS/Modernhistory";
+import PolityData           from "../../data/Subjectwise/pre/GS/Polity";
+import EconomyData          from "../../data/Subjectwise/pre/GS/Economy";
+import GeographyData        from "../../data/Subjectwise/pre/GS/Geography";
+import EnvEcologyData       from "../../data/Subjectwise/pre/GS/envEcology";
+import SciTechData          from "../../data/Subjectwise/pre/GS/scienceTechnologyPYQData";
+import ArtCultureData       from "../../data/Subjectwise/pre/GS/artCulturePYQData";
+import SocialIssuesData     from "../../data/Subjectwise/pre/GS/Socialissues";
+import IRYData              from "../../data/Subjectwise/pre/GS/irypyq";
 
 // ─── OFFICIAL PDF LINK HELPERS ──────────────────────────────────────────────
 import {
   getMainsPaperLink,
   MAINS_LAST_VERIFIED_DATE,
-} from "../data/PYQs/Mains_papers";
+} from "../../data/PYQs/Mains_papers";
 import {
   getPrelimsPaperLink,
   PRELIMS_LAST_VERIFIED_DATE,
-} from "../data/PYQs/Prelims_paper";
+} from "../../data/PYQs/Prelims_paper";
 
 // ─── UTILITIES ────────────────────────────────────────────────────────────────
 const combineData = (...arrays) => arrays.flat().filter(Boolean);
@@ -1147,7 +1147,7 @@ export default function PyqVault({
           <div>
             <p className="text-xs uppercase tracking-[0.25em] text-accent-gold">PYQ Vault</p>
             <h1 className="mt-1 font-display text-2xl font-bold text-text-primary">
-              Official PDFs + Interactive Practice
+              Official PDFs for PYQS of last 20 years
             </h1>
             <p className="mt-2 max-w-3xl text-sm text-text-secondary">
               Subject‑wise PYQs, official papers, and custom practice for UPSC Prelims &amp; Mains.

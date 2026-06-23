@@ -1,40 +1,40 @@
 
 
 import { useState, useCallback, useMemo } from "react";
-import MatchTable from "../components/ui/MatchTable";
-import ExplanationBox from "../components/ui/ExplanationBox";
-import MainsQuestionCard from "../components/ui/MainsQuestionCard";
-import AIMentorChat from "./AI/AIMentorChat";
-import { useRevisionQueue } from "../hooks/useRevisionQueue";
-import { getMainsPaperLink } from "../data/PYQs/Mains_papers";
-import { useQuestionAttempts } from "../hooks/useQuestionAttempts";
+import MatchTable from "../../components/ui/MatchTable";
+import ExplanationBox from "../../components/ui/ExplanationBox";
+import MainsQuestionCard from "../../components/ui/MainsQuestionCard";
+import AIMentorChat from "../AI/AIMentorChat";
+import { useRevisionQueue } from "../../hooks/useRevisionQueue";
+import { getMainsPaperLink } from "../../data/PYQs/Mains_papers";
+import { useQuestionAttempts } from "../../hooks/useQuestionAttempts";
 
 // ─── PRELIMS DATA IMPORTS ─────────────────────────────────────────────────────
-import reasoningCSATData    from "../data/Subjectwise/pre/CSAT/reasoningCSATData";
-import ComprehensionPYQData from "../data/Subjectwise/pre/CSAT/ComprehensionPYQData";
-import MathsData            from "../data/Subjectwise/pre/CSAT/Maths";
-import HistoryData          from "../data/Subjectwise/pre/GS/History";
-import ModernHistoryData    from "../data/Subjectwise/pre/GS/Modernhistory";
-import PolityData           from "../data/Subjectwise/pre/GS/Polity";
-import EconomyData          from "../data/Subjectwise/pre/GS/Economy";
-import GeographyData        from "../data/Subjectwise/pre/GS/Geography";
-import EnvEcologyData       from "../data/Subjectwise/pre/GS/envEcology";
-import SciTechData          from "../data/Subjectwise/pre/GS/scienceTechnologyPYQData";
-import ArtCultureData       from "../data/Subjectwise/pre/GS/artCulturePYQData";
-import SocialIssuesData     from "../data/Subjectwise/pre/GS/Socialissues";
-import IRYData              from "../data/Subjectwise/pre/GS/irypyq";
+import reasoningCSATData    from "../../data/Subjectwise/pre/CSAT/reasoningCSATData";
+import ComprehensionPYQData from "../../data/Subjectwise/pre/CSAT/ComprehensionPYQData";
+import MathsData            from "../../data/Subjectwise/pre/CSAT/Maths";
+import HistoryData          from "../../data/Subjectwise/pre/GS/History";
+import ModernHistoryData    from "../../data/Subjectwise/pre/GS/Modernhistory";
+import PolityData           from "../../data/Subjectwise/pre/GS/Polity";
+import EconomyData          from "../../data/Subjectwise/pre/GS/Economy";
+import GeographyData        from "../../data/Subjectwise/pre/GS/Geography";
+import EnvEcologyData       from "../../data/Subjectwise/pre/GS/envEcology";
+import SciTechData          from "../../data/Subjectwise/pre/GS/scienceTechnologyPYQData";
+import ArtCultureData       from "../../data/Subjectwise/pre/GS/artCulturePYQData";
+import SocialIssuesData     from "../../data/Subjectwise/pre/GS/Socialissues";
+import IRYData              from "../../data/Subjectwise/pre/GS/irypyq";
 
 // ─── MAINS DATA IMPORTS (2025) ────────────────────────────────────────────────
-import mainsGS1Data from "../data/Subjectwise/mains/2025/GS1";
-import mainsGS2Data from "../data/Subjectwise/mains/2025/GS2";
-import mainsGS3Data from "../data/Subjectwise/mains/2025/GS3";
-import mainsGS4Data from "../data/Subjectwise/mains/2025/GS4"; // uncomment when available
+import mainsGS1Data from "../../data/Subjectwise/mains/2025/GS1";
+import mainsGS2Data from "../../data/Subjectwise/mains/2025/GS2";
+import mainsGS3Data from "../../data/Subjectwise/mains/2025/GS3";
+import mainsGS4Data from "../../data/Subjectwise/mains/2025/GS4"; // uncomment when available
 
 // ─── MAINS DATA IMPORTS (2024) ────────────────────────────────────────────────
-import mainsGS1Data24 from "../data/Subjectwise/mains/2024/GS1";
-import mainsGS2Data24 from "../data/Subjectwise/mains/2024/GS2";
-import mainsGS3Data24 from "../data/Subjectwise/mains/2024/GS3";
-import mainsGS4Data24 from "../data/Subjectwise/mains/2024/GS4";
+import mainsGS1Data24 from "../../data/Subjectwise/mains/2024/GS1";
+import mainsGS2Data24 from "../../data/Subjectwise/mains/2024/GS2";
+import mainsGS3Data24 from "../../data/Subjectwise/mains/2024/GS3";
+import mainsGS4Data24 from "../../data/Subjectwise/mains/2024/GS4";
 
 // ─── UTILITY: COMBINE MULTIPLE YEAR ARRAYS ───────────────────────────────────
 const combineData = (...arrays) => arrays.flat().filter(Boolean);
@@ -1353,7 +1353,7 @@ export default function Topicwise({ onSyllabusUpdate, onBulkSyllabusUpdate = nul
 
       {/* ── AI Mentor Chat ── */}
       <div className="max-w-3xl mx-auto px-3 sm:px-6 py-6">
-      
+
       </div>
 
       {/* ── Footer ── */}

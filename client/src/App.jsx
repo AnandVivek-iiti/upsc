@@ -1,28 +1,28 @@
 import { useEffect, useState } from "react";
 import Sidebar from "./components/layout/Sidebar.jsx";
-import Dashboard from "./pages/Dashboard";
-import SyllabusTracker from "./pages/SyllabusTracker";
-import MainsGrind from "./pages/MainsGrind";
-import PrelimsGrind from "./pages/PrelimsGrind";
-import PyqVault from "./pages/PyqVault";               // ← new
+import Dashboard from "./pages/Dashboard/Dashboard.jsx";
+import SyllabusTracker from "./pages/User/SyllabusTracker.jsx";
+import MainsGrind from "./pages/PYQs/MainsGrind.jsx";
+import PrelimsGrind from "./pages/PYQs/PrelimsGrind";
+import PyqVault from "./pages/PYQs/PyqVault.jsx";               // ← new
 import Footer from "./components/layout/Footer";
 import { useUserData } from "./hooks/useUserData";
 import { AlertCircle } from "lucide-react";
 import HeroBanner from "./pages/Hero";
 import LandingHero from "./pages/LandingHero";
 // import Topicwise from "./pages/Topicwise";          // removed
-import AuthPage from "./pages/AuthPage";
+import AuthPage from "./pages/User/AuthPage.jsx";
 import { useAuth } from "./hooks/useAuth";
-import Adminpannel from "./pages/Adminpannel.jsx";
-import ResourceLibrary from "./pages/ResourceLibrary";
-import ProfilePage from "./pages/ProfilePage";
+import Adminpannel from "./pages/Admin/Adminpannel.jsx";
+import ResourceLibrary from "./pages/User/ResourceLibrary.jsx";
+import ProfilePage from "./pages/User/ProfilePage.jsx";
 import PWAInstallPrompt from "./components/PWAInstallPrompt";
 import timerStore from "./hooks/timerStore";
 import BottomNav from "./components/layout/BottomNav.jsx";
-import AIMentorWorkspace from "./pages/AIMentorWorkspace.jsx";
+import AIMentorWorkspace from "./pages/AI/AIMentorWorkspace.jsx";
 import AIMentorChat from "./pages/AI/AIMentorChat";
-import MentorNotes from "./pages/MentorNotes.jsx";
-import TestSeriesPage from "./pages/Testseriespage";
+import MentorNotes from "./pages/User/MentorNotes.jsx";
+import TestSeriesPage from "./pages/User/Testseriespage";
 import FeedbackModal from "./components/FeedbackModal";
 
 // ─── Splash Screen ────────────────────────────────────────────────────────────

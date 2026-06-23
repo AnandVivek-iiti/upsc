@@ -2,21 +2,17 @@ const rateLimit = require("express-rate-limit");
 
 // ─── Generic App-Wide Limiter ─────────────────────────────────────────────────
 const globalLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 200,
+  windowMs: 5 * 60 * 1000,
+  max: 300,
   standardHeaders: true,
   legacyHeaders: false,
-  message: { success: false, error: "Too many requests. Please try again after 15 minutes." },
+  message: { success: false, error: "Too many requests. Please try again after 5 minutes." },
   skipSuccessfulRequests: false,
 });
 
-// ─── AI Evaluate Limiter ──────────────────────────────────────────────────────
-// Max 5 evaluations per user per 24 hours
-// Note: this limiter sits behind the protect middleware, so req.user is always set.
-// We key by user ID — no IP fallback needed, which avoids the IPv6 validation issue.
 const evaluateLimiter = rateLimit({
   windowMs: 24 * 60 * 60 * 1000, // 24 hours
-  max: 5,
+  max: 10,
   standardHeaders: true,
   legacyHeaders: false,
   keyGenerator: (req) => `user_${req.user.id}`,

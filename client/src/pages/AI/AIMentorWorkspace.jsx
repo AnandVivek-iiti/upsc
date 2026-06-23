@@ -1,6 +1,6 @@
 // pages/AIMentorWorkspace.jsx
 
-import AIMentorChat from "./AI/AIMentorChat";
+import AIMentorChat from "./AIMentorChat";
 
 export default function AIMentorWorkspace({
   isLoggedIn,

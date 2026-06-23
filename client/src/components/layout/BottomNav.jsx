@@ -4,24 +4,24 @@ import {
   Library, MoreHorizontal, X, Moon, Sun, LogOut, LogIn,
   User, Flame, Shield, Sparkles, NotebookPen, Archive,
 } from "lucide-react";
-import { AvatarCircle } from "../../pages/ProfilePage";
+import { AvatarCircle } from "../../pages/User/ProfilePage";
 
 // ─── Primary nav (shown in the bar) ──
 const PRIMARY_NAV = [
-  { id: "dashboard",  label: "Home",     icon: LayoutDashboard },
-  { id: "mains",      label: "Mains",    icon: PenTool },
-  { id: "pre",        label: "Prelims",  icon: PenLine },
-  { id: "pyq-vault",  label: "Vault",    icon: Archive },
-  { id: "notes",      label: "Notes",    icon: NotebookPen },
+  { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { id: "mains", label: "Mains", icon: PenTool },
+  { id: "pre", label: "Prelims", icon: PenLine },
+  { id: "syllabus", label: "Syllabus", icon: BookOpen },
+
+  { id: "notes", label: "Notes", icon: NotebookPen },
 
 ];
 
 // ─── "More" drawer items ──
 const MORE_NAV = [
-  { id: "syllabus",   label: "Syllabus", icon: BookOpen },
+  { id: "pyq-vault", label: "Vault", icon: Archive },
 
-  { id: "resources",  label: "Resources",icon: Library },
-  { id: "ai-mentor",  label: "AI Mentor",icon: Sparkles },
+  { id: "resources", label: "Resources", icon: Library },
 ];
 
 export default function BottomNav({

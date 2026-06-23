@@ -2,16 +2,16 @@ import {
   LayoutDashboard, BookOpen, NotebookPen, PenLine, PenTool, Flame, Archive,
   ChevronRight, Moon, Sun, LogOut, LogIn, Shield, Library, User,
 } from "lucide-react";
-import { AvatarCircle } from "../../pages/ProfilePage";
+import { AvatarCircle } from "../../pages/User/ProfilePage";
 
 const NAV_ITEMS = [
   { id: "dashboard",  label: "Dashboard",       icon: LayoutDashboard },
   { id: "syllabus",   label: "Syllabus Tracker", icon: BookOpen },
+  { id: "notes",      label: "Notes",            icon: NotebookPen },
   { id: "mains",      label: "Mains Grind",      icon: PenTool },
   { id: "pre",        label: "Prelims Grind",    icon: PenLine },
   { id: "pyq-vault",  label: "PYQ Vault",        icon: Archive },
   { id: "resources",  label: "Resources",        icon: Library },
-  { id: "notes",      label: "Notes",            icon: NotebookPen },
 ];
 
 export default function Sidebar({

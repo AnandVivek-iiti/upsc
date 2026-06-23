@@ -1,16 +1,16 @@
 
 import { useState, useMemo } from "react";
 import TestSeriesPage from "./Testseriespage";
-import MentorNotes from "./MentorNotes"; 
+import MentorNotes from "./MentorNotes";
 import {
   NCERT_BOOKS, SUBJECTS, SUBJECT_PAPER_MAP, NCERT_LAST_UPDATED,
-} from "../data/Resources/ncert_data";
+} from "../../data/Resources/ncert_data";
 import {
   REFERENCE_BOOKS, REF_BOOK_PAPERS, PRIORITY_COLORS, REF_BOOKS_LAST_UPDATED,
-} from "../data/Resources/reference_books_data";
+} from "../../data/Resources/reference_books_data";
 import {
   YOUTUBE_CLASSES, YT_SUBJECTS, YT_PAPERS, YT_LAST_UPDATED,
-} from "../data/Resources/classes";
+} from "../../data/Resources/classes";
 
 // ─── COVER IMAGE MAP ──────────────────────────────────────────────────────────
 const COVER_MAP = {};

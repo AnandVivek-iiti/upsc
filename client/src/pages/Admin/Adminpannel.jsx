@@ -10,8 +10,8 @@ import {
 } from "lucide-react";
 import {
   downloadFullReport,
-} from "../utils/adminReports";
-
+} from "../../utils/adminReports";
+import AdminStudyAnalytics from "./AdminStudyAnalytics";
 const BASE = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
 // ─── fetch helper ─────────────────────────────────────────────────────────────
@@ -286,18 +286,7 @@ function UsersTab({ users, usersTotal, userPage, loading, onPageChange, onSortCh
     if (!email) return "—";
     return email.replace(/(.{2}).*(@.*)/, "$1••••$2");
   };
-  const fetchFeedback = useCallback(async () => {
-    load("feedback", true);
-    try {
-      const [statsRes, listRes] = await Promise.all([
-        adminFetch("/feedback/admin/stats"),
-        adminFetch("/feedback/admin/list?limit=20"),
-      ]);
-      setFeedbackStats(statsRes.stats);
-      setFeedbackList(listRes.feedback || []);
-    } catch (e) { notify(e.message, "error"); }
-    finally { load("feedback", false); }
-  }, []);
+
   const totalPages = Math.ceil(usersTotal / 20);
 
   return (
@@ -1027,7 +1016,16 @@ function FeedbackTab({ stats, feedbackList, loading, onRefresh, onExport }) {
       {/* Stats cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <MetricCard icon={MessageCircle} label="Total Feedback" value={total} iconColor="#60a5fa" />
-        <MetricCard icon={Star} label="Avg Rating" value={avgRating ? avgRating.toFixed(1) : "—"} iconColor="#f59e0b" />
+        <MetricCard
+          icon={Star}
+          label="Avg Rating"
+          value={
+            avgRating != null && !isNaN(Number(avgRating))
+              ? Number(avgRating).toFixed(1)
+              : "—"
+          }
+          iconColor="#f59e0b"
+        />
         <MetricCard icon={ThumbsUp} label="Would Recommend" value={`${recommendRate}%`} iconColor="#4ade80" />
         <MetricCard icon={TrendingUp} label="Best Feature" value={featureStats?.[0]?.feature || "—"} iconColor="#a78bfa" />
       </div>
@@ -1048,7 +1046,9 @@ function FeedbackTab({ stats, feedbackList, loading, onRefresh, onExport }) {
                     />
                   </div>
                   <span className="text-xs font-mono text-text-muted w-16 text-right">
-                    {f.avgRating ? f.avgRating.toFixed(1) : "—"} ★
+                    {f.avgRating != null && !isNaN(Number(f.avgRating))
+                      ? Number(f.avgRating).toFixed(1)
+                      : "—"} ★
                   </span>
                   <span className="text-[10px] font-mono text-text-muted w-12 text-right">({f.count})</span>
                 </div>
@@ -1346,18 +1346,24 @@ export default function AdminPanel() {
     } catch (e) { notify(e.message, "error"); }
     finally { load("insights", false); }
   }, []);
-  const fetchFeedback = useCallback(async () => {
-    load("feedback", true);
-    try {
-      const [statsRes, listRes] = await Promise.all([
-        adminFetch("/feedback/admin/stats"),
-        adminFetch("/feedback/admin/list?limit=20"),
-      ]);
-      setFeedbackStats(statsRes.stats);
-      setFeedbackList(listRes.feedback || []);
-    } catch (e) { notify(e.message, "error"); }
-    finally { load("feedback", false); }
-  }, []);
+const fetchFeedback = useCallback(async () => {
+  load("feedback", true);
+  try {
+    const token = localStorage.getItem("upsc_token");
+    const headers = {
+      "Content-Type": "application/json",
+      Authorization: token ? `Bearer ${token}` : "",
+    };
+    const [statsRes, listRes] = await Promise.all([
+      fetch(`${BASE}/feedback/admin/stats`, { headers }).then(r => r.json()),
+      fetch(`${BASE}/feedback/admin/list?limit=20`, { headers }).then(r => r.json()),
+    ]);
+    if (!statsRes.success) throw new Error(statsRes.error);
+    setFeedbackStats(statsRes.stats);
+    setFeedbackList(listRes.feedback || []);
+  } catch (e) { notify(e.message, "error"); }
+  finally { load("feedback", false); }
+}, []);
   // ── Tab-driven lazy loading ────────────────────────────────────────────────
   useEffect(() => {
     fetchMetrics();
@@ -1535,7 +1541,7 @@ export default function AdminPanel() {
       {profileUserId && (
         <UserProfileModal userId={profileUserId} onClose={closeProfile} />
       )}
-
+ <AdminStudyAnalytics />
       {toast && <Toast msg={toast.msg} type={toast.type} onClose={() => setToast(null)} />}
     </div>
   );

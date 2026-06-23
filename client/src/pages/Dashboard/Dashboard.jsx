@@ -10,12 +10,6 @@ import {
   X,
   Flame,
   Target,
-  Play,
-  Pause,
-  RotateCcw,
-  Timer,
-  Cloud,
-  CloudOff,
   ChevronDown,
   ChevronUp,
   ChevronLeft,
@@ -28,13 +22,14 @@ import {
   MessageSquarePlus,
 } from "lucide-react";
 import { useState, useEffect } from "react";
-import { SYLLABUS, PAPER_ORDER, getPct } from "../data/PYQs/syllabusData";
-import AuthGate from "../components/ui/AuthGate";
-import timerStore from "../hooks/timerStore";
-import QuestionStatsPanel from "../components/QuestionStats";
-import { AvatarCircle } from "./ProfilePage";
-import AIRevisionPanel from "./AI/AIRevisionPanel";
-import { getISTDateString, getISTDay } from "../utils/dateUtils";
+import { SYLLABUS, PAPER_ORDER, getPct } from "../../data/PYQs/syllabusData";
+import AuthGate from "../../components/ui/AuthGate";
+import timerStore from "../../hooks/timerStore";
+import QuestionStatsPanel from "../../components/QuestionStats";
+import { AvatarCircle } from "../User/ProfilePage";
+import AIRevisionPanel from "../AI/AIRevisionPanel";
+import SubjectStudyTimer from "./SubjectStudyTimer";
+import { getISTDateString, getISTDay } from "../../utils/dateUtils";
 
 // ─── Tiny helpers ──────────────────────────────────────────────────────────────
 function todayKey() {
@@ -121,7 +116,7 @@ function ActionHub({ onNavigate }) {
       title: "Answer Evaluation",
       desc: "Evaluate your GS/Mains answer in seconds. Get score, strengths, weaknesses, keyword coverage, structural feedback and a topper-style rewritten answer.",
       cta: "Evaluate Answer",
-      view: "topic-wise",
+      view: "mains",
     },
     {
       icon: FileSearch,
@@ -145,7 +140,7 @@ function ActionHub({ onNavigate }) {
       title: "Topic-wise Practice",
       desc: "Practice PYQs topic-wise and automatically update syllabus progress when questions are completed.",
       cta: "Practice Questions",
-      view: "topic-wise",
+      view: "pre",
     },
     {
       icon: FlaskConical,
@@ -234,241 +229,6 @@ function ActionHub({ onNavigate }) {
             </button>
           </div>
         ))}
-      </div>
-    </div>
-  );
-}
-
-// ─── StudyTimer ───────────────────────────────────────────────────────────────
-function StudyTimer({ onLogHours, onSynced, targetHours = 8, serverHours = 0, dataReady = false, userId = null }) {
-  const [elapsed, setElapsed] = useState(timerStore.elapsed);
-  const [running, setRunning] = useState(timerStore.running);
-  const [remote, setRemote] = useState(timerStore.remote);
-  const [syncState, setSyncState] = useState("idle");
-  const [isCompact, setIsCompact] = useState(false);
-  const [ringGrown, setRingGrown] = useState(false);
-
-  useEffect(() => {
-    const checkSize = () => setIsCompact(window.innerWidth < 380);
-    checkSize();
-    window.addEventListener("resize", checkSize);
-    return () => window.removeEventListener("resize", checkSize);
-  }, []);
-
-  useEffect(() => {
-    const t = setTimeout(() => setRingGrown(true), 150);
-    return () => clearTimeout(t);
-  }, []);
-
-  useEffect(() => {
-    setElapsed(timerStore.elapsed);
-    setRunning(timerStore.running);
-
-    const unsub = timerStore.subscribe(({ elapsed: e, running: r, remote: rm }) => {
-      setElapsed(e);
-      setRunning(r);
-      if (rm) setRemote(rm);
-    });
-    return unsub;
-  }, []);
-
-  useEffect(() => {
-    timerStore.setUser(userId);
-  }, [userId]);
-
-  useEffect(() => {
-    timerStore.setSyncHandler(async (hours) => {
-      setSyncState("syncing");
-      try {
-        await onLogHours(hours, "Timer session");
-        setSyncState("synced");
-        onSynced?.(hours);
-        setTimeout(() => setSyncState("idle"), 2500);
-      } catch {
-        setSyncState("error");
-        setTimeout(() => setSyncState("idle"), 3000);
-      }
-    });
-  }, [onLogHours, onSynced]);
-
-  useEffect(() => {
-    if (!dataReady) return;
-    timerStore.hydrate(serverHours);
-    timerStore.autoStart();
-  }, [dataReady, serverHours]);
-
-  const handleStart = () => timerStore.start();
-  const handlePause = () => timerStore.pause();
-  const handleReset = () => timerStore.reset();
-
-  const TARGET_SECS = targetHours * 3600;
-  const progress    = Math.min(elapsed / TARGET_SECS, 1);
-  const R           = isCompact ? 45 : 54;
-  const SVG_SIZE    = isCompact ? 110 : 140;
-  const CIRC        = 2 * Math.PI * R;
-  const displayProgress = ringGrown ? progress : 0;
-  const dashOffset  = CIRC * (1 - displayProgress);
-  const ringColor   = running ? "#4ade80" : elapsed > 0 ? "#C9A84C" : "#374151";
-  const statusLabel = running ? "Studying" : elapsed > 0 ? "Paused" : "Not started";
-  const statusColor = running ? "#4ade80" : elapsed > 0 ? "#C9A84C" : "#6b7280";
-  const leftSecs    = Math.max(0, TARGET_SECS - elapsed);
-
-  return (
-    <div className="glass-panel p-3 sm:p-5">
-      <div className="flex items-center gap-2 mb-3 sm:mb-4">
-        <Timer size={14} className="text-accent-gold shrink-0" />
-        <h3 className="text-sm font-display font-semibold text-text-primary">Study Timer</h3>
-
-        <span className="flex items-center gap-1 ml-1 sm:ml-2">
-          {syncState === "syncing" && <Cloud size={11} className="text-text-muted animate-pulse" />}
-          {syncState === "synced"  && <Cloud size={11} className="text-accent-green" />}
-          {syncState === "error"   && <CloudOff size={11} className="text-red-400" />}
-          <span
-            className={`text-[10px] font-mono hidden sm:inline ${
-              syncState === "synced" ? "text-accent-green"
-              : syncState === "error" ? "text-red-400"
-              : "text-text-muted"
-            }`}
-          >
-            {syncState === "syncing" ? "saving…"
-             : syncState === "synced" ? "saved"
-             : syncState === "error"  ? "sync failed"
-             : ""}
-          </span>
-        </span>
-
-        {remote.active && (
-          <span className="label-tag text-[10px] sm:text-xs text-accent-blue border-accent-blue/30 bg-accent-blue/10 flex items-center gap-1">
-            <span className="w-1.5 h-1.5 rounded-full bg-accent-blue animate-pulse" />
-            Studying on another device — {fmtHM(remote.elapsed)}
-          </span>
-        )}
-
-        <span
-          className="label-tag ml-auto text-[10px] sm:text-xs"
-          style={{
-            color: statusColor,
-            borderColor: `${statusColor}40`,
-            background: `${statusColor}15`,
-          }}
-        >
-          {statusLabel}
-        </span>
-      </div>
-
-      <div className={`flex ${isCompact ? 'flex-col' : 'flex-col sm:flex-row'} items-center gap-4 sm:gap-6`}>
-        <div className="relative shrink-0" style={{ width: SVG_SIZE, height: SVG_SIZE }}>
-          <svg width={SVG_SIZE} height={SVG_SIZE} viewBox={`0 0 ${SVG_SIZE} ${SVG_SIZE}`}>
-            <circle
-              cx={SVG_SIZE/2} cy={SVG_SIZE/2} r={R}
-              fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="8"
-            />
-            <circle
-              cx={SVG_SIZE/2} cy={SVG_SIZE/2} r={R}
-              fill="none"
-              stroke={ringColor}
-              strokeWidth="8"
-              strokeLinecap="round"
-              strokeDasharray={CIRC}
-              strokeDashoffset={dashOffset}
-              transform={`rotate(-90 ${SVG_SIZE/2} ${SVG_SIZE/2})`}
-              style={{ transition: "stroke-dashoffset 1.1s cubic-bezier(0.16, 1, 0.3, 1), stroke 0.4s" }}
-            />
-          </svg>
-          <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <span className={`font-mono font-bold text-text-primary tabular-nums ${isCompact ? 'text-lg' : 'text-xl'}`}>
-              {fmtTime(elapsed)}
-            </span>
-            <span className="text-[10px] font-mono text-text-muted mt-0.5">
-              {fmtHM(elapsed)} studied
-            </span>
-          </div>
-        </div>
-
-        <div className="flex flex-col gap-2.5 sm:gap-3 flex-1 w-full">
-          <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
-            {[
-              { label: "Today",  val: fmtHM(elapsed) },
-              { label: "Target", val: `${targetHours}h` },
-              { label: "Left",   val: fmtHM(leftSecs) },
-            ].map(({ label, val }) => (
-              <div key={label} className="bg-bg-muted rounded-lg p-1.5 sm:p-2 text-center">
-                <p className="text-[9px] sm:text-[10px] font-mono text-text-muted uppercase">{label}</p>
-                <p className="text-xs sm:text-sm font-display font-bold text-text-primary mt-0.5">{val}</p>
-              </div>
-            ))}
-          </div>
-
-          <div>
-            <p className="text-[10px] font-mono text-text-muted mb-1 sm:mb-1.5 uppercase tracking-wider">
-              Hours completed
-            </p>
-            <div className="flex gap-0.5 sm:gap-1">
-              {Array.from({ length: Math.min(targetHours, isCompact ? 8 : targetHours) }, (_, i) => {
-                const filled  = elapsed >= (i + 1) * 3600;
-                const partial = !filled && elapsed > i * 3600;
-                const pct     = partial ? ((elapsed - i * 3600) / 3600) * 100 : 0;
-                return (
-                  <div
-                    key={i}
-                    className="relative h-4 sm:h-5 rounded overflow-hidden bg-bg-muted flex-1 transition-all duration-500 ease-out"
-                    style={{
-                      opacity: ringGrown ? 1 : 0,
-                      transform: ringGrown ? "scaleY(1)" : "scaleY(0.4)",
-                      transitionDelay: `${i * 40}ms`,
-                    }}
-                  >
-                    {filled && (
-                      <div
-                        className="absolute inset-0 rounded"
-                        style={{ background: CHART_COLORS.goalMet.grad }}
-                      />
-                    )}
-                    {partial && (
-                      <div
-                        className="absolute inset-y-0 left-0 rounded"
-                        style={{
-                          width: `${pct}%`,
-                          background: running ? CHART_COLORS.goalMet.grad : CHART_COLORS.today.grad,
-                        }}
-                      />
-                    )}
-                    <span className="absolute inset-0 flex items-center justify-center text-[8px] sm:text-[9px] font-mono text-text-muted z-10">
-                      {i + 1}
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-
-          <div className="flex gap-2">
-            {!running ? (
-              <button
-                onClick={handleStart}
-                className="btn-primary flex items-center gap-1.5 flex-1 justify-center text-xs sm:text-sm py-2.5"
-              >
-                <Play size={13} fill="currentColor" />
-                {elapsed > 0 ? "Resume" : "Start"}
-              </button>
-            ) : (
-              <button
-                onClick={handlePause}
-                className="flex items-center gap-1.5 flex-1 justify-center px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-medium bg-accent-gold/15 text-accent-gold border border-accent-gold/30 hover:bg-accent-gold/25 transition-colors"
-              >
-                <Pause size={13} fill="currentColor" />
-                Pause &amp; Save
-              </button>
-            )}
-            <button
-              onClick={handleReset}
-              className="btn-ghost border border-bg-border flex items-center justify-center px-2 sm:px-3 py-2 sm:py-2.5"
-              title="Reset timer for today"
-            >
-              <RotateCcw size={13} />
-            </button>
-          </div>
-        </div>
       </div>
     </div>
   );
@@ -1319,8 +1079,8 @@ export default function Dashboard({
         <ActionHub onNavigate={onNavigate} />
       )}
 
-      {/* ── Study Timer ── */}
-      <StudyTimer
+      {/* ── Study Timer (subject-tagged) ── */}
+      <SubjectStudyTimer
         onLogHours={onLogHours}
         onSynced={setTimerHours}
         targetHours={targetHours}
