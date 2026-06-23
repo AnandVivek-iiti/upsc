@@ -152,11 +152,11 @@ export default function AIRevisionPanel({ isLoggedIn, compact = false, onNavigat
                         <div className="flex flex-col sm:flex-row gap-2 justify-center mt-2">
                             <button
                                 type="button"
-                                onClick={() => handleNavigate("topic-wise")}
+                                onClick={() => handleNavigate("pre")}
                                 className="flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-sm font-mono transition-all"
                                 style={{ background: "var(--accent-gold)", color: "var(--bg-base)" }}
                             >
-                                <Target size={14} /> Go to Topicwise
+                                <Target size={14} /> Go to Prelims Grind
                             </button>
                             <button
                                 type="button"

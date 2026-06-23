@@ -28,7 +28,7 @@ import IRYData              from "../../data/Subjectwise/pre/GS/irypyq";
 const TABS = [
   { id: "practice",   label: "Practice",     icon: Zap      },
   { id: "resources",  label: "Resources",    icon: Library  },
-  { id: "myqs",       label: "My Questions", icon: PenSquare },
+  { id: "myqs",       label: "Questions Solved", icon: PenSquare },
 ];
 
 // ─── STYLE / DIFF META ────────────────────────────────────────────────────────

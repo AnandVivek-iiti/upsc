@@ -52,14 +52,16 @@ function useGrow(delay = 80) {
   }, []);
   return grown;
 }
-
-// ─── Filled Donut Ring (flat — no shadow) ─────────────────────────────────
-function FilledDonutRing({ correct, wrong, skipped, accuracy, size = 148 }) {
+function FilledDonutRing({ correct, wrong, skipped, accuracy, size = 150 }) {
   const grown = useGrow(100);
   const total = correct + wrong + skipped || 1;
-  const R = (size / 2) - 17;
+  const STROKE = Math.max(13, Math.round(size * 0.01));
+  const R = (size / 2) - STROKE - 4;
   const CIRC = 2 * Math.PI * R;
   const cx = size / 2, cy = size / 2;
+  const innerR = R * 0.52;
+  const pctFontSize = Math.max(16, Math.round(size * 0.165));
+  const labelFontSize = Math.max(8, Math.round(size * 0.052));
 
   let currentAngle = 0;
   const segments = [
@@ -72,7 +74,7 @@ function FilledDonutRing({ correct, wrong, skipped, accuracy, size = 148 }) {
     <div style={{ width: "100%", maxWidth: size, margin: "0 auto", position: "relative", flexShrink: 0 }}>
       <div style={{ width: "100%", paddingBottom: "100%", position: "relative" }}>
         <svg viewBox={`0 0 ${size} ${size}`} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", overflow: "visible" }}>
-          <circle cx={cx} cy={cy} r={R} fill="none" stroke="var(--bg-muted)" strokeWidth={13} />
+          <circle cx={cx} cy={cy} r={R} fill="none" stroke="var(--bg-muted)" strokeWidth={STROKE} />
 
           {segments.map((seg) => {
             const angle = seg.pct * 360;
@@ -92,7 +94,7 @@ function FilledDonutRing({ correct, wrong, skipped, accuracy, size = 148 }) {
               const dashLength = seg.pct * CIRC;
               return (
                 <circle
-                  key={seg.label} cx={cx} cy={cy} r={R} fill="none" stroke={seg.color} strokeWidth={13}
+                  key={seg.label} cx={cx} cy={cy} r={R} fill="none" stroke={seg.color} strokeWidth={STROKE}
                   strokeDasharray={`${dashLength} ${CIRC - dashLength}`}
                   strokeDashoffset={-startAngle / 360 * CIRC}
                   transform={`rotate(-90 ${cx} ${cy})`}
@@ -105,11 +107,11 @@ function FilledDonutRing({ correct, wrong, skipped, accuracy, size = 148 }) {
             ) : null;
           })}
 
-          <circle cx={cx} cy={cy} r={R * 0.3} fill="var(--bg-surface)" stroke="var(--bg-border)" strokeWidth={1} />
-          <text x={cx} y={cy - 3} textAnchor="middle" dominantBaseline="central" fontSize={16} fontWeight={700} fill="var(--text-primary)" fontFamily={SERIF}>
+          <circle cx={cx} cy={cy} r={innerR} fill="var(--bg-surface)" stroke="var(--bg-border)" strokeWidth={1} />
+          <text x={cx} y={cy - innerR * 0.18} textAnchor="middle" dominantBaseline="central" fontSize={pctFontSize} fontWeight={400} fill="var(--text-primary)" fontFamily={SERIF}>
             {accuracy}%
           </text>
-          <text x={cx} y={cy + 14} textAnchor="middle" dominantBaseline="central" fontSize={8} fill="var(--text-muted)" fontFamily={MONO} letterSpacing="0.5">
+          <text x={cx} y={cy + innerR * 0.55} textAnchor="middle" dominantBaseline="central" fontSize={labelFontSize} fill="var(--text-muted)" fontFamily={MONO} letterSpacing="0.5">
             ACCURACY
           </text>
         </svg>
@@ -594,31 +596,74 @@ function QuestionsModal({ label, viewType, questions, onClose }) {
   );
 }
 
-// ─── Year Bar Chart — pure flat rectangles, no rounding, no shadow ─────────
-function YearBarChart({ byYear }) {
+// ─── YearTrendChart — bar chart with axis + gridlines, bigger labels, no shadow ──
+const YEAR_C = { total: "#14b8a6", correct: "#8b5cf6" }; // teal + violet — distinct from Outcome Split's green/red/gray
+
+function YearTrendChart({ byYear }) {
   const grown = useGrow(280);
   const years = Object.keys(byYear).sort((a, b) => Number(a) - Number(b)).slice(-8);
   if (years.length < 1) return null;
+
   const maxTotal = Math.max(...years.map(y => byYear[y].total), 1);
+  const TICKS = 5;
+  const scaleMax = Math.max(Math.ceil(maxTotal / (TICKS - 1)) * (TICKS - 1), TICKS - 1);
+  const ticks = Array.from({ length: TICKS }, (_, i) => Math.round(scaleMax * (1 - i / (TICKS - 1))));
+  const CHART_H = 170;
+  const barW = years.length > 5 ? 26 : 36;
+  const colW = barW + 14;
+  const wrap = years.length > 4 ? "space-around" : "center";
+  const gap  = years.length > 4 ? 0 : 30;
 
   return (
     <div style={{ width: "100%" }}>
-      <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "center", gap: years.length > 5 ? 8 : 16, height: 128, padding: "0 4px" }}>
-        {years.map((y) => {
-          const t = byYear[y].total, c = byYear[y].correct;
-          const hTotal = grown ? (t / maxTotal) * 100 : 0;
-          const hCorrect = grown ? (c / maxTotal) * 100 : 0;
-          return (
-            <div key={y} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 7, flex: "0 1 40px" }}>
-              <div style={{ position: "relative", width: 28, height: 96, background: "var(--bg-muted)" }}>
-                <div style={{ position: "absolute", bottom: 0, left: 0, width: "100%", height: `${hTotal}%`, background: `${P.blue.solid}30`, transition: "height 0.9s cubic-bezier(0.34,1.56,0.64,1)" }} />
-                <div style={{ position: "absolute", bottom: 0, left: "20%", width: "60%", height: `${hCorrect}%`, background: P.correct.solid, transition: "height 0.9s cubic-bezier(0.34,1.56,0.64,1) 0.08s" }} />
-              </div>
-              <span style={{ fontSize: 11, fontFamily: MONO, color: "var(--text-muted)", fontWeight: 700 }}>{y}</span>
-              <span style={{ fontSize: 10, fontFamily: MONO, color: "var(--text-secondary)" }}>{t}</span>
-            </div>
-          );
-        })}
+      <div style={{ display: "flex" }}>
+        {/* Y-axis ticks */}
+        <div style={{ width: 26, flexShrink: 0, display: "flex", flexDirection: "column", justifyContent: "space-between", height: CHART_H, textAlign: "right", paddingRight: 6 }}>
+          {ticks.map((t) => (
+            <span key={t} style={{ fontSize: 10.5, fontFamily: MONO, color: "var(--text-muted)", lineHeight: 1 }}>{t}</span>
+          ))}
+        </div>
+
+        {/* Chart area */}
+        <div style={{ position: "relative", flex: 1, height: CHART_H, borderLeft: "1px solid var(--bg-border)", borderBottom: "1px solid var(--bg-border)" }}>
+          {ticks.slice(0, -1).map((t) => (
+            <div key={t} style={{ position: "absolute", left: 0, right: 0, top: `${((scaleMax - t) / scaleMax) * 100}%`, borderTop: "1px dashed var(--bg-border)", opacity: 0.6 }} />
+          ))}
+          <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "flex-end", justifyContent: wrap, gap, padding: "0 10px" }}>
+            {years.map((y, i) => {
+              const t = byYear[y].total, c = byYear[y].correct;
+              const hTotal   = grown ? Math.max((t / scaleMax) * 100, t > 0 ? 4 : 0) : 0;
+              const hCorrect = grown ? Math.max((c / scaleMax) * 100, c > 0 ? 4 : 0) : 0;
+              return (
+                <div key={y} style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "flex-end", height: "100%", width: colW }}>
+                  {t > 0 && <span style={{ fontSize: 12.5, fontWeight: 800, fontFamily: MONO, color: YEAR_C.total, marginBottom: 6 }}>{t}</span>}
+                  <div style={{ position: "relative", width: barW, height: "100%" }}>
+                    <div style={{
+                      position: "absolute", bottom: 0, left: 0, width: "100%", height: `${hTotal}%`,
+                      borderRadius: "8px 8px 0 0", background: `${YEAR_C.total}28`,
+                      transition: `height 0.85s cubic-bezier(0.34,1.56,0.64,1) ${i * 70}ms`,
+                    }} />
+                    <div style={{
+                      position: "absolute", bottom: 0, left: "22%", width: "56%", height: `${hCorrect}%`,
+                      borderRadius: "6px 6px 0 0", background: `linear-gradient(180deg, ${YEAR_C.correct}cc 0%, ${YEAR_C.correct} 100%)`,
+                      transition: `height 0.85s cubic-bezier(0.34,1.56,0.64,1) ${i * 70 + 90}ms`,
+                    }} />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+
+      {/* X-axis year labels */}
+      <div style={{ display: "flex" }}>
+        <div style={{ width: 26, flexShrink: 0 }} />
+        <div style={{ flex: 1, display: "flex", justifyContent: wrap, gap, padding: "10px 10px 0" }}>
+          {years.map((y) => (
+            <span key={y} style={{ fontSize: 13, fontWeight: 700, fontFamily: MONO, color: "var(--text-secondary)", width: colW, textAlign: "center" }}>{y}</span>
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -736,12 +781,29 @@ export default function QuestionStats() {
 
   if (total === 0) {
     return (
-      <div style={{ fontFamily: SANS, maxWidth: 900, margin: "0 auto", padding: "60px 20px", color: "var(--text-primary)", textAlign: "center" }}>
-        <div style={{ fontSize: 56, marginBottom: 16 }}>📊</div>
-        <div style={{ fontSize: 26, fontWeight: 600, fontFamily: SERIF, marginBottom: 10 }}>No Attempts Yet</div>
-        <div style={{ fontSize: 14, color: "var(--text-muted)", fontFamily: MONO, lineHeight: 1.8, maxWidth: 440, margin: "0 auto" }}>
-          Answer questions in pre or mainsGrind PYQs or take a Test Series.
-          <br />Every answer gets tracked here automatically.
+      <div className="glass-panel" style={{ fontFamily: SANS, color: "var(--text-primary)" }}>
+        <div style={{ padding: "56px 24px", textAlign: "center", maxWidth: 440, margin: "0 auto" }}>
+          <div
+            style={{
+              width: 64, height: 64, borderRadius: 18, margin: "0 auto 20px",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              background: `${P.blue.solid}14`, border: `1px solid ${P.blue.solid}30`,
+            }}
+          >
+            <Target size={28} style={{ color: P.blue.solid }} />
+          </div>
+          <div style={{ fontSize: 22, fontWeight: 700, fontFamily: SERIF, marginBottom: 10, letterSpacing: "-0.2px" }}>
+            No Attempts Yet
+          </div>
+          <div style={{ fontSize: 13.5, color: "var(--text-muted)", fontFamily: MONO, lineHeight: 1.85 }}>
+            Answer questions in Prelims or Mains PYQs, or take a Test Series.
+            <br />Every attempt gets tracked here automatically.
+          </div>
+          <div style={{ display: "flex", justifyContent: "center", gap: 18, flexWrap: "wrap", marginTop: 22 }}>
+            <LegendDot color={P.correct.solid} label="Correct" />
+            <LegendDot color={P.wrong.solid} label="Wrong" />
+            <LegendDot color={P.skipped.solid} label="Skipped" />
+          </div>
         </div>
       </div>
     );
@@ -751,7 +813,7 @@ export default function QuestionStats() {
   const diffDotColor = { Easy: P.correct.solid, Medium: P.gold.solid, Hard: P.wrong.solid };
 
   return (
-    <div style={{ fontFamily: SANS, width: "100%", color: "var(--text-primary)", overflow: "visible" }}>
+    <div className="glass-panel p-4 sm:p-6" style={{ fontFamily: SANS, width: "100%", color: "var(--text-primary)", overflow: "visible" }}>
 
       {/* ── Header ── */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 18, flexWrap: "wrap", gap: 12 }}>
@@ -797,7 +859,7 @@ export default function QuestionStats() {
 
         <SectionCard title="Outcome Split" accent={P.correct.solid} right={`${total} total`}>
           <div style={{ display: "flex", gap: 24, alignItems: "center", flexWrap: "wrap" }}>
-            <FilledDonutRing correct={correct} wrong={wrong} skipped={skipped} accuracy={accuracy} size={140} />
+            <FilledDonutRing correct={correct} wrong={wrong} skipped={skipped} accuracy={accuracy} size={200} />
             <div style={{ flex: 1, minWidth: 160, display: "flex", flexDirection: "column", gap: 14 }}>
               <BreakdownRow color={P.correct.solid} label="Correct" pct={total ? (correct / total) * 100 : 0} pctLabel={`${total ? Math.round((correct / total) * 100) : 0}%`} countLabel={`${correct} of ${total}`} delay={0} />
               <BreakdownRow color={P.wrong.solid} label="Wrong" pct={total ? (wrong / total) * 100 : 0} pctLabel={`${total ? Math.round((wrong / total) * 100) : 0}%`} countLabel={`${wrong} of ${total}`} delay={60} />
@@ -821,11 +883,11 @@ export default function QuestionStats() {
         </SectionCard>
 
         {Object.keys(byYear).length >= 1 && (
-          <SectionCard title="Year-wise" accent={P.blue.solid} right={yearMeta ? `peak ${yearMeta.peakYear} (${yearMeta.peakTotal})` : null}>
-            <YearBarChart byYear={byYear} />
-            <div style={{ display: "flex", gap: 16, marginTop: 12, flexWrap: "wrap", justifyContent: "center" }}>
-              <LegendDot color={P.blue.solid} label="Attempted" />
-              <LegendDot color={P.correct.solid} label="Correct" />
+          <SectionCard title="Year-wise" accent={YEAR_C.total} right={yearMeta ? `peak ${yearMeta.peakYear} (${yearMeta.peakTotal})` : null} style={{ boxShadow: "none" }}>
+            <YearTrendChart byYear={byYear} />
+            <div style={{ display: "flex", gap: 16, marginTop: 14, flexWrap: "wrap", justifyContent: "center" }}>
+              <LegendDot color={YEAR_C.total} label="Attempted" />
+              <LegendDot color={YEAR_C.correct} label="Correct" />
             </div>
           </SectionCard>
         )}

@@ -29,6 +29,7 @@ import QuestionStatsPanel from "../../components/QuestionStats";
 import { AvatarCircle } from "../User/ProfilePage";
 import AIRevisionPanel from "../AI/AIRevisionPanel";
 import SubjectStudyTimer from "./SubjectStudyTimer";
+import SubjectAnalyticsDashboard from "./SubjectAnalyticsDashboard"; // ← ADDED
 import { getISTDateString, getISTDay } from "../../utils/dateUtils";
 
 // ─── Tiny helpers ──────────────────────────────────────────────────────────────
@@ -95,8 +96,6 @@ function CollapsibleSection({ title, icon: Icon, children, defaultOpen = true, t
 }
 
 // ─── ActionHub ────────────────────────────────────────────────────────────────
-// Note: openFeedbackModal global is registered by FeedbackModal itself.
-// ActionHub simply calls window.openFeedbackModal() — no modal state here.
 function ActionHub({ onNavigate }) {
   const [grown, setGrown] = useState(false);
 
@@ -158,7 +157,6 @@ function ActionHub({ onNavigate }) {
 
   return (
     <div className="glass-panel p-3 sm:p-5 space-y-3 sm:space-y-4">
-      {/* Section header */}
       <div className="flex items-center gap-2">
         <Rocket size={14} className="text-accent-gold shrink-0" />
         <div>
@@ -171,7 +169,6 @@ function ActionHub({ onNavigate }) {
         </div>
       </div>
 
-      {/* 2×2 on desktop, single column on mobile */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
         {actions.map(({ icon: Icon, iconColor, gradFrom, gradTo, border, glow, title, desc, cta, view }, i) => (
           <div
@@ -188,13 +185,10 @@ function ActionHub({ onNavigate }) {
             }}
             onClick={() => onNavigate?.(view)}
           >
-            {/* Subtle hover glow overlay */}
             <div
               className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
               style={{ background: `radial-gradient(ellipse at 30% 30%, ${gradFrom} 0%, transparent 70%)` }}
             />
-
-            {/* Icon + title row */}
             <div className="flex items-center gap-2.5 relative z-10">
               <div
                 className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg flex items-center justify-center shrink-0"
@@ -206,17 +200,12 @@ function ActionHub({ onNavigate }) {
                 {title}
               </h4>
             </div>
-
-            {/* Description */}
             <p className="text-[11px] sm:text-xs font-mono text-text-secondary leading-relaxed relative z-10">
               {desc}
             </p>
-
-            {/* CTA button */}
             <button
               className="relative z-10 flex items-center justify-center gap-1.5 w-full py-2 sm:py-2.5 rounded-lg
-                         text-[11px] sm:text-xs font-semibold font-mono transition-all duration-200
-                         group-hover:gap-2.5"
+                         text-[11px] sm:text-xs font-semibold font-mono transition-all duration-200 group-hover:gap-2.5"
               style={{
                 background: `${iconColor}18`,
                 border: `1px solid ${iconColor}35`,
@@ -287,9 +276,9 @@ function StudyChart({ logs = [], targetHours = 8 }) {
   const todayStr = todayKey();
   const [todayY, todayM] = todayStr.split("-").map(Number);
 
-  const viewedMonth = new Date(todayY, todayM - 1 + monthOffset, 1);
-  const viewYear  = viewedMonth.getFullYear();
-  const viewMonth = viewedMonth.getMonth();
+  const viewedMonth  = new Date(todayY, todayM - 1 + monthOffset, 1);
+  const viewYear     = viewedMonth.getFullYear();
+  const viewMonth    = viewedMonth.getMonth();
   const daysInMonth  = new Date(viewYear, viewMonth + 1, 0).getDate();
   const firstWeekday = viewedMonth.getDay();
 
@@ -299,9 +288,7 @@ function StudyChart({ logs = [], targetHours = 8 }) {
     const isFuture = dateStr > todayStr;
     const hours    = isFuture ? 0 : getHoursForDate(dateStr);
     return {
-      day: dayNum,
-      dateStr,
-      hours,
+      day: dayNum, dateStr, hours,
       isToday: dateStr === todayStr,
       isFuture,
       met:     !isFuture && hours >= targetHours,
@@ -311,20 +298,19 @@ function StudyChart({ logs = [], targetHours = 8 }) {
 
   const monthLabel     = viewedMonth.toLocaleString("en-US", { month: "long", year: "numeric" });
   const isCurrentMonth = monthOffset === 0;
+  const viewedYear     = todayY + yearOffset;
+  const isCurrentYear  = yearOffset === 0;
 
-  const viewedYear    = todayY + yearOffset;
-  const isCurrentYear = yearOffset === 0;
-
-  const elapsedDays   = monthDays.filter((d) => !d.isFuture);
-  const studiedCount  = elapsedDays.filter((d) => d.studied).length;
-  const metCount      = elapsedDays.filter((d) => d.met).length;
-  const monthTotal    = parseFloat(elapsedDays.reduce((s, d) => s + d.hours, 0).toFixed(1));
-  const monthAvg      = studiedCount ? parseFloat((monthTotal / studiedCount).toFixed(1)) : 0;
+  const elapsedDays  = monthDays.filter((d) => !d.isFuture);
+  const studiedCount = elapsedDays.filter((d) => d.studied).length;
+  const metCount     = elapsedDays.filter((d) => d.met).length;
+  const monthTotal   = parseFloat(elapsedDays.reduce((s, d) => s + d.hours, 0).toFixed(1));
+  const monthAvg     = studiedCount ? parseFloat((monthTotal / studiedCount).toFixed(1)) : 0;
 
   const dataMax  = Math.max(...weeklyData.map((d) => d.hours), 0);
   const scaleMax = Math.max(targetHours, Math.ceil(dataMax) || 1);
   const TICKS    = 5;
-  const ticks = Array.from({ length: TICKS }, (_, i) =>
+  const ticks    = Array.from({ length: TICKS }, (_, i) =>
     parseFloat((scaleMax * (1 - i / (TICKS - 1))).toFixed(1))
   );
   const AXIS_W = "w-7 sm:w-8";
@@ -335,36 +321,30 @@ function StudyChart({ logs = [], targetHours = 8 }) {
   const weekAvg          = weekStudiedCount ? parseFloat((weekTotal / weekStudiedCount).toFixed(1)) : 0;
 
   const weekStats = [
-    { label: "Total",    val: `${weekTotal}h`,                          icon: Clock,       color: "#C9A84C" },
-    { label: "Days Hit", val: `${weekMetCount}/${weeklyData.length}`,   icon: CheckCircle, color: "#22c55e" },
-    { label: "Avg/Day",  val: `${weekAvg}h`,                            icon: TrendingUp,  color: "#3b82f6" },
+    { label: "Total",    val: `${weekTotal}h`,                        icon: Clock,       color: "#C9A84C" },
+    { label: "Days Hit", val: `${weekMetCount}/${weeklyData.length}`, icon: CheckCircle, color: "#22c55e" },
+    { label: "Avg/Day",  val: `${weekAvg}h`,                          icon: TrendingUp,  color: "#3b82f6" },
   ];
 
   const monthStats = [
-    { label: "Total",    val: `${monthTotal}h`,                     icon: Clock,       color: "#C9A84C" },
-    { label: "Days Hit", val: `${metCount}/${elapsedDays.length}`,  icon: CheckCircle, color: "#22c55e" },
-    { label: "Avg/Day",  val: `${monthAvg}h`,                       icon: TrendingUp,  color: "#3b82f6" },
+    { label: "Total",    val: `${monthTotal}h`,                    icon: Clock,       color: "#C9A84C" },
+    { label: "Days Hit", val: `${metCount}/${elapsedDays.length}`, icon: CheckCircle, color: "#22c55e" },
+    { label: "Avg/Day",  val: `${monthAvg}h`,                      icon: TrendingUp,  color: "#3b82f6" },
   ];
 
   const yearlyData = (() => {
-    const MONTH_FULL = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    const MONTH_FULL = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
     const serverTodayHours    = logs.find((l) => l.date === todayStr)?.hours || 0;
     const liveTodayHours      = parseFloat((timerStore.elapsed / 3600).toFixed(2));
     const effectiveTodayHours = Math.max(serverTodayHours, liveTodayHours);
-
     return Array.from({ length: 12 }, (_, m) => {
       const monthPrefix = `${viewedYear}-${pad2(m + 1)}`;
       let total = logs
         .filter((l) => l.date && l.date.startsWith(monthPrefix))
         .reduce((s, l) => s + (l.hours || 0), 0);
-
       const isCurrentMonthCell = viewedYear === todayY && m === todayM - 1;
-      if (isCurrentMonthCell) {
-        total = total - serverTodayHours + effectiveTodayHours;
-      }
-
+      if (isCurrentMonthCell) total = total - serverTodayHours + effectiveTodayHours;
       const isFuture = viewedYear > todayY || (viewedYear === todayY && m > todayM - 1);
-
       return {
         label: MONTH_FULL[m],
         short: isMobile ? MONTH_FULL[m].slice(0, 1) : MONTH_FULL[m].slice(0, 3),
@@ -377,22 +357,19 @@ function StudyChart({ logs = [], targetHours = 8 }) {
 
   const elapsedMonths      = yearlyData.filter((d) => !d.isFuture);
   const studiedMonthsCount = elapsedMonths.filter((d) => d.hours > 0).length;
-  const yearTotal = parseFloat(elapsedMonths.reduce((s, d) => s + d.hours, 0).toFixed(1));
-  const bestMonth = elapsedMonths.reduce(
-    (best, d) => (d.hours > best.hours ? d : best),
-    { hours: 0, label: "—" }
-  );
-  const yearAvg = studiedMonthsCount ? parseFloat((yearTotal / studiedMonthsCount).toFixed(1)) : 0;
+  const yearTotal          = parseFloat(elapsedMonths.reduce((s, d) => s + d.hours, 0).toFixed(1));
+  const bestMonth          = elapsedMonths.reduce((best, d) => (d.hours > best.hours ? d : best), { hours: 0, label: "—" });
+  const yearAvg            = studiedMonthsCount ? parseFloat((yearTotal / studiedMonthsCount).toFixed(1)) : 0;
 
   const yearStats = [
-    { label: "Total",      val: `${yearTotal}h`,                                                         icon: Clock,       color: "#C9A84C" },
-    { label: "Best Month", val: bestMonth.hours > 0 ? `${bestMonth.label} · ${bestMonth.hours}h` : "—", icon: Flame,       color: "#ec4899" },
-    { label: "Avg/Month",  val: `${yearAvg}h`,                                                           icon: TrendingUp,  color: "#3b82f6" },
+    { label: "Total",      val: `${yearTotal}h`,                                                         icon: Clock,      color: "#C9A84C" },
+    { label: "Best Month", val: bestMonth.hours > 0 ? `${bestMonth.label} · ${bestMonth.hours}h` : "—", icon: Flame,      color: "#ec4899" },
+    { label: "Avg/Month",  val: `${yearAvg}h`,                                                           icon: TrendingUp, color: "#3b82f6" },
   ];
 
   const yearDataMax  = Math.max(...yearlyData.map((d) => d.hours), 0);
   const yearScaleMax = Math.max(Math.ceil(yearDataMax / 5) * 5, 5);
-  const yearTicks = Array.from({ length: TICKS }, (_, i) =>
+  const yearTicks    = Array.from({ length: TICKS }, (_, i) =>
     parseFloat((yearScaleMax * (1 - i / (TICKS - 1))).toFixed(1))
   );
 
@@ -402,26 +379,16 @@ function StudyChart({ logs = [], targetHours = 8 }) {
         <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
           <TrendingUp size={14} className="text-accent-green shrink-0" />
           <h3 className="text-xs sm:text-sm font-display font-semibold text-text-primary truncate">
-            {view === "weekly"
-              ? (isMobile ? "5-Day Hours" : "Weekly Hours")
-              : view === "monthly"
-              ? monthLabel
-              : `${viewedYear} Overview`}
+            {view === "weekly" ? (isMobile ? "5-Day Hours" : "Weekly Hours") : view === "monthly" ? monthLabel : `${viewedYear} Overview`}
           </h3>
         </div>
         <div className="flex items-center bg-bg-muted rounded-lg p-0.5 gap-0.5 shrink-0">
-          {[
-            ["weekly", isMobile ? "5D" : "7D"],
-            ["monthly", "Month"],
-            ["yearly", "Year"],
-          ].map(([v, lbl]) => (
+          {[["weekly", isMobile ? "5D" : "7D"], ["monthly", "Month"], ["yearly", "Year"]].map(([v, lbl]) => (
             <button
               key={v}
               onClick={() => setView(v)}
               className={`px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-md text-[10px] sm:text-[11px] font-mono transition-all ${
-                view === v
-                  ? "bg-accent-gold/20 text-accent-gold border border-accent-gold/30"
-                  : "text-text-muted hover:text-text-secondary"
+                view === v ? "bg-accent-gold/20 text-accent-gold border border-accent-gold/30" : "text-text-muted hover:text-text-secondary"
               }`}
             >
               {lbl}
@@ -435,23 +402,18 @@ function StudyChart({ logs = [], targetHours = 8 }) {
           <div className="flex">
             <div className={`${AXIS_W} shrink-0 flex flex-col justify-between h-36 sm:h-44 pr-1 sm:pr-1.5 text-right`}>
               {ticks.map((t) => (
-                <span key={t} className="text-[9px] sm:text-[10px] font-mono text-text-muted leading-none">
-                  {t}h
-                </span>
+                <span key={t} className="text-[9px] sm:text-[10px] font-mono text-text-muted leading-none">{t}h</span>
               ))}
             </div>
             <div className="relative flex-1 h-36 sm:h-44 border-l border-b border-bg-border">
               {ticks.slice(0, -1).map((t) => (
-                <div
-                  key={t}
-                  className="absolute left-0 right-0 border-t border-bg-border/50"
-                  style={{ top: `${((scaleMax - t) / scaleMax) * 100}%` }}
-                />
+                <div key={t} className="absolute left-0 right-0 border-t border-bg-border/50"
+                  style={{ top: `${((scaleMax - t) / scaleMax) * 100}%` }} />
               ))}
               <div className="absolute inset-0 flex items-end px-1 sm:px-2">
                 {weeklyData.map(({ label, hours, isToday }, i) => {
-                  const met = hours >= targetHours;
-                  const pct = Math.min((hours / scaleMax) * 100, 100);
+                  const met     = hours >= targetHours;
+                  const pct     = Math.min((hours / scaleMax) * 100, 100);
                   const palette = isToday ? CHART_COLORS.today : met ? CHART_COLORS.goalMet : CHART_COLORS.inProgress;
                   return (
                     <div key={label} className="flex-1 h-full flex items-end justify-center">
@@ -473,63 +435,31 @@ function StudyChart({ logs = [], targetHours = 8 }) {
               </div>
             </div>
           </div>
-
           <div className="flex">
             <div className={`${AXIS_W} shrink-0`} />
             <div className="flex-1 flex px-1 sm:px-2">
               {weeklyData.map(({ label, isToday }) => (
-                <span
-                  key={label}
-                  className={`flex-1 text-center text-[9px] sm:text-[11px] font-mono ${
-                    isToday ? "text-accent-gold font-bold" : "text-text-muted"
-                  }`}
-                >
+                <span key={label} className={`flex-1 text-center text-[9px] sm:text-[11px] font-mono ${isToday ? "text-accent-gold font-bold" : "text-text-muted"}`}>
                   {label}
                 </span>
               ))}
             </div>
           </div>
-
           <div className="flex flex-wrap items-center justify-center gap-x-3 sm:gap-x-4 gap-y-1 text-[9px] sm:text-[10px] font-mono text-text-muted pt-1">
-            <span className="flex items-center gap-1">
-              <span className="inline-block w-2 h-2 rounded-sm" style={{ background: CHART_COLORS.goalMet.grad }} /> Goal met
-            </span>
-            <span className="flex items-center gap-1">
-              <span className="inline-block w-2 h-2 rounded-sm" style={{ background: CHART_COLORS.inProgress.grad }} /> In progress
-            </span>
-            <span className="flex items-center gap-1">
-              <span className="inline-block w-2 h-2 rounded-sm" style={{ background: CHART_COLORS.today.grad }} /> Today
-            </span>
-            <span className="flex items-center gap-1">
-              <span className="inline-block w-2 h-2 rounded-sm bg-bg-muted border border-bg-border" /> Target left
-            </span>
+            <span className="flex items-center gap-1"><span className="inline-block w-2 h-2 rounded-sm" style={{ background: CHART_COLORS.goalMet.grad }} /> Goal met</span>
+            <span className="flex items-center gap-1"><span className="inline-block w-2 h-2 rounded-sm" style={{ background: CHART_COLORS.inProgress.grad }} /> In progress</span>
+            <span className="flex items-center gap-1"><span className="inline-block w-2 h-2 rounded-sm" style={{ background: CHART_COLORS.today.grad }} /> Today</span>
+            <span className="flex items-center gap-1"><span className="inline-block w-2 h-2 rounded-sm bg-bg-muted border border-bg-border" /> Target left</span>
           </div>
-
           <div className="grid grid-cols-3 gap-1.5 sm:gap-2 pt-1">
             {weekStats.map(({ label, val, icon: Icon, color }, i) => (
-              <div
-                key={label}
-                className="rounded-lg p-2.5 sm:p-3.5 text-center flex flex-col items-center justify-center gap-1 sm:gap-1.5 transition-all duration-500 ease-out"
-                style={{
-                  background: `${color}14`,
-                  border: `1px solid ${color}30`,
-                  opacity: grown ? 1 : 0,
-                  transform: grown ? "translateY(0)" : "translateY(10px)",
-                  transitionDelay: `${i * 90}ms`,
-                }}
-              >
+              <div key={label} className="rounded-lg p-2.5 sm:p-3.5 text-center flex flex-col items-center justify-center gap-1 sm:gap-1.5 transition-all duration-500 ease-out"
+                style={{ background: `${color}14`, border: `1px solid ${color}30`, opacity: grown ? 1 : 0, transform: grown ? "translateY(0)" : "translateY(10px)", transitionDelay: `${i * 90}ms` }}>
                 <div className="flex items-center gap-1">
                   <Icon size={11} style={{ color }} />
-                  <span
-                    className="text-[9px] sm:text-[10px] font-mono uppercase tracking-wider font-semibold"
-                    style={{ color }}
-                  >
-                    {label}
-                  </span>
+                  <span className="text-[9px] sm:text-[10px] font-mono uppercase tracking-wider font-semibold" style={{ color }}>{label}</span>
                 </div>
-                <p className="text-lg sm:text-2xl font-display font-bold text-text-primary leading-none">
-                  {val}
-                </p>
+                <p className="text-lg sm:text-2xl font-display font-bold text-text-primary leading-none">{val}</p>
               </div>
             ))}
           </div>
@@ -537,91 +467,45 @@ function StudyChart({ logs = [], targetHours = 8 }) {
       ) : view === "monthly" ? (
         <div className="space-y-2.5 sm:space-y-3">
           <div className="flex items-center justify-between bg-bg-muted rounded-lg p-1 sm:p-1.5">
-            <button
-              onClick={() => setMonthOffset((o) => o - 1)}
-              className="p-1.5 sm:p-2 rounded-md border border-transparent hover:border-accent-gold/30 hover:bg-bg-surface transition-colors"
-            >
-              <ChevronLeft size={15} />
-            </button>
-            <span className="text-xs sm:text-sm font-display font-semibold text-text-primary">
-              {isCurrentMonth ? "This month" : monthLabel}
-            </span>
-            <button
-              onClick={() => setMonthOffset((o) => Math.min(0, o + 1))}
-              disabled={isCurrentMonth}
-              className={`p-1.5 sm:p-2 rounded-md border border-transparent transition-colors ${
-                isCurrentMonth ? "opacity-30 cursor-not-allowed" : "hover:border-accent-gold/30 hover:bg-bg-surface"
-              }`}
-            >
+            <button onClick={() => setMonthOffset((o) => o - 1)} className="p-1.5 sm:p-2 rounded-md border border-transparent hover:border-accent-gold/30 hover:bg-bg-surface transition-colors"><ChevronLeft size={15} /></button>
+            <span className="text-xs sm:text-sm font-display font-semibold text-text-primary">{isCurrentMonth ? "This month" : monthLabel}</span>
+            <button onClick={() => setMonthOffset((o) => Math.min(0, o + 1))} disabled={isCurrentMonth}
+              className={`p-1.5 sm:p-2 rounded-md border border-transparent transition-colors ${isCurrentMonth ? "opacity-30 cursor-not-allowed" : "hover:border-accent-gold/30 hover:bg-bg-surface"}`}>
               <ChevronRight size={15} />
             </button>
           </div>
-
           <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
             {monthStats.map(({ label, val, icon: Icon, color }, i) => (
-              <div
-                key={label}
-                className="rounded-lg p-2.5 sm:p-3.5 text-center flex flex-col items-center justify-center gap-1 sm:gap-1.5 transition-all duration-500 ease-out"
-                style={{
-                  background: `${color}14`,
-                  border: `1px solid ${color}30`,
-                  opacity: grown ? 1 : 0,
-                  transform: grown ? "translateY(0)" : "translateY(10px)",
-                  transitionDelay: `${i * 90}ms`,
-                }}
-              >
+              <div key={label} className="rounded-lg p-2.5 sm:p-3.5 text-center flex flex-col items-center justify-center gap-1 sm:gap-1.5 transition-all duration-500 ease-out"
+                style={{ background: `${color}14`, border: `1px solid ${color}30`, opacity: grown ? 1 : 0, transform: grown ? "translateY(0)" : "translateY(10px)", transitionDelay: `${i * 90}ms` }}>
                 <div className="flex items-center gap-1">
                   <Icon size={11} style={{ color }} />
-                  <span className="text-[9px] sm:text-[10px] font-mono uppercase tracking-wider font-semibold" style={{ color }}>
-                    {label}
-                  </span>
+                  <span className="text-[9px] sm:text-[10px] font-mono uppercase tracking-wider font-semibold" style={{ color }}>{label}</span>
                 </div>
                 <p className="text-lg sm:text-2xl font-display font-bold text-text-primary leading-none">{val}</p>
               </div>
             ))}
           </div>
-
           <div className="grid grid-cols-7 gap-1.5 sm:gap-2 text-center">
-            {["S", "M", "T", "W", "T", "F", "S"].map((d, i) => (
+            {["S","M","T","W","T","F","S"].map((d, i) => (
               <span key={i} className="text-[9px] sm:text-[11px] font-mono text-text-muted">{d}</span>
             ))}
           </div>
-
           <div className="grid grid-cols-7 gap-1.5 sm:gap-2">
             {Array.from({ length: firstWeekday }, (_, i) => <div key={`pad-${i}`} />)}
             {monthDays.map((d) => {
-              const palette = d.isToday
-                ? CHART_COLORS.today
-                : d.met
-                ? CHART_COLORS.goalMet
-                : d.studied
-                ? CHART_COLORS.inProgress
-                : null;
+              const palette = d.isToday ? CHART_COLORS.today : d.met ? CHART_COLORS.goalMet : d.studied ? CHART_COLORS.inProgress : null;
               return (
-                <div
-                  key={d.dateStr}
-                  title={d.isFuture ? "" : `${d.dateStr} — ${d.hours}h studied`}
+                <div key={d.dateStr} title={d.isFuture ? "" : `${d.dateStr} — ${d.hours}h studied`}
                   className={`aspect-square rounded-lg sm:rounded-xl flex flex-col items-center justify-center gap-0.5 border transition-all duration-500 ease-out ${
-                    d.isFuture
-                      ? "border-transparent bg-transparent"
-                      : palette
-                      ? "border-transparent"
-                      : "border-gray-600/30 bg-gray-700/20"
+                    d.isFuture ? "border-transparent bg-transparent" : palette ? "border-transparent" : "border-gray-600/30 bg-gray-700/20"
                   }`}
-                  style={{
-                    background: palette ? palette.grad : undefined,
-                    boxShadow: palette ? `0 2px 8px ${palette.glow}` : undefined,
-                  }}
-                >
-                  <span className={`text-[9px] sm:text-[11px] font-mono font-bold leading-none ${
-                    palette ? "text-white" : d.isFuture ? "text-transparent" : "text-text-muted"
-                  }`}>
+                  style={{ background: palette ? palette.grad : undefined, boxShadow: palette ? `0 2px 8px ${palette.glow}` : undefined }}>
+                  <span className={`text-[9px] sm:text-[11px] font-mono font-bold leading-none ${palette ? "text-white" : d.isFuture ? "text-transparent" : "text-text-muted"}`}>
                     {d.day}
                   </span>
                   {!d.isFuture && d.hours > 0 && (
-                    <span className="text-[7px] sm:text-[8px] font-mono leading-none text-white/70">
-                      {d.hours}h
-                    </span>
+                    <span className="text-[7px] sm:text-[8px] font-mono leading-none text-white/70">{d.hours}h</span>
                   )}
                 </div>
               );
@@ -631,39 +515,17 @@ function StudyChart({ logs = [], targetHours = 8 }) {
       ) : (
         <div className="space-y-2.5 sm:space-y-3">
           <div className="flex items-center justify-between bg-bg-muted rounded-lg p-1 sm:p-1.5">
-            <button
-              onClick={() => setYearOffset((o) => o - 1)}
-              className="p-1.5 sm:p-2 rounded-md border border-transparent hover:border-accent-gold/30 hover:bg-bg-surface transition-colors"
-            >
-              <ChevronLeft size={15} />
-            </button>
-            <span className="text-xs sm:text-sm font-display font-semibold text-text-primary">
-              {isCurrentYear ? "This year" : viewedYear}
-            </span>
-            <button
-              onClick={() => setYearOffset((o) => Math.min(0, o + 1))}
-              disabled={isCurrentYear}
-              className={`p-1.5 sm:p-2 rounded-md border border-transparent transition-colors ${
-                isCurrentYear ? "opacity-30 cursor-not-allowed" : "hover:border-accent-gold/30 hover:bg-bg-surface"
-              }`}
-            >
+            <button onClick={() => setYearOffset((o) => o - 1)} className="p-1.5 sm:p-2 rounded-md border border-transparent hover:border-accent-gold/30 hover:bg-bg-surface transition-colors"><ChevronLeft size={15} /></button>
+            <span className="text-xs sm:text-sm font-display font-semibold text-text-primary">{isCurrentYear ? "This year" : viewedYear}</span>
+            <button onClick={() => setYearOffset((o) => Math.min(0, o + 1))} disabled={isCurrentYear}
+              className={`p-1.5 sm:p-2 rounded-md border border-transparent transition-colors ${isCurrentYear ? "opacity-30 cursor-not-allowed" : "hover:border-accent-gold/30 hover:bg-bg-surface"}`}>
               <ChevronRight size={15} />
             </button>
           </div>
-
           <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
             {yearStats.map(({ label, val, icon: Icon, color }, i) => (
-              <div
-                key={label}
-                className="rounded-lg p-2.5 sm:p-3.5 text-center flex flex-col items-center justify-center gap-1 sm:gap-1.5 transition-all duration-500 ease-out"
-                style={{
-                  background: `${color}14`,
-                  border: `1px solid ${color}30`,
-                  opacity: grown ? 1 : 0,
-                  transform: grown ? "translateY(0)" : "translateY(10px)",
-                  transitionDelay: `${i * 90}ms`,
-                }}
-              >
+              <div key={label} className="rounded-lg p-2.5 sm:p-3.5 text-center flex flex-col items-center justify-center gap-1 sm:gap-1.5 transition-all duration-500 ease-out"
+                style={{ background: `${color}14`, border: `1px solid ${color}30`, opacity: grown ? 1 : 0, transform: grown ? "translateY(0)" : "translateY(10px)", transitionDelay: `${i * 90}ms` }}>
                 <div className="flex items-center gap-1">
                   <Icon size={11} style={{ color }} />
                   <span className="text-[9px] sm:text-[10px] font-mono uppercase tracking-wider font-semibold" style={{ color }}>{label}</span>
@@ -672,7 +534,6 @@ function StudyChart({ logs = [], targetHours = 8 }) {
               </div>
             ))}
           </div>
-
           <div className="flex">
             <div className={`${AXIS_W} shrink-0 flex flex-col justify-between h-36 sm:h-44 pr-1 sm:pr-1.5 text-right`}>
               {yearTicks.map((t) => (
@@ -681,29 +542,20 @@ function StudyChart({ logs = [], targetHours = 8 }) {
             </div>
             <div className="relative flex-1 h-36 sm:h-44 border-l border-b border-bg-border">
               {yearTicks.slice(0, -1).map((t) => (
-                <div
-                  key={t}
-                  className="absolute left-0 right-0 border-t border-bg-border/50"
-                  style={{ top: `${((yearScaleMax - t) / yearScaleMax) * 100}%` }}
-                />
+                <div key={t} className="absolute left-0 right-0 border-t border-bg-border/50"
+                  style={{ top: `${((yearScaleMax - t) / yearScaleMax) * 100}%` }} />
               ))}
               <div className="absolute inset-0 flex items-end px-1 sm:px-2">
                 {yearlyData.map((d, i) => {
-                  const pct = Math.min((d.hours / yearScaleMax) * 100, 100);
-                  const isBest = bestMonth.hours > 0 && d.label === bestMonth.label && !d.isCurrent;
+                  const pct     = Math.min((d.hours / yearScaleMax) * 100, 100);
+                  const isBest  = bestMonth.hours > 0 && d.label === bestMonth.label && !d.isCurrent;
                   const palette = d.isCurrent ? CHART_COLORS.today : isBest ? CHART_COLORS.best : CHART_COLORS.inProgress;
                   return (
                     <div key={i} className="flex-1 h-full flex items-end justify-center">
                       {!d.isFuture && d.hours > 0 && (
-                        <div
-                          title={`${d.label}: ${d.hours}h`}
+                        <div title={`${d.label}: ${d.hours}h`}
                           className="w-full max-w-[16px] sm:max-w-[22px] rounded-t-md transition-all duration-700 ease-out"
-                          style={{
-                            height: `${grown ? Math.max(pct, 4) : 0}%`,
-                            background: palette.grad,
-                            boxShadow: `0 2px 10px ${palette.glow}`,
-                            transitionDelay: `${i * 50}ms`,
-                          }}
+                          style={{ height: `${grown ? Math.max(pct, 4) : 0}%`, background: palette.grad, boxShadow: `0 2px 10px ${palette.glow}`, transitionDelay: `${i * 50}ms` }}
                         />
                       )}
                     </div>
@@ -712,23 +564,16 @@ function StudyChart({ logs = [], targetHours = 8 }) {
               </div>
             </div>
           </div>
-
           <div className="flex">
             <div className={`${AXIS_W} shrink-0`} />
             <div className="flex-1 flex px-1 sm:px-2">
               {yearlyData.map((d, i) => (
-                <span
-                  key={i}
-                  className={`flex-1 text-center text-[9px] sm:text-[11px] font-mono ${
-                    d.isCurrent ? "text-accent-gold font-bold" : "text-text-muted"
-                  }`}
-                >
+                <span key={i} className={`flex-1 text-center text-[9px] sm:text-[11px] font-mono ${d.isCurrent ? "text-accent-gold font-bold" : "text-text-muted"}`}>
                   {d.short}
                 </span>
               ))}
             </div>
           </div>
-
           <div className="flex flex-wrap items-center justify-center gap-x-3 sm:gap-x-4 gap-y-1 text-[9px] sm:text-[10px] font-mono text-text-muted pt-1">
             <span className="flex items-center gap-1"><span className="inline-block w-2 h-2 rounded-sm" style={{ background: CHART_COLORS.inProgress.grad }} /> Monthly hours</span>
             <span className="flex items-center gap-1"><span className="inline-block w-2 h-2 rounded-sm" style={{ background: CHART_COLORS.best.grad }} /> Best month</span>
@@ -753,26 +598,15 @@ function StatCard({ icon: Icon, label, value, sub, accent = false, iconColor, de
       className={`glass-panel p-2.5 sm:p-4 flex flex-col gap-0.5 sm:gap-1.5 transition-all duration-500 ease-out active:scale-95 sm:hover:-translate-y-0.5 sm:hover:border-accent-gold/30 cursor-default ${
         accent ? "border-accent-gold/30 bg-accent-gold/5" : ""
       }`}
-      style={{
-        opacity: grown ? 1 : 0,
-        transform: grown ? "translateY(0)" : "translateY(10px)",
-      }}
+      style={{ opacity: grown ? 1 : 0, transform: grown ? "translateY(0)" : "translateY(10px)" }}
     >
       <div className="flex items-center gap-1 sm:gap-2">
-        <Icon
-          size={12}
-          style={{ color: iconColor }}
-          className={`shrink-0 ${!iconColor ? (accent ? "text-accent-gold" : "text-text-secondary") : ''}`}
+        <Icon size={12} style={{ color: iconColor }}
+          className={`shrink-0 ${!iconColor ? (accent ? "text-accent-gold" : "text-text-secondary") : ""}`}
         />
-        <span className="text-[9px] sm:text-xs font-mono text-text-muted uppercase tracking-wider leading-tight truncate">
-          {label}
-        </span>
+        <span className="text-[9px] sm:text-xs font-mono text-text-muted uppercase tracking-wider leading-tight truncate">{label}</span>
       </div>
-      <p
-        className={`text-lg sm:text-2xl font-display font-bold leading-tight ${
-          accent ? "text-accent-gold" : "text-text-primary"
-        }`}
-      >
+      <p className={`text-lg sm:text-2xl font-display font-bold leading-tight ${accent ? "text-accent-gold" : "text-text-primary"}`}>
         {value}
       </p>
       {sub && <p className="text-[9px] sm:text-xs text-text-secondary truncate">{sub}</p>}
@@ -784,24 +618,13 @@ function StatCard({ icon: Icon, label, value, sub, accent = false, iconColor, de
 function TodayPlanner() {
   const SK = `upsc-tasks-${todayKey()}`;
   const [tasks, setTasks] = useState(() => {
-    try {
-      return JSON.parse(localStorage.getItem(SK) || "[]");
-    } catch {
-      return [];
-    }
+    try { return JSON.parse(localStorage.getItem(SK) || "[]"); } catch { return []; }
   });
   const [input, setInput] = useState("");
-  const save = (next) => {
-    setTasks(next);
-    localStorage.setItem(SK, JSON.stringify(next));
-  };
-  const add = () => {
-    if (!input.trim()) return;
-    save([...tasks, { text: input.trim(), done: false }]);
-    setInput("");
-  };
-
+  const save = (next) => { setTasks(next); localStorage.setItem(SK, JSON.stringify(next)); };
+  const add  = () => { if (!input.trim()) return; save([...tasks, { text: input.trim(), done: false }]); setInput(""); };
   const done = tasks.filter((t) => t.done).length;
+
   return (
     <div className="glass-panel p-3 sm:p-4 space-y-2.5 sm:space-y-3">
       <div className="flex items-center justify-between">
@@ -810,28 +633,21 @@ function TodayPlanner() {
           <h3 className="text-xs sm:text-sm font-display font-semibold text-text-primary">Today's Tasks</h3>
         </div>
         {tasks.length > 0 && (
-          <span className="text-[10px] sm:text-[11px] font-mono text-text-muted">
-            {done}/{tasks.length}
-          </span>
+          <span className="text-[10px] sm:text-[11px] font-mono text-text-muted">{done}/{tasks.length}</span>
         )}
       </div>
       <div className="flex gap-2">
         <input
-          type="text"
-          value={input}
+          type="text" value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => { if (e.key === "Enter") add(); }}
           placeholder="Add a task..."
           className="flex-1 min-w-0 bg-bg-muted border border-bg-border rounded-lg px-2.5 sm:px-3 py-2 text-text-primary text-xs sm:text-sm focus:outline-none focus:border-accent-gold/50 transition-colors"
         />
-        <button onClick={add} className="btn-primary flex items-center gap-1 px-3 py-2">
-          <Plus size={14} />
-        </button>
+        <button onClick={add} className="btn-primary flex items-center gap-1 px-3 py-2"><Plus size={14} /></button>
       </div>
       {tasks.length === 0 ? (
-        <p className="text-[11px] sm:text-xs text-text-muted font-mono">
-          No tasks yet. Add your study goals for today.
-        </p>
+        <p className="text-[11px] sm:text-xs text-text-muted font-mono">No tasks yet. Add your study goals for today.</p>
       ) : (
         <div className="space-y-1.5 max-h-44 overflow-y-auto pr-1">
           {tasks.map((t, i) => (
@@ -844,15 +660,11 @@ function TodayPlanner() {
               >
                 {t.done && <CheckCircle size={10} className="text-white" />}
               </button>
-              <span className={`text-[11px] sm:text-xs flex-1 min-w-0 leading-tight ${
-                t.done ? "line-through text-text-muted" : "text-text-secondary"
-              }`}>
+              <span className={`text-[11px] sm:text-xs flex-1 min-w-0 leading-tight ${t.done ? "line-through text-text-muted" : "text-text-secondary"}`}>
                 {t.text}
               </span>
-              <button
-                onClick={() => save(tasks.filter((_, j) => j !== i))}
-                className="opacity-0 group-hover:opacity-60 hover:opacity-100 text-text-muted hover:text-red-400 transition-all shrink-0 p-0.5"
-              >
+              <button onClick={() => save(tasks.filter((_, j) => j !== i))}
+                className="opacity-0 group-hover:opacity-60 hover:opacity-100 text-text-muted hover:text-red-400 transition-all shrink-0 p-0.5">
                 <X size={11} />
               </button>
             </div>
@@ -873,19 +685,11 @@ function PaperProgress({ syllabusData }) {
       const meta      = SYLLABUS[stage][paperKey];
       const userPaper = stagePapers[paperKey];
       if (!meta || !userPaper) continue;
-      rows.push({
-        label: meta.label.split("—")[1]?.trim() || meta.label,
-        color: meta.color,
-        pct: getPct(userPaper.modules),
-      });
+      rows.push({ label: meta.label.split("—")[1]?.trim() || meta.label, color: meta.color, pct: getPct(userPaper.modules) });
     }
   }
-
   const [grown, setGrown] = useState(false);
-  useEffect(() => {
-    const t = setTimeout(() => setGrown(true), 120);
-    return () => clearTimeout(t);
-  }, []);
+  useEffect(() => { const t = setTimeout(() => setGrown(true), 120); return () => clearTimeout(t); }, []);
 
   return (
     <div className="glass-panel p-3 sm:p-4 space-y-2.5 sm:space-y-3">
@@ -894,29 +698,18 @@ function PaperProgress({ syllabusData }) {
         <h3 className="text-xs sm:text-sm font-display font-semibold text-text-primary">Paper Coverage</h3>
       </div>
       {rows.length === 0 ? (
-        <p className="text-[11px] sm:text-xs text-text-muted font-mono py-2">
-          Mark progress in Syllabus Tracker to see coverage.
-        </p>
+        <p className="text-[11px] sm:text-xs text-text-muted font-mono py-2">Mark progress in Syllabus Tracker to see coverage.</p>
       ) : (
         <div className="space-y-2.5">
           {rows.map(({ label, color, pct }, i) => (
             <div key={label} className="space-y-1">
               <div className="flex justify-between items-center gap-2">
-                <span className="text-[11px] sm:text-xs text-text-secondary truncate max-w-[65%] sm:max-w-[70%]">
-                  {label}
-                </span>
+                <span className="text-[11px] sm:text-xs text-text-secondary truncate max-w-[65%] sm:max-w-[70%]">{label}</span>
                 <span className="text-[10px] sm:text-[11px] font-mono text-text-muted shrink-0">{pct}%</span>
               </div>
               <div className="h-2 bg-bg-muted rounded-full overflow-hidden">
-                <div
-                  className="h-full rounded-full transition-all ease-out"
-                  style={{
-                    width: grown ? `${pct}%` : "0%",
-                    background: `linear-gradient(90deg, ${color}cc, ${color})`,
-                    boxShadow: pct > 0 ? `0 0 8px ${color}66` : "none",
-                    transitionDuration: "900ms",
-                    transitionDelay: `${i * 110}ms`,
-                  }}
+                <div className="h-full rounded-full transition-all ease-out"
+                  style={{ width: grown ? `${pct}%` : "0%", background: `linear-gradient(90deg, ${color}cc, ${color})`, boxShadow: pct > 0 ? `0 0 8px ${color}66` : "none", transitionDuration: "900ms", transitionDelay: `${i * 110}ms` }}
                 />
               </div>
             </div>
@@ -944,7 +737,7 @@ export default function Dashboard({
   if (!user) return <AuthGate feature="Dashboard" onNavigateAuth={onNavigateAuth} />;
 
   const [timerHours, setTimerHours] = useState(0);
-  const [isMobile, setIsMobile] = useState(false);
+  const [isMobile, setIsMobile]     = useState(false);
   const [progressGrown, setProgressGrown] = useState(false);
 
   useEffect(() => {
@@ -971,6 +764,7 @@ export default function Dashboard({
 
   return (
     <div className="overflow-y-auto p-2 sm:p-4 md:p-6 space-y-2 sm:space-y-4 md:space-y-5 animate-fade-in">
+
       {/* ── Header ── */}
       <div className="flex items-center justify-between px-1 sticky top-0 bg-bg-base/95 backdrop-blur-sm z-10 py-2 sm:py-0">
         <div className="min-w-0">
@@ -981,7 +775,6 @@ export default function Dashboard({
             Progress, revision, and daily momentum.
           </p>
         </div>
-
         {userName && (
           <button
             onClick={onNavigateProfile}
@@ -1003,74 +796,34 @@ export default function Dashboard({
 
       {/* ── Stat cards ── */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-1.5 sm:gap-2 md:gap-3">
-        <StatCard
-          icon={Clock}
-          label="Today"
-          value={fmtHM(Math.round(todayHours * 3600))}
-          sub={`Target: ${targetHours}h`}
-          accent={todayHours >= targetHours}
-          delay={0}
-        />
+        <StatCard icon={Clock}     label="Today"    value={fmtHM(Math.round(todayHours * 3600))} sub={`Target: ${targetHours}h`} accent={todayHours >= targetHours} delay={0} />
         <StatCard icon={TrendingUp} label="7-Day Avg" value={`${weekAvgHours}h`} sub="Per day" delay={60} />
-        <StatCard
-          icon={Flame}
-          label="Streak"
-          value={`${streak}d`}
-          sub={`Best: ${longestStreak}d`}
-          iconColor="#fb923c"
-          delay={120}
-        />
-        <StatCard icon={BookMarked} label="Answers" value={totalAnswers} sub="Written" delay={180} />
-        <StatCard
-          icon={BarChart2}
-          label="Coverage"
-          value={`${Math.round(overallProgress)}%`}
-          sub="Syllabus"
-          iconColor="#C9A84C"
-          delay={240}
-        />
-        <StatCard
-          icon={Target}
-          label="GS1 Done"
-          value={`${getPct(syllabusData?.mains?.GS1?.modules || {})}%`}
-          sub="GS1 modules"
-          iconColor="#4ade80"
-          delay={300}
-        />
+        <StatCard icon={Flame}     label="Streak"   value={`${streak}d`} sub={`Best: ${longestStreak}d`} iconColor="#fb923c" delay={120} />
+        <StatCard icon={BookMarked} label="Answers"  value={totalAnswers} sub="Written" delay={180} />
+        <StatCard icon={BarChart2} label="Coverage" value={`${Math.round(overallProgress)}%`} sub="Syllabus" iconColor="#C9A84C" delay={240} />
+        <StatCard icon={Target}    label="GS1 Done" value={`${getPct(syllabusData?.mains?.GS1?.modules || {})}%`} sub="GS1 modules" iconColor="#4ade80" delay={300} />
       </div>
 
       {/* ── Overall progress bar ── */}
       <div className="glass-panel p-3 sm:p-4 space-y-1.5 sm:space-y-2">
         <div className="flex items-center justify-between">
-          <span className="text-[10px] sm:text-xs font-mono text-text-secondary uppercase tracking-wider">
-            Overall Coverage
-          </span>
-          <span className="text-sm sm:text-base font-display font-bold text-text-primary">
-            {Math.round(overallProgress)}%
-          </span>
+          <span className="text-[10px] sm:text-xs font-mono text-text-secondary uppercase tracking-wider">Overall Coverage</span>
+          <span className="text-sm sm:text-base font-display font-bold text-text-primary">{Math.round(overallProgress)}%</span>
         </div>
         <div className="h-2.5 bg-bg-muted rounded-full overflow-hidden">
-          <div
-            className="h-full bg-gradient-to-r from-accent-gold to-yellow-400 rounded-full transition-all ease-out"
-            style={{
-              width: progressGrown ? `${overallProgress}%` : "0%",
-              boxShadow: "0 0 10px rgba(201,168,76,0.5)",
-              transitionDuration: "1100ms",
-            }}
+          <div className="h-full bg-gradient-to-r from-accent-gold to-yellow-400 rounded-full transition-all ease-out"
+            style={{ width: progressGrown ? `${overallProgress}%` : "0%", boxShadow: "0 0 10px rgba(201,168,76,0.5)", transitionDuration: "1100ms" }}
           />
         </div>
         <p className="text-[10px] sm:text-xs text-text-muted font-mono">
-          {overallProgress < 10
-            ? "Day one. The journey begins."
-            : overallProgress < 40
-            ? "Foundation phase. Keep the momentum."
-            : overallProgress < 70
-            ? "Solid coverage. Depth work begins now."
-            : "Advanced stage. Revision and PYQ analysis."}
+          {overallProgress < 10 ? "Day one. The journey begins."
+           : overallProgress < 40 ? "Foundation phase. Keep the momentum."
+           : overallProgress < 70 ? "Solid coverage. Depth work begins now."
+           : "Advanced stage. Revision and PYQ analysis."}
         </p>
       </div>
 
-      {/* ── ACTION HUB — primary study actions ── */}
+      {/* ── ACTION HUB ── */}
       {isMobile ? (
         <CollapsibleSection title="Start Studying" icon={Rocket} defaultOpen={true}>
           <ActionHub onNavigate={onNavigate} />
@@ -1080,6 +833,8 @@ export default function Dashboard({
       )}
 
       {/* ── Study Timer (subject-tagged) ── */}
+      {/* SubjectStudyTimer does NOT render SubjectAnalyticsDashboard inside it. */}
+      {/* The analytics card lives below as its own separate section.            */}
       <SubjectStudyTimer
         onLogHours={onLogHours}
         onSynced={setTimerHours}
@@ -1088,7 +843,15 @@ export default function Dashboard({
         dataReady={!!userData}
         userId={userId}
       />
-
+    {/* ── Subject Study Analytics ── */}
+      {/* Standalone card. Rendered ONCE here. Never inside SubjectStudyTimer. */}
+      {isMobile ? (
+        <CollapsibleSection title="Subject Study Hours" icon={BarChart2} defaultOpen={false}>
+          <SubjectAnalyticsDashboard isLoggedIn={isLoggedIn} />
+        </CollapsibleSection>
+      ) : (
+        <SubjectAnalyticsDashboard isLoggedIn={isLoggedIn} />
+      )}
       {/* ── Today's Tasks ── */}
       {isMobile ? (
         <CollapsibleSection title="Today's Tasks" icon={ListChecks} defaultOpen={true}>
@@ -1117,6 +880,8 @@ export default function Dashboard({
         )}
       </div>
 
+
+
       {/* ── AI Spaced Repetition ── */}
       {isMobile ? (
         <CollapsibleSection title="AI Revision Queue" icon={Brain} defaultOpen={false}>
@@ -1135,15 +900,11 @@ export default function Dashboard({
         <QuestionStatsPanel />
       )}
 
-      {/* ── Feedback card — at bottom of dashboard ── */}
+      {/* ── Feedback card ── */}
       <div className="glass-panel p-4 sm:p-5 flex items-center justify-between gap-4">
         <div>
-          <p className="text-sm font-display font-semibold text-text-primary">
-            How's your experience?
-          </p>
-          <p className="text-xs font-mono text-text-muted mt-0.5">
-            Help us improve UPSC Mentor — takes 30 seconds.
-          </p>
+          <p className="text-sm font-display font-semibold text-text-primary">How's your experience?</p>
+          <p className="text-xs font-mono text-text-muted mt-0.5">Help us improve UPSC Mentor — takes 30 seconds.</p>
         </div>
         <button
           onClick={() => window.openFeedbackModal?.()}

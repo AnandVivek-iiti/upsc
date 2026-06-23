@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import {
   Play, Pause, RotateCcw, Timer, Cloud, CloudOff,
-  BookOpen, ChevronDown, ChevronUp, Clock, TrendingUp,
+  BookOpen, ChevronDown, ChevronUp, Clock,
 } from "lucide-react";
 import timerStore from "../../hooks/timerStore";
 import { useSubjectTimer, UPSC_SUBJECTS, SUBJECT_COLORS, SUBJECT_ICONS } from "../../hooks/useSubjectTimer";
@@ -63,145 +63,6 @@ function SubjectPicker({ onSelect, onCancel }) {
   );
 }
 
-// ─── SessionHistory ──────────────────────────────────────────────────────────
-function SessionHistory({ sessions }) {
-  const [expanded, setExpanded] = useState(false);
-  if (!sessions?.length) {
-    return <p className="text-[11px] font-mono text-text-muted py-1">No sessions recorded today yet.</p>;
-  }
-  const shown = expanded ? sessions : sessions.slice(0, 3);
-  return (
-    <div className="space-y-1.5">
-      {shown.map((s, i) => {
-        const color = SUBJECT_COLORS[s.subject] || "#94a3b8";
-        const icon = SUBJECT_ICONS[s.subject] || "📚";
-        const timeStr = new Date(Number(s.started_at || s.start_time)).toLocaleTimeString("en-IN", {
-          hour: "2-digit", minute: "2-digit", hour12: true,
-        });
-        return (
-          <div key={s.id || i} className="flex items-center gap-2 py-1.5 px-2.5 rounded-lg" style={{ background: `${color}08`, border: `0.5px solid ${color}25` }}>
-            <span className="text-sm leading-none">{icon}</span>
-            <div className="flex-1 min-w-0">
-              <span className="text-xs font-medium text-text-primary">{s.subject}</span>
-              <span className="text-[10px] font-mono text-text-muted ml-1.5">{timeStr}</span>
-            </div>
-            <span className="text-xs font-mono font-bold shrink-0" style={{ color }}>{s.display || fmtHM(s.duration_seconds || 0)}</span>
-          </div>
-        );
-      })}
-      {sessions.length > 3 && (
-        <button onClick={() => setExpanded((v) => !v)} className="flex items-center gap-1 text-[10px] font-mono text-text-muted hover:text-text-primary transition-colors">
-          {expanded ? <ChevronUp size={10} /> : <ChevronDown size={10} />}
-          {expanded ? "Show less" : `+${sessions.length - 3} more`}
-        </button>
-      )}
-    </div>
-  );
-}
-
-// ─── SubjectDistribution ─────────────────────────────────────────────────────
-function SubjectDistribution({ analytics, loading }) {
-  if (loading) {
-    return (
-      <div className="space-y-2 animate-pulse">
-        {[70, 50, 35, 20].map((w, i) => <div key={i} className="h-5 bg-bg-muted rounded" style={{ width: `${w}%` }} />)}
-      </div>
-    );
-  }
-  const dist = analytics?.distribution || [];
-  if (!dist.length) {
-    return <p className="text-[11px] font-mono text-text-muted py-1">Start studying to see your subject breakdown.</p>;
-  }
-  const maxSecs = dist[0]?.total_seconds || 1;
-  return (
-    <div className="space-y-2">
-      {dist.slice(0, 7).map((row) => {
-        const color = SUBJECT_COLORS[row.subject] || "#94a3b8";
-        const icon = SUBJECT_ICONS[row.subject] || "📚";
-        const barWidth = `${(row.total_seconds / maxSecs) * 100}%`;
-        return (
-          <div key={row.subject} className="space-y-0.5">
-            <div className="flex items-center justify-between gap-2">
-              <div className="flex items-center gap-1.5 min-w-0">
-                <span className="text-sm leading-none">{icon}</span>
-                <span className="text-[11px] sm:text-xs text-text-secondary truncate">{row.subject}</span>
-              </div>
-              <div className="flex items-center gap-2 shrink-0">
-                <span className="text-[10px] font-mono text-text-muted">{row.percentage}%</span>
-                <span className="text-[11px] font-mono font-bold" style={{ color }}>{row.display}</span>
-              </div>
-            </div>
-            <div className="h-1.5 bg-bg-muted rounded-full overflow-hidden">
-              <div className="h-full rounded-full transition-all duration-700 ease-out" style={{ width: barWidth, background: `linear-gradient(90deg, ${color}bb, ${color})`, boxShadow: `0 0 5px ${color}44` }} />
-            </div>
-          </div>
-        );
-      })}
-      {dist.length > 7 && <p className="text-[10px] font-mono text-text-muted">+{dist.length - 7} more subjects</p>}
-    </div>
-  );
-}
-
-// ─── SubjectInsights ─────────────────────────────────────────────────────────
-function SubjectInsights({ analytics }) {
-  if (!analytics) return null;
-  const { insights, total_hours } = analytics;
-  if (!insights?.most_studied && !insights?.least_studied) return null;
-  const most = insights.most_studied;
-  const least = insights.least_studied;
-  return (
-    <div className="space-y-2">
-      <div className="grid grid-cols-2 gap-2">
-        {most && (
-          <div className="rounded-xl p-2.5 sm:p-3 space-y-0.5" style={{ background: `${SUBJECT_COLORS[most.subject]}12`, border: `0.5px solid ${SUBJECT_COLORS[most.subject]}30` }}>
-            <p className="text-[9px] font-mono uppercase tracking-wider text-text-muted">Most Studied</p>
-            <p className="text-xs font-medium text-text-primary leading-tight">{SUBJECT_ICONS[most.subject]} {most.subject}</p>
-            <p className="text-sm font-display font-bold" style={{ color: SUBJECT_COLORS[most.subject] }}>{most.display}</p>
-          </div>
-        )}
-        {least && (
-          <div className="rounded-xl p-2.5 sm:p-3 space-y-0.5" style={{ background: `${SUBJECT_COLORS[least.subject]}08`, border: `0.5px solid ${SUBJECT_COLORS[least.subject]}20` }}>
-            <p className="text-[9px] font-mono uppercase tracking-wider text-text-muted">Least Studied</p>
-            <p className="text-xs font-medium text-text-primary leading-tight">{SUBJECT_ICONS[least.subject]} {least.subject}</p>
-            <p className="text-sm font-display font-bold" style={{ color: SUBJECT_COLORS[least.subject] }}>{least.display}</p>
-          </div>
-        )}
-      </div>
-      {(insights.this_week?.[0] || insights.this_month?.[0]) && (
-        <div className="grid grid-cols-2 gap-2">
-          {insights.this_week?.[0] && (() => {
-            const w = insights.this_week[0];
-            const c = SUBJECT_COLORS[w.subject] || "#C9A84C";
-            return (
-              <div className="rounded-xl p-2.5 space-y-0.5" style={{ background: `${c}0a`, border: `0.5px solid ${c}20` }}>
-                <p className="text-[9px] font-mono uppercase text-text-muted">This Week Top</p>
-                <p className="text-xs font-medium text-text-primary">{SUBJECT_ICONS[w.subject]} {w.subject}</p>
-                <p className="text-xs font-mono font-bold" style={{ color: c }}>{w.display}</p>
-              </div>
-            );
-          })()}
-          {insights.this_month?.[0] && (() => {
-            const m = insights.this_month[0];
-            const c = SUBJECT_COLORS[m.subject] || "#C9A84C";
-            return (
-              <div className="rounded-xl p-2.5 space-y-0.5" style={{ background: `${c}0a`, border: `0.5px solid ${c}20` }}>
-                <p className="text-[9px] font-mono uppercase text-text-muted">This Month Top</p>
-                <p className="text-xs font-medium text-text-primary">{SUBJECT_ICONS[m.subject]} {m.subject}</p>
-                <p className="text-xs font-mono font-bold" style={{ color: c }}>{m.display}</p>
-              </div>
-            );
-          })()}
-        </div>
-      )}
-      <div className="flex items-center justify-between px-1 pt-0.5">
-        <span className="text-[10px] font-mono text-text-muted">Lifetime total</span>
-        <span className="text-xs font-mono font-bold text-accent-gold">{total_hours}h</span>
-      </div>
-    </div>
-  );
-}
-
-// ─── Main SubjectStudyTimer ─────────────────────────────────────────────────
 export default function SubjectStudyTimer({
   onLogHours,
   onSynced,
@@ -216,7 +77,6 @@ export default function SubjectStudyTimer({
   const [ringGrown, setRingGrown] = useState(false);
   const [isCompact, setIsCompact] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
-  const [showDistribution, setShowDistribution] = useState(true); // ✅ default open
 
   const subjectTimer = useSubjectTimer({
     userId, onLogHours, onSynced, targetHours, serverHours, dataReady,
@@ -225,7 +85,7 @@ export default function SubjectStudyTimer({
   const {
     subject, phase, error,
     showSubjectPicker, startStudy, pauseStudy, resumeStudy, resetStudy,
-    todaySessions, todayTimeline, analytics, analyticsLoading, fetchAnalytics,
+    todaySessions, todayTimeline,
   } = subjectTimer;
 
   // ── Mirror timerStore ────────────────────────────────────────────────────
@@ -433,26 +293,6 @@ export default function SubjectStudyTimer({
           {showHistory && <UserTimeline events={todayTimeline} compact />}
         </div>
       )}
-
-      {/* Subject distribution – always open */}
-      <div className="pt-1 border-t border-bg-border/50">
-        <button
-          onClick={() => {
-            setShowDistribution((v) => !v);
-            if (!showDistribution) fetchAnalytics("lifetime");
-          }}
-          className="flex items-center justify-between w-full text-[11px] font-mono text-text-muted hover:text-text-primary transition-colors"
-        >
-          <span className="flex items-center gap-1.5"><TrendingUp size={11} /> Subject Study Hours</span>
-          {showDistribution ? <ChevronUp size={10} /> : <ChevronDown size={10} />}
-        </button>
-        {showDistribution && (
-          <div className="mt-3 space-y-4">
-            <SubjectDistribution analytics={analytics} loading={analyticsLoading} />
-            <SubjectInsights analytics={analytics} />
-          </div>
-        )}
-      </div>
     </div>
   );
 }
