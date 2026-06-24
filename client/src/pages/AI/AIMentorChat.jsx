@@ -282,11 +282,34 @@ const AMC_STYLES = `
   position: fixed;
   right: 16px;
   bottom: calc(var(--bottom-nav-h,0px) + var(--safe-bottom,0px) + 16px);
-  z-index: 9999;
+  z-index: 10000;
   display: flex; flex-direction: column; align-items: flex-end; gap: 14px;
 }
 @media (min-width: 768px) {
   .amc-dock { right: 28px; bottom: calc(var(--safe-bottom,0px) + 28px); }
+}
+
+/* FAB row — wraps dismiss × and main FAB side-by-side */
+.amc-fab-row {
+  display: flex; align-items: center; gap: 8px;
+}
+
+/* Dismiss button — only shown on mobile when panel is closed */
+.amc-fab-dismiss {
+  width: 26px; height: 26px; border-radius: 9999px;
+  display: none; align-items: center; justify-content: center;
+  background: var(--bg-surface);
+  border: 1px solid var(--bg-border);
+  color: var(--text-muted);
+  box-shadow: var(--shadow-lg);
+  cursor: pointer;
+  transition: background .15s, color .15s;
+  align-self: flex-start;
+  margin-top: 4px;
+}
+.amc-fab-dismiss:hover { background: var(--bg-muted); color: var(--text-primary); }
+@media (max-width: 1023px) {
+  .amc-fab-dismiss { display: flex; }
 }
 
 /* FAB */
@@ -296,7 +319,7 @@ const AMC_STYLES = `
   background: linear-gradient(135deg, var(--accent-blue), #2563eb);
   color: var(--text-inverse); box-shadow: var(--shadow-lg);
   transition: transform .15s ease;
-  animation: amc-ring 2.4s ease-out infinite;
+  animation: amc-ring 2.4s ease-out 3;
   cursor: pointer; border: none;
 }
 .amc-fab:hover { transform: scale(1.05); }
@@ -1001,9 +1024,23 @@ export default function AIMentorChat({
   prefill = "",
   quoteMeta = null,
   onClearPrefill = null,
+  // Controlled open state — when provided, App.jsx owns open/close
+  open: controlledOpen = undefined,
+  onOpen = null,
+  onClose = null,
 }) {
-  const [open, setOpen]               = useState(!compact || startExpanded);
+  const isControlled = controlledOpen !== undefined;
+  const [internalOpen, setInternalOpen] = useState(!compact || startExpanded);
+  const open = isControlled ? controlledOpen : internalOpen;
+  const setOpen = useCallback((valOrFn) => {
+    const next = typeof valOrFn === "function"
+      ? valOrFn(isControlled ? controlledOpen : internalOpen)
+      : valOrFn;
+    if (isControlled) { next ? onOpen?.() : onClose?.(); }
+    else { setInternalOpen(next); }
+  }, [isControlled, controlledOpen, internalOpen, onOpen, onClose]);
   const [fullScreen, setFullScreen]   = useState(startExpanded);
+  const [fabVisible, setFabVisible]   = useState(true);
   const [messages, setMessages]       = useState([]);
   const [sending, setSending]         = useState(false);
   const [error, setError]             = useState(null);
@@ -1195,9 +1232,9 @@ export default function AIMentorChat({
 }, [contextHint, threadId]);
 
   const handleSearchChange = useCallback(e => setHistorySearch(e.target.value), []);
-  const closeAll           = useCallback(() => { setOpen(false); setFullScreen(false); }, []);
-  const toggleFullScreen   = useCallback(() => setFullScreen(v => !v), []);
-  const handleOpen         = useCallback(() => setOpen(true), []);
+  const closeAll         = useCallback(() => { setOpen(false); setFullScreen(false); }, []);
+  const toggleFullScreen = useCallback(() => setFullScreen(v => !v), []);
+  const handleOpen       = useCallback(() => { setFabVisible(true); setOpen(true); }, []);
 
   const isEmpty = messages.length === 0 && !threadLoading;
 
@@ -1252,6 +1289,8 @@ export default function AIMentorChat({
   }
 
   // ── Compact / floating ───────────────────────────────────────────────────
+  if (!fabVisible) return null;
+
   return (
     <>
       <style>{AMC_STYLES}</style>
@@ -1263,12 +1302,13 @@ export default function AIMentorChat({
             style={fullScreen
               ? {
                   position: "fixed", inset: 0, borderRadius: 0,
-                  zIndex: 9998, animation: "none",
+                  zIndex: 10002, animation: "none",
                   display: "flex", flexDirection: "row",
                 }
               : {
                   width: "min(420px, calc(100vw - 32px))",
                   height: "min(620px, calc(100dvh - 100px))",
+                  zIndex: 10002,
                 }
             }
           >
@@ -1300,9 +1340,20 @@ export default function AIMentorChat({
           </div>
         )}
 
-        <button data-amc-fab onClick={handleOpen} className="amc-fab" aria-label="Open AI Mentor">
-          <Sparkles size={22} />
-        </button>
+        <div className="amc-fab-row">
+          {!open && (
+            <button
+              className="amc-fab-dismiss"
+              onClick={() => setFabVisible(false)}
+              aria-label="Hide AI Mentor"
+            >
+              <X size={13} />
+            </button>
+          )}
+          <button data-amc-fab onClick={handleOpen} className="amc-fab" aria-label="Open AI Mentor">
+            <Sparkles size={22} />
+          </button>
+        </div>
       </div>
     </>
   );

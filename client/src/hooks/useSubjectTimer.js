@@ -2,6 +2,13 @@
  * useSubjectTimer.js
  * ─────────────────────────────────────────────────────────────────────────────
  * Bridges timerStore with subject-session API. Includes detailed logging.
+ *
+ * "Today's Topic" = { subject, chapter } chosen once via the subject picker
+ * before the timer is allowed to start. It is persisted to localStorage
+ * (date-keyed, same pattern as TodayPlanner's `upsc-tasks-${date}` key) so
+ * the topic shown to the student and the subject the timer is logging
+ * against can never drift apart — even across reloads, pauses, and tab
+ * switches. Picking a topic and starting the timer happen as one step.
  */
 
 import { useState, useCallback, useRef, useEffect } from "react";
@@ -41,6 +48,61 @@ function authHeaders() {
 const ACTIVE_SESSION_KEY = "upsc_active_session_id";
 const ACTIVE_SUBJECT_KEY = "upsc_active_subject";
 
+// ─── Today's Topic persistence — date-keyed, mirrors TodayPlanner's pattern ───
+// This is the single source of truth for "what is today's topic", independent
+// of the active-session bookkeeping above (which only tracks the *currently
+// running* server session and gets cleared on every pause).
+function todayTopicKey() {
+  return `upsc_today_topic_${getISTDateString()}`;
+}
+function loadTodayTopic() {
+  try {
+    const raw = localStorage.getItem(todayTopicKey());
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+}
+function saveTodayTopic(subj, chap) {
+  try {
+    localStorage.setItem(todayTopicKey(), JSON.stringify({ subject: subj, chapter: chap || "" }));
+  } catch {
+    // localStorage unavailable — the topic just won't survive a reload, the timer still works
+  }
+}
+function clearTodayTopic() {
+  try {
+    localStorage.removeItem(todayTopicKey());
+  } catch {
+    // no-op
+  }
+}
+
+// ─── Preferred Subjects persistence ──────────────────────────────────────────
+// Exported (not local to one file) so ProfilePage.jsx's editor and this
+// timer's subject picker read/write the exact same storage key — a student's
+// saved preferences and what the picker offers first can never drift apart.
+// Keyed by user, not by date: a study-subject preference isn't a daily thing.
+export function preferredSubjectsKey(uid) {
+  return `upsc_preferred_subjects_${uid || "anon"}`;
+}
+export function loadPreferredSubjects(uid) {
+  try {
+    const raw = localStorage.getItem(preferredSubjectsKey(uid));
+    const parsed = raw ? JSON.parse(raw) : [];
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+export function savePreferredSubjects(uid, subjects) {
+  try {
+    localStorage.setItem(preferredSubjectsKey(uid), JSON.stringify(subjects || []));
+  } catch {
+    // localStorage unavailable — selection just won't survive a reload
+  }
+}
+
 export function useSubjectTimer({
   userId,
   onLogHours,
@@ -51,6 +113,7 @@ export function useSubjectTimer({
 }) {
   const [phase, setPhase] = useState("idle");
   const [subject, setSubject] = useState(null);
+  const [chapter, setChapter] = useState("");
   const [activeId, setActiveId] = useState(null);
   const [todaySessions, setTodaySessions] = useState([]);
   const [todayTimeline, setTodayTimeline] = useState([]);
@@ -59,17 +122,31 @@ export function useSubjectTimer({
   const [error, setError] = useState(null);
   const startedAtRef = useRef(null);
 
-  // Restore session across reloads
+  // Restore session + today's topic across reloads
   useEffect(() => {
     const savedId = sessionStorage.getItem(ACTIVE_SESSION_KEY);
     const savedSubject = sessionStorage.getItem(ACTIVE_SUBJECT_KEY);
+    const savedTopic = loadTodayTopic();
+
     if (savedId && savedSubject && timerStore.elapsed > 0) {
+      // A live, server-tracked session survived the reload — restore it exactly.
       setActiveId(savedId);
       setSubject(savedSubject);
+      setChapter(savedTopic?.chapter || "");
       setPhase(timerStore.running ? "running" : "paused");
-    } else if (savedId && timerStore.elapsed === 0) {
-      sessionStorage.removeItem(ACTIVE_SESSION_KEY);
-      sessionStorage.removeItem(ACTIVE_SUBJECT_KEY);
+    } else {
+      if (savedId && timerStore.elapsed === 0) {
+        sessionStorage.removeItem(ACTIVE_SESSION_KEY);
+        sessionStorage.removeItem(ACTIVE_SUBJECT_KEY);
+      }
+      // No live session to restore — but the student may already have picked
+      // today's topic earlier (e.g. paused, then reloaded the page). Surface
+      // it anyway so what's shown never falls out of sync with what's logged.
+      if (savedTopic?.subject) {
+        setSubject(savedTopic.subject);
+        setChapter(savedTopic.chapter || "");
+        setPhase(timerStore.elapsed > 0 ? "paused" : "idle");
+      }
     }
   }, []);
 
@@ -117,11 +194,16 @@ export function useSubjectTimer({
 
   const showSubjectPicker = useCallback(() => setPhase("selecting"), []);
 
-  const startStudy = useCallback(async (selectedSubject) => {
+  // selectedSubject is required; selectedChapter is optional free text.
+  // This is the single place "today's topic" gets logged AND the timer gets
+  // started — they happen as one atomic step so they can never go out of sync.
+  const startStudy = useCallback(async (selectedSubject, selectedChapter = "") => {
     setError(null);
     startedAtRef.current = Date.now();
     timerStore.start();
     setSubject(selectedSubject);
+    setChapter(selectedChapter || "");
+    saveTodayTopic(selectedSubject, selectedChapter);
     setPhase("running");
 
     if (userId) {
@@ -129,7 +211,7 @@ export function useSubjectTimer({
         const res = await fetch(`${BASE}/subject-sessions/start`, {
           method: "POST",
           headers: authHeaders(),
-          body: JSON.stringify({ subject: selectedSubject }),
+          body: JSON.stringify({ subject: selectedSubject, chapter: selectedChapter || "" }),
         });
         const json = await res.json();
         console.log("🚀 Start session response:", json);
@@ -166,7 +248,8 @@ export function useSubjectTimer({
       if (json.success) {
         const totalHours = timerStore.elapsed / 3600;
         if (onLogHours) {
-          await onLogHours(totalHours, `${subject} session`);
+          const note = chapter ? `${subject} — ${chapter} session` : `${subject} session`;
+          await onLogHours(totalHours, note);
           onSynced?.(totalHours);
         }
         await fetchTodaySessions();
@@ -179,15 +262,15 @@ export function useSubjectTimer({
     setActiveId(null);
     sessionStorage.removeItem(ACTIVE_SESSION_KEY);
     sessionStorage.removeItem(ACTIVE_SUBJECT_KEY);
-  }, [activeId, userId, subject, onLogHours, onSynced, fetchTodaySessions, fetchAnalytics]);
+  }, [activeId, userId, subject, chapter, onLogHours, onSynced, fetchTodaySessions, fetchAnalytics]);
 
   const resumeStudy = useCallback(async () => {
     if (!subject) {
       setPhase("selecting");
       return;
     }
-    await startStudy(subject);
-  }, [subject, startStudy]);
+    await startStudy(subject, chapter);
+  }, [subject, chapter, startStudy]);
 
   const resetStudy = useCallback(async () => {
     if (activeId && userId) {
@@ -203,9 +286,11 @@ export function useSubjectTimer({
     timerStore.reset();
     setPhase("idle");
     setSubject(null);
+    setChapter("");
     setActiveId(null);
     sessionStorage.removeItem(ACTIVE_SESSION_KEY);
     sessionStorage.removeItem(ACTIVE_SUBJECT_KEY);
+    clearTodayTopic();
     await fetchTodaySessions();
     await fetchAnalytics("lifetime");
   }, [activeId, userId, fetchTodaySessions, fetchAnalytics]);
@@ -213,6 +298,7 @@ export function useSubjectTimer({
   return {
     phase,
     subject,
+    chapter,
     activeId,
     error,
     todaySessions,
@@ -225,6 +311,8 @@ export function useSubjectTimer({
     resumeStudy,
     resetStudy,
     setSubject,
+    setChapter,
+    setPhase,
     fetchTodaySessions,
     fetchAnalytics,
   };

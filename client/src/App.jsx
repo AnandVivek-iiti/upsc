@@ -4,13 +4,12 @@ import Dashboard from "./pages/Dashboard/Dashboard.jsx";
 import SyllabusTracker from "./pages/User/SyllabusTracker.jsx";
 import MainsGrind from "./pages/PYQs/MainsGrind.jsx";
 import PrelimsGrind from "./pages/PYQs/PrelimsGrind";
-import PyqVault from "./pages/PYQs/PyqVault.jsx";               // ← new
+import PyqVault from "./pages/PYQs/PyqVault.jsx";
 import Footer from "./components/layout/Footer";
 import { useUserData } from "./hooks/useUserData";
 import { AlertCircle } from "lucide-react";
 import HeroBanner from "./pages/Hero";
 import LandingHero from "./pages/LandingHero";
-// import Topicwise from "./pages/Topicwise";          // removed
 import AuthPage from "./pages/User/AuthPage.jsx";
 import { useAuth } from "./hooks/useAuth";
 import Adminpannel from "./pages/Admin/Adminpannel.jsx";
@@ -138,7 +137,7 @@ export default function App() {
   const [workspaceQuestion, setWorkspaceQuestion] = useState(null);
   const [previousView, setPreviousView] = useState("dashboard");
   const [aiMentorPrefill, setAiMentorPrefill] = useState("");
-  const [authStage, setAuthStage] = useState("landing");
+  const [fabChatOpen, setFabChatOpen] = useState(false);
   const [theme, setTheme] = useState(() => {
     if (typeof window === "undefined") return "light";
     return localStorage.getItem("upsc-theme") || "light";
@@ -194,12 +193,49 @@ export default function App() {
     handleViewChange("ai-mentor");
   };
 
+  // ─── Derived booleans ─────────────────────────────────────────────────────
+  const isLoggedIn = !!user && !!token;
+
+  // Show LandingHero when: not logged in AND on the dashboard view.
+  // All other pages keep their own internal AuthGate gating.
+  const showLandingHero = !isLoggedIn && activeView === "dashboard";
+
   if (authLoading) return <SplashScreen />;
   if (loading && !userData && (user || token)) return <LoadingScreen />;
 
   const userName = userData?.profile?.name || user?.name || "";
   const isWorkspace = activeView === "ai-mentor" || activeView === "notes";
 
+  // ─── Full-page landing (unauthenticated dashboard) ────────────────────────
+  // Bypasses sidebar/bottom-nav shell so the landing owns the whole screen.
+  if (showLandingHero) {
+    return (
+      <>
+        <LandingHero
+          theme={theme}
+          onToggleTheme={() => setTheme((p) => (p === "light" ? "dark" : "light"))}
+          onSignUp={() => setActiveView("auth")}
+          onSignIn={() => setActiveView("auth")}
+        />
+        {/* Keep the mobile bottom nav so returning users can navigate freely */}
+        <BottomNav
+          activeView={activeView}
+          onViewChange={handleViewChange}
+          user={user}
+          userData={userData}
+          isLoggedIn={isLoggedIn}
+          theme={theme}
+          onToggleTheme={() => setTheme((p) => (p === "light" ? "dark" : "light"))}
+          onLogout={logout}
+          onLoginClick={() => setActiveView("auth")}
+          onNavigateProfile={handleNavigateProfile}
+          userName={userName}
+        />
+      </>
+    );
+  }
+
+  // ─── Main app shell (authenticated, or non-dashboard views) ───────────────
   return (
     <div className="min-h-[100dvh]">
       {/* ── Desktop Sidebar ── */}
@@ -211,7 +247,7 @@ export default function App() {
           theme={theme}
           onToggleTheme={() => setTheme((p) => (p === "light" ? "dark" : "light"))}
           onLogout={logout}
-          isLoggedIn={!!user && !!token}
+          isLoggedIn={isLoggedIn}
           onLoginClick={() => setActiveView("auth")}
           userName={userName}
           onNavigateProfile={handleNavigateProfile}
@@ -241,7 +277,7 @@ export default function App() {
                   overallProgress={overallProgress}
                   onLogHours={logHours}
                   user={user}
-                  isLoggedIn={!!user && !!token}
+                  isLoggedIn={isLoggedIn}
                   onNavigateAuth={() => setActiveView("auth")}
                   onNavigateProfile={handleNavigateProfile}
                   onNavigate={handleViewChange}
@@ -251,19 +287,19 @@ export default function App() {
                 <SyllabusTracker
                   userData={userData}
                   onUpdateProgress={updateProgress}
-                  isLoggedIn={!!user && !!token}
+                  isLoggedIn={isLoggedIn}
                 />
               )}
               {activeView === "mains" && (
                 <MainsGrind
                   workspaceQuestion={workspaceQuestion}
                   user={user}
-                  isLoggedIn={!!user && !!token}
+                  isLoggedIn={isLoggedIn}
                 />
               )}
-              {activeView === "pre" && <PrelimsGrind isLoggedIn={!!user && !!token} />}
+              {activeView === "pre" && <PrelimsGrind isLoggedIn={isLoggedIn} />}
               {activeView === "pyq-vault" && (
-                <PyqVault isLoggedIn={!!user && !!token} />
+                <PyqVault isLoggedIn={isLoggedIn} />
               )}
               {activeView === "admin" && <Adminpannel />}
               {activeView === "resources" && (
@@ -301,14 +337,14 @@ export default function App() {
               )}
               {activeView === "ai-mentor" && (
                 <AIMentorWorkspace
-                  isLoggedIn={!!user && !!token}
+                  isLoggedIn={isLoggedIn}
                   prefill={aiMentorPrefill}
                   onClearPrefill={() => setAiMentorPrefill("")}
                 />
               )}
               {activeView === "notes" && (
                 <MentorNotes
-                  isLoggedIn={!!user && !!token}
+                  isLoggedIn={isLoggedIn}
                   contextHint="Notes section"
                 />
               )}
@@ -317,14 +353,17 @@ export default function App() {
             <PWAInstallPrompt />
           </div>
 
-          { (!isWorkspace || (activeView === "notes" && !isMobile)) && <Footer /> }
+          {!isWorkspace && <Footer />}
         </div>
       </main>
 
       {!isWorkspace && (
         <AIMentorChat
-          isLoggedIn={!!user && !!token}
+          isLoggedIn={isLoggedIn}
           compact={true}
+          open={fabChatOpen}
+          onOpen={() => setFabChatOpen(true)}
+          onClose={() => setFabChatOpen(false)}
         />
       )}
 
@@ -334,7 +373,7 @@ export default function App() {
         onViewChange={handleViewChange}
         user={user}
         userData={userData}
-        isLoggedIn={!!user && !!token}
+        isLoggedIn={isLoggedIn}
         theme={theme}
         onToggleTheme={() => setTheme((p) => (p === "light" ? "dark" : "light"))}
         onLogout={logout}
@@ -342,7 +381,7 @@ export default function App() {
         onNavigateProfile={handleNavigateProfile}
         userName={userName}
       />
-      <FeedbackModal isLoggedIn={!!user && !!token} user={user} />
+      <FeedbackModal isLoggedIn={isLoggedIn} user={user} />
     </div>
   );
 }

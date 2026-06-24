@@ -1,7 +1,7 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import {
   Play, Pause, RotateCcw, Timer, Cloud, CloudOff,
-  BookOpen, ChevronDown, ChevronUp, Clock,
+  BookOpen, ChevronDown, ChevronUp, Clock, Edit3,
 } from "lucide-react";
 import timerStore from "../../hooks/timerStore";
 import { useSubjectTimer, UPSC_SUBJECTS, SUBJECT_COLORS, SUBJECT_ICONS } from "../../hooks/useSubjectTimer";
@@ -22,12 +22,19 @@ function fmtHM(secs) {
 }
 
 // ─── SubjectPicker ────────────────────────────────────────────────────────────
-function SubjectPicker({ onSelect, onCancel }) {
+// Single prompt for "today's topic": pick a subject (required) and, optionally,
+// a chapter/topic detail. Nothing starts until the student confirms — this is
+// the gate that stops the timer ever running without a topic attached, and
+// keeps the topic shown in sync with the subject actually being timed.
+function SubjectPicker({ initialSubject = null, initialChapter = "", onConfirm, onCancel, confirmLabel = "Start Studying" }) {
+  const [selected, setSelected] = useState(initialSubject);
+  const [chapter, setChapterInput] = useState(initialChapter);
   const [hovered, setHovered] = useState(null);
+
   return (
     <div className="space-y-3 animate-fade-in">
       <div className="flex items-center justify-between">
-        <p className="text-sm font-display font-semibold text-text-primary">What are you studying?</p>
+        <p className="text-sm font-display font-semibold text-text-primary">What are you studying today?</p>
         {onCancel && (
           <button onClick={onCancel} className="text-xs font-mono text-text-muted hover:text-text-primary transition-colors">
             Cancel
@@ -38,27 +45,54 @@ function SubjectPicker({ onSelect, onCancel }) {
         {UPSC_SUBJECTS.map((s) => {
           const color = SUBJECT_COLORS[s];
           const icon = SUBJECT_ICONS[s];
+          const isSelected = selected === s;
           const isHovered = hovered === s;
           return (
             <button
               key={s}
-              onClick={() => onSelect(s)}
+              type="button"
+              onClick={() => setSelected(s)}
               onMouseEnter={() => setHovered(s)}
               onMouseLeave={() => setHovered(null)}
               className="flex flex-col items-center justify-center gap-1.5 p-2.5 sm:p-3 rounded-xl border transition-all duration-150 active:scale-95 touch-manipulation"
               style={{
-                borderColor: isHovered ? color : "var(--bg-border)",
-                background: isHovered ? `${color}15` : "var(--bg-muted)",
+                borderColor: isSelected ? color : isHovered ? color : "var(--bg-border)",
+                background: isSelected ? `${color}22` : isHovered ? `${color}15` : "var(--bg-muted)",
+                boxShadow: isSelected ? `0 0 0 1px ${color}55` : "none",
               }}
             >
               <span className="text-xl leading-none">{icon}</span>
-              <span className="text-[10px] sm:text-[11px] font-mono font-semibold text-center leading-tight" style={{ color: isHovered ? color : "var(--text-secondary)" }}>
+              <span className="text-[10px] sm:text-[11px] font-mono font-semibold text-center leading-tight" style={{ color: isSelected || isHovered ? color : "var(--text-secondary)" }}>
                 {s}
               </span>
             </button>
           );
         })}
       </div>
+
+      {/* Chapter / topic — optional, kept on the same prompt so it's always in sync with the subject */}
+      <div className="space-y-1.5">
+        <label className="flex items-center gap-1.5 text-[10px] font-mono text-text-muted uppercase tracking-wider">
+          <BookOpen size={10} /> Chapter / topic <span className="text-text-muted/60 normal-case">(optional)</span>
+        </label>
+        <input
+          type="text"
+          value={chapter}
+          onChange={(e) => setChapterInput(e.target.value)}
+          placeholder="e.g. Fundamental Rights, Mughal Empire…"
+          maxLength={80}
+          className="w-full bg-bg-muted border border-bg-border rounded-lg px-3 py-2 text-xs sm:text-sm text-text-primary placeholder:text-text-muted/50 focus:outline-none focus:border-accent-gold/50 transition-colors"
+        />
+      </div>
+
+      <button
+        type="button"
+        onClick={() => selected && onConfirm(selected, chapter.trim())}
+        disabled={!selected}
+        className="btn-primary w-full flex items-center justify-center gap-1.5 text-xs sm:text-sm py-2.5 disabled:opacity-40 disabled:cursor-not-allowed"
+      >
+        <Play size={13} fill="currentColor" /> {confirmLabel}
+      </button>
     </div>
   );
 }
@@ -83,10 +117,29 @@ export default function SubjectStudyTimer({
   });
 
   const {
-    subject, phase, error,
-    showSubjectPicker, startStudy, pauseStudy, resumeStudy, resetStudy,
+    subject, chapter, phase, error,
+    showSubjectPicker, startStudy, pauseStudy, resumeStudy, resetStudy, setPhase,
     todaySessions, todayTimeline,
   } = subjectTimer;
+
+  // Remembers the phase to fall back to if the student cancels out of the
+  // picker, so "Cancel" never strands them on the picker screen and never
+  // wipes a topic/session that was already in progress.
+  const previousPhaseRef = useRef(phase);
+
+  // Opens the subject/topic picker. If a session is currently running, it is
+  // paused (and its hours synced) first — this is what keeps "today's topic"
+  // and "the subject actually being timed" from ever drifting apart: you can
+  // never have a new topic selected while an old one is still silently ticking.
+  const openPicker = useCallback(async () => {
+    if (phase === "running") {
+      await pauseStudy();
+      previousPhaseRef.current = "paused";
+    } else {
+      previousPhaseRef.current = phase;
+    }
+    showSubjectPicker();
+  }, [phase, pauseStudy, showSubjectPicker]);
 
   // ── Mirror timerStore ────────────────────────────────────────────────────
   useEffect(() => {
@@ -116,11 +169,18 @@ export default function SubjectStudyTimer({
   useEffect(() => { timerStore.setUser(userId); }, [userId]);
 
   // ── Register sync handler ───────────────────────────────────────────────
+  // timerStore can invoke this independently of pauseStudy() above (e.g. on
+  // its own auto-sync). Keeping the note here built from the same
+  // subject/chapter means there's no path where an hours-log can show up
+  // without today's topic attached.
   useEffect(() => {
     timerStore.setSyncHandler(async (hours) => {
       setSyncState("syncing");
       try {
-        await onLogHours(hours, "Timer session");
+        const note = subject
+          ? (chapter ? `${subject} — ${chapter} session` : `${subject} session`)
+          : "Timer session";
+        await onLogHours(hours, note);
         setSyncState("synced");
         onSynced?.(hours);
         setTimeout(() => setSyncState("idle"), 2500);
@@ -129,7 +189,7 @@ export default function SubjectStudyTimer({
         setTimeout(() => setSyncState("idle"), 3000);
       }
     });
-  }, [onLogHours, onSynced]);
+  }, [onLogHours, onSynced, subject, chapter]);
 
   // ── Hydrate on data ready ──────────────────────────────────────────────
   useEffect(() => {
@@ -156,7 +216,7 @@ export default function SubjectStudyTimer({
 
   const statusLabel = phase === "running"   ? (subject ? `Studying ${subject}` : "Studying")
                     : phase === "paused"    ? "Paused"
-                    : phase === "selecting" ? "Pick a subject"
+                    : phase === "selecting" ? "Pick today's topic"
                     : "Ready to study";
   const statusColor = phase === "running"   ? "#4ade80"
                     : phase === "paused"    ? "var(--accent-gold)"
@@ -179,8 +239,19 @@ export default function SubjectStudyTimer({
           </span>
         </span>
         {subject && (
-          <span className="text-[10px] font-mono px-2 py-0.5 rounded-full" style={{ background: `${SUBJECT_COLORS[subject]}18`, color: SUBJECT_COLORS[subject], border: `0.5px solid ${SUBJECT_COLORS[subject]}40` }}>
-            {SUBJECT_ICONS[subject]} {subject}
+          <span className="flex items-center gap-1.5">
+            <span className="text-[10px] font-mono px-2 py-0.5 rounded-full" style={{ background: `${SUBJECT_COLORS[subject]}18`, color: SUBJECT_COLORS[subject], border: `0.5px solid ${SUBJECT_COLORS[subject]}40` }}>
+              {SUBJECT_ICONS[subject]} {subject}{chapter ? ` — ${chapter}` : ""}
+            </span>
+            {phase !== "selecting" && (
+              <button
+                onClick={openPicker}
+                title="Edit today's topic"
+                className="flex items-center gap-0.5 text-[10px] font-mono text-text-muted hover:text-accent-gold transition-colors"
+              >
+                <Edit3 size={10} /> Edit
+              </button>
+            )}
           </span>
         )}
         <span className="label-tag ml-auto text-[10px] sm:text-xs" style={{ color: statusColor, borderColor: `${statusColor}40`, background: `${statusColor}15` }}>
@@ -191,16 +262,14 @@ export default function SubjectStudyTimer({
       {/* Error banner */}
       {error && <p className="text-[11px] font-mono text-red-400 bg-red-400/10 px-3 py-2 rounded-lg">{error}</p>}
 
-      {/* Subject picker */}
+      {/* Subject picker — this is "today's topic": one prompt, then the timer starts */}
       {phase === "selecting" && (
         <SubjectPicker
-          onSelect={startStudy}
-          onCancel={() => {
-            subjectTimer.setSubject(null);
-            if (!timerStore.running && timerStore.elapsed === 0) {
-              subjectTimer.setSubject(null);
-            }
-          }}
+          initialSubject={subject}
+          initialChapter={chapter}
+          confirmLabel={subject ? "Update & Continue" : "Start Studying"}
+          onConfirm={(selectedSubject, selectedChapter) => startStudy(selectedSubject, selectedChapter)}
+          onCancel={() => setPhase(previousPhaseRef.current)}
         />
       )}
 
@@ -256,15 +325,15 @@ export default function SubjectStudyTimer({
             {/* Buttons */}
             <div className="flex gap-2">
               {phase === "idle" ? (
-                <button onClick={showSubjectPicker} className="btn-primary flex items-center gap-1.5 flex-1 justify-center text-xs sm:text-sm py-2.5">
-                  <BookOpen size={13} /> Start Studying
+                <button onClick={openPicker} className="btn-primary flex items-center gap-1.5 flex-1 justify-center text-xs sm:text-sm py-2.5">
+                  <BookOpen size={13} /> Set Today's Topic &amp; Start
                 </button>
               ) : phase === "paused" ? (
                 <>
                   <button onClick={resumeStudy} className="btn-primary flex items-center gap-1.5 flex-1 justify-center text-xs sm:text-sm py-2.5">
                     <Play size={13} fill="currentColor" /> Resume {subject}
                   </button>
-                  <button onClick={showSubjectPicker} className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium bg-bg-muted border border-bg-border text-text-muted hover:text-text-primary transition-colors">
+                  <button onClick={openPicker} className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium bg-bg-muted border border-bg-border text-text-muted hover:text-text-primary transition-colors">
                     Switch
                   </button>
                 </>

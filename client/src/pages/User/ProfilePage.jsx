@@ -2,8 +2,9 @@ import { useState, useEffect, useCallback } from "react";
 import {
   User, Mail, Calendar, Clock, Target, Flame, Trophy,
   Edit3, Save, X, Loader2, CheckCircle2, AlertCircle,
-  TrendingUp, Shield, KeyRound, Eye, EyeOff, ArrowLeft,
+  TrendingUp, Shield, KeyRound, Eye, EyeOff, ArrowLeft, BookOpen,
 } from "lucide-react";
+import { UPSC_SUBJECTS, SUBJECT_COLORS, SUBJECT_ICONS } from "../../hooks/useSubjectTimer";
 
 // ─── Avatar initials ──────────────────────────────────────────────────────────
 export function getInitials(name = "") {
@@ -53,6 +54,30 @@ const HOUR_OPTIONS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 16, 18, 20];
 
 function authHeaders(token) {
   return { "Content-Type": "application/json", Authorization: `Bearer ${token}` };
+}
+
+// ─── Preferred Subjects persistence ──────────────────────────────────────────
+// There's no backend field for this yet, so it's kept client-side per user —
+// same trick as "Today's Topic" in useSubjectTimer.js, just keyed by user
+// instead of by date since a study-subject preference isn't a daily thing.
+function preferredSubjectsKey(uid) {
+  return `upsc_preferred_subjects_${uid || "anon"}`;
+}
+function loadPreferredSubjects(uid) {
+  try {
+    const raw = localStorage.getItem(preferredSubjectsKey(uid));
+    const parsed = raw ? JSON.parse(raw) : [];
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+function savePreferredSubjects(uid, subjects) {
+  try {
+    localStorage.setItem(preferredSubjectsKey(uid), JSON.stringify(subjects || []));
+  } catch {
+    // localStorage unavailable — selection just won't survive a reload
+  }
 }
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
@@ -115,6 +140,45 @@ function SelectField({ label, icon: Icon, value, onChange, children }) {
   );
 }
 
+// ─── SubjectChipGrid — multi-select, same subject list/colors/icons as the
+// Dashboard's study timer, so "preferred subjects" never drifts out of sync
+// with what shows up when picking today's topic. ───────────────────────────
+function SubjectChipGrid({ selected = [], onToggle, hint }) {
+  return (
+    <div className="space-y-1.5">
+      <label className="flex items-center gap-2 text-xs sm:text-sm font-mono uppercase tracking-wider text-text-muted">
+        <BookOpen size={12} /> Preferred Subjects <span className="text-text-muted/60 normal-case">(optional)</span>
+      </label>
+      <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+        {UPSC_SUBJECTS.map((s) => {
+          const color = SUBJECT_COLORS[s];
+          const icon = SUBJECT_ICONS[s];
+          const isSelected = selected.includes(s);
+          return (
+            <button
+              key={s}
+              type="button"
+              onClick={() => onToggle(s)}
+              className="flex flex-col items-center justify-center gap-1.5 p-2.5 sm:p-3 rounded-xl border transition-all duration-150 active:scale-95 touch-manipulation"
+              style={{
+                borderColor: isSelected ? color : "var(--bg-border,#333)",
+                background: isSelected ? `${color}22` : "var(--bg-muted)",
+                boxShadow: isSelected ? `0 0 0 1px ${color}55` : "none",
+              }}
+            >
+              <span className="text-xl leading-none">{icon}</span>
+              <span className="text-[10px] sm:text-[11px] font-mono font-semibold text-center leading-tight" style={{ color: isSelected ? color : "var(--text-secondary)" }}>
+                {s}
+              </span>
+            </button>
+          );
+        })}
+      </div>
+      {hint && <p className="text-xs font-mono text-text-muted/70">{hint}</p>}
+    </div>
+  );
+}
+
 // ─── StatPill — used for the 4 primary stat cards only ───────────────────────
 function StatPill({ icon: Icon, label, value, color }) {
   return (
@@ -153,8 +217,11 @@ export default function ProfilePage({ token, onBack, onProfileUpdate, userData =
   const [fieldErrs, setFieldErrs] = useState({});
 
   const [form, setForm] = useState({
-    name: "", target_year: 2026, daily_target_hours: 8, examDate: "",
+    name: "", target_year: 2026, daily_target_hours: 8, examDate: "", preferred_subjects: [],
   });
+  // Last-saved preferred subjects, shown in view mode — separate from
+  // form.preferred_subjects, which is just the in-progress edit draft.
+  const [savedSubjects, setSavedSubjects] = useState([]);
   const [passForm, setPassForm] = useState({ current: "", next: "", confirm: "" });
 
   // ── Today's study hours from daily_logs ──────────────────────────────────
@@ -176,11 +243,15 @@ export default function ProfilePage({ token, onBack, onProfileUpdate, userData =
         if (!d.success) throw new Error(d.error || "Failed to load profile");
         setProfile(d.user);
         const p = d.user?.profile || {};
+        const uid = d.user?.id || d.user?._id || null;
+        const loadedSubjects = loadPreferredSubjects(uid);
+        setSavedSubjects(loadedSubjects);
         setForm({
           name: d.user?.name || "",
           target_year: p.target_year || 2026,
           daily_target_hours: p.daily_target_hours || 8,
           examDate: p.examDate ? new Date(p.examDate).toISOString().split("T")[0] : "",
+          preferred_subjects: loadedSubjects,
         });
       })
       .catch(e => setFetchErr(e.message))
@@ -240,6 +311,12 @@ export default function ProfilePage({ token, onBack, onProfileUpdate, userData =
         }));
       }
 
+      // No backend field for this yet — persisted client-side, but as part of
+      // the same "Save Changes" action so it never feels like a separate step.
+      const uid = profile?.id || profile?._id || null;
+      savePreferredSubjects(uid, form.preferred_subjects);
+      setSavedSubjects(form.preferred_subjects);
+
       onProfileUpdate?.();
       showToast("saved");
       setSection("view");
@@ -286,6 +363,7 @@ export default function ProfilePage({ token, onBack, onProfileUpdate, userData =
         target_year: p.target_year || 2026,
         daily_target_hours: p.daily_target_hours || 8,
         examDate: p.examDate ? new Date(p.examDate).toISOString().split("T")[0] : "",
+        preferred_subjects: savedSubjects,
       });
     }
     setPassForm({ current: "", next: "", confirm: "" });
@@ -293,6 +371,12 @@ export default function ProfilePage({ token, onBack, onProfileUpdate, userData =
 
   const sf = k => e => setForm(f => ({ ...f, [k]: e.target.value }));
   const pf = k => e => setPassForm(f => ({ ...f, [k]: e.target.value }));
+  const toggleSubject = (subj) => setForm(f => ({
+    ...f,
+    preferred_subjects: f.preferred_subjects.includes(subj)
+      ? f.preferred_subjects.filter(s => s !== subj)
+      : [...f.preferred_subjects, subj],
+  }));
 
   // ── Derived values ────────────────────────────────────────────────────────
   const p = profile?.profile || {};
@@ -460,6 +544,26 @@ export default function ProfilePage({ token, onBack, onProfileUpdate, userData =
                   <InfoRow icon={Calendar} label="Exam Date"          value={examDisplay}                                accent="#4ade80" />
                   <InfoRow icon={Clock}    label="Daily Study Target" value={`${p.daily_target_hours || 8} hours / day`} accent="#a78bfa" />
                   <InfoRow icon={User}     label="Member Since"       value={memberSince} />
+                  <div className="flex items-start gap-4 py-3">
+                    <span className="w-8 h-8 rounded-xl bg-bg-muted flex items-center justify-center shrink-0" style={{ color: "#f59e0b" }}>
+                      <BookOpen size={15} />
+                    </span>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[11px] sm:text-xs font-mono uppercase tracking-wider text-text-muted mb-1.5">Preferred Subjects</p>
+                      {savedSubjects.length === 0 ? (
+                        <p className="text-sm sm:text-base text-text-primary font-medium">—</p>
+                      ) : (
+                        <div className="flex flex-wrap gap-1.5">
+                          {savedSubjects.map((s) => (
+                            <span key={s} className="text-[11px] sm:text-xs font-mono px-2 py-1 rounded-full"
+                              style={{ background: `${SUBJECT_COLORS[s]}18`, color: SUBJECT_COLORS[s], border: `0.5px solid ${SUBJECT_COLORS[s]}40` }}>
+                              {SUBJECT_ICONS[s]} {s}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 </div>
               ) : (
                 <div className="space-y-5 sm:space-y-6">
@@ -472,6 +576,11 @@ export default function ProfilePage({ token, onBack, onProfileUpdate, userData =
                   <SelectField label="Daily Study Target" icon={Clock} value={form.daily_target_hours} onChange={sf("daily_target_hours")}>
                     {HOUR_OPTIONS.map(h => <option key={h} value={h}>{h} hour{h > 1 ? "s" : ""} / day</option>)}
                   </SelectField>
+                  <SubjectChipGrid
+                    selected={form.preferred_subjects}
+                    onToggle={toggleSubject}
+                    hint="Shown here and offered first when picking today's topic on the Dashboard timer"
+                  />
                   <div className="flex flex-col sm:flex-row gap-3 pt-2">
                     <button onClick={cancelEdit}
                       className="btn-ghost border border-bg-border flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-medium transition-all active:scale-95">

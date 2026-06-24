@@ -5,7 +5,7 @@ import {
   Plus, Search, Trash2, X, ChevronLeft, Clock, Check, Loader2,
   Sparkles, AlertTriangle, Zap, Wand2, Eye, EyeOff, Copy,
   RotateCcw, GraduationCap, LogIn, NotebookPen, BookOpen,
-  ListFilter, PenLine,
+  ListFilter, PenLine, History,
 } from "lucide-react";
 import {
   improveNotes, findMistakesInNotes, generateRevisionNotes, convertToMainsFormat,
@@ -16,6 +16,8 @@ import {
 const STORAGE_KEY = "upsc_notes_v1";
 const AUTOSAVE_DEBOUNCE_MS = 1400;
 const MIN_CONTENT_FOR_AI = 40;
+const UNDO_SNAPSHOT_DEBOUNCE_MS = 2000; // push a snapshot every 2s of inactivity
+const MAX_UNDO_DEPTH = 40;
 
 const TOPICS = [
   { id: "polity", label: "Polity", color: "#f87171" },
@@ -29,10 +31,18 @@ const TOPICS = [
 ];
 
 const AI_ACTIONS = [
-  { id: "improve", label: "Improve Notes", short: "Improve", icon: Wand2, fn: improveNotes, accent: "#60a5fa" },
-  { id: "mistakes", label: "Find Mistakes", short: "Mistakes", icon: AlertTriangle, fn: findMistakesInNotes, accent: "#f59e0b" },
-  { id: "revision", label: "Generate Revision Notes", short: "Revise", icon: Zap, fn: generateRevisionNotes, accent: "#34d399" },
-  { id: "mains", label: "Convert to Mains Format", short: "Mains", icon: GraduationCap, fn: convertToMainsFormat, accent: "#a78bfa" },
+  { id: "improve",  label: "Improve Notes",          short: "Improve",  icon: Wand2,         fn: improveNotes,         accent: "#60a5fa", versionKey: "enhanced" },
+  { id: "mistakes", label: "Find Mistakes",           short: "Mistakes", icon: AlertTriangle, fn: findMistakesInNotes,  accent: "#f59e0b", versionKey: null        },
+  { id: "revision", label: "Generate Revision Notes", short: "Revise",   icon: Zap,           fn: generateRevisionNotes,accent: "#34d399", versionKey: "revision"  },
+  { id: "mains",    label: "Convert to Mains Format", short: "Mains",    icon: GraduationCap, fn: convertToMainsFormat, accent: "#a78bfa", versionKey: "mains"     },
+];
+
+// Version tabs shown in the editor (original is always first)
+const VERSION_TABS = [
+  { key: "original",  label: "Original",  color: "var(--text-muted)" },
+  { key: "enhanced",  label: "Enhanced",  color: "#60a5fa" },
+  { key: "revision",  label: "Revision",  color: "#34d399" },
+  { key: "mains",     label: "Mains",     color: "#a78bfa" },
 ];
 
 // ─── Pure helpers ─────────────────────────────────────────────────────────────
@@ -701,6 +711,35 @@ const MN_STYLES = `
 
 .mn-save-dot { width: 6px; height: 6px; border-radius: 999px; flex-shrink: 0; }
 
+/* Version tab bar */
+.mn-version-tab-bar {
+  display: flex; align-items: center; gap: 2px; overflow-x: auto; scrollbar-width: none;
+  padding: 0 16px; border-bottom: 1px solid var(--bg-border); background: var(--bg-surface);
+  flex-shrink: 0; min-height: 38px;
+}
+.mn-version-tab-bar::-webkit-scrollbar { display: none; }
+.mn-version-tab {
+  display: inline-flex; align-items: center; gap: 5px; flex-shrink: 0;
+  padding: 7px 12px; font-size: 11.5px; font-weight: 600; border: none; background: transparent;
+  color: var(--text-muted); cursor: pointer; position: relative; white-space: nowrap;
+  transition: color .15s ease; border-bottom: 2px solid transparent; margin-bottom: -1px;
+}
+.mn-version-tab:hover { color: var(--text-primary); }
+.mn-version-tab.active { color: var(--tab-color, var(--text-primary)); border-bottom-color: var(--tab-color, var(--text-primary)); }
+.mn-version-tab-dot { width: 6px; height: 6px; border-radius: 999px; flex-shrink: 0; }
+.mn-version-tab-clear {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 16px; height: 16px; border-radius: 999px; border: none; background: rgba(255,255,255,.12);
+  color: inherit; cursor: pointer; opacity: .7; padding: 0; flex-shrink: 0;
+  transition: opacity .15s, background .15s;
+}
+.mn-version-tab-clear:hover { opacity: 1; background: rgba(255,255,255,.22); }
+
+/* Version content panel */
+.mn-version-content { max-width: 800px; margin: 0 auto; width: 100%; animation: mn-rise 200ms ease both; }
+.mn-version-empty { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; height: 100%; padding: 32px 20px; gap: 16px; }
+.mn-version-empty-icon { width: 56px; height: 56px; border-radius: 18px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+
 /* AI action rail */
 .mn-ai-rail { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; }
 .mn-ai-rail::-webkit-scrollbar { display: none; }
@@ -824,6 +863,49 @@ const MN_STYLES = `
   .mn-drawer-body { padding: 14px 14px 18px; }
   .mn-drawer-footer { padding: 10px 12px calc(10px + env(safe-area-inset-bottom, 0px)); }
 }
+
+/* ── Version Tabs ─────────────────────────────────────────────────────────── */
+.mn-version-tabbar {
+  flex-shrink: 0; display: flex; align-items: stretch; gap: 0;
+  overflow-x: auto; scrollbar-width: none;
+  border-bottom: 1px solid var(--bg-border);
+  background: var(--bg-surface);
+  padding: 0 12px;
+}
+.mn-version-tabbar::-webkit-scrollbar { display: none; }
+.mn-version-tab {
+  display: inline-flex; align-items: center; gap: 5px; flex-shrink: 0;
+  padding: 7px 12px; font-size: 11.5px; font-weight: 600;
+  border: none; background: transparent; cursor: pointer;
+  border-bottom: 2px solid transparent; margin-bottom: -1px;
+  color: var(--text-muted); transition: color .15s, border-color .15s;
+  min-height: 36px; white-space: nowrap; font-family: inherit;
+}
+.mn-version-tab:hover { color: var(--text-primary); }
+.mn-version-tab.active { color: var(--text-primary); border-bottom-color: currentColor; }
+.mn-version-tab-dot {
+  width: 6px; height: 6px; border-radius: 999px; flex-shrink: 0;
+}
+.mn-version-tab-clear {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 16px; height: 16px; border-radius: 4px; font-size: 10px;
+  border: none; background: transparent; color: var(--text-muted);
+  cursor: pointer; opacity: 0.5; transition: opacity .15s, background .15s;
+  margin-left: 2px; flex-shrink: 0;
+}
+.mn-version-tab-clear:hover { opacity: 1; background: rgba(248,113,113,.15); color: #f87171; }
+
+/* Version slot empty state */
+.mn-version-empty {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 14px; height: 100%; padding: 40px 24px; text-align: center;
+}
+
+/* Version content area — read-only rendered view */
+.mn-version-view {
+  max-width: 720px; margin: 0 auto; width: 100%;
+  padding-bottom: 40px;
+}
 `;
 
 // ─── Small atoms ──────────────────────────────────────────────────────────────
@@ -860,6 +942,92 @@ const SaveIndicator = memo(function SaveIndicator({ status, lastSavedAt }) {
   }
   return <span className="text-[11px] font-mono text-text-muted">Not saved yet</span>;
 });
+
+// ─── Version Tab Bar ─────────────────────────────────────────────────────────
+
+const VersionTabBar = memo(function VersionTabBar({ activeTab, onTabChange, versions, onClearVersion }) {
+  return (
+    <div className="mn-version-tabbar">
+      {VERSION_TABS.map(tab => {
+        const hasContent = tab.key === "original" || !!(versions?.[tab.key]);
+        const isActive = activeTab === tab.key;
+        return (
+          <button
+            key={tab.key}
+            className={`mn-version-tab ${isActive ? "active" : ""}`}
+            style={{ color: isActive ? (tab.key === "original" ? "var(--text-primary)" : tab.color) : undefined }}
+            onClick={() => onTabChange(tab.key)}
+            title={
+              tab.key === "original" ? "Your original note" :
+              hasContent ? `View ${tab.label} version` :
+              `No ${tab.label} version yet — run the AI action to generate one`
+            }
+          >
+            {tab.key !== "original" && (
+              <span
+                className="mn-version-tab-dot"
+                style={{ background: hasContent ? tab.color : "var(--bg-border)" }}
+              />
+            )}
+            {tab.label}
+            {tab.key === "original" && (
+              <span style={{
+                fontSize: 9, fontFamily: "monospace", padding: "1px 5px",
+                borderRadius: 4, background: "rgba(245,158,11,0.12)",
+                color: "var(--accent-gold)", border: "0.5px solid rgba(245,158,11,0.3)",
+                marginLeft: 4, letterSpacing: "0.04em",
+              }}>editable</span>
+            )}
+            {tab.key !== "original" && hasContent && (
+              <button
+                className="mn-version-tab-clear"
+                onClick={e => { e.stopPropagation(); onClearVersion(tab.key); }}
+                title={`Clear ${tab.label} version`}
+                aria-label={`Clear ${tab.label} version`}
+              >&#x2715;</button>
+            )}
+          </button>
+        );
+      })}
+    </div>
+  );
+});
+
+// ─── Empty version slot ───────────────────────────────────────────────────────
+
+const EmptyVersionSlot = memo(function EmptyVersionSlot({ tab, onRunAction }) {
+  const action = AI_ACTIONS.find(a => a.versionKey === tab.key);
+  if (!action) return null;
+  const Icon = action.icon;
+  return (
+    <div className="mn-version-empty">
+      <div style={{
+        width: 52, height: 52, borderRadius: 16,
+        display: "flex", alignItems: "center", justifyContent: "center",
+        background: `${action.accent}18`, border: `1px solid ${action.accent}30`,
+      }}>
+        <Icon size={22} style={{ color: action.accent }} />
+      </div>
+      <div>
+        <p style={{ fontSize: 14, fontWeight: 700, color: "var(--text-primary)", marginBottom: 6 }}>
+          No {tab.label} version yet
+        </p>
+        <p style={{ fontSize: 12, color: "var(--text-muted)", fontFamily: "monospace", lineHeight: 1.6, maxWidth: 280 }}>
+          Run <strong style={{ color: action.accent }}>{action.label}</strong> from the toolbar below to generate and save it here. Your original note is never changed.
+        </p>
+      </div>
+      <button
+        onClick={onRunAction}
+        className="mn-pill-btn"
+        style={{ background: `${action.accent}18`, borderColor: `${action.accent}44`, color: action.accent }}
+      >
+        <Icon size={13} /> {action.label}
+      </button>
+    </div>
+  );
+});
+
+// ─── Score Bar ───────────────────────────────────────────────────────────────
 
 const ScoreBar = memo(function ScoreBar({ label, value }) {
   const color = scoreColor(value);
@@ -1076,16 +1244,13 @@ const AIResultBody = memo(function AIResultBody({ actionId, loading, error, resu
 // ─── AI result drawer ─────────────────────────────────────────────────────────
 
 function AIDrawer({
-  open, action, loading, error, result, onClose, onRegenerate, onApply, onAppendRecap,
+  open, action, loading, error, result, onClose, onRegenerate, onSaveVersion, onAppendRecap,
 }) {
   const [copied, setCopied] = useState(false);
   const bodyRef = useRef(null);
 
   useEffect(() => { setCopied(false); }, [result, open]);
 
-  // Always start the result view scrolled to the top: a fresh open, a new
-  // action, a regenerate, or new content arriving should never inherit a
-  // stale scroll position from whatever was shown before.
   useEffect(() => {
     if (bodyRef.current) bodyRef.current.scrollTop = 0;
   }, [open, action?.id, loading, result]);
@@ -1102,8 +1267,13 @@ function AIDrawer({
     });
   };
 
-  const canApply = ["improve", "revision", "mains"].includes(action.id) && !!result && !loading && !error;
+  const canSave = !!action.versionKey && !!result && !loading && !error;
   const canAppendRecap = action.id === "mistakes" && !!result && !loading && !error && !!parseMistakesReport(result);
+
+  // Human-readable tab name for the save button
+  const tabLabel = action.versionKey
+    ? VERSION_TABS.find(t => t.key === action.versionKey)?.label || action.versionKey
+    : null;
 
   return (
     <>
@@ -1116,7 +1286,9 @@ function AIDrawer({
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-[14px] font-bold text-text-primary leading-tight truncate">{action.label}</p>
-            <p className="text-[10.5px] font-mono text-text-muted mt-0.5">AI Mentor · based on this note</p>
+            <p className="text-[10.5px] font-mono text-text-muted mt-0.5">
+              AI Mentor · saved to <span style={{ color: action.accent }}>{tabLabel ?? "note"}</span> tab
+            </p>
           </div>
           <button onClick={onClose} className="mn-icon-btn" aria-label="Close"><X size={17} /></button>
         </div>
@@ -1136,12 +1308,12 @@ function AIDrawer({
             </button>
             {canAppendRecap && (
               <button onClick={onAppendRecap} className="mn-pill-btn mn-pill-btn-full">
-                <Plus size={14} /> Add recap to note
+                <Plus size={14} /> Add recap to original
               </button>
             )}
-            {canApply && (
-              <button onClick={onApply} className="mn-pill-btn mn-pill-btn-primary">
-                Apply to note
+            {canSave && (
+              <button onClick={() => onSaveVersion(action.versionKey)} className="mn-pill-btn mn-pill-btn-primary">
+                <Check size={14} /> Save to {tabLabel} tab
               </button>
             )}
           </div>
@@ -1192,6 +1364,7 @@ export default function MentorNotes({ isLoggedIn = false, contextHint = "Notes s
   const [readingMode, setReadingMode] = useState(false);
 
   const [draft, setDraft] = useState({ title: "", topic: null, content: "" });
+  const [activeTab, setActiveTab] = useState("original"); // "original" | "enhanced" | "revision" | "mains"
   const [saveStatus, setSaveStatus] = useState("idle");
   const [lastSavedAt, setLastSavedAt] = useState(null);
 
@@ -1207,11 +1380,18 @@ export default function MentorNotes({ isLoggedIn = false, contextHint = "Notes s
   const titleRef = useRef(null);
   const skipNextSave = useRef(true);
 
+  // ── Undo history (per-note content snapshots) ─────────────────────────────
+  // contentHistory: { [noteId]: string[] }  — oldest first, newest last
+  const contentHistory = useRef({});
+  const undoSnapshotTimer = useRef(null);
+  const [canUndo, setCanUndo] = useState(false);
+
   const activeNote = useMemo(() => notes.find(n => n.id === activeId) || null, [notes, activeId]);
 
   // ── Load draft whenever the active note changes ──────────────────────────
   useEffect(() => {
     skipNextSave.current = true;
+    setActiveTab("original");
     if (activeNote) {
       setDraft({ title: activeNote.title || "", topic: activeNote.topic || null, content: activeNote.content || "" });
       setSaveStatus("saved");
@@ -1263,7 +1443,7 @@ export default function MentorNotes({ isLoggedIn = false, contextHint = "Notes s
   // ── Note CRUD ──────────────────────────────────────────────────────────────
   const handleCreate = useCallback(() => {
     const now = new Date().toISOString();
-    const note = { id: uid(), title: "", topic: topicFilter || null, content: "", createdAt: now, updatedAt: now };
+    const note = { id: uid(), title: "", topic: topicFilter || null, content: "", versions: {}, createdAt: now, updatedAt: now };
     setNotes(prev => {
       const updated = [note, ...prev];
       persistNotesToStorage(updated);
@@ -1295,7 +1475,69 @@ export default function MentorNotes({ isLoggedIn = false, contextHint = "Notes s
   // ── Draft field handlers ──────────────────────────────────────────────────
   const setTitle = useCallback((title) => setDraft(d => ({ ...d, title })), []);
   const setTopic = useCallback((topic) => setDraft(d => ({ ...d, topic })), []);
-  const setContent = useCallback((content) => setDraft(d => ({ ...d, content })), []);
+
+  // Snapshot the current content into undo history (debounced — 2s idle)
+  const pushUndoSnapshot = useCallback((id, content) => {
+    const hist = contentHistory.current[id] || [];
+    const last = hist[hist.length - 1];
+    if (last === content) return;
+    const next = [...hist, content].slice(-MAX_UNDO_DEPTH);
+    contentHistory.current[id] = next;
+    setCanUndo(next.length > 1);
+  }, []);
+
+  const setContent = useCallback((content) => {
+    setDraft(d => ({ ...d, content }));
+    // Debounced snapshot for undo history
+    clearTimeout(undoSnapshotTimer.current);
+    undoSnapshotTimer.current = setTimeout(() => {
+      setActiveId(id => { if (id) pushUndoSnapshot(id, content); return id; });
+    }, UNDO_SNAPSHOT_DEBOUNCE_MS);
+  }, [pushUndoSnapshot]);
+
+  // Sync canUndo when note switches
+  useEffect(() => {
+    if (!activeId) { setCanUndo(false); return; }
+    const hist = contentHistory.current[activeId] || [];
+    setCanUndo(hist.length > 1);
+  }, [activeId]);
+
+  // Seed undo history when opening a note for the first time
+  useEffect(() => {
+    if (!activeId || !activeNote) return;
+    if (!contentHistory.current[activeId]) {
+      contentHistory.current[activeId] = [activeNote.content || ""];
+      setCanUndo(false);
+    }
+  }, [activeId, activeNote]);
+
+  // ── Undo handler ──────────────────────────────────────────────────────────
+  const handleUndo = useCallback(() => {
+    if (!activeId) return;
+    const hist = contentHistory.current[activeId] || [];
+    if (hist.length <= 1) return;
+    const next = hist.slice(0, -1);
+    contentHistory.current[activeId] = next;
+    const prevContent = next[next.length - 1];
+    setDraft(d => ({ ...d, content: prevContent }));
+    setCanUndo(next.length > 1);
+    clearTimeout(saveTimer.current);
+    persistDraft(activeId, { content: prevContent });
+  }, [activeId, persistDraft]);
+
+  // Ctrl+Z / Cmd+Z intercept (only when textarea is focused)
+  useEffect(() => {
+    const onKeyDown = (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === "z" && !e.shiftKey) {
+        if (document.activeElement === textareaRef.current) {
+          const hist = contentHistory.current[activeId] || [];
+          if (hist.length > 1) { e.preventDefault(); handleUndo(); }
+        }
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [activeId, handleUndo]);
 
   // ── AI actions ─────────────────────────────────────────────────────────────
   const runAction = useCallback(async (action) => {
@@ -1317,21 +1559,20 @@ export default function MentorNotes({ isLoggedIn = false, contextHint = "Notes s
 
   const closeDrawer = useCallback(() => setDrawerOpen(false), []);
 
-  // ── Apply to note (immediate persist) ────────────────────────────────────
-  const handleApply = useCallback(() => {
-    if (!aiResult || !activeId) return;
+  // ── Save AI result into a version slot (never overwrites original content) ─
+  const handleSaveVersion = useCallback((versionKey) => {
+    if (!aiResult || !activeId || !versionKey) return;
     const now = new Date().toISOString();
 
-    // Update draft
-    setDraft(d => ({ ...d, content: aiResult }));
-
-    // Update notes state and persist immediately
     setNotes(prev => {
-      const updated = prev.map(n =>
-        n.id === activeId
-          ? { ...n, content: aiResult, updatedAt: now }
-          : n
-      );
+      const updated = prev.map(n => {
+        if (n.id !== activeId) return n;
+        return {
+          ...n,
+          versions: { ...(n.versions || {}), [versionKey]: aiResult },
+          updatedAt: now,
+        };
+      });
       persistNotesToStorage(updated);
       return updated;
     });
@@ -1339,7 +1580,26 @@ export default function MentorNotes({ isLoggedIn = false, contextHint = "Notes s
     setLastSavedAt(now);
     setSaveStatus("saved");
     setDrawerOpen(false);
+    // Switch to the newly saved tab
+    setActiveTab(versionKey);
   }, [aiResult, activeId]);
+
+  // ── Clear a version slot ──────────────────────────────────────────────────
+  const handleClearVersion = useCallback((versionKey) => {
+    if (!activeId || !versionKey) return;
+    const now = new Date().toISOString();
+    setNotes(prev => {
+      const updated = prev.map(n => {
+        if (n.id !== activeId) return n;
+        const versions = { ...(n.versions || {}) };
+        delete versions[versionKey];
+        return { ...n, versions, updatedAt: now };
+      });
+      persistNotesToStorage(updated);
+      return updated;
+    });
+    setActiveTab("original");
+  }, [activeId]);
 
   // ── Add recap to note (immediate persist) ───────────────────────────────
   const handleAppendRecap = useCallback(() => {
@@ -1382,9 +1642,25 @@ export default function MentorNotes({ isLoggedIn = false, contextHint = "Notes s
             <p className="text-[10px] font-mono text-text-muted">Write once. Revise fast.</p>
           </div>
           {mobilePane === "editor" && activeNote && (
-            <button onClick={() => setReadingMode(v => !v)} className="mn-icon-btn lg:hidden" aria-label="Toggle reading mode">
-              {readingMode ? <EyeOff size={17} /> : <Eye size={17} />}
-            </button>
+            <>
+              {activeTab === "original" && !readingMode && (
+                <button
+                  onClick={handleUndo}
+                  disabled={!canUndo}
+                  className="mn-icon-btn lg:hidden"
+                  aria-label="Undo last change"
+                  title="Undo"
+                  style={{ opacity: canUndo ? 1 : 0.35 }}
+                >
+                  <History size={17} />
+                </button>
+              )}
+              {activeTab === "original" && (
+                <button onClick={() => setReadingMode(v => !v)} className="mn-icon-btn lg:hidden" aria-label="Toggle reading mode">
+                  {readingMode ? <EyeOff size={17} /> : <Eye size={17} />}
+                </button>
+              )}
+            </>
           )}
         </div>
 
@@ -1407,6 +1683,7 @@ export default function MentorNotes({ isLoggedIn = false, contextHint = "Notes s
               <EmptyEditor onCreate={handleCreate} />
             ) : (
               <>
+                {/* ── Toolbar: title, topic chips, undo/read toggle ── */}
                 <div className="mn-toolbar">
                   <div className="px-4 pt-3.5 pb-3 flex items-start gap-2">
                     <button onClick={handleBackToList} className="mn-icon-btn lg:hidden shrink-0 -ml-1.5" aria-label="Back to notes">
@@ -1420,18 +1697,51 @@ export default function MentorNotes({ isLoggedIn = false, contextHint = "Notes s
                         placeholder="Untitled note"
                         className="mn-title-input"
                         aria-label="Note title"
+                        readOnly={activeTab !== "original"}
+                        style={{ opacity: activeTab !== "original" ? 0.7 : 1 }}
                       />
                       <div className="flex items-center gap-3 mt-2 flex-wrap">
-                        <SaveIndicator status={saveStatus} lastSavedAt={lastSavedAt} />
-                        <span className="text-[11px] font-mono text-text-muted">· {wordCount(draft.content)} words</span>
+                        {activeTab === "original" ? (
+                          <>
+                            <SaveIndicator status={saveStatus} lastSavedAt={lastSavedAt} />
+                            <span className="text-[11px] font-mono text-text-muted">· {wordCount(draft.content)} words</span>
+                          </>
+                        ) : (
+                          <span className="text-[11px] font-mono text-text-muted">
+                            {(() => {
+                              const tab = VERSION_TABS.find(t => t.key === activeTab);
+                              return (
+                                <span style={{ color: tab?.color }}>
+                                  {tab?.label} version · read-only
+                                </span>
+                              );
+                            })()}
+                          </span>
+                        )}
                       </div>
                     </div>
-                    <button onClick={() => setReadingMode(v => !v)} className="mn-icon-btn hidden lg:inline-flex" aria-label="Toggle reading mode" title="Reading mode">
-                      {readingMode ? <PenLine size={17} /> : <Eye size={17} />}
-                    </button>
+                    {/* Only show read/edit toggle on original tab */}
+                    {activeTab === "original" && (
+                      <button onClick={() => setReadingMode(v => !v)} className="mn-icon-btn hidden lg:inline-flex" aria-label="Toggle reading mode" title="Reading mode">
+                        {readingMode ? <PenLine size={17} /> : <Eye size={17} />}
+                      </button>
+                    )}
+                    {activeTab === "original" && !readingMode && (
+                      <button
+                        onClick={handleUndo}
+                        disabled={!canUndo}
+                        className="mn-icon-btn hidden lg:inline-flex"
+                        aria-label="Undo last change"
+                        title="Undo (Ctrl+Z)"
+                        style={{ opacity: canUndo ? 1 : 0.35 }}
+                      >
+                        <History size={16} />
+                      </button>
+                    )}
                   </div>
 
-                  {!readingMode && (
+                  {/* Topic chips — only on original tab in edit mode */}
+                  {activeTab === "original" && !readingMode && (
                     <div className="px-4 pb-3">
                       <div className="mn-topic-rail">
                         <TopicChip topic={{ color: "var(--text-muted)", label: "No topic" }} active={!draft.topic} onClick={() => setTopic(null)} />
@@ -1443,51 +1753,143 @@ export default function MentorNotes({ isLoggedIn = false, contextHint = "Notes s
                   )}
                 </div>
 
+                {/* ── Version Tab Bar ── */}
+                <VersionTabBar
+                  activeTab={activeTab}
+                  onTabChange={tab => { setActiveTab(tab); setReadingMode(false); }}
+                  versions={activeNote.versions}
+                  onClearVersion={handleClearVersion}
+                />
+
+                {/* ── Content Area: switches by active tab ── */}
                 <div className="mn-content-area mn-scroll px-4 sm:px-6 py-5 pb-bottom-nav lg:pb-5">
                   <div className="mn-content-inner">
-                    {readingMode ? (
-                      <div className="mn-reading" style={{ animation: "mn-rise 200ms ease both" }}>
-                        {meta && (
-                          <span className="inline-flex items-center gap-1.5 text-[11px] font-mono font-semibold mb-3" style={{ color: meta.color }}>
-                            <span className="mn-chip-dot" style={{ background: meta.color }} /> {meta.label}
-                          </span>
-                        )}
-                        <h1 className="font-display text-[26px] font-bold text-text-primary leading-tight mb-4">{draft.title || "Untitled note"}</h1>
-                        {draft.content.trim() ? renderRich(draft.content) : (
-                          <p className="text-[13px] text-text-muted font-mono">This note is empty. Switch back to writing mode to add content.</p>
-                        )}
-                      </div>
-                    ) : (
-                      <textarea
-                        ref={textareaRef}
-                        value={draft.content}
-                        onChange={(e) => setContent(e.target.value)}
-                        placeholder="Start writing — concepts, dates, articles, your own words…"
-                        className="mn-textarea"
-                        style={{ minHeight: "40vh" }}
-                        aria-label="Note content"
-                      />
+
+                    {/* ORIGINAL TAB */}
+                    {activeTab === "original" && (
+                      readingMode ? (
+                        <div className="mn-reading" style={{ animation: "mn-rise 200ms ease both" }}>
+                          {meta && (
+                            <span className="inline-flex items-center gap-1.5 text-[11px] font-mono font-semibold mb-3" style={{ color: meta.color }}>
+                              <span className="mn-chip-dot" style={{ background: meta.color }} /> {meta.label}
+                            </span>
+                          )}
+                          <h1 className="font-display text-[26px] font-bold text-text-primary leading-tight mb-4">{draft.title || "Untitled note"}</h1>
+                          {draft.content.trim() ? renderRich(draft.content) : (
+                            <p className="text-[13px] text-text-muted font-mono">This note is empty. Switch back to writing mode to add content.</p>
+                          )}
+                        </div>
+                      ) : (
+                        <textarea
+                          ref={textareaRef}
+                          value={draft.content}
+                          onChange={(e) => setContent(e.target.value)}
+                          placeholder="Start writing — concepts, dates, articles, your own words…"
+                          className="mn-textarea"
+                          style={{ minHeight: "40vh" }}
+                          aria-label="Note content"
+                        />
+                      )
                     )}
+
+                    {/* ENHANCED / REVISION / MAINS TABS — rendered AI content */}
+                    {activeTab !== "original" && (() => {
+                      const tab = VERSION_TABS.find(t => t.key === activeTab);
+                      const versionContent = activeNote.versions?.[activeTab];
+                      const matchingAction = AI_ACTIONS.find(a => a.versionKey === activeTab);
+
+                      if (!versionContent) {
+                        return (
+                          <EmptyVersionSlot
+                            tab={tab}
+                            onRunAction={() => {
+                              if (matchingAction) runAction(matchingAction);
+                            }}
+                          />
+                        );
+                      }
+
+                      return (
+                        <div className="mn-version-view" style={{ animation: "mn-rise 200ms ease both" }}>
+                          {/* Version header badge */}
+                          <div style={{
+                            display: "flex", alignItems: "center", gap: 8,
+                            marginBottom: 20, flexWrap: "wrap",
+                          }}>
+                            <span style={{
+                              fontSize: 10, fontFamily: "monospace", padding: "3px 10px",
+                              borderRadius: 20, fontWeight: 700, letterSpacing: "0.06em",
+                              background: `${tab.color}18`, color: tab.color,
+                              border: `0.5px solid ${tab.color}44`,
+                            }}>
+                              {tab.label.toUpperCase()} VERSION
+                            </span>
+                            <span style={{ fontSize: 11, color: "var(--text-muted)", fontFamily: "monospace" }}>
+                              {wordCount(versionContent)} words · read-only
+                            </span>
+                            <button
+                              onClick={() => {
+                                navigator.clipboard?.writeText(versionContent);
+                              }}
+                              className="mn-pill-btn"
+                              style={{ padding: "4px 10px", fontSize: 11, minHeight: 28, marginLeft: "auto" }}
+                              title="Copy to clipboard"
+                            >
+                              <Copy size={11} /> Copy
+                            </button>
+                            {matchingAction && (
+                              <button
+                                onClick={() => runAction(matchingAction)}
+                                disabled={aiDisabled}
+                                className="mn-pill-btn"
+                                style={{
+                                  padding: "4px 10px", fontSize: 11, minHeight: 28,
+                                  borderColor: `${tab.color}44`, color: tab.color,
+                                  background: `${tab.color}10`,
+                                }}
+                                title="Regenerate this version"
+                              >
+                                <RotateCcw size={11} /> Regenerate
+                              </button>
+                            )}
+                          </div>
+
+                          {/* Rendered AI content */}
+                          {renderAIContent(versionContent, { actionId: matchingAction?.id })}
+                        </div>
+                      );
+                    })()}
+
                   </div>
                 </div>
 
-                {!readingMode && (
+                {/* ── AI Action Rail (only shown on original tab) ── */}
+                {activeTab === "original" && !readingMode && (
                   <div className="mn-toolbar mn-mobile-ai-bar lg:static lg:border-t-0 lg:px-4 lg:pb-4 lg:pt-0" style={{ borderTop: "1px solid var(--bg-border)" }}>
                     <div className="mn-ai-rail px-1 lg:px-0 pt-0 lg:pt-3">
                       {AI_ACTIONS.map(action => {
                         const Icon = action.icon;
+                        const hasVersion = !!(action.versionKey && activeNote.versions?.[action.versionKey]);
                         return (
                           <button
                             key={action.id}
                             onClick={() => runAction(action)}
                             disabled={aiDisabled}
                             className="mn-ai-btn"
-                            style={{ "--ai-accent": action.accent }}
+                            style={{ "--ai-accent": action.accent, position: "relative" }}
                             title={aiDisabled ? "Write a few more sentences first" : action.label}
                           >
                             <Icon size={14} style={{ color: action.accent }} />
                             <span className="hidden sm:inline">{action.label}</span>
                             <span className="sm:hidden">{action.short}</span>
+                            {/* Green dot indicates a saved version exists */}
+                            {hasVersion && (
+                              <span style={{
+                                position: "absolute", top: 5, right: 5,
+                                width: 6, height: 6, borderRadius: "50%",
+                                background: action.accent, opacity: 0.85,
+                              }} />
+                            )}
                           </button>
                         );
                       })}
@@ -1509,7 +1911,7 @@ export default function MentorNotes({ isLoggedIn = false, contextHint = "Notes s
           result={aiResult}
           onClose={closeDrawer}
           onRegenerate={() => runAction(activeAction)}
-          onApply={handleApply}
+          onSaveVersion={handleSaveVersion}
           onAppendRecap={handleAppendRecap}
         />
       )}
