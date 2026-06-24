@@ -35,7 +35,7 @@ const PORT = process.env.PORT || 5000;
 const allowedOrigins = [
   "http://localhost:5173",
   "https://upsc-by-iitian.onrender.com",
- " https://www.upscbyiitians.in"
+ "https://www.upscbyiitians.in",
 ];
 
 app.use(
