@@ -1,10 +1,6 @@
-
 const { runNotesAction } = require("../config/ai-client");
 const trackEvent = require("../utils/trackEvent");
-
-// Single factory shared by all 4 notes actions — validates input, calls the
-// matching AI prompt via runNotesAction, and normalizes the response shape
-// to { success, provider_used, result }, consistent with the rest of the API.
+const { UserData } = require("../models/UserData");
 function makeNotesHandler(actionId) {
   return async (req, res, next) => {
     try {
@@ -25,6 +21,18 @@ function makeNotesHandler(actionId) {
 
       trackEvent(req.user.id, "notes_audited", "Notes Auditor", {
         action: actionId,
+      }).catch(() => {});
+
+      // Fire-and-forget: append a note_audits entry so the
+      // "Audit your first set of notes" onboarding milestone marks done.
+      UserData.findOne({ where: { user_id: req.user.id } }).then((ud) => {
+        if (!ud) return;
+        ud.note_audits = [
+          ...(ud.note_audits || []),
+          { id: `na_${Date.now()}`, action: actionId, at: new Date().toISOString() },
+        ];
+        ud.changed("note_audits", true);
+        return ud.save();
       }).catch(() => {});
 
       return res.status(200).json({

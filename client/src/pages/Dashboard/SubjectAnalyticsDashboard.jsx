@@ -65,14 +65,14 @@ function InsightPill({ icon: Icon, label, value, color }) {
 }
 
 export default function SubjectAnalyticsDashboard({ userId, isLoggedIn = false }) {
-  const [period, setPeriod] = useState("lifetime");
+  const [period, setPeriod] = useState("day");
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [grown, setGrown] = useState(false);
   const [syncingF5, setSyncingF5] = useState(false);
   const [f5Result, setF5Result] = useState(null);
 
-  const fetchData = useCallback(async (p = "lifetime") => {
+  const fetchData = useCallback(async (p = "day") => {
     if (!isLoggedIn) return;
     setLoading(true);
     setGrown(false);
@@ -91,7 +91,7 @@ export default function SubjectAnalyticsDashboard({ userId, isLoggedIn = false }
     }
   }, [isLoggedIn]);
 
-  useEffect(() => { fetchData("lifetime"); }, [fetchData]);
+  useEffect(() => { fetchData("day"); }, [fetchData]);
 
   const handlePeriod = (p) => { setPeriod(p); fetchData(p); };
 

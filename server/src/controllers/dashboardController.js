@@ -1,5 +1,5 @@
 const User = require("../models/User");
-const { UserData } = require("../models/UserData");
+const { UserData, TestAttempt } = require("../models/UserData");
 const { getISTDateString } = require("../utils/dateUtils");
 const { emitToUser } = require("../socket/socketManager");
 const trackEvent = require("../utils/trackEvent");
@@ -9,40 +9,81 @@ const trackEvent = require("../utils/trackEvent");
 const getUserData = async (req, res, next) => {
   try {
     trackEvent(req.user.id, "dashboard_visit").catch(() => {}); // fire-and-forget
-    const userData = await UserData.findOne({ where: { user_id: req.user.id } });
+
+    let [userData, testAttemptCount] = await Promise.all([
+      UserData.findOne({ where: { user_id: req.user.id } }),
+      TestAttempt.count({ where: { user_id: req.user.id } }).catch(() => 0),
+    ]);
 
     if (!userData) {
       await UserData.seedForUser(req.user.id);
-      const seeded = await UserData.findOne({ where: { user_id: req.user.id } });
-      return buildResponse(res, req.user, seeded);
+      userData = await UserData.findOne({ where: { user_id: req.user.id } });
     }
 
-    return buildResponse(res, req.user, userData);
+    return buildResponse(res, req.user, userData, testAttemptCount);
   } catch (err) {
     next(err);
   }
 };
 
-function buildResponse(res, user, userData) {
+function buildResponse(res, user, userData, testAttemptCount = 0) {
+  // spaced_repetition is stored as { queue: [...] } but Dashboard components
+  // (TodaysMission, DashboardOnboardingCards) expect a plain array they can
+  // call .filter() and .length on.  Normalise here; DB format is unchanged.
+  const srQueue = Array.isArray(userData.spaced_repetition)
+    ? userData.spaced_repetition
+    : (userData.spaced_repetition?.queue || []);
+
   return res.json({
     success: true,
     profile: {
-      id: user.id,
-      name: user.name,
-      email: user.email,
-      role: user.role,
-      target_year: user.target_year,
+      id:                 user.id,
+      name:               user.name,
+      email:              user.email,
+      role:               user.role,
+      target_year:        user.target_year,
       daily_target_hours: user.daily_target_hours,
-      streak: user.streak || 0,
-      longest_streak: user.longest_streak || 0,
-      examDate: user.exam_date ?? null,
+      streak:             user.streak         || 0,
+      longest_streak:     user.longest_streak || 0,
+      examDate:           user.exam_date      ?? null,
+      quote:              user.quote          ?? null, // consumed by HeroBanner
     },
-    syllabus_progress: userData.syllabus_progress || {},
-    answers: userData.answers || [],
+
+    // ── Syllabus: both keys so Dashboard.jsx (.syllabus) and SyllabusTracker
+    //    (.syllabus_progress) both resolve without a useUserData transform ──
+    syllabus_progress:  userData.syllabus_progress || {},
+    syllabus:           userData.syllabus_progress || {},
+
+    // ── Core activity data ────────────────────────────────────────────────────
+    answers:    userData.answers    || [],
     daily_logs: userData.daily_logs || [],
-    spaced_repetition: userData.spaced_repetition || { queue: [] },
-    // ── NEW: server-persisted question attempts for cross-device sync ──────
-    question_attempts: userData.question_attempts || [],
+
+    // ── Question attempts: normalise so every entry has a `date` field.
+    //    TodaysMission filters by (a.date || a.created_at).startsWith(today)
+    //    but the sync endpoint stored only `attemptedAt` (ISO string).  ─────
+    question_attempts: (userData.question_attempts || []).map((a) => ({
+      ...a,
+      date: a.date
+        || (a.attemptedAt ? a.attemptedAt.split("T")[0] : null)
+        || (a.created_at  ? a.created_at.split("T")[0]  : null),
+    })),
+
+    // ── Spaced repetition: expose as a plain array (not { queue: [] }).
+    //    Both keys are set so old consumers of either name keep working. ──────
+    spaced_repetition: srQueue,
+    revision_queue:    srQueue,  // TodaysMission checks this key first
+
+    // ── Onboarding milestone completion signals ───────────────────────────────
+    // test_attempts: component only needs .length > 0; avoid full join by
+    // sending a synthetic one-element array when count > 0.
+    test_attempts:    testAttemptCount > 0 ? [{ _count: testAttemptCount }] : [],
+    // note_audits / mentor_sessions are appended to UserData by their
+    // respective controllers (see notes below).  Safe-default to [] here.
+    note_audits:      userData.note_audits     || [],
+    // mentor_threads is already written by evaluateController:chat() on every
+    // AI Mentor exchange.  DashboardOnboardingCards only needs .length > 0,
+    // so derive mentor_sessions from the threads count — no extra column needed.
+    mentor_sessions:  (userData.mentor_threads || []).length > 0 ? [{ _derived: true }] : [],
   });
 }
 
@@ -318,16 +359,20 @@ const syncQuestionAttempts = async (req, res, next) => {
 
     // Upsert: incoming attempts override existing ones with same id
     for (const a of attempts) {
+      const attemptedAt = a.attemptedAt || new Date().toISOString();
       byId[a.id] = {
-        id:           a.id,
-        topic:        a.topic        || "",
-        subject:      a.subject      || "",
-        paper:        a.paper        || "",
-        difficulty:   a.difficulty   || "Medium",
-        result:       a.result,
-        attemptedAt:  a.attemptedAt  || new Date().toISOString(),
-        year:         a.year         || null,
-        source:       a.source       || "Practice",
+        id:          a.id,
+        topic:       a.topic       || "",
+        subject:     a.subject     || "",
+        paper:       a.paper       || "",
+        difficulty:  a.difficulty  || "Medium",
+        result:      a.result,
+        // `date` (YYYY-MM-DD) lets TodaysMission filter today's attempts.
+        // Stored alongside `attemptedAt` so both formats always resolve.
+        date:        a.date || attemptedAt.split("T")[0],
+        attemptedAt,
+        year:        a.year        || null,
+        source:      a.source      || "Practice",
       };
     }
 

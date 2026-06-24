@@ -1,21 +1,4 @@
-/**
- * UserData — PostgreSQL / Sequelize
- *
- * The original single Mongoose document is split into relational tables:
- *
- *   UserData          — one row per user (root record)
- *   SyllabusModule    — one row per module (maps to moduleSchema)
- *   Answer            — one row per written answer
- *   DailyLog          — one row per daily study log
- *   SpacedRepItem     — one row per spaced-repetition item
- *
- * Relationships:
- *   User      1 ── 1   UserData
- *   UserData  1 ── N   SyllabusModule
- *   UserData  1 ── N   Answer
- *   UserData  1 ── N   DailyLog
- *   UserData  1 ── N   SpacedRepItem
- */
+
 
 const { DataTypes, Op } = require("sequelize");
 const { sequelize } = require("../config/db");
@@ -74,6 +57,14 @@ const UserData = sequelize.define(
     // (preferences, recurring weak spots, goals) that survive even after old
     // raw messages get trimmed off a thread. Shape: string[]
     mentor_memory: {
+      type: DataTypes.JSONB,
+      defaultValue: [],
+    },
+    // ── Note audit history — one entry per Notes AI action (improve / mistakes
+    //    / revision / mains-format).  Used by DashboardOnboardingCards to mark
+    //    the "Audit your first set of notes" milestone.
+    //    Shape: [{ id, action, at }]
+    note_audits: {
       type: DataTypes.JSONB,
       defaultValue: [],
     },
@@ -288,6 +279,7 @@ UserData.seedForUser = async function (userId) {
     mentor_chat: [],
     mentor_threads: [],
     mentor_memory: [],
+    note_audits: [],        // ← new
   });
 
   const modulesToInsert = DEFAULT_SYLLABUS_MODULES.map((m) => ({

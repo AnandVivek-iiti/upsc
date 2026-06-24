@@ -32,7 +32,7 @@ const User = sequelize.define(
     },
     password: {
       type: DataTypes.STRING,
-      allowNull: true, // nullable for Google-only accounts
+      allowNull: true,
       validate: {
         passwordLength(value) {
           if (value && value.length < 8 && !value.startsWith("$2")) {
@@ -83,9 +83,14 @@ const User = sequelize.define(
         return d;
       },
     },
+    quote: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      defaultValue: null,
+    },
   },
   {
-    tableName: "users", // production table is lowercase "users" — without this Sequelize defaults to "Users"
+    tableName: "users",
     timestamps: true,
     underscored: true,
     hooks: {
