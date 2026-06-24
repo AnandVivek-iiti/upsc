@@ -1,14 +1,14 @@
 import {
-  LayoutDashboard, BookOpen, NotebookPen, PenLine, PenTool, Flame, Archive,
+  LayoutDashboard, BookOpen, NotebookPen, PenLine, PenTool, Flame, Archive,TrendingUp,
   ChevronRight, Moon, Sun, LogOut, LogIn, Shield, Library, User,
 } from "lucide-react";
 import { AvatarCircle } from "../../pages/User/ProfilePage";
 
 const NAV_ITEMS = [
   { id: "dashboard",  label: "Dashboard",       icon: LayoutDashboard },
-  { id: "syllabus",   label: "Syllabus Tracker", icon: BookOpen },
+  { id: "syllabus",   label: "Syllabus Tracker", icon: TrendingUp, },
   { id: "notes",      label: "Notes",            icon: NotebookPen },
-  { id: "mains",      label: "Mains Grind",      icon: PenTool },
+  { id: "mains",      label: "Mains Drill",      icon: PenTool },
   { id: "pre",        label: "Prelims Grind",    icon: PenLine },
   { id: "pyq-vault",  label: "PYQ Vault",        icon: Archive },
   { id: "resources",  label: "Resources",        icon: Library },

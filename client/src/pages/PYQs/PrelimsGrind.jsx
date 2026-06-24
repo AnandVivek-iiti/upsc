@@ -1,4 +1,3 @@
-
 import { useState, useCallback, useMemo } from "react";
 import { Library, PenSquare, Zap } from "lucide-react";
 import MatchTable from "../../components/ui/MatchTable";
@@ -564,8 +563,8 @@ function SubjectPanel({ subject, subjectKey, accentColor, revQueue, onTopicCompl
 
 // ─── PAPER ACCORDION ──────────────────────────────────────────────────────────
 function PaperSection({ paperId, paper, isOpen, onToggle, revQueue, onTopicComplete, recordAttempt, attemptedIds }) {
-  const [activeSubject, setActiveSubject] = useState(null);
   const subjectEntries = Object.entries(paper.subjects || {});
+  const [activeSubject, setActiveSubject] = useState(() => isOpen && subjectEntries.length > 0 ? subjectEntries[0][0] : null);
 
   const handleToggle = useCallback(() => {
     onToggle();

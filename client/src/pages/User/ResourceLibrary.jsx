@@ -431,7 +431,6 @@ function RefBookCard({ book }) {
 }
 
 // ─── YOUTUBE CLASS CARD ───────────────────────────────────────────────────────
-// Shows a real YouTube thumbnail via thumbnailVideoId, falls back to a placeholder
 function ClassCard({ cls }) {
   const [thumbError, setThumbError] = useState(false);
   const langColor    = LANG_COLORS[cls.language] || "#a78bfa";
@@ -754,7 +753,7 @@ export default function ResourceLibrary({ user = null, updateProgress = null, bu
           ["ncert",       "📚 NCERT Books"],
           ["notes",       "📝 My Notes"],
           ["refbooks",    "📖 Reference Books"],
-          ["classes",     "▶ YouTube Classes"],
+          // ["classes",     "▶ YouTube Classes"],
           ["test-series", "🎯 Test Series"],
         ].map(([id, label]) => (
           <button key={id} onClick={() => { setActiveTab(id); setSearch(""); }} style={{

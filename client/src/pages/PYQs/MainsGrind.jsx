@@ -1,4 +1,3 @@
-
 import { useState, useMemo, useCallback } from "react";
 import { Library, PenSquare, Archive } from "lucide-react";
 import ResourceLibrary from "../User/ResourceLibrary";
@@ -799,8 +798,8 @@ function MainsSubjectPanel({ subject, accentColor, paperLabel, recordAttempt, at
 
 // ─── PAPER SECTION ──────────────────────────────────────────────────────────
 function PaperSection({ paperId, paper, isOpen, onToggle, recordAttempt, attemptedIds, isLoggedIn }) {
-  const [activeSubject, setActiveSubject] = useState(null);
   const subjectEntries = Object.entries(paper.subjects || {});
+  const [activeSubject, setActiveSubject] = useState(() => isOpen && subjectEntries.length > 0 ? subjectEntries[0][0] : null);
   const totalQ = useMemo(
     () => subjectEntries.reduce((s, [, sub]) => s + (sub.data?.length || 0), 0),
     [subjectEntries]

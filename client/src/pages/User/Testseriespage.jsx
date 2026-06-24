@@ -24,7 +24,7 @@ import {
   RefreshCw,
   BookMarked,
 } from "lucide-react";
-const TEST_MODULES = import.meta.glob("../data/Test/Testseries_t*_data.js", { eager: true });
+const TEST_MODULES = import.meta.glob("../../data/Test/Testseries_t*_data.js", { eager: true });
 
 function loadAllTests() {
   const all = [];
@@ -35,13 +35,11 @@ function loadAllTests() {
       if (Array.isArray(val)) {
         all.push(...val);
       } else if (val && typeof val === "object" && Array.isArray(val.questions)) {
-        // Single test object (has a `questions` array) — wrap it
-        all.push(val);
+          all.push(val);
       }
     }
   }
-  // De-duplicate by id if present; otherwise fall back to file path + index
-  const seen = new Set();
+    const seen = new Set();
   return all.filter((t, i) => {
     const key = t && t.id ? t.id : `__noid_${i}`;
     if (seen.has(key)) return false;

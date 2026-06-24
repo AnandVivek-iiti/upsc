@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, useMemo } from "react";
 import {
   LayoutDashboard, BookOpen, PenTool, PenLine,
   Library, MoreHorizontal, X, Moon, Sun, LogOut, LogIn,
-  User, Flame, Shield, Sparkles, NotebookPen, Archive,
+  User, Flame, Shield, Sparkles, NotebookPen, Archive,TrendingUp,
 } from "lucide-react";
 import { AvatarCircle } from "../../pages/User/ProfilePage";
 
@@ -11,15 +11,14 @@ const PRIMARY_NAV = [
   { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
   { id: "mains", label: "Mains", icon: PenTool },
   { id: "pre", label: "Prelims", icon: PenLine },
-  { id: "syllabus", label: "Syllabus", icon: BookOpen },
-
+  { id: "syllabus", label: "Syl Tracker", icon: TrendingUp, },
   { id: "notes", label: "Notes", icon: NotebookPen },
 
 ];
 
 // ─── "More" drawer items ──
 const MORE_NAV = [
-  { id: "pyq-vault", label: "Vault", icon: Archive },
+  { id: "pyq-vault", label: "PYQS", icon: Archive },
 
   { id: "resources", label: "Resources", icon: Library },
 ];
