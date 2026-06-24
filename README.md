@@ -2,7 +2,7 @@
 
 **An AI-powered preparation companion for UPSC Civil Services aspirants — syllabus tracking, subject-wise study analytics, Mains answer evaluation, Prelims PYQ drilling, MCQ test series with AI diagnostics, an AI notes workspace, and a personal AI mentor, all in one platform.**
 
-🔗 **Live App:** [upsc-by-iitian.onrender.com](https://upsc-by-iitian.onrender.com/)
+🔗 **Live App:** [https://www.upscbyiitians.in](https://www.upscbyiitians.in//)
 
 ---
 

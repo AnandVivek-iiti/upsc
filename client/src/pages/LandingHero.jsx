@@ -86,7 +86,7 @@ function ScreenshotFrame({ src, alt, caption, className = "" }) {
           <span className="w-2.5 h-2.5 rounded-full bg-yellow-400/60" />
           <span className="w-2.5 h-2.5 rounded-full bg-green-400/60" />
           <span className="ml-2 flex-1 h-5 rounded-md bg-bg-border/60 text-[10px] font-mono text-text-muted flex items-center px-2">
-            upsc-mentor.com
+            upscbyiitians.com
           </span>
         </div>
 
