@@ -257,7 +257,7 @@ export default function SubjectStudyTimer({
             <div className="flex gap-2">
               {phase === "idle" ? (
                 <button onClick={showSubjectPicker} className="btn-primary flex items-center gap-1.5 flex-1 justify-center text-xs sm:text-sm py-2.5">
-                  <BookOpen size={13} /> What are you studying?
+                  <BookOpen size={13} /> Start Studying
                 </button>
               ) : phase === "paused" ? (
                 <>
