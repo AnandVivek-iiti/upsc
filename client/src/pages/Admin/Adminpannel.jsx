@@ -47,6 +47,25 @@ function fmtNum(n) {
   return String(n);
 }
 
+// ─── Collapse consecutive same-user/same-event rows ──────────────────────────
+function groupConsecutiveEvents(events) {
+  if (!events?.length) return [];
+  const result = [];
+  for (const ev of events) {
+    const prev = result[result.length - 1];
+    if (
+      prev &&
+      prev.event_type === ev.event_type &&
+      prev.user_name === ev.user_name
+    ) {
+      prev._count += 1;
+    } else {
+      result.push({ ...ev, _count: 1 });
+    }
+  }
+  return result;
+}
+
 // ─── Toast ────────────────────────────────────────────────────────────────────
 function Toast({ msg, type, onClose }) {
   useEffect(() => {
@@ -555,7 +574,7 @@ function ActivityTab({ events, loading, onRefresh }) {
 
       {events?.length ? (
         <div className="bg-bg-surface border border-bg-border rounded-2xl overflow-hidden divide-y divide-bg-border/50">
-          {events.map((ev) => {
+          {groupConsecutiveEvents(events).map((ev) => {
             const meta = EVENT_LABELS[ev.event_type] || { label: ev.event_type, icon: Activity, color: "#94a3b8" };
             const Icon = meta.icon;
             return (
@@ -565,16 +584,23 @@ function ActivityTab({ events, loading, onRefresh }) {
                   <Icon size={12} style={{ color: meta.color }} />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm text-text-primary">
-                    <span className="font-semibold">{ev.user_name || "A user"}</span>
-                    {" "}{meta.label}
-                    {ev.feature_name && ev.feature_name !== ev.user_name && (
-                      <span className="text-text-muted text-xs sm:text-sm"> · {ev.feature_name}</span>
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <p className="text-sm text-text-primary">
+                      <span className="font-semibold">{ev.user_name || "A user"}</span>
+                      {" "}{meta.label}
+                      {ev.feature_name && ev.feature_name !== ev.user_name && (
+                        <span className="text-text-muted text-xs sm:text-sm"> · {ev.feature_name}</span>
+                      )}
+                      {ev.metadata?.subject && (
+                        <span className="text-accent-gold font-mono text-xs ml-1">({ev.metadata.subject})</span>
+                      )}
+                    </p>
+                    {ev._count > 1 && (
+                      <span className="inline-flex items-center text-[10px] font-mono font-bold bg-bg-muted border border-bg-border text-text-muted px-1.5 py-0.5 rounded-full shrink-0">
+                        ×{ev._count}
+                      </span>
                     )}
-                    {ev.metadata?.subject && (
-                      <span className="text-accent-gold font-mono text-xs ml-1">({ev.metadata.subject})</span>
-                    )}
-                  </p>
+                  </div>
                   {ev.metadata?.score !== undefined && (
                     <p className="text-[11px] font-mono text-text-muted">Score: {ev.metadata.score}</p>
                   )}
