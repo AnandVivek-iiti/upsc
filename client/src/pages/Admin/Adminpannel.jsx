@@ -6,14 +6,14 @@ import {
   Flame, Clock, BookOpen, Brain, FileText, Target,
   ArrowUp, ArrowDown, Minus, X, Calendar, UserCheck,
   GitBranch, Compass, Lightbulb, User, Zap, AlertTriangle, MessageCircle, Star, ThumbsUp,
-  Layers, Info,
+  Layers, Info, Mail,
 } from "lucide-react";
 import {
   downloadFullReport,
 } from "../../utils/adminReports";
 import AdminStudyAnalytics from "./AdminStudyAnalytics";
 const BASE = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
-
+ import PowerUserEmailer from "./PowerUserEmailer";
 // ─── fetch helper ─────────────────────────────────────────────────────────────
 async function adminFetch(path, options = {}) {
   const token = localStorage.getItem("upsc_token");
@@ -283,6 +283,26 @@ function UsersTab({ users, usersTotal, userPage, loading, onPageChange, onSortCh
   const [pendingDelete, setPendingDelete] = useState(null);
   const [feedbackStats, setFeedbackStats] = useState(null);
   const [feedbackList, setFeedbackList] = useState([]);
+  const [emailingUserId, setEmailingUserId] = useState(null);
+
+  const handleSendDirectEmail = async (e, user) => {
+    e.stopPropagation();
+    if (emailingUserId !== null) return; // block concurrent sends
+    if (!window.confirm(`Send outreach email to ${user.name}?`)) return;
+    setEmailingUserId(user.id);
+    try {
+      await adminFetch("/email/send-single", {
+        method: "POST",
+        body: JSON.stringify({ userId: user.id }),
+      });
+      alert(`✅ Email sent to ${user.name} (${user.email})`);
+    } catch (err) {
+      alert(`❌ Failed to send email to ${user.name}: ${err.message}`);
+    } finally {
+      setEmailingUserId(null);
+    }
+  };
+
   const COLS = [
     { key: "name", label: "Name" },
     { key: "email", label: "Email" },
@@ -335,6 +355,7 @@ function UsersTab({ users, usersTotal, userPage, loading, onPageChange, onSortCh
                       </span>
                     </th>
                   ))}
+                  <th className="w-10 px-2 sm:px-3 py-2.5 sm:py-3" />
                   <th className="w-10 px-2 sm:px-3 py-2.5 sm:py-3" />
                 </tr>
               </thead>
@@ -404,6 +425,18 @@ function UsersTab({ users, usersTotal, userPage, loading, onPageChange, onSortCh
                           <Trash2 size={12} />
                         </button>
                       )}
+                    </td>
+                    <td className="px-1 sm:px-2 py-2" onClick={(e) => e.stopPropagation()}>
+                      <button
+                        onClick={(e) => handleSendDirectEmail(e, u)}
+                        disabled={emailingUserId !== null}
+                        title={`Send outreach email to ${u.name}`}
+                        className="opacity-0 group-hover:opacity-100 flex items-center justify-center p-1 rounded hover:bg-accent-blue/10 text-text-muted hover:text-accent-blue transition-all disabled:cursor-not-allowed disabled:opacity-40"
+                      >
+                        {emailingUserId === u.id
+                          ? <Loader2 size={12} className="animate-spin text-accent-blue" />
+                          : <Mail size={12} />}
+                      </button>
                     </td>
                   </tr>
                 ))}
@@ -1557,6 +1590,7 @@ const fetchFeedback = useCallback(async () => {
       )}
       <br/>
       <AdminStudyAnalytics />
+       <PowerUserEmailer />
       {toast && <Toast msg={toast.msg} type={toast.type} onClose={() => setToast(null)} />}
     </div>
   );
