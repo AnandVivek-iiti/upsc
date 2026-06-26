@@ -1,44 +1,32 @@
-
 const nodemailer = require("nodemailer");
 const { Op, QueryTypes } = require("sequelize");
 const { sequelize } = require("../config/db");
 const User = require("../models/User");
 
 // ─── Nodemailer transporter ────────────────────────────────────────────────────
-// Uses Gmail with an App Password (generate at myaccount.google.com/apppasswords)
-// Set GMAIL_APP_PASSWORD in your .env file
 function createTransporter() {
   return nodemailer.createTransport({
     service: "gmail",
     auth: {
       user: process.env.SENDER_EMAIL || "me240003006@iiti.ac.in",
-      pass: process.env.GMAIL_APP_PASSWORD, // 16-char App Password from Google
+      pass: process.env.GMAIL_APP_PASSWORD,
     },
   });
 }
 
-// ─── Logo as inline base64 CID attachment ─────────────────────────────────────
-// The logo file should be placed at server/assets/upsc-logo.png
-// We embed it inline so it renders in all email clients
-const fs = require("fs");
+// ─── Logo CID attachment ───────────────────────────────────────────────────────
+const fs   = require("fs");
 const path = require("path");
 
 function getLogoAttachment() {
-  const logoPath = path.join(__dirname, "../assets/upsc-logo.png");
+  const logoPath = path.join(__dirname, "./assets/upsc-logo.png");
   if (fs.existsSync(logoPath)) {
-    return {
-      filename: "upsc-logo.png",
-      path: logoPath,
-      cid: "upsclogo@mentor", // referenced in HTML as cid:upsclogo@mentor
-    };
+    return { filename: "upsc-logo.png", path: logoPath, cid: "upsclogo@mentor" };
   }
   return null;
 }
 
 // ─── Segment-specific copy ─────────────────────────────────────────────────────
-// Mirrors the segments defined in the admin Email Composer (new / power / idle / feature).
-// Each segment has its own subject line, accent color, and body content built from
-// the founder's own drafted copy — kept in one place so HTML + text stay in sync.
 const SEGMENT_COPY = {
   new: {
     subject: "Welcome to UPSC Mentor — here's where to start 🎯",
@@ -106,12 +94,12 @@ const SEGMENT_COPY = {
 };
 
 const VALID_SEGMENTS = Object.keys(SEGMENT_COPY); // ["new","power","idle","feature"]
+
 function resolveSegment(segment) {
-  return VALID_SEGMENTS.includes(segment) ? segment : "power"; // safe default = original template
+  return VALID_SEGMENTS.includes(segment) ? segment : "power";
 }
 
-// ─── HTML email template (light theme) ─────────────────────────────────────────
-// Brand palette matches the UPSC Mentor architecture report: navy / gold on a light base.
+// ─── HTML email builder ────────────────────────────────────────────────────────
 function buildEmailHTML(userName, segment = "power") {
   const firstName = (userName || "").split(" ")[0] || "there";
   const name = firstName.charAt(0).toUpperCase() + firstName.slice(1);
@@ -134,7 +122,7 @@ function buildEmailHTML(userName, segment = "power") {
       <td align="center">
         <table width="100%" style="max-width:580px;background:#ffffff;border-radius:16px;border:1px solid #dde3ed;overflow:hidden;">
 
-          <!-- Header with logo -->
+          <!-- Header -->
           <tr>
             <td style="background:linear-gradient(135deg,#f0d98a 0%,#fdf6e3 100%);padding:28px 32px;text-align:center;border-bottom:1px solid #dde3ed;">
               <img src="cid:upsclogo@mentor" alt="UPSC Mentor" width="56" height="56"
@@ -149,35 +137,20 @@ function buildEmailHTML(userName, segment = "power") {
           <!-- Body -->
           <tr>
             <td style="padding:32px 32px 24px;">
-
-              <p style="margin:0 0 16px;font-size:11px;font-weight:700;color:${c.accent};text-transform:uppercase;letter-spacing:1px;">
-                ${c.eyebrow}
-              </p>
-
+              <p style="margin:0 0 16px;font-size:11px;font-weight:700;color:${c.accent};text-transform:uppercase;letter-spacing:1px;">${c.eyebrow}</p>
               <p style="margin:0 0 16px;font-size:15px;color:#0f2044;line-height:1.7;">
                 Hi <strong style="color:${c.accent};">${name}</strong>,
               </p>
+              <p style="margin:0 0 14px;font-size:14px;color:#374151;line-height:1.8;">${c.greetingLine}</p>
+              <p style="margin:0 0 20px;font-size:14px;color:#374151;line-height:1.8;">${c.intro}</p>
 
-              <p style="margin:0 0 14px;font-size:14px;color:#374151;line-height:1.8;">
-                ${c.greetingLine}
-              </p>
-
-              <p style="margin:0 0 20px;font-size:14px;color:#374151;line-height:1.8;">
-                ${c.intro}
-              </p>
-
-              <!-- Highlights card -->
               <div style="background:${c.accentBg};border:1px solid ${c.accent}22;border-radius:12px;padding:20px 24px;margin-bottom:24px;">
                 ${stepsHTML}
               </div>
 
-              <p style="margin:0 0 12px;font-size:14px;color:#374151;line-height:1.8;">
-                ${c.closing}
-              </p>
-
+              <p style="margin:0 0 12px;font-size:14px;color:#374151;line-height:1.8;">${c.closing}</p>
               ${c.closing2 ? `<p style="margin:0 0 24px;font-size:14px;color:#374151;line-height:1.8;">${c.closing2}</p>` : ""}
 
-              <!-- CTA -->
               <div style="text-align:center;margin:8px 0 8px;">
                 <a href="https://www.upscbyiitians.in" target="_blank"
                   style="display:inline-block;background:linear-gradient(135deg,#c9a227,#e8c96d);color:#0f2044;
@@ -186,7 +159,6 @@ function buildEmailHTML(userName, segment = "power") {
                   Visit UPSC Mentor →
                 </a>
               </div>
-
             </td>
           </tr>
 
@@ -199,9 +171,7 @@ function buildEmailHTML(userName, segment = "power") {
               <p style="margin:0 0 2px;font-size:12px;color:#6b7280;">Third Year | Mechanical Engineering</p>
               <p style="margin:0 0 2px;font-size:12px;color:#6b7280;">Indian Institute of Technology Indore</p>
               <p style="margin:0 0 8px;font-size:12px;color:#6b7280;">📞 9675109428</p>
-              <a href="https://www.upscbyiitians.in" style="font-size:12px;color:#c9a227;text-decoration:none;">
-                🔗 upscbyiitians.in
-              </a>
+              <a href="https://www.upscbyiitians.in" style="font-size:12px;color:#c9a227;text-decoration:none;">🔗 upscbyiitians.in</a>
             </td>
           </tr>
 
@@ -250,11 +220,11 @@ Indian Institute of Technology Indore
 🔗 https://www.upscbyiitians.in`;
 }
 
-// ─── Helper: fetch power users from DB ────────────────────────────────────────
-// Power users = active 3+ distinct days in last 7 days, excluding test accounts
+// ─── Test-account exclusion constants ─────────────────────────────────────────
 const EXCL_NAMES = ["admin", "anand vivek"];
 const EXCL_SQL   = EXCL_NAMES.map((n) => `'${n}'`).join(", ");
 
+// ─── Helper: fetch power users from DB ────────────────────────────────────────
 async function fetchPowerUsers() {
   const rows = await sequelize.query(
     `SELECT u.id, u.name, u.email
@@ -277,7 +247,7 @@ async function fetchPowerUsers() {
   return rows;
 }
 
-// ─── GET /api/admin/email/power-users — preview who will be emailed ────────────
+// ─── GET /api/admin/email/power-users ─────────────────────────────────────────
 const getEmailTargets = async (req, res, next) => {
   try {
     const users = await fetchPowerUsers();
@@ -287,15 +257,19 @@ const getEmailTargets = async (req, res, next) => {
   }
 };
 
-// ─── POST /api/admin/email/power-users — send emails ─────────────────────────
+// ─── POST /api/admin/email/power-users ────────────────────────────────────────
+// BUG FIXES:
+//   1. Now reads `segment` from req.body (was being silently ignored)
+//   2. Subject now comes from SEGMENT_COPY[segment].subject (was hardcoded)
+//   3. buildEmailHTML / buildEmailText now receive segment (were called without it)
 const sendPowerUserEmails = async (req, res, next) => {
   try {
-    // Optional: caller can pass a specific user_ids array to override the full list
-    const { user_ids } = req.body; // e.g. [3, 7, 12]
+    const { user_ids, segment } = req.body; // ← fix 1: extract segment
+    const resolvedSeg = resolveSegment(segment);
+    const c = SEGMENT_COPY[resolvedSeg];
 
     let targets;
     if (Array.isArray(user_ids) && user_ids.length > 0) {
-      // Send only to selected users (still exclude test accounts)
       const rows = await sequelize.query(
         `SELECT u.id, u.name, u.email
          FROM "users" u
@@ -311,31 +285,29 @@ const sendPowerUserEmails = async (req, res, next) => {
     }
 
     if (targets.length === 0) {
-      return res.json({ success: true, sent: 0, failed: 0, results: [], message: "No eligible power users found." });
+      return res.json({ success: true, sent: 0, failed: 0, results: [], message: "No eligible users found." });
     }
 
-    const transporter = createTransporter();
+    const transporter   = createTransporter();
     const logoAttachment = getLogoAttachment();
-
-    const results = [];
+    const results       = [];
 
     for (const user of targets) {
       try {
         const mailOptions = {
-          from: `"Anand Vivek | UPSC Mentor" <${process.env.SENDER_EMAIL || "me240003006@iiti.ac.in"}>`,
-          to: user.email,
-          subject: "Thank You for Exploring UPSC Mentor 🎯",
-          text: buildEmailText(user.name),
-          html: buildEmailHTML(user.name),
+          from:    `"Anand Vivek | UPSC Mentor" <${process.env.SENDER_EMAIL || "me240003006@iiti.ac.in"}>`,
+          to:      user.email,
+          subject: c.subject,                           // ← fix 2: segment subject
+          text:    buildEmailText(user.name, resolvedSeg), // ← fix 3: pass segment
+          html:    buildEmailHTML(user.name, resolvedSeg), // ← fix 3: pass segment
           ...(logoAttachment ? { attachments: [logoAttachment] } : {}),
         };
 
         await transporter.sendMail(mailOptions);
         results.push({ id: user.id, name: user.name, email: user.email, status: "sent" });
-        console.log(`[Email] Sent to ${user.name} <${user.email}>`);
+        console.log(`[Email][${resolvedSeg}] Sent to ${user.name} <${user.email}>`);
 
-        // Small delay between sends to avoid Gmail rate limits
-        await new Promise((r) => setTimeout(r, 800));
+        await new Promise((r) => setTimeout(r, 800)); // Gmail rate-limit guard
       } catch (mailErr) {
         console.error(`[Email] Failed for ${user.email}:`, mailErr.message);
         results.push({ id: user.id, name: user.name, email: user.email, status: "failed", error: mailErr.message });
@@ -351,16 +323,19 @@ const sendPowerUserEmails = async (req, res, next) => {
   }
 };
 
-// ─── POST /api/admin/email/send-single — send email to a single user ──────────
+// ─── POST /api/admin/email/send-single ────────────────────────────────────────
+// BUG FIX: also reads segment so single-user sends respect the chosen template
 const sendSingleUserEmail = async (req, res, next) => {
   try {
-    const { userId } = req.body;
+    const { userId, segment } = req.body; // ← fix: read segment here too
 
     if (!userId) {
       return res.status(400).json({ success: false, error: "userId is required." });
     }
 
-    // Fetch the specific user (must be a regular user, not admin/test)
+    const resolvedSeg = resolveSegment(segment);
+    const c = SEGMENT_COPY[resolvedSeg];
+
     const rows = await sequelize.query(
       `SELECT u.id, u.name, u.email
        FROM "users" u
@@ -374,21 +349,21 @@ const sendSingleUserEmail = async (req, res, next) => {
       return res.status(404).json({ success: false, error: "User not found or not eligible." });
     }
 
-    const user = rows[0];
-    const transporter = createTransporter();
+    const user           = rows[0];
+    const transporter    = createTransporter();
     const logoAttachment = getLogoAttachment();
 
     const mailOptions = {
-      from: `"Anand Vivek | UPSC Mentor" <${process.env.SENDER_EMAIL || "me240003006@iiti.ac.in"}>`,
-      to: user.email,
-      subject: "Thank You for Exploring UPSC Mentor 🎯",
-      text: buildEmailText(user.name),
-      html: buildEmailHTML(user.name),
+      from:    `"Anand Vivek | UPSC Mentor" <${process.env.SENDER_EMAIL || "me240003006@iiti.ac.in"}>`,
+      to:      user.email,
+      subject: c.subject,                           // ← fix: segment subject
+      text:    buildEmailText(user.name, resolvedSeg), // ← fix: pass segment
+      html:    buildEmailHTML(user.name, resolvedSeg), // ← fix: pass segment
       ...(logoAttachment ? { attachments: [logoAttachment] } : {}),
     };
 
     await transporter.sendMail(mailOptions);
-    console.log(`[Email] Sent single outreach to ${user.name} <${user.email}>`);
+    console.log(`[Email][${resolvedSeg}] Single send to ${user.name} <${user.email}>`);
 
     res.json({
       success: true,
