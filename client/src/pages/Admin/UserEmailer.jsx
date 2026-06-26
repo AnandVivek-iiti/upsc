@@ -1,6 +1,6 @@
-// PowerUserEmailer.jsx
+// UserEmailer.jsx
 // Segmented email composer with live HTML preview.
-// Drop into: src/pages/Admin/PowerUserEmailer.jsx
+// Drop into: src/pages/Admin/UserEmailer.jsx
 
 import { useState, useEffect, useCallback } from "react";
 import {
