@@ -245,7 +245,7 @@ export default function AuthPage({ onAuthSuccess, onBack }) {
   useEffect(() => {
     if (!googleSdkReady || !window.google?.accounts?.id || !GOOGLE_CLIENT_ID || !googleContainerRef.current) return;
 
-    // STEP 1: initialize FIRST — must happen before renderButton
+    // STEP 1: initialize FIRST  - must happen before renderButton
     window.google.accounts.id.initialize({
       client_id: GOOGLE_CLIENT_ID,
       callback: (response) => handleGoogleCredentialRef.current(response),

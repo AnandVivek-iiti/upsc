@@ -7,7 +7,7 @@ import {
   Mail, Send, Users, CheckCircle2, XCircle,
   Loader2, RefreshCw, Eye, ChevronDown, ChevronUp,
   AlertCircle, UserCheck, X, Sparkles, Flame, Clock, Map,
-  Monitor,
+  Monitor, Server, Zap,
 } from "lucide-react";
 
 const BASE = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
@@ -26,6 +26,7 @@ async function adminFetch(path, options = {}) {
   if (!res.ok || !data.success) throw new Error(data.error || `HTTP ${res.status}`);
   return data;
 }
+
 const SEGMENTS = {
   new: {
     label: "Just signed up",
@@ -34,17 +35,17 @@ const SEGMENTS = {
     accentBg: "#EAF3DE",
     eyebrow: "Welcome",
     desc: "Users who signed up in the last 24 hours. Highest-leverage moment - get them to their first win before they churn.",
-    subject: "Welcome to UPSC Mentor — here's where to start",
+    subject: "Welcome to UPSC Mentor  - here's where to start",
     signOff: "Happy studying,",
-    greetingLine: "Welcome to UPSC Mentor. I'm Anand Vivek, a third-year Mechanical Engineering student at IIT Indore — and the person building this platform.",
+    greetingLine: "Welcome to UPSC Mentor. I'm Anand Vivek, a third-year Mechanical Engineering student at IIT Indore  - and the person building this platform.",
     intro: "Really happy to have you here. Here are three things that'll get you the most value from day one:",
     steps: [
       { title: "Set your exam date", body: "Open your Profile and lock in your Prelims target year. The countdown is surprisingly motivating." },
-      { title: "Mark your syllabus", body: "Go to the Syllabus Tracker and mark the topics you're currently studying. All 48 modules are already loaded — you don't have to build anything." },
+      { title: "Mark your syllabus", body: "Go to the Syllabus Tracker and mark the topics you're currently studying. All 48 modules are already loaded  - you don't have to build anything." },
       { title: "Start the Study Timer", body: "Hit the timer from your dashboard before your next session. It tracks daily hours automatically and syncs across devices." },
     ],
     closing: "That's all you need to begin. No pressure to explore every feature on day one.",
-    closing2: "If you have questions or suggestions, just reply to this email — I personally read every message.",
+    closing2: "If you have questions or suggestions, just reply to this email  - I personally read every message.",
   },
   power: {
     label: "Power users",
@@ -58,11 +59,11 @@ const SEGMENTS = {
     greetingLine: "I wanted to reach out personally. Seeing users like you study consistently is what keeps me building.",
     intro: "You're in the top tier of our early community. A few features you might not have tried yet:",
     steps: [
-      { title: "AI Mentor Workspace", body: "Run separate threads for different subjects — GS4, Economy, Polity. Your mentor carries context across sessions, so it already knows your weak areas going in." },
-      { title: "AI Answer Evaluation", body: "Upload typed or handwritten Mains answers and get detailed feedback in seconds — useful for replicating actual exam conditions." },
+      { title: "AI Mentor Workspace", body: "Run separate threads for different subjects  - GS4, Economy, Polity. Your mentor carries context across sessions, so it already knows your weak areas going in." },
+      { title: "AI Answer Evaluation", body: "Upload typed or handwritten Mains answers and get detailed feedback in seconds  - useful for replicating actual exam conditions." },
       { title: "Personalised Study Plan", body: "After every mock test, the AI generates a targeted recovery plan for your exact weak topics. Worth trying after your next attempt." },
     ],
-    closing: "Your feedback matters a lot — you're actually using the platform regularly, which means you see what's working and what's not.",
+    closing: "Your feedback matters a lot  - you're actually using the platform regularly, which means you see what's working and what's not.",
     closing2: "If you find something confusing or have a suggestion, just reply. I'll personally read it.",
   },
   idle: {
@@ -74,11 +75,11 @@ const SEGMENTS = {
     desc: "Signed up but haven't engaged meaningfully. Time to re-engage with a low-friction entry point.",
     subject: "Still preparing? Here's the simplest way to restart",
     signOff: "Still rooting for you,",
-    greetingLine: "You signed up for UPSC Mentor a while back — I just wanted to check in.",
+    greetingLine: "You signed up for UPSC Mentor a while back  - I just wanted to check in.",
     intro: "If the platform felt overwhelming at first, that's fair. Here's the simplest possible entry point: one subject, one timer, 30 minutes.",
     steps: [
       { title: "Start a 30-minute session", body: "Open the dashboard, pick one subject from the Study Timer (Polity is a popular start), and run one focused session. That single action unlocks the analytics that make everything else useful." },
-      { title: "Your syllabus is already there", body: "All 48 modules are loaded and mapped to the official UPSC notification. You don't have to build anything — just start marking what you're studying." },
+      { title: "Your syllabus is already there", body: "All 48 modules are loaded and mapped to the official UPSC notification. You don't have to build anything  - just start marking what you're studying." },
     ],
     closing: "If something on the platform confused you or stopped you from using it, please do write back.",
     closing2: "Your feedback helps me improve UPSC Mentor for everyone.",
@@ -92,7 +93,7 @@ const SEGMENTS = {
     desc: "Users who've used 3+ features. Rarest segment, highest LTV signal. Treat them like beta testers.",
     subject: "Your feedback on UPSC Mentor would be valuable",
     signOff: "Regards,",
-    greetingLine: "I noticed you've explored several areas of UPSC Mentor — the syllabus tracker, mock tests, AI mentor, and more.",
+    greetingLine: "I noticed you've explored several areas of UPSC Mentor  - the syllabus tracker, mock tests, AI mentor, and more.",
     intro: "That kind of usage tells me you're using the platform as it was designed. Users like you help shape what gets built next. A few things it would be great to hear from you on:",
     steps: [
       { title: "What's been most useful?", body: "Which feature has made the biggest difference in your preparation? Even a one-line reply helps me understand where to invest next." },
@@ -103,6 +104,7 @@ const SEGMENTS = {
     closing2: "Thank you for being part of this.",
   },
 };
+
 // ─── Build preview HTML (mirrors emailController.js) ─────────────────────────
 function buildPreviewHTML(seg, previewName = "User") {
   const c = SEGMENTS[seg];
@@ -133,7 +135,7 @@ function buildPreviewHTML(seg, previewName = "User") {
             <img src="/logo-192.png" alt="UPSC Mentor" width="56" height="56"
               style="border-radius:12px;margin:0 auto 12px;display:block;" />
             <p style="margin:0;font-size:18px;font-weight:700;color:#0f2044;">UPSC Mentor</p>
-            <p style="margin:4px 0 0;font-size:10px;color:#9a8546;letter-spacing:1px;text-transform:uppercase;">Rebuilding UPSC prep · One IITian at a time</p>
+            <p style="margin:4px 0 0;font-size:10px;color:#9a8546;letter-spacing:1px;text-transform:uppercase;">Rebuilding UPSC prep · For IITian By an IITian</p>
           </td>
         </tr>
         <tr>
@@ -190,6 +192,69 @@ function StatusBadge({ status }) {
       </span>
     );
   return null;
+}
+
+// ─── Provider toast ───────────────────────────────────────────────────────────
+// Shows which email provider handled the send (Resend or Nodemailer).
+// Dismisses automatically after 5 s or on ×.
+function ProviderToast({ sent, failed, providers, onClose }) {
+  useEffect(() => {
+    const t = setTimeout(onClose, 5000);
+    return () => clearTimeout(t);
+  }, [onClose]);
+
+  // Derive primary provider label + icon + colours
+  const usedResend     = providers?.includes("resend");
+  const usedNodemailer = providers?.includes("nodemailer");
+  const allFailed      = sent === 0 && failed > 0;
+
+  let bg, border, textCol, ProviderIcon, providerLabel, statusLine;
+
+  if (allFailed) {
+    bg = "bg-red-500/10"; border = "border-red-500/25"; textCol = "text-red-400";
+    ProviderIcon  = XCircle;
+    providerLabel = "Both providers failed";
+    statusLine    = `${failed} email${failed !== 1 ? "s" : ""} could not be sent`;
+  } else if (usedResend && usedNodemailer) {
+    // Mixed: some via Resend, some fell back to Nodemailer
+    bg = "bg-amber-500/10"; border = "border-amber-500/25"; textCol = "text-amber-400";
+    ProviderIcon  = Server;
+    providerLabel = "Resend + Nodemailer (mixed)";
+    statusLine    = `${sent} sent · ${failed} failed`;
+  } else if (usedResend) {
+    bg = "bg-emerald-500/10"; border = "border-emerald-500/25"; textCol = "text-emerald-400";
+    ProviderIcon  = Zap;
+    providerLabel = "Resend";
+    statusLine    = failed > 0 ? `${sent} sent · ${failed} failed` : `${sent} sent successfully`;
+  } else {
+    // Nodemailer only (fallback path)
+    bg = "bg-blue-500/10"; border = "border-blue-500/25"; textCol = "text-blue-400";
+    ProviderIcon  = Server;
+    providerLabel = "Nodemailer (fallback)";
+    statusLine    = failed > 0 ? `${sent} sent · ${failed} failed` : `${sent} sent successfully`;
+  }
+
+  return (
+    <div
+      className={`fixed bottom-5 right-5 z-50 flex items-start gap-3 px-4 py-3 rounded-2xl shadow-2xl border max-w-xs
+        ${bg} ${border}`}
+      style={{ backdropFilter: "blur(8px)" }}
+    >
+      <ProviderIcon size={16} className={`mt-0.5 shrink-0 ${textCol}`} />
+      <div className="flex-1 min-w-0">
+        <p className={`text-[11px] font-semibold font-mono ${textCol}`}>{statusLine}</p>
+        <p className="text-[10px] text-text-muted mt-0.5 font-mono">
+          via <span className={`font-semibold ${textCol}`}>{providerLabel}</span>
+        </p>
+      </div>
+      <button
+        onClick={onClose}
+        className="text-text-muted hover:text-text-primary transition-colors shrink-0 mt-0.5"
+      >
+        <X size={12} />
+      </button>
+    </div>
+  );
 }
 
 // ─── HTML Preview Modal ───────────────────────────────────────────────────────
@@ -287,7 +352,7 @@ function MiniPreview({ seg, accent, accentBg }) {
 // ─── Main component ───────────────────────────────────────────────────────────
 export default function PowerUserEmailer() {
   const [activeSeg, setActiveSeg]           = useState("new");
-  const [allUsers, setAllUsers]             = useState([]);   // full user list, loaded once
+  const [allUsers, setAllUsers]             = useState([]);
   const [selected, setSelected]             = useState(new Set());
   const [loadingTargets, setLoadingTargets] = useState(false);
   const [sending, setSending]               = useState(false);
@@ -296,6 +361,8 @@ export default function PowerUserEmailer() {
   const [previewOpen, setPreviewOpen]       = useState(false);
   const [searchQ, setSearchQ]               = useState("");
   const [error, setError]                   = useState("");
+  // Provider toast state: null | { sent, failed, providers }
+  const [providerToast, setProviderToast]   = useState(null);
 
   const filteredUsers = searchQ.trim()
     ? allUsers.filter(
@@ -306,8 +373,6 @@ export default function PowerUserEmailer() {
     : allUsers;
 
   // ── Load ALL users once ───────────────────────────────────────────────────
-  // Segment selection controls the email template, not who is visible.
-  // Every user can receive any segment email - pick recipients manually.
   const loadAllUsers = useCallback(async () => {
     setLoadingTargets(true);
     setError("");
@@ -315,7 +380,6 @@ export default function PowerUserEmailer() {
       const data = await adminFetch("/users?page=1&limit=500&sort=name&dir=asc");
       const users = (data.users || []).map((u) => ({ id: u.id, name: u.name, email: u.email }));
       setAllUsers(users);
-      // Auto-select everyone on first load
       setSelected(new Set(users.map((u) => u.id)));
       setResults(null);
     } catch (err) {
@@ -327,13 +391,12 @@ export default function PowerUserEmailer() {
 
   useEffect(() => { loadAllUsers(); }, [loadAllUsers]);
 
-  // ── Segment switch - keep user list, just reset search + results ──────────
+  // ── Segment switch ────────────────────────────────────────────────────────
   function switchSeg(seg) {
     setActiveSeg(seg);
     setSearchQ("");
     setResults(null);
     setError("");
-    // Re-select everyone when switching template
     setSelected(new Set(allUsers.map((u) => u.id)));
   }
 
@@ -361,18 +424,25 @@ export default function PowerUserEmailer() {
     if (selected.size === 0) return;
     const c = SEGMENTS[activeSeg];
     const confirmed = window.confirm(
-      `Send "${c.label}" email to ${selected.size} user${selected.size > 1 ? "s" : ""}?\n\nSegment: ${c.label}\nSubject: ${c.subject}\n\nSends from me240003006@iiti.ac.in via Gmail App Password.`
+      `Send "${c.label}" email to ${selected.size} user${selected.size > 1 ? "s" : ""}?\n\nSegment: ${c.label}\nSubject: ${c.subject}\n\nSends via Resend (falls back to Nodemailer/Gmail).`
     );
     if (!confirmed) return;
 
     setSending(true);
     setError("");
+    setProviderToast(null);
     try {
       const data = await adminFetch("/email/power-users", {
         method: "POST",
         body: JSON.stringify({ user_ids: [...selected], segment: activeSeg }),
       });
       setResults(data);
+      // Show provider toast with result details from backend
+      setProviderToast({
+        sent: data.sent,
+        failed: data.failed,
+        providers: data.providers || [],
+      });
     } catch (err) {
       setError(err.message);
     } finally {
@@ -387,6 +457,16 @@ export default function PowerUserEmailer() {
     <>
       {previewOpen && (
         <HtmlPreviewModal seg={activeSeg} onClose={() => setPreviewOpen(false)} />
+      )}
+
+      {/* Provider toast — shows after send completes */}
+      {providerToast && (
+        <ProviderToast
+          sent={providerToast.sent}
+          failed={providerToast.failed}
+          providers={providerToast.providers}
+          onClose={() => setProviderToast(null)}
+        />
       )}
 
       <div className="bg-bg-surface border border-bg-border rounded-2xl overflow-hidden">
@@ -626,17 +706,26 @@ export default function PowerUserEmailer() {
                 {/* Result summary */}
                 {results && (
                   <div
-                    className={`flex items-center gap-3 rounded-xl px-4 py-3 border text-xs ${
+                    className={`rounded-xl px-4 py-3 border text-xs space-y-1.5 ${
                       results.failed === 0
                         ? "bg-emerald-500/8 border-emerald-500/20 text-emerald-400"
                         : "bg-amber-500/8 border-amber-500/20 text-amber-400"
                     }`}
                   >
-                    {results.failed === 0 ? <CheckCircle2 size={13} className="shrink-0" /> : <AlertCircle size={13} className="shrink-0" />}
-                    <span>
-                      {results.sent} sent successfully
-                      {results.failed > 0 ? `, ${results.failed} failed` : " - all done!"}
-                    </span>
+                    <div className="flex items-center gap-2">
+                      {results.failed === 0 ? <CheckCircle2 size={13} className="shrink-0" /> : <AlertCircle size={13} className="shrink-0" />}
+                      <span>
+                        {results.sent} sent successfully
+                        {results.failed > 0 ? `, ${results.failed} failed` : " — all done!"}
+                      </span>
+                    </div>
+                    {/* Provider indicator inside result summary */}
+                    {results.providers?.length > 0 && (
+                      <div className="flex items-center gap-1.5 pl-5 font-mono text-[10px] opacity-80">
+                        <Server size={9} />
+                        <span>via {results.providers.join(" + ")}</span>
+                      </div>
+                    )}
                   </div>
                 )}
 
@@ -661,7 +750,8 @@ export default function PowerUserEmailer() {
                 </button>
 
                 <p className="text-[10px] text-text-muted text-center font-mono">
-                  Requires <code className="bg-bg-muted px-1 rounded">GMAIL_APP_PASSWORD</code> in server .env
+                  Uses <code className="bg-bg-muted px-1 rounded">RESEND_API_KEY</code> · falls back to{" "}
+                  <code className="bg-bg-muted px-1 rounded">GMAIL_APP_PASSWORD</code>
                 </p>
               </div>
             </div>

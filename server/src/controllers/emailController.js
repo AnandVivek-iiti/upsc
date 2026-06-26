@@ -1,14 +1,22 @@
 const nodemailer = require("nodemailer");
-const { Op, QueryTypes } = require("sequelize");
+const { Resend } = require("resend");
+const { QueryTypes } = require("sequelize");
 const { sequelize } = require("../config/db");
 const User = require("../models/User");
+const fs = require("fs");
+const path = require("path");
 
-// ─── Nodemailer transporter ────────────────────────────────────────────────────
+// ─── Resend client (primary) ───────────────────────────────────────────────────
+const resend = new Resend(process.env.RESEND_API_KEY);
+
+// ─── Nodemailer transporter (fallback) ────────────────────────────────────────
+// SENDER_EMAIL must be the real Gmail address used for SMTP auth.
+// Never set it to a custom domain — Gmail SMTP will reject it.
 function createTransporter() {
   return nodemailer.createTransport({
     host: "smtp.gmail.com",
     port: 587,
-    secure: false,        
+    secure: false,
     auth: {
       user: process.env.SENDER_EMAIL || "me240003006@iiti.ac.in",
       pass: process.env.GMAIL_APP_PASSWORD,
@@ -19,22 +27,47 @@ function createTransporter() {
   });
 }
 
-// ─── Logo CID attachment ───────────────────────────────────────────────────────
-const fs = require("fs");
-const path = require("path");
-
-function getLogoAttachment() {
-  const logoPath = path.join(__dirname, "./assets/upsc-logo.png");
+// ─── Logo helpers ──────────────────────────────────────────────────────────────
+// Resend doesn't support CID attachments — embed logo as base64 data URI instead.
+function getLogoBase64DataURI() {
+  const logoPath = path.join(__dirname, "../assets/upsc-logo.png");
   if (fs.existsSync(logoPath)) {
-    return {
-      filename: "upsc-logo.png",
-      path: logoPath,
-      cid: "upsclogo@mentor",
-    };
+    const data = fs.readFileSync(logoPath).toString("base64");
+    return `data:image/png;base64,${data}`;
   }
   return null;
 }
 
+// Nodemailer keeps the classic CID approach.
+function getLogoAttachment() {
+  const logoPath = path.join(__dirname, "../assets/upsc-logo.png");
+  if (fs.existsSync(logoPath)) {
+    return { filename: "upsc-logo.png", path: logoPath, cid: "upsclogo@mentor" };
+  }
+  return null;
+}
+
+// ─── PDF report attachment ─────────────────────────────────────────────────────
+// The report PDF lives at: backend/assets/UPSC_Mentor_Report.pdf
+// To REMOVE the PDF attachment from all emails:
+//   1. Delete or comment out the getPDFAttachment() function below.
+//   2. Remove the `pdfAttachment` variable and both spread lines
+//      that reference it inside sendEmail() (search "PDF_ATTACH").
+function getPDFAttachment() {
+  const pdfPath = path.join(__dirname, "../assets/UPSC_Mentor_Report.pdf");
+  if (fs.existsSync(pdfPath)) {
+    return {
+      filename: "UPSC_Mentor_Report.pdf",
+      path: pdfPath,
+      contentType: "application/pdf",
+    };
+  }
+  // If file not found, warn once and skip silently — never block the send.
+  console.warn("[Email] PDF not found at assets/UPSC_Mentor_Report.pdf — skipping attachment.");
+  return null;
+}
+
+// ─── Segment copy ──────────────────────────────────────────────────────────────
 const SEGMENT_COPY = {
   new: {
     subject: "Welcome to UPSC Mentor — here's where to start",
@@ -46,23 +79,12 @@ const SEGMENT_COPY = {
     intro:
       "Really happy to have you here. Here are three things that'll get you the most value from day one:",
     steps: [
-      {
-        title: "Set your exam date",
-        body: "Open your Profile and lock in your Prelims target year. The countdown is surprisingly motivating.",
-      },
-      {
-        title: "Mark your syllabus",
-        body: "Go to the Syllabus Tracker and mark the topics you're currently studying. All 48 modules are already loaded — you don't have to build anything.",
-      },
-      {
-        title: "Start the Study Timer",
-        body: "Hit the timer from your dashboard before your next session. It tracks daily hours automatically and syncs across devices.",
-      },
+      { title: "Set your exam date", body: "Open your Profile and lock in your Prelims target year. The countdown is surprisingly motivating." },
+      { title: "Mark your syllabus", body: "Go to the Syllabus Tracker and mark the topics you're currently studying. All 48 modules are already loaded — you don't have to build anything." },
+      { title: "Start the Study Timer", body: "Hit the timer from your dashboard before your next session. It tracks daily hours automatically and syncs across devices." },
     ],
-    closing:
-      "That's all you need to begin. No pressure to explore every feature on day one.",
-    closing2:
-      "If you have questions or suggestions, just reply to this email — I personally read every message.",
+    closing: "That's all you need to begin. No pressure to explore every feature on day one.",
+    closing2: "If you have questions or suggestions, just reply to this email — I personally read every message.",
     signOff: "Happy studying,",
   },
 
@@ -73,26 +95,14 @@ const SEGMENT_COPY = {
     eyebrow: "A personal note",
     greetingLine:
       "I wanted to reach out personally. Seeing users like you study consistently is what keeps me building.",
-    intro:
-      "You're in the top tier of our early community. A few features you might not have tried yet:",
+    intro: "You're in the top tier of our early community. A few features you might not have tried yet:",
     steps: [
-      {
-        title: "AI Mentor Workspace",
-        body: "Run separate threads for different subjects — GS4, Economy, Polity. Your mentor carries context across sessions, so it already knows your weak areas going in.",
-      },
-      {
-        title: "AI Answer Evaluation",
-        body: "Upload typed or handwritten Mains answers and get detailed feedback in seconds — useful for replicating actual exam conditions.",
-      },
-      {
-        title: "Personalised Study Plan",
-        body: "After every mock test, the AI generates a targeted recovery plan for your exact weak topics. Worth trying after your next attempt.",
-      },
+      { title: "AI Mentor Workspace", body: "Run separate threads for different subjects — GS4, Economy, Polity. Your mentor carries context across sessions, so it already knows your weak areas going in." },
+      { title: "AI Answer Evaluation", body: "Upload typed or handwritten Mains answers and get detailed feedback in seconds — useful for replicating actual exam conditions." },
+      { title: "Personalised Study Plan", body: "After every mock test, the AI generates a targeted recovery plan for your exact weak topics. Worth trying after your next attempt." },
     ],
-    closing:
-      "Your feedback matters a lot — you're actually using the platform regularly, which means you see what's working and what's not.",
-    closing2:
-      "If you find something confusing or have a suggestion, just reply. I'll personally read it.",
+    closing: "Your feedback matters a lot — you're actually using the platform regularly, which means you see what's working and what's not.",
+    closing2: "If you find something confusing or have a suggestion, just reply. I'll personally read it.",
     signOff: "Thank you,",
   },
 
@@ -101,24 +111,14 @@ const SEGMENT_COPY = {
     accent: "#993C1D",
     accentBg: "#FAECE7",
     eyebrow: "Quick check-in",
-    greetingLine:
-      "You signed up for UPSC Mentor a while back — I just wanted to check in.",
-    intro:
-      "If the platform felt overwhelming at first, that's fair. Here's the simplest possible entry point: one subject, one timer, 30 minutes.",
+    greetingLine: "You signed up for UPSC Mentor a while back — I just wanted to check in.",
+    intro: "If the platform felt overwhelming at first, that's fair. Here's the simplest possible entry point: one subject, one timer, 30 minutes.",
     steps: [
-      {
-        title: "Start a 30-minute session",
-        body: "Open the dashboard, pick one subject from the Study Timer (Polity is a popular start), and run one focused session. That single action unlocks the analytics that make everything else useful.",
-      },
-      {
-        title: "Your syllabus is already there",
-        body: "All 48 modules are loaded and mapped to the official UPSC notification. You don't have to build anything — just start marking what you're studying.",
-      },
+      { title: "Start a 30-minute session", body: "Open the dashboard, pick one subject from the Study Timer (Polity is a popular start), and run one focused session. That single action unlocks the analytics that make everything else useful." },
+      { title: "Your syllabus is already there", body: "All 48 modules are loaded and mapped to the official UPSC notification. You don't have to build anything — just start marking what you're studying." },
     ],
-    closing:
-      "If something on the platform confused you or stopped you from using it, please do write back.",
-    closing2:
-      "Your feedback helps me improve UPSC Mentor for everyone.",
+    closing: "If something on the platform confused you or stopped you from using it, please do write back.",
+    closing2: "Your feedback helps me improve UPSC Mentor for everyone.",
     signOff: "Still rooting for you,",
   },
 
@@ -127,48 +127,42 @@ const SEGMENT_COPY = {
     accent: "#3C3489",
     accentBg: "#EEEDFE",
     eyebrow: "Thank you",
-    greetingLine:
-      "I noticed you've explored several areas of UPSC Mentor — the syllabus tracker, mock tests, AI mentor, and more.",
-    intro:
-      "That kind of usage tells me you're using the platform as it was designed. Users like you help shape what gets built next. A few things it would be great to hear from you on:",
+    greetingLine: "I noticed you've explored several areas of UPSC Mentor — the syllabus tracker, mock tests, AI mentor, and more.",
+    intro: "That kind of usage tells me you're using the platform as it was designed. Users like you help shape what gets built next. A few things it would be great to hear from you on:",
     steps: [
-      {
-        title: "What's been most useful?",
-        body: "Which feature has made the biggest difference in your preparation? Even a one-line reply helps me understand where to invest next.",
-      },
-      {
-        title: "What's confusing or missing?",
-        body: "Was anything unclear, frustrating, or not quite what you expected? Honest feedback from active users is the most useful kind.",
-      },
-      {
-        title: "What would you add?",
-        body: "If there's a feature you've always wanted for UPSC prep, please do share. Many improvements on the platform started with a single user suggestion.",
-      },
+      { title: "What's been most useful?", body: "Which feature has made the biggest difference in your preparation? Even a one-line reply helps me understand where to invest next." },
+      { title: "What's confusing or missing?", body: "Was anything unclear, frustrating, or not quite what you expected? Honest feedback from active users is the most useful kind." },
+      { title: "What would you add?", body: "If there's a feature you've always wanted for UPSC prep, please do share. Many improvements on the platform started with a single user suggestion." },
     ],
-    closing:
-      "Even a short reply makes a real difference.",
+    closing: "Even a short reply makes a real difference.",
     closing2: "Thank you for being part of this.",
     signOff: "Regards,",
   },
 };
 
-const VALID_SEGMENTS = Object.keys(SEGMENT_COPY); // ["new","power","idle","feature"]
+const VALID_SEGMENTS = Object.keys(SEGMENT_COPY);
 
 function resolveSegment(segment) {
   return VALID_SEGMENTS.includes(segment) ? segment : "power";
 }
 
-// ─── HTML email builder ────────────────────────────────────────────────────────
-function buildEmailHTML(userName, segment = "power") {
+// ─── HTML builder ──────────────────────────────────────────────────────────────
+// logoSrc: base64 data URI (Resend) | "cid:upsclogo@mentor" (Nodemailer) | null
+function buildEmailHTML(userName, segment = "power", logoSrc = null) {
   const firstName = (userName || "").split(" ")[0] || "there";
   const name = firstName.charAt(0).toUpperCase() + firstName.slice(1);
   const c = SEGMENT_COPY[resolveSegment(segment)];
 
+  const logoImg = logoSrc
+    ? `<img src="${logoSrc}" alt="UPSC Mentor" width="56" height="56"
+         style="border-radius:12px;margin-bottom:12px;display:block;margin-left:auto;margin-right:auto;" />`
+    : "";
+
   const stepsHTML = c.steps
     .map(
       (s) => `
-                <p style="margin:0 0 4px;font-size:14px;color:#0f2044;font-weight:600;">${s.title}</p>
-                <p style="margin:0 0 14px;font-size:13px;color:#374151;line-height:1.7;">${s.body}</p>`,
+        <p style="margin:0 0 4px;font-size:14px;color:#0f2044;font-weight:600;">${s.title}</p>
+        <p style="margin:0 0 14px;font-size:13px;color:#374151;line-height:1.7;">${s.body}</p>`,
     )
     .join("");
 
@@ -188,11 +182,10 @@ function buildEmailHTML(userName, segment = "power") {
           <!-- Header -->
           <tr>
             <td style="background:linear-gradient(135deg,#f0d98a 0%,#fdf6e3 100%);padding:28px 32px;text-align:center;border-bottom:1px solid #dde3ed;">
-              <img src="cid:upsclogo@mentor" alt="UPSC Mentor" width="56" height="56"
-                style="border-radius:12px;margin-bottom:12px;display:block;margin-left:auto;margin-right:auto;" />
+              ${logoImg}
               <p style="margin:0;font-size:20px;font-weight:700;color:#0f2044;letter-spacing:0.5px;">UPSC Mentor</p>
               <p style="margin:4px 0 0;font-size:11px;color:#9a8546;letter-spacing:1px;text-transform:uppercase;">
-                Rebuilding UPSC prep · One IITian at a time
+                Rebuilding UPSC prep · For IITians BY IITian
               </p>
             </td>
           </tr>
@@ -261,10 +254,7 @@ function buildEmailText(userName, segment = "power") {
   const firstName = (userName || "").split(" ")[0] || "there";
   const name = firstName.charAt(0).toUpperCase() + firstName.slice(1);
   const c = SEGMENT_COPY[resolveSegment(segment)];
-
-  const stepsText = c.steps
-    .map((s) => `→ ${s.title}\n   ${s.body}`)
-    .join("\n\n");
+  const stepsText = c.steps.map((s) => `→ ${s.title}\n   ${s.body}`).join("\n\n");
 
   return `Hi ${name},
 
@@ -285,13 +275,109 @@ Indian Institute of Technology Indore
 🔗 https://www.upscbyiitians.in`;
 }
 
-// ─── Test-account exclusion constants ─────────────────────────────────────────
+// ─── Console logger ────────────────────────────────────────────────────────────
+function logSend({ provider, status, segment, name, email, error }) {
+  const ts = new Date().toISOString();
+  const providerTag = provider === "resend" ? "Resend  " : "Nodemailer";
+  const statusTag   = status  === "sent"   ? "✓ SENT  " : "✗ FAILED";
+  if (status === "sent") {
+    console.log(
+      `[Email] ${ts}  ${statusTag}  via ${providerTag}  [${segment.padEnd(7)}]  ${name} <${email}>`
+    );
+  } else {
+    console.error(
+      `[Email] ${ts}  ${statusTag}  via ${providerTag}  [${segment.padEnd(7)}]  ${name} <${email}>  ERR: ${error}`
+    );
+  }
+}
+
+// ─── Core send: Resend primary, Nodemailer fallback ───────────────────────────
+// Two separate "from" addresses:
+//   RESEND_FROM   → custom domain address shown to recipients (e.g. anand@send.upscbyiitians.in)
+//                   Only works after Resend verifies your domain in their dashboard.
+//   SENDER_EMAIL  → real Gmail used for SMTP auth in Nodemailer (e.g. me240003006@iiti.ac.in)
+//                   Must stay a Gmail address — never set to a custom domain.
+async function sendEmail({ toEmail, toName, subject, segment }) {
+  const resolvedSeg = resolveSegment(segment);
+  const text        = buildEmailText(toName, resolvedSeg);
+
+  // Resend uses the verified custom domain address.
+  const resendFrom    = process.env.RESEND_FROM   || "anand@send.upscbyiitians.in";
+  const resendLabel   = `"Anand Vivek | UPSC Mentor" <${resendFrom}>`;
+
+  // Nodemailer must use the real Gmail address for SMTP auth.
+  const gmailAddress  = process.env.SENDER_EMAIL  || "me240003006@iiti.ac.in";
+  const gmailLabel    = `"Anand Vivek | UPSC Mentor" <${gmailAddress}>`;
+
+  // PDF_ATTACH: load the report PDF for attachment (all segments).
+  // To remove the PDF from all emails, delete this line and all lines marked PDF_ATTACH below.
+  const pdfAttachment = getPDFAttachment();
+
+  // ── Attempt 1: Resend ──────────────────────────────────────────────────────
+  if (process.env.RESEND_API_KEY) {
+    try {
+      const logoDataURI = getLogoBase64DataURI();
+      const html = buildEmailHTML(toName, resolvedSeg, logoDataURI);
+
+      // PDF_ATTACH: build Resend attachments array — remove the block below to drop the PDF.
+      const attachments = pdfAttachment
+        ? [{ filename: pdfAttachment.filename, content: fs.readFileSync(pdfAttachment.path) }]
+        : [];
+
+      const { error } = await resend.emails.send({
+        from: resendLabel,   // ← custom domain (anand@send.upscbyiitians.in)
+        to: toEmail,
+        subject,
+        html,
+        text,
+        ...(attachments.length ? { attachments } : {}), // PDF_ATTACH
+      });
+
+      if (!error) {
+        logSend({ provider: "resend", status: "sent", segment: resolvedSeg, name: toName, email: toEmail });
+        return { provider: "resend" };
+      }
+
+      // Resend returned an API-level error — fall through to Nodemailer.
+      console.warn(`[Email] Resend API error for ${toEmail}:`, error.message ?? error);
+    } catch (resendErr) {
+      console.warn(`[Email] Resend exception for ${toEmail}:`, resendErr.message);
+    }
+  } else {
+    console.warn("[Email] RESEND_API_KEY not set — skipping Resend, trying Nodemailer.");
+  }
+
+  // ── Attempt 2: Nodemailer (Gmail SMTP fallback) ────────────────────────────
+  const logoAttachment = getLogoAttachment();
+  const html = buildEmailHTML(toName, resolvedSeg, logoAttachment ? "cid:upsclogo@mentor" : null);
+
+  // PDF_ATTACH: build Nodemailer attachments array — remove the pdfAttachment spread below to drop the PDF.
+  const nmAttachments = [
+    ...(logoAttachment ? [logoAttachment] : []),
+    ...(pdfAttachment  ? [pdfAttachment]  : []), // PDF_ATTACH
+  ];
+
+  const transporter = createTransporter();
+  await transporter.sendMail({
+    from: gmailLabel,        // ← real Gmail (me240003006@iiti.ac.in)
+    to: toEmail,
+    subject,
+    text,
+    html,
+    ...(nmAttachments.length ? { attachments: nmAttachments } : {}),
+  });
+
+  logSend({ provider: "nodemailer", status: "sent", segment: resolvedSeg, name: toName, email: toEmail });
+  return { provider: "nodemailer" };
+}
+
+// ─── Test-account exclusion ────────────────────────────────────────────────────
 const EXCL_NAMES = ["admin", "anand vivek"];
-const EXCL_SQL = EXCL_NAMES.map((n) => `'${n}'`).join(", ");
+const EXCL_SQL   = EXCL_NAMES.map((n) => `'${n}'`).join(", ");
 
 // ─── Helper: fetch power users from DB ────────────────────────────────────────
 async function fetchPowerUsers() {
-  const rows = await sequelize.query(
+  return sequelize.query(
     `SELECT u.id, u.name, u.email
      FROM "users" u
      WHERE u.role = 'user'
@@ -309,7 +395,6 @@ async function fetchPowerUsers() {
      ORDER BY u.name`,
     { type: QueryTypes.SELECT },
   );
-  return rows;
 }
 
 // ─── GET /api/admin/email/power-users ─────────────────────────────────────────
@@ -323,19 +408,15 @@ const getEmailTargets = async (req, res, next) => {
 };
 
 // ─── POST /api/admin/email/power-users ────────────────────────────────────────
-// BUG FIXES:
-//   1. Now reads `segment` from req.body (was being silently ignored)
-//   2. Subject now comes from SEGMENT_COPY[segment].subject (was hardcoded)
-//   3. buildEmailHTML / buildEmailText now receive segment (were called without it)
 const sendPowerUserEmails = async (req, res, next) => {
   try {
-    const { user_ids, segment } = req.body; // ← fix 1: extract segment
+    const { user_ids, segment } = req.body;
     const resolvedSeg = resolveSegment(segment);
-    const c = SEGMENT_COPY[resolvedSeg];
+    const subject     = SEGMENT_COPY[resolvedSeg].subject;
 
     let targets;
     if (Array.isArray(user_ids) && user_ids.length > 0) {
-      const rows = await sequelize.query(
+      targets = await sequelize.query(
         `SELECT u.id, u.name, u.email
          FROM "users" u
          WHERE u.id IN (:ids)
@@ -344,83 +425,51 @@ const sendPowerUserEmails = async (req, res, next) => {
          ORDER BY u.name`,
         { type: QueryTypes.SELECT, replacements: { ids: user_ids } },
       );
-      targets = rows;
     } else {
       targets = await fetchPowerUsers();
     }
 
     if (targets.length === 0) {
-      return res.json({
-        success: true,
-        sent: 0,
-        failed: 0,
-        results: [],
-        message: "No eligible users found.",
-      });
+      return res.json({ success: true, sent: 0, failed: 0, results: [], message: "No eligible users found." });
     }
 
-    const transporter = createTransporter();
-    const logoAttachment = getLogoAttachment();
+    console.log(`[Email] Starting bulk send — segment: ${resolvedSeg}, recipients: ${targets.length}`);
     const results = [];
 
     for (const user of targets) {
       try {
-        const mailOptions = {
-          from: `"Anand Vivek | UPSC Mentor" <${process.env.SENDER_EMAIL || "me240003006@iiti.ac.in"}>`,
-          to: user.email,
-          subject: c.subject, // ← fix 2: segment subject
-          text: buildEmailText(user.name, resolvedSeg), // ← fix 3: pass segment
-          html: buildEmailHTML(user.name, resolvedSeg), // ← fix 3: pass segment
-          ...(logoAttachment ? { attachments: [logoAttachment] } : {}),
-        };
-
-        await transporter.sendMail(mailOptions);
-        results.push({
-          id: user.id,
-          name: user.name,
-          email: user.email,
-          status: "sent",
-        });
-        console.log(
-          `[Email][${resolvedSeg}] Sent to ${user.name} <${user.email}>`,
-        );
-
-        await new Promise((r) => setTimeout(r, 800)); // Gmail rate-limit guard
+        const { provider } = await sendEmail({ toEmail: user.email, toName: user.name, subject, segment: resolvedSeg });
+        results.push({ id: user.id, name: user.name, email: user.email, status: "sent", provider });
+        await new Promise((r) => setTimeout(r, 800)); // rate-limit guard
       } catch (mailErr) {
-        console.error(`[Email] Failed for ${user.email}:`, mailErr.message);
-        results.push({
-          id: user.id,
-          name: user.name,
-          email: user.email,
-          status: "failed",
-          error: mailErr.message,
-        });
+        logSend({ provider: "both_failed", status: "failed", segment: resolvedSeg, name: user.name, email: user.email, error: mailErr.message });
+        results.push({ id: user.id, name: user.name, email: user.email, status: "failed", error: mailErr.message });
       }
     }
 
-    const sent = results.filter((r) => r.status === "sent").length;
-    const failed = results.filter((r) => r.status === "failed").length;
+    const sent     = results.filter((r) => r.status === "sent").length;
+    const failed   = results.filter((r) => r.status === "failed").length;
+    // Summarise which provider handled the bulk
+    const providers = [...new Set(results.filter(r => r.provider).map(r => r.provider))];
+    console.log(`[Email] Bulk done — sent: ${sent}, failed: ${failed}, provider(s): ${providers.join(", ")}`);
 
-    res.json({ success: true, sent, failed, results });
+    res.json({ success: true, sent, failed, results, providers });
   } catch (err) {
     next(err);
   }
 };
 
 // ─── POST /api/admin/email/send-single ────────────────────────────────────────
-// BUG FIX: also reads segment so single-user sends respect the chosen template
 const sendSingleUserEmail = async (req, res, next) => {
   try {
-    const { userId, segment } = req.body; // ← fix: read segment here too
+    const { userId, segment } = req.body;
 
     if (!userId) {
-      return res
-        .status(400)
-        .json({ success: false, error: "userId is required." });
+      return res.status(400).json({ success: false, error: "userId is required." });
     }
 
     const resolvedSeg = resolveSegment(segment);
-    const c = SEGMENT_COPY[resolvedSeg];
+    const subject     = SEGMENT_COPY[resolvedSeg].subject;
 
     const rows = await sequelize.query(
       `SELECT u.id, u.name, u.email
@@ -432,36 +481,20 @@ const sendSingleUserEmail = async (req, res, next) => {
     );
 
     if (!rows.length) {
-      return res
-        .status(404)
-        .json({ success: false, error: "User not found or not eligible." });
+      return res.status(404).json({ success: false, error: "User not found or not eligible." });
     }
 
     const user = rows[0];
-    const transporter = createTransporter();
-    const logoAttachment = getLogoAttachment();
-
-    const mailOptions = {
-      from: `"Anand Vivek | UPSC Mentor" <${process.env.SENDER_EMAIL || "me240003006@iiti.ac.in"}>`,
-      to: user.email,
-      subject: c.subject, // ← fix: segment subject
-      text: buildEmailText(user.name, resolvedSeg), // ← fix: pass segment
-      html: buildEmailHTML(user.name, resolvedSeg), // ← fix: pass segment
-      ...(logoAttachment ? { attachments: [logoAttachment] } : {}),
-    };
-
-    await transporter.sendMail(mailOptions);
-    console.log(
-      `[Email][${resolvedSeg}] Single send to ${user.name} <${user.email}>`,
-    );
+    const { provider } = await sendEmail({ toEmail: user.email, toName: user.name, subject, segment: resolvedSeg });
 
     res.json({
       success: true,
-      message: `Email sent to ${user.name} (${user.email}).`,
+      message: `Email sent to ${user.name} (${user.email}) via ${provider}.`,
       user: { id: user.id, name: user.name, email: user.email },
+      provider,
     });
   } catch (err) {
-    console.error("[Email] sendSingleUserEmail error:", err.message);
+    logSend({ provider: "both_failed", status: "failed", segment: "?", name: "?", email: "?", error: err.message });
     next(err);
   }
 };
