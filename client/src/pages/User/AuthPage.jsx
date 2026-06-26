@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import {
   Eye, EyeOff, ArrowRight, Loader2, AlertCircle,
-  CheckCircle2, User, Mail, Lock, Target, Clock, BookOpen,
+  CheckCircle2, User, Mail, Lock, Target, Clock,
 } from "lucide-react";
 
 // ─── Google Icon SVG ──────────────────────────────────────────────────────────
@@ -105,6 +105,7 @@ function validateLogin({ email, password }) {
   if (!password) errs.password = "Password is required";
   return errs;
 }
+
 function validateSignup(form) {
   const errs = {};
   if (!form.name.trim()) errs.name = "Name is required";
@@ -114,14 +115,10 @@ function validateSignup(form) {
   if (!form.password) errs.password = "Password is required";
   else if (form.password.length < 8) errs.password = "At least 8 characters";
   if (form.password !== form.confirmPassword) errs.confirmPassword = "Passwords don't match";
-
   const yr = Number(form.target_year);
   if (!yr || yr < 2025 || yr > 2035) errs.target_year = "Pick a year between 2025–2035";
-
   const hrs = Number(form.daily_target_hours);
   if (!hrs || hrs < 1 || hrs > 20) errs.daily_target_hours = "Between 1–20 hours";
-
-  // Exam date verification
   if (!form.examDate) {
     errs.examDate = "Exam date is required for the countdown tracker";
   } else {
@@ -172,7 +169,6 @@ export default function AuthPage({ onAuthSuccess, onBack }) {
   const [globalError, setGlobalError] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
   const [fieldErrors, setFieldErrors] = useState({});
-  // Google SDK ready state
   const [googleSdkReady, setGoogleSdkReady] = useState(false);
 
   const [loginForm, setLoginForm] = useState({ email: "", password: "" });
@@ -190,104 +186,14 @@ export default function AuthPage({ onAuthSuccess, onBack }) {
   const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || "";
   const clearErrors = () => { setFieldErrors({}); setGlobalError(""); };
 
-  // ─── Google Identity Services ──────────────────────────────────────────────
+  // ─── Refs ──────────────────────────────────────────────────────────────────
   const googleContainerRef = useRef(null);
   const resizeObserverRef = useRef(null);
+  // Keep callback ref to avoid stale closure in initialize
+  const handleGoogleCredentialRef = useRef(null);
 
-  // Load the Google SDK script
-  useEffect(() => {
-    if (!GOOGLE_CLIENT_ID) return;
-    const scriptId = "google-gsi-script";
-    if (document.getElementById(scriptId)) {
-      // Script already loaded, check if ready
-      if (window.google?.accounts?.id) {
-        setGoogleSdkReady(true);
-      } else {
-        // Script present but not initialised yet – wait for onload
-        const script = document.getElementById(scriptId);
-        script.onload = () => {
-          if (window.google?.accounts?.id) setGoogleSdkReady(true);
-        };
-      }
-      return;
-    }
-    const script = document.createElement("script");
-    script.id = scriptId;
-    script.src = "https://accounts.google.com/gsi/client";
-    script.async = true;
-    script.defer = true;
-    script.onload = () => {
-      if (window.google?.accounts?.id) setGoogleSdkReady(true);
-    };
-    document.head.appendChild(script);
-
-    return () => {
-      // Cleanup if needed
-    };
-  }, [GOOGLE_CLIENT_ID]);
-
-  // Render Google button when SDK is ready and container exists
-  const renderGoogleButton = useCallback((containerWidth) => {
-    if (!googleSdkReady || !window.google?.accounts?.id || !googleContainerRef.current) return;
-    // Clear container before re-rendering
-    googleContainerRef.current.innerHTML = '';
-    window.google.accounts.id.renderButton(googleContainerRef.current, {
-      theme: "outline",
-      size: "large",
-      width: Math.min(containerWidth, 400), // cap at 400px, but containerWidth is usually smaller on mobile
-      text: mode === "login" ? "signin_with" : "signup_with",
-      logo_alignment: "left",
-    });
-  }, [googleSdkReady, mode]);
-
-  // Initialize button and set up ResizeObserver on the parent container
-  useEffect(() => {
-    if (!googleSdkReady || !GOOGLE_CLIENT_ID || !googleContainerRef.current) return;
-
-    // Get parent element width (the card or wrapper)
-    const parent = googleContainerRef.current.parentElement;
-    if (!parent) return;
-
-    const getWidth = () => {
-      // Get the actual client width of the parent (which is the card)
-      const width = parent.clientWidth;
-      // Ensure we have a positive number, and cap at 400px (max width for Google button)
-      return Math.min(width > 0 ? width : 400, 400);
-    };
-
-    // Initial render
-    const initialWidth = getWidth();
-    renderGoogleButton(initialWidth);
-
-    // Set up ResizeObserver to re-render on size change
-    if (window.ResizeObserver) {
-      resizeObserverRef.current = new ResizeObserver(() => {
-        const newWidth = getWidth();
-        renderGoogleButton(newWidth);
-      });
-      resizeObserverRef.current.observe(parent);
-    }
-
-    return () => {
-      if (resizeObserverRef.current) {
-        resizeObserverRef.current.disconnect();
-        resizeObserverRef.current = null;
-      }
-    };
-  }, [googleSdkReady, GOOGLE_CLIENT_ID, renderGoogleButton]);
-
-  // Re-render when mode changes (signin vs signup text)
-  useEffect(() => {
-    if (!googleSdkReady || !GOOGLE_CLIENT_ID || !googleContainerRef.current) return;
-    // Re-render with current width
-    const parent = googleContainerRef.current.parentElement;
-    if (parent) {
-      const width = Math.min(parent.clientWidth, 400);
-      renderGoogleButton(width);
-    }
-  }, [mode, googleSdkReady, GOOGLE_CLIENT_ID, renderGoogleButton]);
-
-  async function handleGoogleCredential(response) {
+  // ─── Google credential handler ─────────────────────────────────────────────
+  const handleGoogleCredential = useCallback(async (response) => {
     clearErrors();
     setGoogleLoading(true);
     try {
@@ -307,19 +213,77 @@ export default function AuthPage({ onAuthSuccess, onBack }) {
     } finally {
       setGoogleLoading(false);
     }
-  }
+  }, [BASE, onAuthSuccess]); // eslint-disable-line
 
-  // Initialize Google OAuth client
+  // Always keep ref current so initialize callback never goes stale
+  handleGoogleCredentialRef.current = handleGoogleCredential;
+
+  // ─── Load Google SDK script ────────────────────────────────────────────────
   useEffect(() => {
-    if (!googleSdkReady || !window.google?.accounts?.id || !GOOGLE_CLIENT_ID) return;
+    if (!GOOGLE_CLIENT_ID) return;
+    const scriptId = "google-gsi-script";
+
+    const markReady = () => {
+      if (window.google?.accounts?.id) setGoogleSdkReady(true);
+    };
+
+    if (document.getElementById(scriptId)) {
+      markReady();
+      return;
+    }
+
+    const script = document.createElement("script");
+    script.id = scriptId;
+    script.src = "https://accounts.google.com/gsi/client";
+    script.async = true;
+    script.defer = true;
+    script.onload = markReady;
+    document.head.appendChild(script);
+  }, [GOOGLE_CLIENT_ID]);
+
+  // ─── Initialize + render Google button (single effect, correct order) ──────
+  useEffect(() => {
+    if (!googleSdkReady || !window.google?.accounts?.id || !GOOGLE_CLIENT_ID || !googleContainerRef.current) return;
+
+    // STEP 1: initialize FIRST — must happen before renderButton
     window.google.accounts.id.initialize({
       client_id: GOOGLE_CLIENT_ID,
-      callback: handleGoogleCredential,
+      callback: (response) => handleGoogleCredentialRef.current(response),
     });
-    // The button will be rendered by the ResizeObserver effect above.
-    // But we might need to re-initialize if client ID changes? Not needed.
-  }, [googleSdkReady, GOOGLE_CLIENT_ID]);
 
+    // STEP 2: render button AFTER initialize
+    const parent = googleContainerRef.current.parentElement;
+    if (!parent) return;
+
+    const getWidth = () => Math.min(parent.clientWidth > 0 ? parent.clientWidth : 400, 400);
+
+    const doRender = () => {
+      if (!googleContainerRef.current || !window.google?.accounts?.id) return;
+      googleContainerRef.current.innerHTML = "";
+      window.google.accounts.id.renderButton(googleContainerRef.current, {
+        theme: "outline",
+        size: "large",
+        width: getWidth(),
+        text: mode === "login" ? "signin_with" : "signup_with",
+        logo_alignment: "left",
+      });
+    };
+
+    doRender();
+
+    // STEP 3: re-render on resize
+    if (window.ResizeObserver) {
+      resizeObserverRef.current = new ResizeObserver(doRender);
+      resizeObserverRef.current.observe(parent);
+    }
+
+    return () => {
+      resizeObserverRef.current?.disconnect();
+      resizeObserverRef.current = null;
+    };
+  }, [googleSdkReady, GOOGLE_CLIENT_ID, mode]);
+
+  // ─── Form helpers ──────────────────────────────────────────────────────────
   const switchMode = (m) => {
     setMode(m);
     setSignupStep(0);
@@ -364,6 +328,7 @@ export default function AuthPage({ onAuthSuccess, onBack }) {
     if (Object.keys(errs).length) { setFieldErrors(errs); return; }
     setSignupStep(1);
   };
+
   const handleSignup = async () => {
     clearErrors();
     const errs = validateSignup(signupForm);
@@ -414,20 +379,19 @@ export default function AuthPage({ onAuthSuccess, onBack }) {
     </div>
   );
 
-  // ─── Google Button Skeleton ──────────────────────────────────────────────
+  // ─── Google button skeleton ────────────────────────────────────────────────
   const GoogleButtonSkeleton = () => (
     <div className="w-full overflow-hidden rounded-xl">
-      <div className="w-full h-[44px] bg-bg-muted animate-pulse rounded-xl border border-bg-border flex items-center justify-center">
+      <div className="w-full h-[44px] bg-bg-muted animate-pulse rounded-xl border border-bg-border flex items-center justify-center gap-2">
         <div className="w-5 h-5 rounded-full bg-bg-border/60" />
-        <div className="w-24 h-3 bg-bg-border/60 rounded ml-2" />
+        <div className="w-24 h-3 bg-bg-border/60 rounded" />
       </div>
     </div>
   );
 
-  // ─── Render Google button wrapper ────────────────────────────────────────
+  // ─── Google button wrapper ─────────────────────────────────────────────────
   const renderGoogleButtonWrapper = () => {
     if (!GOOGLE_CLIENT_ID) return null;
-
     if (googleLoading) {
       return (
         <div className="flex items-center justify-center gap-2 py-3 rounded-xl border border-bg-border text-base text-text-muted">
@@ -435,11 +399,7 @@ export default function AuthPage({ onAuthSuccess, onBack }) {
         </div>
       );
     }
-
-    if (!googleSdkReady) {
-      return <GoogleButtonSkeleton />;
-    }
-
+    if (!googleSdkReady) return <GoogleButtonSkeleton />;
     return (
       <div className="w-full overflow-hidden rounded-xl">
         <div ref={googleContainerRef} className="w-full" />
@@ -447,24 +407,25 @@ export default function AuthPage({ onAuthSuccess, onBack }) {
     );
   };
 
+  // ─── Render ────────────────────────────────────────────────────────────────
   return (
     <div
       className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden"
       style={{ background: "var(--bg-base)" }}
       onKeyDown={handleKeyDown}
     >
-      {/* Subtle grid overlay - matches your body background radial style */}
+      {/* Grid overlay */}
       <div className="pointer-events-none fixed inset-0 opacity-[0.03]"
         style={{
           backgroundImage: "linear-gradient(var(--accent-gold) 1px, transparent 1px), linear-gradient(90deg, var(--accent-gold) 1px, transparent 1px)",
           backgroundSize: "48px 48px",
         }}
       />
-      {/* Radial glow top-right */}
+      {/* Glow top-right */}
       <div className="pointer-events-none fixed top-0 right-0 w-[500px] h-[400px] opacity-[0.08] rounded-full blur-[100px]"
         style={{ background: "var(--accent-gold)", transform: "translate(30%, -30%)" }}
       />
-      {/* Radial glow bottom-left */}
+      {/* Glow bottom-left */}
       <div className="pointer-events-none fixed bottom-0 left-0 w-[380px] h-[380px] opacity-[0.05] rounded-full blur-[90px]"
         style={{ background: "var(--accent-blue)", transform: "translate(-30%, 30%)" }}
       />
@@ -482,47 +443,27 @@ export default function AuthPage({ onAuthSuccess, onBack }) {
 
       {/* Card */}
       <div className="glass-panel w-full max-w-md relative z-10 p-6 sm:p-8 animate-rise">
+
         {/* Brand header */}
         <div className="text-center mb-6 sm:mb-7">
-
-          {/* Centered Logo */}
           <div className="flex justify-center mb-4">
             <div className="relative">
-
-              {/* Soft Glow */}
               <div
                 className="absolute inset-0 rounded-2xl animate-pulse"
-                style={{
-                  background: "rgba(245,158,11,0.12)",
-                  filter: "blur(16px)",
-                  transform: "scale(1.25)",
-                }}
+                style={{ background: "rgba(245,158,11,0.12)", filter: "blur(16px)", transform: "scale(1.25)" }}
               />
-
-              {/* Animated Border Ring */}
               <div className="absolute inset-0 rounded-2xl logo-ring" />
-
-              {/* Logo Container */}
               <div
                 className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-bg-muted flex items-center justify-center overflow-hidden logo-float"
-                style={{
-                  border: "1px solid rgba(245,158,11,0.25)",
-                }}
+                style={{ border: "1px solid rgba(245,158,11,0.25)" }}
               >
-                <img
-                  src="/logo-upsc.png"
-                  alt="UPSC Mentor"
-                  className="w-full h-full object-cover object-center"
-                />
+                <img src="/logo-upsc.png" alt="UPSC Mentor" className="w-full h-full object-cover object-center" />
               </div>
-
             </div>
           </div>
-
           <h1 className="font-display text-2xl sm:text-3xl font-semibold text-text-primary">
             UPSC Mentor
           </h1>
-
           <p className="text-[10px] sm:text-[11px] font-mono text-text-muted mt-1 tracking-widest uppercase">
             {mode === "login"
               ? "Welcome back, Aspirant"
@@ -549,7 +490,7 @@ export default function AuthPage({ onAuthSuccess, onBack }) {
           ))}
         </div>
 
-        {/* Step dots for signup */}
+        {/* Step dots */}
         {mode === "signup" && (
           <div className="mb-5">
             <StepDots step={signupStep} total={2} />
@@ -559,11 +500,7 @@ export default function AuthPage({ onAuthSuccess, onBack }) {
         {/* Global error */}
         {globalError && (
           <div className="flex items-start gap-2 mb-4 px-3.5 py-3 rounded-xl"
-            style={{
-              background: "var(--accent-red-dim)",
-              border: "0.5px solid rgba(239,68,68,0.3)",
-            }}
-          >
+            style={{ background: "var(--accent-red-dim)", border: "0.5px solid rgba(239,68,68,0.3)" }}>
             <AlertCircle size={14} className="text-accent-red shrink-0 mt-0.5" />
             <p className="text-sm text-accent-red font-mono leading-relaxed">{globalError}</p>
           </div>
@@ -572,11 +509,7 @@ export default function AuthPage({ onAuthSuccess, onBack }) {
         {/* Success */}
         {successMsg && (
           <div className="flex items-center gap-2 mb-4 px-3.5 py-3 rounded-xl"
-            style={{
-              background: "var(--accent-green-dim)",
-              border: "0.5px solid rgba(16,185,129,0.3)",
-            }}
-          >
+            style={{ background: "var(--accent-green-dim)", border: "0.5px solid rgba(16,185,129,0.3)" }}>
             <CheckCircle2 size={14} className="text-accent-green shrink-0" />
             <p className="text-sm text-accent-green font-mono">{successMsg}</p>
           </div>
@@ -598,7 +531,9 @@ export default function AuthPage({ onAuthSuccess, onBack }) {
               disabled={loading}
               className="btn-primary w-full flex items-center justify-center gap-2 mt-2 touch-manipulation"
             >
-              {loading ? <Loader2 size={16} className="animate-spin" /> : <><span>Sign In</span><ArrowRight size={15} /></>}
+              {loading
+                ? <Loader2 size={16} className="animate-spin" />
+                : <><span>Sign In</span><ArrowRight size={15} /></>}
             </button>
 
             <p className="text-center text-sm text-text-muted font-mono">
@@ -617,8 +552,7 @@ export default function AuthPage({ onAuthSuccess, onBack }) {
             {GOOGLE_CLIENT_ID && <Divider />}
 
             <Field label="Full name" value={signupForm.name} onChange={sf("name")}
-              error={fieldErrors.name} icon={User} autoComplete="name"
-              hint="Appears on your dashboard" />
+              error={fieldErrors.name} icon={User} autoComplete="name" hint="Appears on your dashboard" />
             <Field label="Email address" type="email" value={signupForm.email}
               onChange={sf("email")} error={fieldErrors.email} icon={Mail} autoComplete="email" />
             <Field label="Password" type="password" value={signupForm.password}
@@ -627,7 +561,8 @@ export default function AuthPage({ onAuthSuccess, onBack }) {
               onChange={sf("confirmPassword")} error={fieldErrors.confirmPassword}
               icon={Lock} autoComplete="new-password" />
 
-            <button onClick={handleSignupNext} className="btn-primary w-full flex items-center justify-center gap-2 mt-2 touch-manipulation">
+            <button onClick={handleSignupNext}
+              className="btn-primary w-full flex items-center justify-center gap-2 mt-2 touch-manipulation">
               <span>Next - Study Profile</span><ArrowRight size={15} />
             </button>
 
@@ -639,10 +574,12 @@ export default function AuthPage({ onAuthSuccess, onBack }) {
             </p>
           </div>
         )}
+
         {/* ── SIGNUP STEP 1 ── */}
         {mode === "signup" && signupStep === 1 && (
           <div className="space-y-5">
-            <div className="px-4 py-3 rounded-xl" style={{ background: "var(--accent-gold-dim)", border: "0.5px solid rgba(245,158,11,0.2)" }}>
+            <div className="px-4 py-3 rounded-xl"
+              style={{ background: "var(--accent-gold-dim)", border: "0.5px solid rgba(245,158,11,0.2)" }}>
               <p className="text-sm font-mono text-accent-gold leading-relaxed">
                 Almost there! Tell us about your UPSC preparation so we can personalise your dashboard.
               </p>
@@ -685,11 +622,20 @@ export default function AuthPage({ onAuthSuccess, onBack }) {
             </div>
 
             <div className="flex gap-3 pt-1">
-              <button onClick={() => { clearErrors(); setSignupStep(0); }} className="btn-outline flex-1 flex items-center justify-center gap-1.5 py-3 text-base touch-manipulation">
+              <button
+                onClick={() => { clearErrors(); setSignupStep(0); }}
+                className="btn-outline flex-1 flex items-center justify-center gap-1.5 py-3 text-base touch-manipulation"
+              >
                 ← Back
               </button>
-              <button onClick={handleSignup} disabled={loading} className="btn-primary flex-[2] flex items-center justify-center gap-2 py-3 text-base touch-manipulation">
-                {loading ? <Loader2 size={16} className="animate-spin" /> : <><span>Create Account</span><ArrowRight size={15} /></>}
+              <button
+                onClick={handleSignup}
+                disabled={loading}
+                className="btn-primary flex-[2] flex items-center justify-center gap-2 py-3 text-base touch-manipulation"
+              >
+                {loading
+                  ? <Loader2 size={16} className="animate-spin" />
+                  : <><span>Create Account</span><ArrowRight size={15} /></>}
               </button>
             </div>
           </div>
