@@ -6,6 +6,7 @@ let io = null;
 const allowedOrigins = [
   "http://localhost:5173",
   "https://upsc-by-iitian.onrender.com",
+  "https://upsc-by-iitians.onrender.com",
   "https://www.upscbyiitians.in"
 ];
 
