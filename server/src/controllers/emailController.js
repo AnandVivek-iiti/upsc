@@ -15,81 +15,135 @@ function createTransporter() {
 }
 
 // ─── Logo CID attachment ───────────────────────────────────────────────────────
-const fs   = require("fs");
+const fs = require("fs");
 const path = require("path");
 
 function getLogoAttachment() {
   const logoPath = path.join(__dirname, "./assets/upsc-logo.png");
   if (fs.existsSync(logoPath)) {
-    return { filename: "upsc-logo.png", path: logoPath, cid: "upsclogo@mentor" };
+    return {
+      filename: "upsc-logo.png",
+      path: logoPath,
+      cid: "upsclogo@mentor",
+    };
   }
   return null;
 }
 
-// ─── Segment-specific copy ─────────────────────────────────────────────────────
 const SEGMENT_COPY = {
   new: {
-    subject: "Welcome to UPSC Mentor - here's where to start 🎯",
+    subject: "Welcome to UPSC Mentor — here's where to start",
     accent: "#3B6D11",
     accentBg: "#EAF3DE",
-    eyebrow: "Welcome aboard",
-    greetingLine: "Welcome to UPSC Mentor! I'm Anand, one of the builders behind the platform.",
-    intro: "You've joined at a great time. Here's the simplest path to get value from day one:",
+    eyebrow: "Welcome",
+    greetingLine:
+      "Welcome to UPSC Mentor. I'm Anand Vivek, a third-year Mechanical Engineering student at IIT Indore — and the person building this platform.",
+    intro:
+      "Really happy to have you here. Here are three things that'll get you the most value from day one:",
     steps: [
-      { title: "Set your exam date", body: "Go to your Profile page and lock in your Prelims target. The countdown starts ticking - which is surprisingly motivating." },
-      { title: "Mark your syllabus", body: "Open the Syllabus Tracker and set 3–5 modules to \"In Progress\". It takes 2 minutes and gives you a clear view of what you're walking into." },
-      { title: "Start the timer", body: "Hit the study timer on your dashboard before your next session. It syncs across devices - so your phone and laptop both track the same day." },
+      {
+        title: "Set your exam date",
+        body: "Open your Profile and lock in your Prelims target year. The countdown is surprisingly motivating.",
+      },
+      {
+        title: "Mark your syllabus",
+        body: "Go to the Syllabus Tracker and mark the topics you're currently studying. All 48 modules are already loaded — you don't have to build anything.",
+      },
+      {
+        title: "Start the Study Timer",
+        body: "Hit the timer from your dashboard before your next session. It tracks daily hours automatically and syncs across devices.",
+      },
     ],
-    closing: "That's it. No pressure to do everything at once.",
-    closing2: "If you have questions, just reply to this email - I read every one.",
-    signOff: "Good luck,",
+    closing:
+      "That's all you need to begin. No pressure to explore every feature on day one.",
+    closing2:
+      "If you have questions or suggestions, just reply to this email — I personally read every message.",
+    signOff: "Happy studying,",
   },
+
   power: {
-    subject: "You're one of our most dedicated users - a quick note",
+    subject: "Thank you for being one of our most consistent users",
     accent: "#854F0B",
     accentBg: "#FAEEDA",
-    eyebrow: "A note from the founder",
-    greetingLine: "I wanted to reach out personally.",
-    intro: "You're one of the most consistent users on UPSC Mentor right now - studying multiple days in a row puts you in the top tier of our early community.",
+    eyebrow: "A personal note",
+    greetingLine:
+      "I wanted to reach out personally. Seeing users like you study consistently is what keeps me building.",
+    intro:
+      "You're in the top tier of our early community. A few features you might not have tried yet:",
     steps: [
-      { title: "AI Diagnostic Reports", body: "After your next mock test, the AI generates a 7-day recovery study plan targeting your exact weak topics. If you haven't tried it yet, it's worth one test attempt." },
-      { title: "The AI Mentor Workspace", body: "Unlike the chat bubble, the full workspace lets you run separate threads - one for GS4 case studies, one for Economy, for example. Your mentor remembers context across sessions." },
-      { title: "Handwritten answer evaluation", body: "If you're doing Mains practice, you can photograph a handwritten answer and the AI evaluates it the same way - useful for replicating actual exam conditions." },
+      {
+        title: "AI Mentor Workspace",
+        body: "Run separate threads for different subjects — GS4, Economy, Polity. Your mentor carries context across sessions, so it already knows your weak areas going in.",
+      },
+      {
+        title: "AI Answer Evaluation",
+        body: "Upload typed or handwritten Mains answers and get detailed feedback in seconds — useful for replicating actual exam conditions.",
+      },
+      {
+        title: "Personalised Study Plan",
+        body: "After every mock test, the AI generates a targeted recovery plan for your exact weak topics. Worth trying after your next attempt.",
+      },
     ],
-    closing: "I'd genuinely love to hear what's working for you and what's not. Any feedback shapes what we build next.",
-    closing2: "",
-    signOff: "Keep going,",
+    closing:
+      "Your feedback matters a lot — you're actually using the platform regularly, which means you see what's working and what's not.",
+    closing2:
+      "If you find something confusing or have a suggestion, just reply. I'll personally read it.",
+    signOff: "Thank you,",
   },
+
   idle: {
-    subject: "Still preparing? UPSC Mentor has a shortcut for you",
+    subject: "Still preparing? Here's the simplest way to restart",
     accent: "#993C1D",
     accentBg: "#FAECE7",
     eyebrow: "Quick check-in",
-    greetingLine: "You signed up for UPSC Mentor a little while back - I just wanted to check in.",
-    intro: "If the platform felt overwhelming at first, that's fair. Here's the simplest possible entry point: one subject, one timer, 30 minutes.",
+    greetingLine:
+      "You signed up for UPSC Mentor a while back — I just wanted to check in.",
+    intro:
+      "If the platform felt overwhelming at first, that's fair. Here's the simplest possible entry point: one subject, one timer, 30 minutes.",
     steps: [
-      { title: "Open the dashboard", body: "Pick one subject from the study timer (Polity is a popular start) and run a 30-minute focused session. That single action unlocks the analytics that make everything else useful." },
-      { title: "Your syllabus is ready", body: "All 48 modules are already loaded, mapped to the official UPSC notification. You don't have to build anything." },
+      {
+        title: "Start a 30-minute session",
+        body: "Open the dashboard, pick one subject from the Study Timer (Polity is a popular start), and run one focused session. That single action unlocks the analytics that make everything else useful.",
+      },
+      {
+        title: "Your syllabus is already there",
+        body: "All 48 modules are loaded and mapped to the official UPSC notification. You don't have to build anything — just start marking what you're studying.",
+      },
     ],
-    closing: "If you hit a wall or the platform isn't clicking, just reply here and tell me what you're trying to do. I'll help you figure out the fastest path.",
-    closing2: "",
+    closing:
+      "If something on the platform confused you or stopped you from using it, please do write back.",
+    closing2:
+      "Your feedback helps me improve UPSC Mentor for everyone.",
     signOff: "Still rooting for you,",
   },
+
   feature: {
-    subject: "You've found the depth - here's what's coming next",
+    subject: "Your feedback on UPSC Mentor would be valuable",
     accent: "#3C3489",
     accentBg: "#EEEDFE",
-    eyebrow: "For our power explorers",
-    greetingLine: "You're one of a small group of users who's actually explored multiple areas of UPSC Mentor - the syllabus tracker, mock tests, AI mentor, and more.",
-    intro: "That kind of usage tells us you're using the platform as it was designed: as an integrated preparation workspace, not just a single tool. A few things you might not have discovered yet:",
+    eyebrow: "Thank you",
+    greetingLine:
+      "I noticed you've explored several areas of UPSC Mentor — the syllabus tracker, mock tests, AI mentor, and more.",
+    intro:
+      "That kind of usage tells me you're using the platform as it was designed. Users like you help shape what gets built next. A few things it would be great to hear from you on:",
     steps: [
-      { title: "Spaced repetition queue", body: "When you mark a question as difficult in Prelims Grind, it gets added to a revision queue with SM-2 style scheduling. Over time this becomes a highly personalised review bank." },
-      { title: "Cross-module memory", body: "Your AI Mentor carries memory of your weak topics across sessions. If mock tests surface gaps, the Mentor already knows about them in your next chat." },
-      { title: "Re-analysis of past tests", body: "Any test attempt can be re-analysed on demand - useful if you've done focused study on a weak topic and want to check if your diagnostic would look different now." },
+      {
+        title: "What's been most useful?",
+        body: "Which feature has made the biggest difference in your preparation? Even a one-line reply helps me understand where to invest next.",
+      },
+      {
+        title: "What's confusing or missing?",
+        body: "Was anything unclear, frustrating, or not quite what you expected? Honest feedback from active users is the most useful kind.",
+      },
+      {
+        title: "What would you add?",
+        body: "If there's a feature you've always wanted for UPSC prep, please do share. Many improvements on the platform started with a single user suggestion.",
+      },
     ],
-    closing: "I'd really value 5 minutes of your feedback - what's working, what's confusing, what you wish existed. You're exactly the user I want to talk to. Happy to jump on a quick call if that's easier.",
-    closing2: "",
-    signOff: "Thank you for exploring,",
+    closing:
+      "Even a short reply makes a real difference.",
+    closing2: "Thank you for being part of this.",
+    signOff: "Regards,",
   },
 };
 
@@ -105,9 +159,13 @@ function buildEmailHTML(userName, segment = "power") {
   const name = firstName.charAt(0).toUpperCase() + firstName.slice(1);
   const c = SEGMENT_COPY[resolveSegment(segment)];
 
-  const stepsHTML = c.steps.map((s) => `
+  const stepsHTML = c.steps
+    .map(
+      (s) => `
                 <p style="margin:0 0 4px;font-size:14px;color:#0f2044;font-weight:600;">${s.title}</p>
-                <p style="margin:0 0 14px;font-size:13px;color:#374151;line-height:1.7;">${s.body}</p>`).join("");
+                <p style="margin:0 0 14px;font-size:13px;color:#374151;line-height:1.7;">${s.body}</p>`,
+    )
+    .join("");
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -199,7 +257,9 @@ function buildEmailText(userName, segment = "power") {
   const name = firstName.charAt(0).toUpperCase() + firstName.slice(1);
   const c = SEGMENT_COPY[resolveSegment(segment)];
 
-  const stepsText = c.steps.map((s) => `→ ${s.title}\n   ${s.body}`).join("\n\n");
+  const stepsText = c.steps
+    .map((s) => `→ ${s.title}\n   ${s.body}`)
+    .join("\n\n");
 
   return `Hi ${name},
 
@@ -222,7 +282,7 @@ Indian Institute of Technology Indore
 
 // ─── Test-account exclusion constants ─────────────────────────────────────────
 const EXCL_NAMES = ["admin", "anand vivek"];
-const EXCL_SQL   = EXCL_NAMES.map((n) => `'${n}'`).join(", ");
+const EXCL_SQL = EXCL_NAMES.map((n) => `'${n}'`).join(", ");
 
 // ─── Helper: fetch power users from DB ────────────────────────────────────────
 async function fetchPowerUsers() {
@@ -242,7 +302,7 @@ async function fetchPowerUsers() {
            AND MAX(created_at) >= NOW() - INTERVAL '7 days'
        )
      ORDER BY u.name`,
-    { type: QueryTypes.SELECT }
+    { type: QueryTypes.SELECT },
   );
   return rows;
 }
@@ -277,7 +337,7 @@ const sendPowerUserEmails = async (req, res, next) => {
            AND u.role = 'user'
            AND LOWER(u.name) NOT IN (${EXCL_SQL})
          ORDER BY u.name`,
-        { type: QueryTypes.SELECT, replacements: { ids: user_ids } }
+        { type: QueryTypes.SELECT, replacements: { ids: user_ids } },
       );
       targets = rows;
     } else {
@@ -285,36 +345,55 @@ const sendPowerUserEmails = async (req, res, next) => {
     }
 
     if (targets.length === 0) {
-      return res.json({ success: true, sent: 0, failed: 0, results: [], message: "No eligible users found." });
+      return res.json({
+        success: true,
+        sent: 0,
+        failed: 0,
+        results: [],
+        message: "No eligible users found.",
+      });
     }
 
-    const transporter   = createTransporter();
+    const transporter = createTransporter();
     const logoAttachment = getLogoAttachment();
-    const results       = [];
+    const results = [];
 
     for (const user of targets) {
       try {
         const mailOptions = {
-          from:    `"Anand Vivek | UPSC Mentor" <${process.env.SENDER_EMAIL || "me240003006@iiti.ac.in"}>`,
-          to:      user.email,
-          subject: c.subject,                           // ← fix 2: segment subject
-          text:    buildEmailText(user.name, resolvedSeg), // ← fix 3: pass segment
-          html:    buildEmailHTML(user.name, resolvedSeg), // ← fix 3: pass segment
+          from: `"Anand Vivek | UPSC Mentor" <${process.env.SENDER_EMAIL || "me240003006@iiti.ac.in"}>`,
+          to: user.email,
+          subject: c.subject, // ← fix 2: segment subject
+          text: buildEmailText(user.name, resolvedSeg), // ← fix 3: pass segment
+          html: buildEmailHTML(user.name, resolvedSeg), // ← fix 3: pass segment
           ...(logoAttachment ? { attachments: [logoAttachment] } : {}),
         };
 
         await transporter.sendMail(mailOptions);
-        results.push({ id: user.id, name: user.name, email: user.email, status: "sent" });
-        console.log(`[Email][${resolvedSeg}] Sent to ${user.name} <${user.email}>`);
+        results.push({
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          status: "sent",
+        });
+        console.log(
+          `[Email][${resolvedSeg}] Sent to ${user.name} <${user.email}>`,
+        );
 
         await new Promise((r) => setTimeout(r, 800)); // Gmail rate-limit guard
       } catch (mailErr) {
         console.error(`[Email] Failed for ${user.email}:`, mailErr.message);
-        results.push({ id: user.id, name: user.name, email: user.email, status: "failed", error: mailErr.message });
+        results.push({
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          status: "failed",
+          error: mailErr.message,
+        });
       }
     }
 
-    const sent   = results.filter((r) => r.status === "sent").length;
+    const sent = results.filter((r) => r.status === "sent").length;
     const failed = results.filter((r) => r.status === "failed").length;
 
     res.json({ success: true, sent, failed, results });
@@ -330,7 +409,9 @@ const sendSingleUserEmail = async (req, res, next) => {
     const { userId, segment } = req.body; // ← fix: read segment here too
 
     if (!userId) {
-      return res.status(400).json({ success: false, error: "userId is required." });
+      return res
+        .status(400)
+        .json({ success: false, error: "userId is required." });
     }
 
     const resolvedSeg = resolveSegment(segment);
@@ -342,28 +423,32 @@ const sendSingleUserEmail = async (req, res, next) => {
        WHERE u.id = :uid
          AND u.role = 'user'
          AND LOWER(u.name) NOT IN (${EXCL_SQL})`,
-      { type: QueryTypes.SELECT, replacements: { uid: userId } }
+      { type: QueryTypes.SELECT, replacements: { uid: userId } },
     );
 
     if (!rows.length) {
-      return res.status(404).json({ success: false, error: "User not found or not eligible." });
+      return res
+        .status(404)
+        .json({ success: false, error: "User not found or not eligible." });
     }
 
-    const user           = rows[0];
-    const transporter    = createTransporter();
+    const user = rows[0];
+    const transporter = createTransporter();
     const logoAttachment = getLogoAttachment();
 
     const mailOptions = {
-      from:    `"Anand Vivek | UPSC Mentor" <${process.env.SENDER_EMAIL || "me240003006@iiti.ac.in"}>`,
-      to:      user.email,
-      subject: c.subject,                           // ← fix: segment subject
-      text:    buildEmailText(user.name, resolvedSeg), // ← fix: pass segment
-      html:    buildEmailHTML(user.name, resolvedSeg), // ← fix: pass segment
+      from: `"Anand Vivek | UPSC Mentor" <${process.env.SENDER_EMAIL || "me240003006@iiti.ac.in"}>`,
+      to: user.email,
+      subject: c.subject, // ← fix: segment subject
+      text: buildEmailText(user.name, resolvedSeg), // ← fix: pass segment
+      html: buildEmailHTML(user.name, resolvedSeg), // ← fix: pass segment
       ...(logoAttachment ? { attachments: [logoAttachment] } : {}),
     };
 
     await transporter.sendMail(mailOptions);
-    console.log(`[Email][${resolvedSeg}] Single send to ${user.name} <${user.email}>`);
+    console.log(
+      `[Email][${resolvedSeg}] Single send to ${user.name} <${user.email}>`,
+    );
 
     res.json({
       success: true,
