@@ -13,7 +13,7 @@ import {
 } from "../../utils/adminReports";
 import AdminStudyAnalytics from "./AdminStudyAnalytics";
 const BASE = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
- import PowerUserEmailer from "./PowerUserEmailer";
+import PowerUserEmailer from "./PowerUserEmailer";
 // ─── fetch helper ─────────────────────────────────────────────────────────────
 async function adminFetch(path, options = {}) {
   const token = localStorage.getItem("upsc_token");
@@ -1485,7 +1485,8 @@ const fetchFeedback = useCallback(async () => {
     { id: "segments", label: "Segments", icon: Layers },
     { id: "discovery", label: "Discovery", icon: Compass },
     { id: "insights", label: "Insights", icon: Lightbulb },
-    { id: "feedback", label: "Feedback", icon: MessageCircle }
+    { id: "feedback", label: "Feedback", icon: MessageCircle },
+    { id: "email",    label: "Email",    icon: Mail },
   ];
 
   return (
@@ -1585,12 +1586,11 @@ const fetchFeedback = useCallback(async () => {
           onRefresh={fetchFeedback}
         />
       )}
+      {tab === "email" && <PowerUserEmailer />}
       {profileUserId && (
         <UserProfileModal userId={profileUserId} onClose={closeProfile} />
       )}
-      <br/>
       <AdminStudyAnalytics />
-       <PowerUserEmailer />
       {toast && <Toast msg={toast.msg} type={toast.type} onClose={() => setToast(null)} />}
     </div>
   );
