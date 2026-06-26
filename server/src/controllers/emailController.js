@@ -6,11 +6,16 @@ const User = require("../models/User");
 // ─── Nodemailer transporter ────────────────────────────────────────────────────
 function createTransporter() {
   return nodemailer.createTransport({
-    service: "gmail",
+    host: "smtp.gmail.com",
+    port: 587,
+    secure: false,        
     auth: {
       user: process.env.SENDER_EMAIL || "me240003006@iiti.ac.in",
       pass: process.env.GMAIL_APP_PASSWORD,
     },
+    connectionTimeout: 15000,
+    greetingTimeout: 15000,
+    socketTimeout: 30000,
   });
 }
 
