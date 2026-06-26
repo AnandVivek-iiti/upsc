@@ -1,5 +1,5 @@
 // PowerUserEmailer.jsx
-// Full segmented email composer with live HTML preview.
+// Segmented email composer with live HTML preview.
 // Drop into: src/pages/Admin/PowerUserEmailer.jsx
 
 import { useState, useEffect, useCallback, useRef } from "react";
@@ -27,7 +27,7 @@ async function adminFetch(path, options = {}) {
   return data;
 }
 
-// ─── Segment config (mirrors emailController.js SEGMENT_COPY) ────────────────
+// ─── Segment config ───────────────────────────────────────────────────────────
 const SEGMENTS = {
   new: {
     label: "Just signed up",
@@ -42,12 +42,11 @@ const SEGMENTS = {
     intro: "You've joined at a great time. Here's the simplest path to get value from day one:",
     steps: [
       { title: "Set your exam date", body: "Go to your Profile page and lock in your Prelims target. The countdown starts ticking — which is surprisingly motivating." },
-      { title: "Mark your syllabus", body: 'Open the Syllabus Tracker and set 3–5 modules to "In Progress". It takes 2 minutes and gives you a clear view of what you\'re walking into.' },
+      { title: "Mark your syllabus", body: "Open the Syllabus Tracker and set 3–5 modules to \"In Progress\". It takes 2 minutes and gives you a clear view of what you're walking into." },
       { title: "Start the timer", body: "Hit the study timer on your dashboard before your next session. It syncs across devices — so your phone and laptop both track the same day." },
     ],
     closing: "That's it. No pressure to do everything at once.",
     closing2: "If you have questions, just reply to this email — I read every one.",
-    apiSeg: "new",
   },
   power: {
     label: "Power users",
@@ -67,7 +66,6 @@ const SEGMENTS = {
     ],
     closing: "I'd genuinely love to hear what's working for you and what's not. Any feedback shapes what we build next.",
     closing2: "",
-    apiSeg: "power",
   },
   idle: {
     label: "Gone quiet",
@@ -86,7 +84,6 @@ const SEGMENTS = {
     ],
     closing: "If you hit a wall or the platform isn't clicking, just reply here and tell me what you're trying to do. I'll help you figure out the fastest path.",
     closing2: "",
-    apiSeg: "idle",
   },
   feature: {
     label: "Feature explorers",
@@ -106,14 +103,13 @@ const SEGMENTS = {
     ],
     closing: "I'd really value 5 minutes of your feedback — what's working, what's confusing, what you wish existed. You're exactly the user I want to talk to. Happy to jump on a quick call if that's easier.",
     closing2: "",
-    apiSeg: "feature",
   },
 };
 
-// ─── Build the same branded HTML the server sends ────────────────────────────
+// ─── Build preview HTML (mirrors emailController.js) ─────────────────────────
 function buildPreviewHTML(seg, previewName = "User") {
   const c = SEGMENTS[seg];
-  const name = previewName.split(" ")[0] || "there";
+  const name = (previewName.split(" ")[0] || "there");
   const firstName = name.charAt(0).toUpperCase() + name.slice(1);
 
   const stepsHTML = c.steps
@@ -135,8 +131,6 @@ function buildPreviewHTML(seg, previewName = "User") {
   <table width="100%" cellpadding="0" cellspacing="0" style="background:#f8f9fb;padding:24px 12px;">
     <tr><td align="center">
       <table width="100%" style="max-width:540px;background:#ffffff;border-radius:16px;border:1px solid #dde3ed;overflow:hidden;">
-
-        <!-- Header -->
         <tr>
           <td style="background:linear-gradient(135deg,#f0d98a 0%,#fdf6e3 100%);padding:24px 28px;text-align:center;border-bottom:1px solid #dde3ed;">
             <div style="width:48px;height:48px;background:#0f2044;border-radius:12px;margin:0 auto 10px;display:flex;align-items:center;justify-content:center;">
@@ -146,22 +140,17 @@ function buildPreviewHTML(seg, previewName = "User") {
             <p style="margin:4px 0 0;font-size:10px;color:#9a8546;letter-spacing:1px;text-transform:uppercase;">Rebuilding UPSC prep · One IITian at a time</p>
           </td>
         </tr>
-
-        <!-- Body -->
         <tr>
           <td style="padding:28px 28px 20px;">
             <p style="margin:0 0 14px;font-size:10px;font-weight:700;color:${c.accent};text-transform:uppercase;letter-spacing:1px;">${c.eyebrow}</p>
             <p style="margin:0 0 14px;font-size:15px;color:#0f2044;line-height:1.7;">Hi <strong style="color:${c.accent};">${firstName}</strong>,</p>
             <p style="margin:0 0 12px;font-size:13px;color:#374151;line-height:1.8;">${c.greetingLine}</p>
             <p style="margin:0 0 18px;font-size:13px;color:#374151;line-height:1.8;">${c.intro}</p>
-
             <div style="background:${c.accentBg};border:1px solid ${c.accent}22;border-radius:12px;padding:18px 20px;margin-bottom:20px;">
               ${stepsHTML}
             </div>
-
             <p style="margin:0 0 10px;font-size:13px;color:#374151;line-height:1.8;">${c.closing}</p>
             ${c.closing2 ? `<p style="margin:0 0 20px;font-size:13px;color:#374151;line-height:1.8;">${c.closing2}</p>` : ""}
-
             <div style="text-align:center;margin:12px 0 6px;">
               <a href="https://www.upscbyiitians.in" style="display:inline-block;background:linear-gradient(135deg,#c9a227,#e8c96d);color:#0f2044;font-size:12px;font-weight:700;padding:10px 24px;border-radius:8px;text-decoration:none;">
                 Visit UPSC Mentor →
@@ -169,8 +158,6 @@ function buildPreviewHTML(seg, previewName = "User") {
             </div>
           </td>
         </tr>
-
-        <!-- Signature -->
         <tr>
           <td style="padding:18px 28px 24px;border-top:1px solid #dde3ed;">
             <p style="margin:0 0 5px;font-size:12px;color:#374151;">${c.signOff}</p>
@@ -180,14 +167,11 @@ function buildPreviewHTML(seg, previewName = "User") {
             <a href="https://www.upscbyiitians.in" style="font-size:11px;color:#c9a227;text-decoration:none;">🔗 upscbyiitians.in</a>
           </td>
         </tr>
-
-        <!-- Footer -->
         <tr>
           <td style="background:#f8f9fb;padding:10px 28px;text-align:center;border-top:1px solid #dde3ed;">
             <p style="margin:0;font-size:9px;color:#9aa3b2;">You're receiving this because you're a UPSC Mentor user. This is a personal note from the founder — feel free to reply directly.</p>
           </td>
         </tr>
-
       </table>
     </td></tr>
   </table>
@@ -218,7 +202,6 @@ function HtmlPreviewModal({ seg, onClose }) {
   const [previewName, setPreviewName] = useState("Priya");
   const c = SEGMENTS[seg];
 
-  // Write HTML into iframe on every name/seg change
   useEffect(() => {
     const iframe = iframeRef.current;
     if (!iframe) return;
@@ -235,7 +218,6 @@ function HtmlPreviewModal({ seg, onClose }) {
         className="bg-[#18181f] border border-[#2a2a3a] rounded-2xl w-full shadow-2xl flex flex-col"
         style={{ maxWidth: 680, maxHeight: "92vh" }}
       >
-        {/* Modal header */}
         <div className="flex items-center justify-between px-5 py-3.5 border-b border-[#2a2a3a] shrink-0">
           <div className="flex items-center gap-2.5">
             <Monitor size={14} style={{ color: c.accent }} />
@@ -252,7 +234,6 @@ function HtmlPreviewModal({ seg, onClose }) {
           </button>
         </div>
 
-        {/* Meta strip */}
         <div className="flex items-center gap-3 px-5 py-2.5 border-b border-[#2a2a3a] bg-[#0f0f18] text-xs font-mono shrink-0 flex-wrap gap-y-1.5">
           <span className="text-[#7a7a9a]">From:</span>
           <span style={{ color: c.accent }}>"Anand Vivek | UPSC Mentor" &lt;me240003006@iiti.ac.in&gt;</span>
@@ -260,7 +241,6 @@ function HtmlPreviewModal({ seg, onClose }) {
           <span className="text-[#e0e0f0] truncate max-w-[260px]">{c.subject}</span>
         </div>
 
-        {/* Name preview control */}
         <div className="flex items-center gap-2 px-5 py-2 border-b border-[#2a2a3a] bg-[#0f0f18] shrink-0">
           <span className="text-[11px] text-[#7a7a9a] font-mono">Preview name:</span>
           <input
@@ -273,7 +253,6 @@ function HtmlPreviewModal({ seg, onClose }) {
           <span className="text-[10px] text-[#555570]">personalised per recipient</span>
         </div>
 
-        {/* iframe — the actual email HTML */}
         <div className="flex-1 overflow-hidden rounded-b-2xl bg-[#f8f9fb]">
           <iframe
             ref={iframeRef}
@@ -288,61 +267,101 @@ function HtmlPreviewModal({ seg, onClose }) {
   );
 }
 
+// ─── Mini inline preview ──────────────────────────────────────────────────────
+function MiniPreview({ seg, accent, accentBg }) {
+  const iframeRef = useRef(null);
+
+  useEffect(() => {
+    const iframe = iframeRef.current;
+    if (!iframe) return;
+    const doc = iframe.contentDocument || iframe.contentWindow?.document;
+    if (!doc) return;
+    doc.open();
+    doc.write(buildPreviewHTML(seg, "Priya"));
+    doc.close();
+  }, [seg]);
+
+  return (
+    <div className="relative overflow-hidden" style={{ height: 320, background: accentBg + "22" }}>
+      <div
+        style={{
+          position: "absolute", top: 0, left: 0,
+          width: 600, height: 600,
+          transform: "scale(0.5)", transformOrigin: "top left",
+          pointerEvents: "none",
+        }}
+      >
+        <iframe
+          ref={iframeRef}
+          title="Mini Email Preview"
+          className="border-0"
+          style={{ width: 600, height: 600 }}
+          sandbox="allow-same-origin"
+        />
+      </div>
+      <div
+        className="absolute inset-0 flex items-end justify-center pb-3 cursor-pointer"
+        style={{ background: `linear-gradient(to bottom, transparent 50%, ${accentBg}cc 100%)` }}
+      >
+        <span className="text-[10px] font-mono" style={{ color: accent }}>
+          ↑ Click "Full preview" to interact
+        </span>
+      </div>
+    </div>
+  );
+}
+
 // ─── Main component ───────────────────────────────────────────────────────────
 export default function PowerUserEmailer() {
-  const [activeSeg, setActiveSeg]         = useState("new");
-  const [targets, setTargets]             = useState({});       // { [seg]: User[] }
-  const [selected, setSelected]           = useState(new Set());
+  const [activeSeg, setActiveSeg]           = useState("new");
+  const [allUsers, setAllUsers]             = useState([]);   // full user list, loaded once
+  const [selected, setSelected]             = useState(new Set());
   const [loadingTargets, setLoadingTargets] = useState(false);
-  const [sending, setSending]             = useState(false);
-  const [results, setResults]             = useState(null);
-  const [expanded, setExpanded]           = useState(true);
-  const [previewOpen, setPreviewOpen]     = useState(false);
-  const [searchQ, setSearchQ]             = useState("");
-  const [error, setError]                 = useState("");
+  const [sending, setSending]               = useState(false);
+  const [results, setResults]               = useState(null);
+  const [expanded, setExpanded]             = useState(true);
+  const [previewOpen, setPreviewOpen]       = useState(false);
+  const [searchQ, setSearchQ]               = useState("");
+  const [error, setError]                   = useState("");
 
-  const currentUsers = targets[activeSeg] || [];
   const filteredUsers = searchQ.trim()
-    ? currentUsers.filter(
+    ? allUsers.filter(
         (u) =>
           u.name.toLowerCase().includes(searchQ.toLowerCase()) ||
           u.email.toLowerCase().includes(searchQ.toLowerCase())
       )
-    : currentUsers;
+    : allUsers;
 
-  // Load power users from API (only segment the server supports natively)
-  const loadTargets = useCallback(async () => {
+  // ── Load ALL users once ───────────────────────────────────────────────────
+  // Segment selection controls the email template, not who is visible.
+  // Every user can receive any segment email — pick recipients manually.
+  const loadAllUsers = useCallback(async () => {
     setLoadingTargets(true);
     setError("");
     try {
-      const data = await adminFetch("/email/power-users");
-      const powerList = data.users || [];
-      // Power users come from the API; other segments use the metrics/segments data.
-      // For now, populate the power segment from the API and leave others empty (server-side).
-      setTargets((prev) => ({ ...prev, power: powerList }));
-      if (activeSeg === "power") {
-        setSelected(new Set(powerList.map((u) => u.id)));
-      }
+      const data = await adminFetch("/users?page=1&limit=500&sort=name&dir=asc");
+      const users = (data.users || []).map((u) => ({ id: u.id, name: u.name, email: u.email }));
+      setAllUsers(users);
+      // Auto-select everyone on first load
+      setSelected(new Set(users.map((u) => u.id)));
       setResults(null);
     } catch (err) {
       setError(err.message);
     } finally {
       setLoadingTargets(false);
     }
-  }, [activeSeg]);
+  }, []);
 
-  useEffect(() => { loadTargets(); }, [loadTargets]);
+  useEffect(() => { loadAllUsers(); }, [loadAllUsers]);
 
-  // When switching segment, clear selection & search
+  // ── Segment switch — keep user list, just reset search + results ──────────
   function switchSeg(seg) {
     setActiveSeg(seg);
-    setSelected(new Set());
     setSearchQ("");
     setResults(null);
     setError("");
-    // Auto-select all if users are already loaded for this seg
-    const list = targets[seg] || [];
-    if (list.length) setSelected(new Set(list.map((u) => u.id)));
+    // Re-select everyone when switching template
+    setSelected(new Set(allUsers.map((u) => u.id)));
   }
 
   function toggleUser(id) {
@@ -354,7 +373,7 @@ export default function PowerUserEmailer() {
   }
 
   function toggleAll() {
-    if (filteredUsers.every((u) => selected.has(u.id))) {
+    if (filteredUsers.length > 0 && filteredUsers.every((u) => selected.has(u.id))) {
       const next = new Set(selected);
       filteredUsers.forEach((u) => next.delete(u.id));
       setSelected(next);
@@ -369,14 +388,13 @@ export default function PowerUserEmailer() {
     if (selected.size === 0) return;
     const c = SEGMENTS[activeSeg];
     const confirmed = window.confirm(
-      `Send "${c.label}" email to ${selected.size} user${selected.size > 1 ? "s" : ""}?\n\nSegment: ${c.label}\nSubject: ${c.subject}\n\nThis sends from me240003006@iiti.ac.in via Gmail App Password.`
+      `Send "${c.label}" email to ${selected.size} user${selected.size > 1 ? "s" : ""}?\n\nSegment: ${c.label}\nSubject: ${c.subject}\n\nSends from me240003006@iiti.ac.in via Gmail App Password.`
     );
     if (!confirmed) return;
 
     setSending(true);
     setError("");
     try {
-      // Pass both user_ids and segment so the server uses the right template
       const data = await adminFetch("/email/power-users", {
         method: "POST",
         body: JSON.stringify({ user_ids: [...selected], segment: activeSeg }),
@@ -420,9 +438,9 @@ export default function PowerUserEmailer() {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            {currentUsers.length > 0 && (
+            {allUsers.length > 0 && (
               <span className="text-[11px] font-mono px-2 py-0.5 rounded-full bg-[#c9a84c]/10 text-[#c9a84c] border border-[#c9a84c]/20">
-                {currentUsers.length} in segment
+                {allUsers.length} users
               </span>
             )}
             {expanded ? <ChevronUp size={14} className="text-text-muted" /> : <ChevronDown size={14} className="text-text-muted" />}
@@ -452,14 +470,6 @@ export default function PowerUserEmailer() {
                   >
                     <Icon size={11} />
                     {sc.label}
-                    {targets[seg]?.length > 0 && (
-                      <span
-                        className="px-1.5 py-0.5 rounded-full text-[9px]"
-                        style={{ background: isActive ? sc.accent + "33" : "rgba(0,0,0,0.15)" }}
-                      >
-                        {targets[seg].length}
-                      </span>
-                    )}
                   </button>
                 );
               })}
@@ -468,11 +478,7 @@ export default function PowerUserEmailer() {
             {/* Segment description */}
             <div
               className="mx-4 sm:mx-6 mb-3 px-3 py-2 rounded-lg text-[11px] border-l-2"
-              style={{
-                background: c.accentBg + "55",
-                borderColor: c.accent,
-                color: c.accent,
-              }}
+              style={{ background: c.accentBg + "55", borderColor: c.accent, color: c.accent }}
             >
               {c.desc}
             </div>
@@ -487,12 +493,12 @@ export default function PowerUserEmailer() {
                       <div className="w-2 h-2 rounded-full" style={{ background: c.accent }} />
                       <span className="text-xs font-semibold text-text-primary">Recipients</span>
                     </div>
-                    <div className="flex items-center gap-1.5">
+                    <div className="flex items-center gap-2">
                       <span className="text-[11px] text-text-muted font-mono">
-                        {activeSeg === "power" ? `${currentUsers.length} eligible` : "backend-filtered"}
+                        {selected.size} / {allUsers.length} selected
                       </span>
                       <button
-                        onClick={(e) => { e.stopPropagation(); loadTargets(); }}
+                        onClick={(e) => { e.stopPropagation(); loadAllUsers(); }}
                         disabled={loadingTargets}
                         className="text-text-muted hover:text-text-primary transition-colors p-0.5 rounded"
                         title="Refresh"
@@ -506,7 +512,10 @@ export default function PowerUserEmailer() {
                     {/* Search */}
                     <div className="relative mb-2">
                       <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-text-muted">
-                        <svg width="11" height="11" viewBox="0 0 16 16" fill="none"><circle cx="6.5" cy="6.5" r="5" stroke="currentColor" strokeWidth="1.5"/><path d="M10.5 10.5l3 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
+                        <svg width="11" height="11" viewBox="0 0 16 16" fill="none">
+                          <circle cx="6.5" cy="6.5" r="5" stroke="currentColor" strokeWidth="1.5"/>
+                          <path d="M10.5 10.5l3 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                        </svg>
                       </span>
                       <input
                         type="text"
@@ -526,7 +535,9 @@ export default function PowerUserEmailer() {
                         className="rounded"
                         style={{ accentColor: c.accent }}
                       />
-                      Select all in segment
+                      {filteredUsers.length > 0 && filteredUsers.every((u) => selected.has(u.id))
+                        ? `Deselect all (${filteredUsers.length})`
+                        : `Select all (${filteredUsers.length})`}
                     </label>
 
                     {/* Error */}
@@ -538,7 +549,7 @@ export default function PowerUserEmailer() {
                     )}
 
                     {/* User list */}
-                    <div className="max-h-48 overflow-y-auto space-y-1 pr-0.5">
+                    <div className="max-h-56 overflow-y-auto space-y-1 pr-0.5">
                       {loadingTargets ? (
                         <div className="flex items-center gap-2 text-text-muted text-xs py-6 justify-center">
                           <Loader2 size={13} className="animate-spin" />
@@ -547,13 +558,7 @@ export default function PowerUserEmailer() {
                       ) : filteredUsers.length === 0 ? (
                         <div className="flex flex-col items-center gap-1.5 text-text-muted text-xs py-6 text-center">
                           <Users size={18} className="opacity-40" />
-                          <span>
-                            {activeSeg === "power"
-                              ? "No power users (3+ active days in last 7 days)"
-                              : searchQ
-                              ? "No users match your search"
-                              : "User list populated at send time by server"}
-                          </span>
+                          <span>{searchQ ? "No users match your search" : "No users found"}</span>
                         </div>
                       ) : (
                         filteredUsers.map((user) => {
@@ -620,13 +625,9 @@ export default function PowerUserEmailer() {
                 </div>
               </div>
 
-              {/* ── Right: preview panel ── */}
+              {/* ── Right: preview + send ── */}
               <div className="space-y-3">
-                <div
-                  className="rounded-xl border overflow-hidden"
-                  style={{ borderColor: c.accent + "33" }}
-                >
-                  {/* Preview header */}
+                <div className="rounded-xl border overflow-hidden" style={{ borderColor: c.accent + "33" }}>
                   <div className="flex items-center justify-between px-3 py-2.5 border-b" style={{ borderColor: c.accent + "22", background: c.accentBg + "44" }}>
                     <div className="flex items-center gap-2">
                       <Eye size={12} style={{ color: c.accent }} />
@@ -646,8 +647,6 @@ export default function PowerUserEmailer() {
                       <Monitor size={10} /> Full preview
                     </button>
                   </div>
-
-                  {/* Inline mini iframe preview */}
                   <MiniPreview seg={activeSeg} accent={c.accent} accentBg={c.accentBg} />
                 </div>
 
@@ -684,7 +683,7 @@ export default function PowerUserEmailer() {
                   {sending ? (
                     <><Loader2 size={14} className="animate-spin" /> Sending emails…</>
                   ) : (
-                    <><Send size={14} /> Send to {selected.size || "segment"} user{selected.size !== 1 ? "s" : ""}</>
+                    <><Send size={14} /> Send to {selected.size} user{selected.size !== 1 ? "s" : ""}</>
                   )}
                 </button>
 
@@ -697,58 +696,5 @@ export default function PowerUserEmailer() {
         )}
       </div>
     </>
-  );
-}
-
-// ─── Mini inline preview (iframe, scales down to fit) ────────────────────────
-function MiniPreview({ seg, accent, accentBg }) {
-  const iframeRef = useRef(null);
-
-  useEffect(() => {
-    const iframe = iframeRef.current;
-    if (!iframe) return;
-    const doc = iframe.contentDocument || iframe.contentWindow?.document;
-    if (!doc) return;
-    doc.open();
-    doc.write(buildPreviewHTML(seg, "Priya"));
-    doc.close();
-  }, [seg]);
-
-  return (
-    <div
-      className="relative overflow-hidden"
-      style={{ height: 320, background: accentBg + "22" }}
-    >
-      {/* Scale wrapper: render at 600px wide then scale down */}
-      <div
-        style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          width: 600,
-          height: 600,
-          transform: "scale(0.5)",
-          transformOrigin: "top left",
-          pointerEvents: "none",
-        }}
-      >
-        <iframe
-          ref={iframeRef}
-          title="Mini Email Preview"
-          className="border-0"
-          style={{ width: 600, height: 600 }}
-          sandbox="allow-same-origin"
-        />
-      </div>
-      {/* Overlay: click opens full preview */}
-      <div
-        className="absolute inset-0 flex items-end justify-center pb-3 cursor-pointer"
-        style={{ background: `linear-gradient(to bottom, transparent 50%, ${accentBg}cc 100%)` }}
-      >
-        <span className="text-[10px] font-mono" style={{ color: accent }}>
-          ↑ Click "Full preview" to interact
-        </span>
-      </div>
-    </div>
   );
 }
