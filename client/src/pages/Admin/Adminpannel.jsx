@@ -13,7 +13,7 @@ import {
 } from "../../utils/adminReports";
 import AdminStudyAnalytics from "./AdminStudyAnalytics";
 const BASE = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
-import PowerUserEmailer from "./PowerUserEmailer";
+import PowerUserEmailer from "./UserEmailer";
 // ─── fetch helper ─────────────────────────────────────────────────────────────
 async function adminFetch(path, options = {}) {
   const token = localStorage.getItem("upsc_token");
