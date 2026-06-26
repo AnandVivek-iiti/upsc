@@ -12,11 +12,16 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 // ─── Nodemailer transporter (fallback) ────────────────────────────────────────
 // SENDER_EMAIL must be the real Gmail address used for SMTP auth.
 // Never set it to a custom domain — Gmail SMTP will reject it.
-function createTransporter() {
+// pool=true reuses SMTP connections for bulk sends instead of opening a new
+// TCP handshake for every message — dramatically faster for large recipient lists.
+function createTransporter({ pool = false } = {}) {
   return nodemailer.createTransport({
     host: "smtp.gmail.com",
     port: 587,
     secure: false,
+    pool,                              // reuse connections across multiple sendMail calls
+    maxConnections: pool ? 5 : 1,      // 5 parallel SMTP streams when pooling
+    maxMessages:    pool ? 100 : Infinity,
     auth: {
       user: process.env.SENDER_EMAIL || "me240003006@iiti.ac.in",
       pass: process.env.GMAIL_APP_PASSWORD,
@@ -371,6 +376,125 @@ async function sendEmail({ toEmail, toName, subject, segment }) {
   return { provider: "nodemailer" };
 }
 
+// ─── Concurrency helper ────────────────────────────────────────────────────────
+// Processes items in chunks of `limit`, running fn concurrently within each chunk
+// via Promise.allSettled — a slow/failed item never blocks the rest.
+// Returns a flat PromiseSettledResult[] in the same order as items.
+async function runConcurrent(items, limit, fn) {
+  const results = [];
+  for (let i = 0; i < items.length; i += limit) {
+    const chunk   = items.slice(i, i + limit);
+    const settled = await Promise.allSettled(chunk.map(fn));
+    results.push(...settled);
+  }
+  return results;
+}
+
+// ─── Bulk send: Resend batch primary, concurrent Nodemailer fallback ───────────
+// Replaces the old sequential for-loop + 800 ms delay in sendPowerUserEmails.
+//
+// Path A — resend.batch.send(): up to 100 recipients per API call (one round-trip).
+//           Falls back per-chunk when Resend returns an error (e.g. domain not verified).
+// Path B — Nodemailer pool: CONCURRENCY sends in parallel over reused SMTP connections.
+async function sendBulkEmails(targets, resolvedSeg, subject) {
+  const allResults = [];
+  let   nmTargets  = [];
+
+  // ── Path A: Resend batch.send() ─────────────────────────────────────────────
+  if (process.env.RESEND_API_KEY) {
+    const logoDataURI   = getLogoBase64DataURI();
+    const pdfAttachment = getPDFAttachment();
+    const resendFrom    = process.env.RESEND_FROM || "anand@send.upscbyiitians.in";
+    const resendLabel   = `"Anand Vivek | UPSC Mentor" <${resendFrom}>`;
+
+    const buildPayload = (user) => {
+      const html        = buildEmailHTML(user.name, resolvedSeg, logoDataURI);
+      const text        = buildEmailText(user.name, resolvedSeg);
+      const attachments = pdfAttachment
+        ? [{ filename: pdfAttachment.filename, content: fs.readFileSync(pdfAttachment.path) }]
+        : [];
+      return {
+        from: resendLabel,
+        to:   user.email,
+        subject,
+        html,
+        text,
+        ...(attachments.length ? { attachments } : {}),
+      };
+    };
+
+    const RESEND_CHUNK = 100;
+    for (let i = 0; i < targets.length; i += RESEND_CHUNK) {
+      const chunk      = targets.slice(i, i + RESEND_CHUNK);
+      const chunkLabel = `chunk ${Math.floor(i / RESEND_CHUNK) + 1}`;
+      try {
+        const { data, error } = await resend.batch.send(chunk.map(buildPayload));
+        if (error) {
+          console.warn(`[Email] Resend batch error (${chunkLabel}):`, error.message ?? error);
+          nmTargets.push(...chunk);
+        } else {
+          for (const user of chunk) {
+            logSend({ provider: "resend", status: "sent", segment: resolvedSeg, name: user.name, email: user.email });
+            allResults.push({ id: user.id, name: user.name, email: user.email, status: "sent", provider: "resend" });
+          }
+        }
+      } catch (err) {
+        console.warn(`[Email] Resend batch exception (${chunkLabel}):`, err.message);
+        nmTargets.push(...chunk);
+      }
+    }
+
+    if (nmTargets.length > 0) {
+      console.warn(`[Email] ${nmTargets.length} recipient(s) falling back Resend → Nodemailer`);
+    }
+  } else {
+    console.warn("[Email] RESEND_API_KEY not set — routing all to Nodemailer.");
+    nmTargets = targets;
+  }
+
+  if (nmTargets.length === 0) return allResults;
+
+  // ── Path B: Nodemailer — concurrent sends via pooled transporter ─────────────
+  const transporter    = createTransporter({ pool: true });
+  const logoAttachment = getLogoAttachment();
+  const pdfAttachment  = getPDFAttachment();
+  const nmAttachments  = [
+    ...(logoAttachment ? [logoAttachment] : []),
+    ...(pdfAttachment  ? [pdfAttachment]  : []),
+  ];
+  const gmailAddress = process.env.SENDER_EMAIL || "me240003006@iiti.ac.in";
+  const gmailLabel   = `"Anand Vivek | UPSC Mentor" <${gmailAddress}>`;
+
+  const CONCURRENCY = 5; // safe ceiling for Gmail SMTP
+  const settled = await runConcurrent(nmTargets, CONCURRENCY, async (user) => {
+    const html = buildEmailHTML(user.name, resolvedSeg, logoAttachment ? "cid:upsclogo@mentor" : null);
+    const text = buildEmailText(user.name, resolvedSeg);
+    try {
+      await transporter.sendMail({
+        from: gmailLabel,
+        to:   user.email,
+        subject,
+        text,
+        html,
+        ...(nmAttachments.length ? { attachments: nmAttachments } : {}),
+      });
+      logSend({ provider: "nodemailer", status: "sent", segment: resolvedSeg, name: user.name, email: user.email });
+      return { id: user.id, name: user.name, email: user.email, status: "sent", provider: "nodemailer" };
+    } catch (mailErr) {
+      logSend({ provider: "both_failed", status: "failed", segment: resolvedSeg, name: user.name, email: user.email, error: mailErr.message });
+      return { id: user.id, name: user.name, email: user.email, status: "failed", error: mailErr.message };
+    }
+  });
+
+  transporter.close(); // release pooled SMTP connections back to the OS
+
+  for (const r of settled) {
+    allResults.push(r.status === "fulfilled" ? r.value : { status: "failed", error: r.reason?.message });
+  }
+
+  return allResults;
+}
+
 // ─── Test-account exclusion ────────────────────────────────────────────────────
 const EXCL_NAMES = ["admin", "anand vivek"];
 const EXCL_SQL   = EXCL_NAMES.map((n) => `'${n}'`).join(", ");
@@ -434,23 +558,12 @@ const sendPowerUserEmails = async (req, res, next) => {
     }
 
     console.log(`[Email] Starting bulk send — segment: ${resolvedSeg}, recipients: ${targets.length}`);
-    const results = [];
 
-    for (const user of targets) {
-      try {
-        const { provider } = await sendEmail({ toEmail: user.email, toName: user.name, subject, segment: resolvedSeg });
-        results.push({ id: user.id, name: user.name, email: user.email, status: "sent", provider });
-        await new Promise((r) => setTimeout(r, 800)); // rate-limit guard
-      } catch (mailErr) {
-        logSend({ provider: "both_failed", status: "failed", segment: resolvedSeg, name: user.name, email: user.email, error: mailErr.message });
-        results.push({ id: user.id, name: user.name, email: user.email, status: "failed", error: mailErr.message });
-      }
-    }
-
-    const sent     = results.filter((r) => r.status === "sent").length;
-    const failed   = results.filter((r) => r.status === "failed").length;
-    // Summarise which provider handled the bulk
-    const providers = [...new Set(results.filter(r => r.provider).map(r => r.provider))];
+    // sendBulkEmails: Resend batch.send() → concurrent Nodemailer fallback (no serial loop)
+    const results   = await sendBulkEmails(targets, resolvedSeg, subject);
+    const sent      = results.filter((r) => r.status === "sent").length;
+    const failed    = results.filter((r) => r.status === "failed").length;
+    const providers = [...new Set(results.filter((r) => r.provider).map((r) => r.provider))];
     console.log(`[Email] Bulk done — sent: ${sent}, failed: ${failed}, provider(s): ${providers.join(", ")}`);
 
     res.json({ success: true, sent, failed, results, providers });
