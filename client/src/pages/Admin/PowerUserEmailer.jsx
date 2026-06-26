@@ -2,7 +2,7 @@
 // Segmented email composer with live HTML preview.
 // Drop into: src/pages/Admin/PowerUserEmailer.jsx
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   Mail, Send, Users, CheckCircle2, XCircle,
   Loader2, RefreshCw, Eye, ChevronDown, ChevronUp,
@@ -133,9 +133,8 @@ function buildPreviewHTML(seg, previewName = "User") {
       <table width="100%" style="max-width:540px;background:#ffffff;border-radius:16px;border:1px solid #dde3ed;overflow:hidden;">
         <tr>
           <td style="background:linear-gradient(135deg,#f0d98a 0%,#fdf6e3 100%);padding:24px 28px;text-align:center;border-bottom:1px solid #dde3ed;">
-            <div style="width:48px;height:48px;background:#0f2044;border-radius:12px;margin:0 auto 10px;display:flex;align-items:center;justify-content:center;">
-              <span style="color:#c9a227;font-size:22px;font-weight:900;line-height:48px;">U</span>
-            </div>
+            <img src="/logo-192.png" alt="UPSC Mentor" width="56" height="56"
+              style="border-radius:12px;margin:0 auto 12px;display:block;" />
             <p style="margin:0;font-size:18px;font-weight:700;color:#0f2044;">UPSC Mentor</p>
             <p style="margin:4px 0 0;font-size:10px;color:#9a8546;letter-spacing:1px;text-transform:uppercase;">Rebuilding UPSC prep · One IITian at a time</p>
           </td>
@@ -198,19 +197,8 @@ function StatusBadge({ status }) {
 
 // ─── HTML Preview Modal ───────────────────────────────────────────────────────
 function HtmlPreviewModal({ seg, onClose }) {
-  const iframeRef = useRef(null);
   const [previewName, setPreviewName] = useState("Priya");
   const c = SEGMENTS[seg];
-
-  useEffect(() => {
-    const iframe = iframeRef.current;
-    if (!iframe) return;
-    const doc = iframe.contentDocument || iframe.contentWindow?.document;
-    if (!doc) return;
-    doc.open();
-    doc.write(buildPreviewHTML(seg, previewName));
-    doc.close();
-  }, [seg, previewName]);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-3 sm:p-6">
@@ -255,8 +243,8 @@ function HtmlPreviewModal({ seg, onClose }) {
 
         <div className="flex-1 overflow-hidden rounded-b-2xl bg-[#f8f9fb]">
           <iframe
-            ref={iframeRef}
             title="Email HTML Preview"
+            srcDoc={buildPreviewHTML(seg, previewName)}
             className="w-full h-full border-0"
             style={{ minHeight: 480 }}
             sandbox="allow-same-origin"
@@ -269,18 +257,6 @@ function HtmlPreviewModal({ seg, onClose }) {
 
 // ─── Mini inline preview ──────────────────────────────────────────────────────
 function MiniPreview({ seg, accent, accentBg }) {
-  const iframeRef = useRef(null);
-
-  useEffect(() => {
-    const iframe = iframeRef.current;
-    if (!iframe) return;
-    const doc = iframe.contentDocument || iframe.contentWindow?.document;
-    if (!doc) return;
-    doc.open();
-    doc.write(buildPreviewHTML(seg, "Priya"));
-    doc.close();
-  }, [seg]);
-
   return (
     <div className="relative overflow-hidden" style={{ height: 320, background: accentBg + "22" }}>
       <div
@@ -292,8 +268,8 @@ function MiniPreview({ seg, accent, accentBg }) {
         }}
       >
         <iframe
-          ref={iframeRef}
           title="Mini Email Preview"
+          srcDoc={buildPreviewHTML(seg, "Priya")}
           className="border-0"
           style={{ width: 600, height: 600 }}
           sandbox="allow-same-origin"
