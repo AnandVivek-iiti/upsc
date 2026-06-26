@@ -182,7 +182,7 @@ const polityPYQData = [
     ],
     correctOption: "A",
     explanation:
-      "Article 13(3)(a) of the Constitution defines 'law' very broadly: it includes any Ordinance, order, bye-law, rule, regulation, notification, custom or usage having in the territory of India the force of law. Both X and Y are correct. X correctly stated that the definition encompasses ordinances, orders, rules, and regulations. Y correctly added that custom or usage having the force of law is also included. The complete definition under Article 13(3)(a) explicitly covers both these elements. Therefore, X was wrong to not be convinced by Y — Y's addition is entirely accurate and part of the express text of Article 13.",
+      "Article 13(3)(a) of the Constitution defines 'law' very broadly: it includes any Ordinance, order, bye-law, rule, regulation, notification, custom or usage having in the territory of India the force of law. Both X and Y are correct. X correctly stated that the definition encompasses ordinances, orders, rules, and regulations. Y correctly added that custom or usage having the force of law is also included. The complete definition under Article 13(3)(a) explicitly covers both these elements. Therefore, X was wrong to not be convinced by Y - Y's addition is entirely accurate and part of the express text of Article 13.",
     sources: [
       {
         name: "M. Laxmikanth",
@@ -199,7 +199,7 @@ const polityPYQData = [
     styleTag: "applied_law",
     difficulty: "Medium",
     questionText:
-      "In a multi-ethnic district where both economic competition and historical grievances frequently led to community tensions, a flashpoint has arisen with a Government decision to allocate land for a waste management facility near a tribal hamlet, sparking protests by the tribal community, which claimed that the land was sacred and critical to their cultural identity. At the same time, urban residents and local industries supported the project, citing severe solid waste challenges and health concerns due to lack of a proper disposal site. The conflict has escalated with road blockades, social media campaigns, and allegations of police excesses.\n\nAs a responsible Government official, you are tasked with resolving the situation through mediation, ensuring a sustainable outcome that balances environmental needs, tribal rights, and urban public health.\n\nConsider the following statements with reference to the above:\n\n1. A successful conflict resolution process must begin with acknowledging the cultural concerns of the protesting tribal community before discussing technical alternatives.\n2. The Government should move ahead with the project without delay to address urban health concerns, which outweigh the sentiments of a small group.\n3. Creating a multi-stakeholder dialogue platform — including tribal leaders, environmental experts, and municipal representatives — to build mutual understanding and help de-escalate tensions.\n4. Conducting an independent Environmental and Social Impact Assessment (ESIA) and sharing findings transparently with both sides to facilitate evidence-based decision-making.\n\nWhich of the statements given above would contribute to the resolution process?",
+      "In a multi-ethnic district where both economic competition and historical grievances frequently led to community tensions, a flashpoint has arisen with a Government decision to allocate land for a waste management facility near a tribal hamlet, sparking protests by the tribal community, which claimed that the land was sacred and critical to their cultural identity. At the same time, urban residents and local industries supported the project, citing severe solid waste challenges and health concerns due to lack of a proper disposal site. The conflict has escalated with road blockades, social media campaigns, and allegations of police excesses.\n\nAs a responsible Government official, you are tasked with resolving the situation through mediation, ensuring a sustainable outcome that balances environmental needs, tribal rights, and urban public health.\n\nConsider the following statements with reference to the above:\n\n1. A successful conflict resolution process must begin with acknowledging the cultural concerns of the protesting tribal community before discussing technical alternatives.\n2. The Government should move ahead with the project without delay to address urban health concerns, which outweigh the sentiments of a small group.\n3. Creating a multi-stakeholder dialogue platform - including tribal leaders, environmental experts, and municipal representatives - to build mutual understanding and help de-escalate tensions.\n4. Conducting an independent Environmental and Social Impact Assessment (ESIA) and sharing findings transparently with both sides to facilitate evidence-based decision-making.\n\nWhich of the statements given above would contribute to the resolution process?",
     options: [
       { id: "A", text: "1, 3 and 4 only" },
       { id: "B", text: "2 and 3 only" },
@@ -239,7 +239,7 @@ const polityPYQData = [
     ],
     correctOption: "B",
     explanation:
-      "Mr. X's actions demonstrate Accountability and Integrity most strongly. Despite facing 'immense pressure from vested interests,' he chose to report the wrongdoing to the vigilance authority and halted the contract — both acts of accountability (holding himself and the contractor answerable to the public) and integrity (acting honestly in line with his duty regardless of personal or professional risk). Whistleblowing in the public interest and refusing to yield to corrupt pressure are the defining hallmarks of integrity in public administration. The other options — hierarchy, efficiency, and coordination — while important principles, are not the primary attribute exemplified here.",
+      "Mr. X's actions demonstrate Accountability and Integrity most strongly. Despite facing 'immense pressure from vested interests,' he chose to report the wrongdoing to the vigilance authority and halted the contract - both acts of accountability (holding himself and the contractor answerable to the public) and integrity (acting honestly in line with his duty regardless of personal or professional risk). Whistleblowing in the public interest and refusing to yield to corrupt pressure are the defining hallmarks of integrity in public administration. The other options - hierarchy, efficiency, and coordination - while important principles, are not the primary attribute exemplified here.",
     sources: [
       {
         name: "Ethics, Integrity and Aptitude – G. Subba Rao",
@@ -276,7 +276,7 @@ const polityPYQData = [
     ],
     correctOption: "C",
     explanation:
-      "Statement 1 is CORRECT: There is no specific article in the Constitution that formally declares its name as 'Constitution of India.' The name appears in the Preamble and in common usage, but no dedicated Article assigns this official title. Statement 2 is CORRECT: Article 395 of the Constitution repeals the Indian Independence Act, 1947, and the Government of India Act, 1935 (along with certain other enactments). So there IS an Article (395) that specifies the repeal. Therefore, Statement 2 — which claims there is NO such Article — is INCORRECT. Wait: re-examining the answer logic: Statement 2 says 'There is NO Article specifying repeal' — but Article 395 DOES exist for this purpose, so Statement 2 is INCORRECT. Statement 3 is INCORRECT: Article 394 explicitly states that certain provisions come into force immediately, and Article 394A (or more precisely, the interpretation under Article 393 read with Article 394) specifies the commencement. More directly, Article 394 mentions that the Constitution shall come into force on 26th January, 1950. So there IS an Article mentioning this date; Statement 3 is INCORRECT. Therefore, only Statement 1 is correct.",
+      "Statement 1 is CORRECT: There is no specific article in the Constitution that formally declares its name as 'Constitution of India.' The name appears in the Preamble and in common usage, but no dedicated Article assigns this official title. Statement 2 is CORRECT: Article 395 of the Constitution repeals the Indian Independence Act, 1947, and the Government of India Act, 1935 (along with certain other enactments). So there IS an Article (395) that specifies the repeal. Therefore, Statement 2 - which claims there is NO such Article - is INCORRECT. Wait: re-examining the answer logic: Statement 2 says 'There is NO Article specifying repeal' - but Article 395 DOES exist for this purpose, so Statement 2 is INCORRECT. Statement 3 is INCORRECT: Article 394 explicitly states that certain provisions come into force immediately, and Article 394A (or more precisely, the interpretation under Article 393 read with Article 394) specifies the commencement. More directly, Article 394 mentions that the Constitution shall come into force on 26th January, 1950. So there IS an Article mentioning this date; Statement 3 is INCORRECT. Therefore, only Statement 1 is correct.",
     sources: [
       {
         name: "M. Laxmikanth",
@@ -314,7 +314,7 @@ const polityPYQData = [
     "year": 2025,
     "subject": "Indian Polity",
     "topic": "Constitutional Amendment",
-    "subTopic": "Special Majority with State Ratification — Article 368",
+    "subTopic": "Special Majority with State Ratification - Article 368",
     "styleTag": "applied_law",
     "difficulty": "Hard",
     "questionText": "Consider the following subjects under the Constitution of India:\n\nI. List I–Union List, in the Seventh Schedule\nII. Extent of the executive power of a State\nIII. Conditions of the Governor's office\n\nFor a constitutional amendment with respect to which of the above, ratification by the Legislatures of not less than one-half of the States is required before presenting the bill to the President of India for assent?",
@@ -335,7 +335,7 @@ const polityPYQData = [
     "year": 2025,
     "subject": "Indian Polity",
     "topic": "Constitutional Bodies & Schedules",
-    "subTopic": "Fifth Schedule — Scheduled Areas Administration",
+    "subTopic": "Fifth Schedule - Scheduled Areas Administration",
     "styleTag": "statement_pairing",
     "difficulty": "Hard",
     "questionText": "Consider the following statements:\n\nWith reference to the Constitution of India, if an area in a State is declared as Scheduled Area under the Fifth Schedule,\nI. the State Government loses its executive power in such areas and a local body assumes total administration.\nII. the Union Government can take over the total administration of such areas under certain circumstances on the recommendations of the Governor.\n\nWhich of the statements given above is/are correct?",
@@ -356,7 +356,7 @@ const polityPYQData = [
     "year": 2025,
     "subject": "Indian Polity",
     "topic": "Executive",
-    "subTopic": "Ordinance Making Power — Article 123",
+    "subTopic": "Ordinance Making Power - Article 123",
     "styleTag": "statement_pairing",
     "difficulty": "Medium",
     "questionText": "With reference to the Indian polity, consider the following statements:\n\nI. An Ordinance can amend any Central Act.\nII. An Ordinance can abridge a Fundamental Right.\nIII. An Ordinance can come into effect from a back date.\n\nWhich of the statements given above are correct?",
@@ -409,7 +409,7 @@ const polityPYQData = [
       { "id": "D", "text": "None" }
     ],
     "correctOption": "A",
-    "explanation": "Only the Inter-State Council (Item I) was established as per a constitutional provision. Article 263 of the Constitution empowers the President to establish an Inter-State Council if it appears to him that the public interests would be served thereby. It was constituted in 1990 by a Presidential Order. The National Security Council (Item II) is an extra-constitutional body established by an executive order in 1998; it has no constitutional basis. Zonal Councils (Item III) are statutory bodies, established under the States Reorganisation Act, 1956 — a parliamentary act — and NOT under any provision of the Constitution. Therefore, only one body (the Inter-State Council) has a constitutional basis.",
+    "explanation": "Only the Inter-State Council (Item I) was established as per a constitutional provision. Article 263 of the Constitution empowers the President to establish an Inter-State Council if it appears to him that the public interests would be served thereby. It was constituted in 1990 by a Presidential Order. The National Security Council (Item II) is an extra-constitutional body established by an executive order in 1998; it has no constitutional basis. Zonal Councils (Item III) are statutory bodies, established under the States Reorganisation Act, 1956 - a parliamentary act - and NOT under any provision of the Constitution. Therefore, only one body (the Inter-State Council) has a constitutional basis.",
     "sources": [
       { "name": "M. Laxmikanth", "chapter": "Inter-State Relations (Ch. 15) & Advisory Bodies" }
     ]
@@ -430,7 +430,7 @@ const polityPYQData = [
       { "id": "D", "text": "None" }
     ],
     "correctOption": "C",
-    "explanation": "All three pairs are correctly matched. Pair I: Article 50 (under Part IV — DPSPs) directs the State to take steps to separate the Judiciary from the Executive in the public services of the State. Pair II: Article 51A(f) (under Part IVA — Fundamental Duties) states it shall be the duty of every citizen to value and preserve the rich heritage of our composite culture. Pair III: Article 24 (under Part III — Fundamental Rights) prohibits the employment of children below the age of 14 years in any factory or mine or any other hazardous employment. All three pairs are correctly matched, making the answer 'All three'.",
+    "explanation": "All three pairs are correctly matched. Pair I: Article 50 (under Part IV - DPSPs) directs the State to take steps to separate the Judiciary from the Executive in the public services of the State. Pair II: Article 51A(f) (under Part IVA - Fundamental Duties) states it shall be the duty of every citizen to value and preserve the rich heritage of our composite culture. Pair III: Article 24 (under Part III - Fundamental Rights) prohibits the employment of children below the age of 14 years in any factory or mine or any other hazardous employment. All three pairs are correctly matched, making the answer 'All three'.",
     "sources": [
       { "name": "M. Laxmikanth", "chapter": "Fundamental Rights (Ch. 7), DPSPs (Ch. 8), Fundamental Duties (Ch. 9)" }
     ]
@@ -440,7 +440,7 @@ const polityPYQData = [
     "year": 2025,
     "subject": "Indian Polity",
     "topic": "Local Government",
-    "subTopic": "Panchayati Raj — 73rd Amendment, Intermediate Level Panchayats",
+    "subTopic": "Panchayati Raj - 73rd Amendment, Intermediate Level Panchayats",
     "styleTag": "statement_pairing",
     "difficulty": "Hard",
     "questionText": "Consider the following statements:\n\nI. Panchayats at the intermediate level exist in all States.\nII. To be eligible to be a Member of a Panchayat at the intermediate level, a person should attain the age of thirty years.\nIII. The Chief Minister of a State constitutes a commission to review the financial position of Panchayats at the intermediate levels and to make recommendations regarding the distribution of net proceeds of taxes and duties, leviable by the State, between the State and Panchayats at the intermediate level.\n\nWhich of the statements given above are not correct?",
@@ -461,7 +461,7 @@ const polityPYQData = [
     "year": 2025,
     "subject": "Indian Polity",
     "topic": "Executive",
-    "subTopic": "Pardoning Power of the President — Article 72",
+    "subTopic": "Pardoning Power of the President - Article 72",
     "styleTag": "statement_pairing",
     "difficulty": "Medium",
     "questionText": "Consider the following statements with regard to pardoning power of the President of India:\n\nI. The exercise of this power by the President can be subjected to limited judicial review.\nII. The President can exercise this power without the advice of the Council of Ministers.\n\nWhich of the statements given above is/are correct?",
@@ -482,7 +482,7 @@ const polityPYQData = [
     "year": 2025,
     "subject": "Indian Polity",
     "topic": "Parliament",
-    "subTopic": "Anti-Defection Law — Tenth Schedule & Political Parties in Constitution",
+    "subTopic": "Anti-Defection Law - Tenth Schedule & Political Parties in Constitution",
     "styleTag": "statement_pairing",
     "difficulty": "Hard",
     "questionText": "Consider the following statements:\n\nI. If any question arises as to whether a Member of the House of the People has become subject to disqualification under the Tenth Schedule, the President's decision in accordance with the opinion of the Council of Union Ministers shall be final.\nII. There is no mention of the word 'political party' in the Constitution of India.\n\nWhich of the statements given above are correct?",
@@ -503,7 +503,7 @@ const polityPYQData = [
     "year": 2025,
     "subject": "Indian Polity",
     "topic": "Constitutional Bodies",
-    "subTopic": "Lokpal — Composition, Jurisdiction & Powers",
+    "subTopic": "Lokpal - Composition, Jurisdiction & Powers",
     "styleTag": "applied_law",
     "difficulty": "Hard",
     "questionText": "Consider the following statements about Lokpal:\n\nI. The power of Lokpal applies to public servants of India, but not to the Indian public servants posted outside India.\nII. The Chairperson or a Member shall not be a Member of the Parliament or a Member of the Legislature of any State or Union Territory, and only the Chief Justice of India, whether incumbent or retired, has to be its Chairperson.\nIII. The Chairperson or a Member shall not be a person of less than forty-five years of age on the date of assuming office as the Chairperson or Member, as the case may be.\nIV. Lokpal cannot inquire into the allegations of corruption against a sitting Prime Minister of India.\n\nWhich of the statements given above is/are correct?",
@@ -514,7 +514,7 @@ const polityPYQData = [
       { "id": "D", "text": "I, II and IV only" }
     ],
     "correctOption": "A",
-    "explanation": "Only Statement III is correct. Statement I is incorrect. The Lokpal and Lokayuktas Act, 2013 applies to all public servants including those posted outside India. Section 14 of the Act does not carve out an exception for public servants posted abroad. Statement II is incorrect. The Chairperson of Lokpal need not be the Chief Justice of India. As per Section 3(2), the Chairperson shall be either a former Chief Justice of India OR a former Judge of the Supreme Court OR an eminent person with impeccable integrity and outstanding ability, having special knowledge and expertise in anti-corruption policy, public administration, vigilance, finance, law and management. Statement III is correct. Section 3(9) states the Chairperson or a Member shall not be a person of less than 45 years of age on the date of assuming office. Statement IV is incorrect. The Lokpal CAN inquire into allegations of corruption against a sitting Prime Minister, but only under strict conditions — the full Lokpal bench must approve by a two-thirds majority and the inquiry must be conducted in camera, with specific procedural safeguards.",
+    "explanation": "Only Statement III is correct. Statement I is incorrect. The Lokpal and Lokayuktas Act, 2013 applies to all public servants including those posted outside India. Section 14 of the Act does not carve out an exception for public servants posted abroad. Statement II is incorrect. The Chairperson of Lokpal need not be the Chief Justice of India. As per Section 3(2), the Chairperson shall be either a former Chief Justice of India OR a former Judge of the Supreme Court OR an eminent person with impeccable integrity and outstanding ability, having special knowledge and expertise in anti-corruption policy, public administration, vigilance, finance, law and management. Statement III is correct. Section 3(9) states the Chairperson or a Member shall not be a person of less than 45 years of age on the date of assuming office. Statement IV is incorrect. The Lokpal CAN inquire into allegations of corruption against a sitting Prime Minister, but only under strict conditions - the full Lokpal bench must approve by a two-thirds majority and the inquiry must be conducted in camera, with specific procedural safeguards.",
     "sources": [
       { "name": "M. Laxmikanth", "chapter": "Lokpal and Lokayuktas (Ch. 48)" }
     ]
@@ -524,7 +524,7 @@ const polityPYQData = [
     "year": 2025,
     "subject": "Indian Polity",
     "topic": "Centre-State Relations",
-    "subTopic": "Minor Minerals — MMDR Act, State Powers",
+    "subTopic": "Minor Minerals - MMDR Act, State Powers",
     "styleTag": "statement_pairing",
     "difficulty": "Hard",
     "questionText": "Consider the following statements:\n\nStatement I:\nIn India, State Governments have no power for making rules for grant of concessions in respect of extraction of minor minerals even though such minerals are located in their territories.\n\nStatement II:\nIn India, the Central Government has the power to notify minor minerals under the relevant law.\n\nWhich one of the following is correct in respect of the above statements?",
@@ -545,7 +545,7 @@ const polityPYQData = [
     "year": 2025,
     "subject": "Indian Polity",
     "topic": "Parliament",
-    "subTopic": "Speaker of Lok Sabha — Tenure, Removal & Party Affiliation",
+    "subTopic": "Speaker of Lok Sabha - Tenure, Removal & Party Affiliation",
     "styleTag": "parliamentary_rules",
     "difficulty": "Medium",
     "questionText": "Consider the following statements:\n\nI. On the dissolution of the House of the People, the Speaker shall not vacate his/her office until immediately before the first meeting of the House of the People after the dissolution.\nII. According to the provisions of the Constitution of India, a Member of the House of the People on being elected as Speaker shall resign from his/her political party immediately.\nIII. The Speaker of the House of the People may be removed from his/her office by a resolution of the House of the People passed by a majority of all the then Members of the House, provided that no resolution shall be moved unless at least fourteen days' notice has been given of the intention to move the resolution.\n\nWhich of the statements given above are correct?",
@@ -558,15 +558,15 @@ const polityPYQData = [
     "correctOption": "B",
     "explanation": "Statements I and III are correct; Statement II is incorrect. Statement I is correct. Article 94 states that the Speaker shall not vacate his office until immediately before the first meeting of the newly constituted House after the dissolution. This ensures continuity of the office. Statement II is incorrect. The Constitution of India does NOT contain any provision requiring the Speaker to resign from his/her political party upon election. The convention of the Speaker distancing themselves from party activities exists in practice and in the UK, but it is not a constitutional requirement in India. The Tenth Schedule does not deem the Speaker to have voluntarily given up party membership. Statement III is correct. Article 94(c) states that the Speaker may be removed from office by a resolution of the House of the People passed by a majority of all the then members of the House. A 14-day prior notice is required before such a resolution is moved.",
     "sources": [
-      { "name": "M. Laxmikanth", "chapter": "Parliament (Ch. 22) — Speaker of Lok Sabha" }
+      { "name": "M. Laxmikanth", "chapter": "Parliament (Ch. 22) - Speaker of Lok Sabha" }
     ]
   },
   {
     "_id": "pyq_polity_2025_14",
     "year": 2025,
     "subject": "Indian Polity",
-    "topic": "Executive — Government Agencies",
-    "subTopic": "Directorate of Enforcement, DRI, DGSDM — Jurisdictions",
+    "topic": "Executive - Government Agencies",
+    "subTopic": "Directorate of Enforcement, DRI, DGSDM - Jurisdictions",
     "styleTag": "applied_law",
     "difficulty": "Hard",
     "questionText": "With reference to the Government of India, consider the following information:\n\n| Organization | Some of its Functions | It Works Under |\n|---|---|---|\n| Directorate of Enforcement | Enforcement of the Fugitive Economic Offenders Act, 2018 | Internal Security Division-I, Ministry of Home Affairs |\n| Directorate of Revenue Intelligence | Enforces the provisions of the Customs Act, 1962 | Department of Revenue, Ministry of Finance |\n| Directorate General of Systems and Data Management | Carrying out big data analytics to assist tax officers for better policy and nabbing tax evaders | Department of Revenue, Ministry of Finance |\n\nIn how many of the above rows is the information correctly matched?",
@@ -577,7 +577,7 @@ const polityPYQData = [
       { "id": "D", "text": "None" }
     ],
     "correctOption": "B",
-    "explanation": "Only two rows (II and III) are correctly matched. Row I (Directorate of Enforcement) is INCORRECTLY matched. The Enforcement Directorate (ED) does enforce the Fugitive Economic Offenders Act, 2018, which is correct. However, the ED works under the Department of Revenue, Ministry of Finance — NOT under the Internal Security Division-I, Ministry of Home Affairs. This is the error in Row I. Row II (Directorate of Revenue Intelligence) is correctly matched. The DRI is the apex intelligence organisation for anti-smuggling in India, it enforces the Customs Act, 1962, and it functions under the Central Board of Indirect Taxes & Customs (CBIC), Department of Revenue, Ministry of Finance. Row III (Directorate General of Systems and Data Management) is correctly matched. DGSM works under the Department of Revenue, Ministry of Finance, and its core function involves data analytics and systems management to assist tax officers. Hence only two rows are correctly matched.",
+    "explanation": "Only two rows (II and III) are correctly matched. Row I (Directorate of Enforcement) is INCORRECTLY matched. The Enforcement Directorate (ED) does enforce the Fugitive Economic Offenders Act, 2018, which is correct. However, the ED works under the Department of Revenue, Ministry of Finance - NOT under the Internal Security Division-I, Ministry of Home Affairs. This is the error in Row I. Row II (Directorate of Revenue Intelligence) is correctly matched. The DRI is the apex intelligence organisation for anti-smuggling in India, it enforces the Customs Act, 1962, and it functions under the Central Board of Indirect Taxes & Customs (CBIC), Department of Revenue, Ministry of Finance. Row III (Directorate General of Systems and Data Management) is correctly matched. DGSM works under the Department of Revenue, Ministry of Finance, and its core function involves data analytics and systems management to assist tax officers. Hence only two rows are correctly matched.",
     "sources": [
       { "name": "M. Laxmikanth", "chapter": "Enforcement Agencies & Regulatory Bodies" }
     ]
@@ -620,7 +620,7 @@ const polityPYQData = [
       { "id": "D", "text": "1, 2 and 3" }
     ],
     "correctOption": "B",
-    "explanation": "Statement 1 is CORRECT: Any bill that is pending before the Lok Sabha (not yet passed) lapses upon the dissolution of the Lok Sabha. The new Lok Sabha starts fresh. Statement 2 is CORRECT: A bill passed by the Lok Sabha and pending in the Rajya Sabha (awaiting Rajya Sabha consideration) also lapses on the dissolution of the Lok Sabha. Since the bill originated in Lok Sabha and that House dissolves, the bill cannot proceed. Statement 3 is INCORRECT: Article 108(5) provides an exception — if the President has notified the intention to hold a joint sitting of both Houses regarding a bill, that bill does NOT lapse on the dissolution of the Lok Sabha. The joint sitting notification protects the bill from lapsing. The purpose is to ensure deadlocked bills that are heading for a joint sitting are not rendered futile by dissolution.",
+    "explanation": "Statement 1 is CORRECT: Any bill that is pending before the Lok Sabha (not yet passed) lapses upon the dissolution of the Lok Sabha. The new Lok Sabha starts fresh. Statement 2 is CORRECT: A bill passed by the Lok Sabha and pending in the Rajya Sabha (awaiting Rajya Sabha consideration) also lapses on the dissolution of the Lok Sabha. Since the bill originated in Lok Sabha and that House dissolves, the bill cannot proceed. Statement 3 is INCORRECT: Article 108(5) provides an exception - if the President has notified the intention to hold a joint sitting of both Houses regarding a bill, that bill does NOT lapse on the dissolution of the Lok Sabha. The joint sitting notification protects the bill from lapsing. The purpose is to ensure deadlocked bills that are heading for a joint sitting are not rendered futile by dissolution.",
     "sources": [
       { "name": "M. Laxmikanth", "chapter": "Parliament – Joint Sitting and Lapse of Bills" },
       { "name": "Constitution of India", "chapter": "Article 107 and Article 108 – Lapse of Bills and Joint Sittings" }
@@ -642,7 +642,7 @@ const polityPYQData = [
       { "id": "D", "text": "1, 2 and 3" }
     ],
     "correctOption": "C",
-    "explanation": "Article 96 of the Constitution governs the rights of the Speaker while a resolution for their removal is under consideration. Statement 1 is CORRECT: While a resolution for the Speaker's removal is being considered, the Speaker shall NOT preside over the House. The Deputy Speaker presides instead. This ensures natural justice — a person cannot be judge in their own case. Statement 2 is INCORRECT: The Speaker retains the right to speak in the House while the removal resolution is being debated. They have the full right to defend themselves and participate in the debate. Statement 3 is INCORRECT: The Speaker is entitled to vote in the FIRST INSTANCE (like any other member) when a resolution for their removal is being considered. What they cannot do is exercise a casting vote (second vote in case of a tie) while their removal resolution is under consideration. Article 96(2) specifically provides this right to vote in the first instance.",
+    "explanation": "Article 96 of the Constitution governs the rights of the Speaker while a resolution for their removal is under consideration. Statement 1 is CORRECT: While a resolution for the Speaker's removal is being considered, the Speaker shall NOT preside over the House. The Deputy Speaker presides instead. This ensures natural justice - a person cannot be judge in their own case. Statement 2 is INCORRECT: The Speaker retains the right to speak in the House while the removal resolution is being debated. They have the full right to defend themselves and participate in the debate. Statement 3 is INCORRECT: The Speaker is entitled to vote in the FIRST INSTANCE (like any other member) when a resolution for their removal is being considered. What they cannot do is exercise a casting vote (second vote in case of a tie) while their removal resolution is under consideration. Article 96(2) specifically provides this right to vote in the first instance.",
     "sources": [
       { "name": "M. Laxmikanth", "chapter": "Parliament – Speaker of Lok Sabha" },
       { "name": "Constitution of India", "chapter": "Article 96 – Speaker and Deputy Speaker not to preside" }
@@ -686,7 +686,7 @@ const polityPYQData = [
       { "id": "D", "text": "A public authority to show under what authority it is acting." }
     ],
     "correctOption": "A",
-    "explanation": "A Writ of Prohibition is issued by a superior court (Supreme Court or High Court) directing a lower court or quasi-judicial body to STOP proceeding with a case where it either lacks jurisdiction or is exceeding its jurisdiction. It is a preventive writ — it prevents a lower court from going beyond the bounds of its authority BEFORE a final order is passed (unlike Certiorari, which quashes an already passed order). In essence: Habeas Corpus = produce the body (illegal detention). Mandamus = do your duty. Prohibition = stop, you have no jurisdiction. Certiorari = quash the order already passed. Quo Warranto = by what authority do you hold this office.",
+    "explanation": "A Writ of Prohibition is issued by a superior court (Supreme Court or High Court) directing a lower court or quasi-judicial body to STOP proceeding with a case where it either lacks jurisdiction or is exceeding its jurisdiction. It is a preventive writ - it prevents a lower court from going beyond the bounds of its authority BEFORE a final order is passed (unlike Certiorari, which quashes an already passed order). In essence: Habeas Corpus = produce the body (illegal detention). Mandamus = do your duty. Prohibition = stop, you have no jurisdiction. Certiorari = quash the order already passed. Quo Warranto = by what authority do you hold this office.",
     "sources": [
       { "name": "M. Laxmikanth", "chapter": "Fundamental Rights – Constitutional Remedies / Writs" },
       { "name": "Constitution of India", "chapter": "Article 32 and Article 226 – Writs" }
@@ -708,7 +708,7 @@ const polityPYQData = [
       { "id": "D", "text": "1, 2 and 3" }
     ],
     "correctOption": "D",
-    "explanation": "Article 368(1) of the Constitution explicitly states: 'Notwithstanding anything in this Constitution, Parliament may in exercise of its constituent power amend by way of addition, variation or repeal any provision of this Constitution in accordance with the procedure laid down in this article.' All three modes of constitutional amendment are explicitly provided — Addition (inserting new provisions), Variation (modifying existing provisions), and Repeal (removing provisions). This three-part formulation gives Parliament comprehensive power to reshape the Constitution, subject to the constraint identified in the Kesavananda Bharati case that the 'Basic Structure' of the Constitution cannot be amended.",
+    "explanation": "Article 368(1) of the Constitution explicitly states: 'Notwithstanding anything in this Constitution, Parliament may in exercise of its constituent power amend by way of addition, variation or repeal any provision of this Constitution in accordance with the procedure laid down in this article.' All three modes of constitutional amendment are explicitly provided - Addition (inserting new provisions), Variation (modifying existing provisions), and Repeal (removing provisions). This three-part formulation gives Parliament comprehensive power to reshape the Constitution, subject to the constraint identified in the Kesavananda Bharati case that the 'Basic Structure' of the Constitution cannot be amended.",
     "sources": [
       { "name": "M. Laxmikanth", "chapter": "Amendment of the Constitution – Article 368" },
       { "name": "Constitution of India", "chapter": "Article 368 – Power of Parliament to amend the Constitution" }
@@ -752,7 +752,7 @@ const polityPYQData = [
       { "id": "D", "text": "1, 3 and 4 only" }
     ],
     "correctOption": "B",
-    "explanation": "The correct equivalences across the three services: Row 1 — Brigadier / Air Commodore / Commander: INCORRECT. Brigadier and Air Commodore are equivalent, but the Navy equivalent of Brigadier/Air Commodore is Commodore, NOT Commander. A Commander in the Navy is equivalent to a Lieutenant Colonel in the Army. Row 2 — Major General / Air Vice Marshal / Vice Admiral: INCORRECT. Major General and Air Vice Marshal are equivalent, but the Navy equivalent is Rear Admiral, NOT Vice Admiral. Vice Admiral is equivalent to Lieutenant General in the Army. Row 3 — Major / Squadron Leader / Lieutenant Commander: CORRECT. Major (Army), Squadron Leader (Air Force), and Lieutenant Commander (Navy) are all correctly equivalent ranks. Row 4 — Lieutenant Colonel / Group Captain / Captain: INCORRECT. Lieutenant Colonel and Group Captain are equivalent, but the Navy equivalent is Commander, NOT Captain. A Captain in the Navy is equivalent to a Colonel in the Army. Therefore, only Row 3 is correctly matched. Wait — rechecking Row 1: Brigadier/Air Commodore/Commodore (not Commander). Row 1 has Commander which is wrong. Only Row 3 is correct. However, the standard answer accepted is Rows 1 and 3. Re-examining: some sources equate Brigadier=Air Commodore=Commodore (one-star). Commander is one rank below. Row 1 is incorrect on the Navy equivalent. Therefore only Row 3 is definitively correct. The most defensible answer based on standard military equivalence tables is that Rows 1 and 3 are correct per UPSC's official answer key.",
+    "explanation": "The correct equivalences across the three services: Row 1 - Brigadier / Air Commodore / Commander: INCORRECT. Brigadier and Air Commodore are equivalent, but the Navy equivalent of Brigadier/Air Commodore is Commodore, NOT Commander. A Commander in the Navy is equivalent to a Lieutenant Colonel in the Army. Row 2 - Major General / Air Vice Marshal / Vice Admiral: INCORRECT. Major General and Air Vice Marshal are equivalent, but the Navy equivalent is Rear Admiral, NOT Vice Admiral. Vice Admiral is equivalent to Lieutenant General in the Army. Row 3 - Major / Squadron Leader / Lieutenant Commander: CORRECT. Major (Army), Squadron Leader (Air Force), and Lieutenant Commander (Navy) are all correctly equivalent ranks. Row 4 - Lieutenant Colonel / Group Captain / Captain: INCORRECT. Lieutenant Colonel and Group Captain are equivalent, but the Navy equivalent is Commander, NOT Captain. A Captain in the Navy is equivalent to a Colonel in the Army. Therefore, only Row 3 is correctly matched. Wait - rechecking Row 1: Brigadier/Air Commodore/Commodore (not Commander). Row 1 has Commander which is wrong. Only Row 3 is correct. However, the standard answer accepted is Rows 1 and 3. Re-examining: some sources equate Brigadier=Air Commodore=Commodore (one-star). Commander is one rank below. Row 1 is incorrect on the Navy equivalent. Therefore only Row 3 is definitively correct. The most defensible answer based on standard military equivalence tables is that Rows 1 and 3 are correct per UPSC's official answer key.",
     "sources": [
       { "name": "Ministry of Defence – Equivalent Ranks Notification", "chapter": "Three Services Equivalence" },
       { "name": "M. Laxmikanth", "chapter": "Defence Services – Organization" }
@@ -774,7 +774,7 @@ const polityPYQData = [
       { "id": "D", "text": "1, 2, 3 and 4" }
     ],
     "correctOption": "D",
-    "explanation": "After the NEC Act was amended in 2002, the composition of the North Eastern Council was expanded significantly. The Council now comprises: (1) Governors of each constituent state — each state of the Northeast is represented by its Governor; (2) Chief Ministers of each constituent state — the elected heads of government are key members; (3) Three members to be nominated by the President of India — these nominated members bring additional expertise and representation; (4) The Home Minister of India (or any other Union Minister nominated by the PM) — the 2002 amendment brought the Union Home Minister into the NEC to strengthen the Centre's engagement with Northeast development. The NEC covers the eight states of the Northeast: Arunachal Pradesh, Assam, Manipur, Meghalaya, Mizoram, Nagaland, Sikkim, and Tripura. All four categories listed are part of the post-2002 composition.",
+    "explanation": "After the NEC Act was amended in 2002, the composition of the North Eastern Council was expanded significantly. The Council now comprises: (1) Governors of each constituent state - each state of the Northeast is represented by its Governor; (2) Chief Ministers of each constituent state - the elected heads of government are key members; (3) Three members to be nominated by the President of India - these nominated members bring additional expertise and representation; (4) The Home Minister of India (or any other Union Minister nominated by the PM) - the 2002 amendment brought the Union Home Minister into the NEC to strengthen the Centre's engagement with Northeast development. The NEC covers the eight states of the Northeast: Arunachal Pradesh, Assam, Manipur, Meghalaya, Mizoram, Nagaland, Sikkim, and Tripura. All four categories listed are part of the post-2002 composition.",
     "sources": [
       { "name": "North Eastern Council Act, 1971 (as amended 2002)", "chapter": "Section 3 – Constitution of the Council" },
       { "name": "Ministry of Development of North Eastern Region – NEC Overview", "chapter": "Composition and Functions" }
@@ -818,7 +818,7 @@ const polityPYQData = [
       { "id": "D", "text": "1, 2 and 3" }
     ],
     "correctOption": "B",
-    "explanation": "The Chief of Defence Staff (CDS) was created in 2019 and heads the Department of Military Affairs (DMA). Statement 1 is CORRECT: The CDS serves as the Permanent Chairman of the Chiefs of Staff Committee (COSC). This replaced the earlier system of a rotating chairman. The CDS chairs the COSC that comprises the three service chiefs. Statement 2 is INCORRECT: The CDS does NOT exercise military command over the three Service Chiefs. This is a critical distinction — the CDS is 'first among equals' but does not command the Army, Navy, or Air Force. Each Service Chief commands their respective service. The CDS has a coordinating/advisory role, not a command role. Making the CDS a supreme military commander would require much larger constitutional and structural changes. Statement 3 is CORRECT: The CDS is the Principal Military Adviser to the Defence Minister on all tri-service matters. For single-service matters, the respective Service Chief advises the Defence Minister. But for matters involving all three services, the CDS is the designated adviser.",
+    "explanation": "The Chief of Defence Staff (CDS) was created in 2019 and heads the Department of Military Affairs (DMA). Statement 1 is CORRECT: The CDS serves as the Permanent Chairman of the Chiefs of Staff Committee (COSC). This replaced the earlier system of a rotating chairman. The CDS chairs the COSC that comprises the three service chiefs. Statement 2 is INCORRECT: The CDS does NOT exercise military command over the three Service Chiefs. This is a critical distinction - the CDS is 'first among equals' but does not command the Army, Navy, or Air Force. Each Service Chief commands their respective service. The CDS has a coordinating/advisory role, not a command role. Making the CDS a supreme military commander would require much larger constitutional and structural changes. Statement 3 is CORRECT: The CDS is the Principal Military Adviser to the Defence Minister on all tri-service matters. For single-service matters, the respective Service Chief advises the Defence Minister. But for matters involving all three services, the CDS is the designated adviser.",
     "sources": [
       { "name": "Government of India – CDS Creation Notification, December 2019", "chapter": "Charter of Duties of CDS" },
       { "name": "M. Laxmikanth", "chapter": "Defence Services / Chief of Defence Staff" }
@@ -862,7 +862,7 @@ const polityPYQData = [
       { "id": "D", "text": "Neither 1 nor 2" }
     ],
     "correctOption": "B",
-    "explanation": "Statement 1 is INCORRECT: Under Article 342, it is the PRESIDENT of India (not the Governor) who specifies the Scheduled Tribes for each State/Union Territory by a public notification (after consultation with the Governor concerned). Subsequent additions or modifications to the ST list are made by Parliament by law. The Governor is consulted but does NOT independently declare communities as Scheduled Tribes. Statement 2 is CORRECT: The ST list is state-specific. A community recognized as a Scheduled Tribe in one state may not have the same status in another state. The lists are issued separately for each state/UT, and a community's inclusion in one state's list does not automatically confer ST status in another state. This is why there are different state-wise ST lists, and why ST status cannot be ported from state to state — a person belonging to a tribe notified in State A cannot claim ST benefits in State B unless that tribe is separately notified there.",
+    "explanation": "Statement 1 is INCORRECT: Under Article 342, it is the PRESIDENT of India (not the Governor) who specifies the Scheduled Tribes for each State/Union Territory by a public notification (after consultation with the Governor concerned). Subsequent additions or modifications to the ST list are made by Parliament by law. The Governor is consulted but does NOT independently declare communities as Scheduled Tribes. Statement 2 is CORRECT: The ST list is state-specific. A community recognized as a Scheduled Tribe in one state may not have the same status in another state. The lists are issued separately for each state/UT, and a community's inclusion in one state's list does not automatically confer ST status in another state. This is why there are different state-wise ST lists, and why ST status cannot be ported from state to state - a person belonging to a tribe notified in State A cannot claim ST benefits in State B unless that tribe is separately notified there.",
     "sources": [
       { "name": "M. Laxmikanth", "chapter": "Scheduled Castes and Scheduled Tribes / Constitutional Provisions" },
       { "name": "Constitution of India", "chapter": "Article 342 – Scheduled Tribes" }
@@ -884,7 +884,7 @@ const polityPYQData = [
       { "id": "D", "text": "C. Rajagopalachari" }
     ],
     "correctOption": "B",
-    "explanation": "Dr. Sachchidananda Sinha served as the Provisional President (also called Temporary President) of the Constituent Assembly when it first met on December 9, 1946. He was the oldest member of the Constituent Assembly and was asked to preside over the inaugural session. Dr. Rajendra Prasad was elected as the permanent President of the Constituent Assembly on December 11, 1946 — two days after the first meeting. Dr. B.R. Ambedkar was the Chairman of the Drafting Committee. Jawaharlal Nehru moved the Objectives Resolution and was the first Prime Minister. C. Rajagopalachari was a prominent leader but not the provisional president.",
+    "explanation": "Dr. Sachchidananda Sinha served as the Provisional President (also called Temporary President) of the Constituent Assembly when it first met on December 9, 1946. He was the oldest member of the Constituent Assembly and was asked to preside over the inaugural session. Dr. Rajendra Prasad was elected as the permanent President of the Constituent Assembly on December 11, 1946 - two days after the first meeting. Dr. B.R. Ambedkar was the Chairman of the Drafting Committee. Jawaharlal Nehru moved the Objectives Resolution and was the first Prime Minister. C. Rajagopalachari was a prominent leader but not the provisional president.",
     "sources": [
       { "name": "M. Laxmikanth", "chapter": "Making of the Indian Constitution – Constituent Assembly" },
       { "name": "Constituent Assembly Debates – Vol. 1, December 9, 1946", "chapter": "First Session" }
@@ -900,13 +900,13 @@ const polityPYQData = [
     "difficulty": "Easy",
     "questionText": "Which one of the following statements is correct as per the Constitution of India?",
     "options": [
-      { "id": "A", "text": "India has dual citizenship — citizens of India and citizens of States." },
-      { "id": "B", "text": "India has single citizenship — citizens of India only." },
+      { "id": "A", "text": "India has dual citizenship - citizens of India and citizens of States." },
+      { "id": "B", "text": "India has single citizenship - citizens of India only." },
       { "id": "C", "text": "Citizenship provisions are in Part III of the Constitution." },
       { "id": "D", "text": "Fundamental Rights are available only to Indian citizens and not to foreigners in any case." }
     ],
     "correctOption": "B",
-    "explanation": "India has a single citizenship system. Unlike the USA (where people are citizens of both the country and the state), Indian citizens are citizens of India only and not citizens of any particular state. This principle of single citizenship is contained in Part II (Articles 5-11) of the Constitution. This means all citizens, regardless of the state they reside in, enjoy the same rights throughout the country. Option A is incorrect — India has single, not dual citizenship. Option C is incorrect — citizenship provisions are in Part II (not Part III). Part III deals with Fundamental Rights. Option D is incorrect — some Fundamental Rights like Articles 14 (equality before law) and 21 (right to life) are available to all persons including foreigners; only certain rights like Articles 15, 16, 19 etc. are exclusive to citizens.",
+    "explanation": "India has a single citizenship system. Unlike the USA (where people are citizens of both the country and the state), Indian citizens are citizens of India only and not citizens of any particular state. This principle of single citizenship is contained in Part II (Articles 5-11) of the Constitution. This means all citizens, regardless of the state they reside in, enjoy the same rights throughout the country. Option A is incorrect - India has single, not dual citizenship. Option C is incorrect - citizenship provisions are in Part II (not Part III). Part III deals with Fundamental Rights. Option D is incorrect - some Fundamental Rights like Articles 14 (equality before law) and 21 (right to life) are available to all persons including foreigners; only certain rights like Articles 15, 16, 19 etc. are exclusive to citizens.",
     "sources": [
       { "name": "M. Laxmikanth", "chapter": "Citizenship – Single Citizenship" },
       { "name": "Constitution of India", "chapter": "Part II (Articles 5-11) – Citizenship" }
@@ -950,7 +950,7 @@ const polityPYQData = [
       { "id": "D", "text": "1, 2, 3 and 4" }
     ],
     "correctOption": "A",
-    "explanation": "Statement 1 is CORRECT: Article 109 of the Constitution provides the special procedure for Money Bills. It outlines how a Money Bill is treated differently from ordinary bills — it goes only to the Lok Sabha for introduction, is certified by the Speaker, and the Rajya Sabha has limited powers over it. Statement 2 is CORRECT: Article 109(1) explicitly states that a Money Bill 'shall not be introduced in the Council of States' (Rajya Sabha). Money Bills can only be introduced in the Lok Sabha. Statement 3 is CORRECT: The Rajya Sabha's only options with a Money Bill are to pass it, suggest amendments (which the Lok Sabha may or may not accept), or not act within 14 days (in which case it is deemed passed). The Rajya Sabha CANNOT reject a Money Bill. Statement 4 is INCORRECT: This is the critical distinction. When the Rajya Sabha suggests amendments to a Money Bill, the Lok Sabha may ACCEPT OR REJECT those suggestions at its discretion. The Lok Sabha is NOT bound to accept Rajya Sabha's amendments — it 'may' accept them, meaning it has discretionary power. If Lok Sabha rejects all suggested amendments, the bill is deemed passed in the form in which Lok Sabha originally passed it.",
+    "explanation": "Statement 1 is CORRECT: Article 109 of the Constitution provides the special procedure for Money Bills. It outlines how a Money Bill is treated differently from ordinary bills - it goes only to the Lok Sabha for introduction, is certified by the Speaker, and the Rajya Sabha has limited powers over it. Statement 2 is CORRECT: Article 109(1) explicitly states that a Money Bill 'shall not be introduced in the Council of States' (Rajya Sabha). Money Bills can only be introduced in the Lok Sabha. Statement 3 is CORRECT: The Rajya Sabha's only options with a Money Bill are to pass it, suggest amendments (which the Lok Sabha may or may not accept), or not act within 14 days (in which case it is deemed passed). The Rajya Sabha CANNOT reject a Money Bill. Statement 4 is INCORRECT: This is the critical distinction. When the Rajya Sabha suggests amendments to a Money Bill, the Lok Sabha may ACCEPT OR REJECT those suggestions at its discretion. The Lok Sabha is NOT bound to accept Rajya Sabha's amendments - it 'may' accept them, meaning it has discretionary power. If Lok Sabha rejects all suggested amendments, the bill is deemed passed in the form in which Lok Sabha originally passed it.",
     "sources": [
       { "name": "M. Laxmikanth", "chapter": "Parliament – Money Bills" },
       { "name": "Constitution of India", "chapter": "Article 109 and Article 110" }
@@ -994,7 +994,7 @@ const polityPYQData = [
       { "id": "D", "text": "1, 2 and 3" }
     ],
     "correctOption": "C",
-    "explanation": "The Constitution (106th Amendment) Act, 2023, known as the 'Nari Shakti Vandan Adhiniyam', reserves 33% seats for women in Lok Sabha, State Legislative Assemblies, and Delhi Assembly. Statement 1 is INCORRECT: The provisions will NOT come into effect from the 18th Lok Sabha. The Act requires a delimitation exercise based on the first Census after the Act's commencement. Since the next Census is expected after 2024, the reservation will likely take effect from the Lok Sabha election AFTER the delimitation — making it potentially effective from the 19th Lok Sabha at the earliest, not the 18th. Statement 2 is INCORRECT: The reservation is NOT limited to 15 years. The Act provides that the reservation shall be in force for 15 years after it first takes effect (not 15 years from becoming an Act). Also, it can be extended further by Parliament. Statement 3 is CORRECT: The Act explicitly provides that one-third of seats reserved for women shall be from seats already reserved for Scheduled Castes and Scheduled Tribes. Women from SC/ST communities get sub-reservation within the overall women's quota. This ensures intersectional representation.",
+    "explanation": "The Constitution (106th Amendment) Act, 2023, known as the 'Nari Shakti Vandan Adhiniyam', reserves 33% seats for women in Lok Sabha, State Legislative Assemblies, and Delhi Assembly. Statement 1 is INCORRECT: The provisions will NOT come into effect from the 18th Lok Sabha. The Act requires a delimitation exercise based on the first Census after the Act's commencement. Since the next Census is expected after 2024, the reservation will likely take effect from the Lok Sabha election AFTER the delimitation - making it potentially effective from the 19th Lok Sabha at the earliest, not the 18th. Statement 2 is INCORRECT: The reservation is NOT limited to 15 years. The Act provides that the reservation shall be in force for 15 years after it first takes effect (not 15 years from becoming an Act). Also, it can be extended further by Parliament. Statement 3 is CORRECT: The Act explicitly provides that one-third of seats reserved for women shall be from seats already reserved for Scheduled Castes and Scheduled Tribes. Women from SC/ST communities get sub-reservation within the overall women's quota. This ensures intersectional representation.",
     "sources": [
       { "name": "Constitution (106th Amendment) Act, 2023", "chapter": "Nari Shakti Vandan Adhiniyam – Articles 330A and 332A" },
       { "name": "M. Laxmikanth", "chapter": "Women's Reservation Bill / 106th Amendment" }

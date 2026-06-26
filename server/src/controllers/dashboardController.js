@@ -82,7 +82,7 @@ function buildResponse(res, user, userData, testAttemptCount = 0) {
     note_audits:      userData.note_audits     || [],
     // mentor_threads is already written by evaluateController:chat() on every
     // AI Mentor exchange.  DashboardOnboardingCards only needs .length > 0,
-    // so derive mentor_sessions from the threads count — no extra column needed.
+    // so derive mentor_sessions from the threads count - no extra column needed.
     mentor_sessions:  (userData.mentor_threads || []).length > 0 ? [{ _derived: true }] : [],
   });
 }
@@ -138,7 +138,7 @@ const updateModuleProgress = async (req, res, next) => {
 };
 
 // ─── POST /api/dashboard/syllabus/bulk ────────────────────────────────────────
-// Bulk-update multiple modules in one request — prevents race conditions when
+// Bulk-update multiple modules in one request - prevents race conditions when
 // question solving auto-syncs several topics at once.
 // Body: { updates: [{ stage, paper, module, progress, state }, ...] }
 const bulkUpdateSyllabus = async (req, res, next) => {

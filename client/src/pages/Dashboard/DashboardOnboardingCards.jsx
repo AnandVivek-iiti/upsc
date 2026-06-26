@@ -1,15 +1,15 @@
 /**
- * DashboardOnboardingCards v2 — Progressive preparation journey.
+ * DashboardOnboardingCards v2 - Progressive preparation journey.
  *
  * This replaces the flat 6-card list with a 5-stage milestones system that
  * mirrors the actual UPSC preparation sequence, not generic SaaS onboarding.
  *
  * Stages:
- *   1. Foundation  — Set exam year, study goal, complete syllabus setup
- *   2. Consistency — Log first session, maintain 3-day streak, log 5 hours
- *   3. Practice    — Attempt first PYQ, complete 20 PYQs, take first mock
- *   4. Improvement — Write first answer, audit first notes, use AI Mentor
- *   5. Revision    — Review weak topics, clear revision queue
+ *   1. Foundation  - Set exam year, study goal, complete syllabus setup
+ *   2. Consistency - Log first session, maintain 3-day streak, log 5 hours
+ *   3. Practice    - Attempt first PYQ, complete 20 PYQs, take first mock
+ *   4. Improvement - Write first answer, audit first notes, use AI Mentor
+ *   5. Revision    - Review weak topics, clear revision queue
  *
  * How it works:
  * - Every milestone derives its "done" state from the same props already
@@ -62,7 +62,7 @@ const STAGES = [
         id: "set-study-goal",
         icon: Target,
         title: "Set a daily study goal",
-        text: "Set how many hours you plan to study each day — this powers your timer target and weekly chart.",
+        text: "Set how many hours you plan to study each day - this powers your timer target and weekly chart.",
         view: "profile",
         isDone: ({ userData }) => (userData?.profile?.daily_target_hours || 0) > 0,
       },
@@ -172,7 +172,7 @@ const STAGES = [
         id: "ai-mentor",
         icon: Brain,
         title: "Ask the AI Mentor a question",
-        text: "Open the AI Mentor and ask it anything — a concept, current affairs angle, or strategy question.",
+        text: "Open the AI Mentor and ask it anything - a concept, current affairs angle, or strategy question.",
         view: "ai-mentor",
         isDone: ({ userData }) => (userData?.mentor_sessions?.length || 0) > 0,
       },
@@ -428,7 +428,7 @@ export default function DashboardOnboardingCards({
                       );
                     })}
 
-                  {/* Already-done milestones in this stage — show as quiet done badges */}
+                  {/* Already-done milestones in this stage - show as quiet done badges */}
                   {state.milestones
                     .filter((m) => m.done)
                     .map((m) => {
@@ -454,7 +454,7 @@ export default function DashboardOnboardingCards({
                 </div>
               )}
 
-              {/* Stage fully done — compact done state */}
+              {/* Stage fully done - compact done state */}
               {isOpen && state.allDone && (
                 <div
                   className="mt-2 rounded-xl p-3 flex items-center gap-2"

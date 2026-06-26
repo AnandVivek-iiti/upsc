@@ -110,7 +110,7 @@ export async function evaluateAnswer({ question, answer, paper }, onChunk, onDon
 }
 
 // ─── Bulk Syllabus Update ────────────────────────────────────────────────────
-// Single call to update multiple modules — avoids race conditions from parallel PATCHes
+// Single call to update multiple modules - avoids race conditions from parallel PATCHes
 export async function bulkUpdateSyllabus(updates) {
   return apiFetch("/dashboard/syllabus/bulk", {
     method: "POST",

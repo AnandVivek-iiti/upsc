@@ -25,12 +25,12 @@ export default defineConfig({
         "Motivation.png",
       ],
 
-      // ── Manifest — replaces manual manifest.webmanifest / manifest.json ──
+      // ── Manifest - replaces manual manifest.webmanifest / manifest.json ──
       manifest: {
-        name: "UPSC Mentor — AI-Powered Preparation",
+        name: "UPSC Mentor - AI-Powered Preparation",
         short_name: "UPSC Mentor",
         description:
-          "AI-powered UPSC CSE preparation — syllabus tracker, PYQs, Mains evaluator and Prelims grind.",
+          "AI-powered UPSC CSE preparation - syllabus tracker, PYQs, Mains evaluator and Prelims grind.",
         theme_color: "#F59E0B",
         background_color: "#09110F",
         id: "UPSC_MENTOR_APP",

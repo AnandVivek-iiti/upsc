@@ -6,7 +6,7 @@
 
 export const TEST_T42 = [{
   id: "sfg2026-t42",
-  title: "SFG 2026 — Level 1 · Test 42",
+  title: "SFG 2026 - Level 1 · Test 42",
   testCode: "321138",
   subject: "Ancient History",
   topic: "Mauryan Empire, Mahajanapadas, Buddhism & Jainism, Vedic Age, IVC, Stone Age",
@@ -40,7 +40,7 @@ export const TEST_T42 = [{
     {
       id: "t42_q02",
       qNo: 2,
-      text: "With reference to the Mahajanapadas in ancient India, consider the following pairs:\n\nMahajanapada — Capital\nI. Matsya — Viratnagara (Vairat)\nII. Shurasena — Mathura\nIII. Kosala — Indraprastha\nIV. Anga — Champa",
+      text: "With reference to the Mahajanapadas in ancient India, consider the following pairs:\n\nMahajanapada - Capital\nI. Matsya - Viratnagara (Vairat)\nII. Shurasena - Mathura\nIII. Kosala - Indraprastha\nIV. Anga - Champa",
       suffix: "How many of the pairs given above are correctly matched?",
       options: [
         { id: "A", text: "Only one" },
@@ -94,7 +94,7 @@ export const TEST_T42 = [{
     {
       id: "t42_q05",
       qNo: 5,
-      text: "With reference to ancient India (600–322 BC), consider the following pairs:\n\nTerritorial region — River flowing in the region\nI. Asmaka — Godavari\nII. Kamboja — Vipas\nIII. Avanti — Mahanadi\nIV. Kosala — Sarayu",
+      text: "With reference to ancient India (600–322 BC), consider the following pairs:\n\nTerritorial region - River flowing in the region\nI. Asmaka - Godavari\nII. Kamboja - Vipas\nIII. Avanti - Mahanadi\nIV. Kosala - Sarayu",
       suffix: "How many of the pairs given above are correctly matched?",
       options: [
         { id: "A", text: "Only one" },
@@ -140,7 +140,7 @@ export const TEST_T42 = [{
       ],
       correct: "D",
       explanation:
-        "In Jain philosophy, Anekantavada means 'not just one' aspect or perspective — the truth has many aspects and cannot be fully described by any single statement. Different viewpoints can all be partially true depending on the context. This teaching encourages intellectual openness, tolerance, and humility. Option A describes Sallekhana (voluntary fasting unto death). Option B describes Aparigraha (non-possession). Option C describes Jiva (soul in everything).",
+        "In Jain philosophy, Anekantavada means 'not just one' aspect or perspective - the truth has many aspects and cannot be fully described by any single statement. Different viewpoints can all be partially true depending on the context. This teaching encourages intellectual openness, tolerance, and humility. Option A describes Sallekhana (voluntary fasting unto death). Option B describes Aparigraha (non-possession). Option C describes Jiva (soul in everything).",
       topic: "Buddhism and Jainism",
       difficulty: "Easy",
       pyqYear: null,
@@ -194,7 +194,7 @@ export const TEST_T42 = [{
       ],
       correct: "C",
       explanation:
-        "Pragjyotiṣhapura was in the Brahmaputra valley (present-day Assam/Guwahati) — easternmost. Champa was the capital of Anga, near present-day Bhagalpur in Bihar — second from east. Rajagriha was the early capital of Magadha in southern Bihar — west of Champa. Shibipura is associated with the Shibi tribe in the north-western region (Punjab/Indus plains) — westernmost. Correct east to west: I (Pragjyotiṣhapura) → IV (Champa) → III (Rajagriha) → II (Shibipura).",
+        "Pragjyotiṣhapura was in the Brahmaputra valley (present-day Assam/Guwahati) - easternmost. Champa was the capital of Anga, near present-day Bhagalpur in Bihar - second from east. Rajagriha was the early capital of Magadha in southern Bihar - west of Champa. Shibipura is associated with the Shibi tribe in the north-western region (Punjab/Indus plains) - westernmost. Correct east to west: I (Pragjyotiṣhapura) → IV (Champa) → III (Rajagriha) → II (Shibipura).",
       topic: "Mahajanapadas",
       difficulty: "Hard",
       pyqYear: null,
@@ -356,7 +356,7 @@ export const TEST_T42 = [{
       ],
       correct: "D",
       explanation:
-        "Statement I is correct: The Sohgaura inscription (discovered in Gorakhpur, UP) is written in Prakrit using the Brahmi script. Statement II is incorrect: It dates to the 4th–3rd century BCE and is believed to have been issued during the reign of Chandragupta Maurya, not Ashoka. Statement III is incorrect: The inscription mentions the establishment of a granary to store grain as a precaution against famines, reflecting proactive state intervention to ensure food security — not poor management. Statements II and III are incorrect.",
+        "Statement I is correct: The Sohgaura inscription (discovered in Gorakhpur, UP) is written in Prakrit using the Brahmi script. Statement II is incorrect: It dates to the 4th–3rd century BCE and is believed to have been issued during the reign of Chandragupta Maurya, not Ashoka. Statement III is incorrect: The inscription mentions the establishment of a granary to store grain as a precaution against famines, reflecting proactive state intervention to ensure food security - not poor management. Statements II and III are incorrect.",
       topic: "Mauryan Empire",
       difficulty: "Medium",
       pyqYear: null,
@@ -410,7 +410,7 @@ export const TEST_T42 = [{
       ],
       correct: "C",
       explanation:
-        "All three cities were located on the Dakshinapatha. The Dakshinapatha — the great southern trade route — started from Kaushambi near Allahabad, running through Ujjaiyini (modern Ujjain), extending further up to Bhrigukaccha or Broach, an important port on the western coast. The Dakshinapatha was further connected with Pratishthana (modern Paithan), the capital of the Satavahanas.",
+        "All three cities were located on the Dakshinapatha. The Dakshinapatha - the great southern trade route - started from Kaushambi near Allahabad, running through Ujjaiyini (modern Ujjain), extending further up to Bhrigukaccha or Broach, an important port on the western coast. The Dakshinapatha was further connected with Pratishthana (modern Paithan), the capital of the Satavahanas.",
       topic: "Mahajanapadas",
       difficulty: "Medium",
       pyqYear: null,
@@ -428,7 +428,7 @@ export const TEST_T42 = [{
       ],
       correct: "B",
       explanation:
-        "Statement I is correct: The Shunga period witnessed a revival of Vedic traditions; rulers like Pushyamitra Shunga performed Ashvamedha yajna. Statement II is correct: The Yoga Sutras were compiled by Patanjali around the 2nd century BCE during the Shunga period. Statement III is incorrect: The Bharhut Stupa was probably built during the time of Ashoka, but the Shungas added beautifully carved railings and reliefs. The construction was not 'initiated' during the Shunga period — only the railings were added.",
+        "Statement I is correct: The Shunga period witnessed a revival of Vedic traditions; rulers like Pushyamitra Shunga performed Ashvamedha yajna. Statement II is correct: The Yoga Sutras were compiled by Patanjali around the 2nd century BCE during the Shunga period. Statement III is incorrect: The Bharhut Stupa was probably built during the time of Ashoka, but the Shungas added beautifully carved railings and reliefs. The construction was not 'initiated' during the Shunga period - only the railings were added.",
       topic: "Mauryan Empire",
       difficulty: "Medium",
       pyqYear: null,
@@ -446,7 +446,7 @@ export const TEST_T42 = [{
       ],
       correct: "B",
       explanation:
-        "A Yaksha sculpture was found from Pitalkhora caves, Maharashtra, carved out during the reign of the Satavahanas. This sculpture carries an inscription on its hand stating 'kanhadāsena hiramakarena kāṭa' — meaning 'made by Kanahadasa, a goldsmith'. It is interesting that a goldsmith could also craft a stone sculpture, revealing information about professions of the time.",
+        "A Yaksha sculpture was found from Pitalkhora caves, Maharashtra, carved out during the reign of the Satavahanas. This sculpture carries an inscription on its hand stating 'kanhadāsena hiramakarena kāṭa' - meaning 'made by Kanahadasa, a goldsmith'. It is interesting that a goldsmith could also craft a stone sculpture, revealing information about professions of the time.",
       topic: "Post-Mauryan Era",
       difficulty: "Hard",
       pyqYear: null,
@@ -454,7 +454,7 @@ export const TEST_T42 = [{
     {
       id: "t42_q25",
       qNo: 25,
-      text: "Consider the following statements about the practice of Vedic sacrifices:\n\n1. The shrauta (Vedic sacrifices) involved the use of three fires — the garhapatya (householder's fire), ahavaniya (offeratorial fire) and dakshinagni (southern fire).\n2. These fires were supposed to be placed in pits of different shapes, i.e., the garhapatya to be square, ahavaniya to be round and that of the dakshinagni, rectangle-shaped.",
+      text: "Consider the following statements about the practice of Vedic sacrifices:\n\n1. The shrauta (Vedic sacrifices) involved the use of three fires - the garhapatya (householder's fire), ahavaniya (offeratorial fire) and dakshinagni (southern fire).\n2. These fires were supposed to be placed in pits of different shapes, i.e., the garhapatya to be square, ahavaniya to be round and that of the dakshinagni, rectangle-shaped.",
       suffix: "Which of the statements given above is/are correct?",
       options: [
         { id: "A", text: "1 only" },
@@ -464,7 +464,7 @@ export const TEST_T42 = [{
       ],
       correct: "A",
       explanation:
-        "Statement 1 is correct: The shrauta (Vedic sacrifices) involved the three fires — Garhapatya (householder's fire), Ahavaniya (offeratorial fire), and Dakshinagni (southern fire) — known collectively as Tretagni. Statement 2 is incorrect: The traditional shapes are: the Garhapatya fire is set in a circular pit; the Ahavaniya fire (for offerings) is in a square pit representing stability; and the Dakshinagni is placed in a semi-circular pit — not rectangle-shaped as stated.",
+        "Statement 1 is correct: The shrauta (Vedic sacrifices) involved the three fires - Garhapatya (householder's fire), Ahavaniya (offeratorial fire), and Dakshinagni (southern fire) - known collectively as Tretagni. Statement 2 is incorrect: The traditional shapes are: the Garhapatya fire is set in a circular pit; the Ahavaniya fire (for offerings) is in a square pit representing stability; and the Dakshinagni is placed in a semi-circular pit - not rectangle-shaped as stated.",
       topic: "Vedic Age",
       difficulty: "Medium",
       pyqYear: 2023,
@@ -500,7 +500,7 @@ export const TEST_T42 = [{
       ],
       correct: "B",
       explanation:
-        "According to the Vedas, Ṛta (Rita) is the principle of natural order; it controls the functioning of the universe and everything it includes. Ṛta systematically connects order, rule and truth, and follows the proper operation of the moral and natural systems. The action of human beings concerning these principles is called Karma. It is an important idea of the Ṛgveda — 'Ṛtam Satyam Param Brahma' — Ṛta reveals transcendental Brahman.",
+        "According to the Vedas, Ṛta (Rita) is the principle of natural order; it controls the functioning of the universe and everything it includes. Ṛta systematically connects order, rule and truth, and follows the proper operation of the moral and natural systems. The action of human beings concerning these principles is called Karma. It is an important idea of the Ṛgveda - 'Ṛtam Satyam Param Brahma' - Ṛta reveals transcendental Brahman.",
       topic: "Vedic Age",
       difficulty: "Medium",
       pyqYear: null,
@@ -590,7 +590,7 @@ export const TEST_T42 = [{
       ],
       correct: "C",
       explanation:
-        "The Shunga dynasty was founded in 185 BCE by Pushyamitra Shunga after the fall of the Mauryan Empire — making it the earliest among the options. The Shakas (Indo-Scythians) migrated into India around the 1st century BCE. The Kanva dynasty succeeded the Shungas around 73 BCE. The Kushanas consolidated power in the 1st century CE.",
+        "The Shunga dynasty was founded in 185 BCE by Pushyamitra Shunga after the fall of the Mauryan Empire - making it the earliest among the options. The Shakas (Indo-Scythians) migrated into India around the 1st century BCE. The Kanva dynasty succeeded the Shungas around 73 BCE. The Kushanas consolidated power in the 1st century CE.",
       topic: "Post-Mauryan Era",
       difficulty: "Easy",
       pyqYear: null,
@@ -598,7 +598,7 @@ export const TEST_T42 = [{
     {
       id: "t42_q33",
       qNo: 33,
-      text: "With reference to the Indus Valley Civilization, consider the following pairs:\n\nIndus Valley Civilization Site — Located in\nI. Nageshwar — Gujarat\nII. Manda — Jammu and Kashmir\nIII. Mitathal — Maharashtra\nIV. Daimabad — Haryana\n\nHow many of the above given pairs are correctly matched?",
+      text: "With reference to the Indus Valley Civilization, consider the following pairs:\n\nIndus Valley Civilization Site - Located in\nI. Nageshwar - Gujarat\nII. Manda - Jammu and Kashmir\nIII. Mitathal - Maharashtra\nIV. Daimabad - Haryana\n\nHow many of the above given pairs are correctly matched?",
       suffix: "",
       options: [
         { id: "A", text: "Only one" },
@@ -626,7 +626,7 @@ export const TEST_T42 = [{
       ],
       correct: "A",
       explanation:
-        "The Harappans cultivated a variety of crops including Wheat, Barley, Peas, Rai, Sesame, Mustard, Cotton, Rice, lentil, chickpea, and Millets. Wheat (I) and Barley (II) were the two most important crops. Sesame (III) was also cultivated. Maize (IV) was NOT cultivated by the Harappans — no evidence exists for this. Maize (corn) was introduced in India much later by European powers.",
+        "The Harappans cultivated a variety of crops including Wheat, Barley, Peas, Rai, Sesame, Mustard, Cotton, Rice, lentil, chickpea, and Millets. Wheat (I) and Barley (II) were the two most important crops. Sesame (III) was also cultivated. Maize (IV) was NOT cultivated by the Harappans - no evidence exists for this. Maize (corn) was introduced in India much later by European powers.",
       topic: "Indus Valley Civilization",
       difficulty: "Easy",
       pyqYear: null,
@@ -644,7 +644,7 @@ export const TEST_T42 = [{
       ],
       correct: "A",
       explanation:
-        "Statement 1 is correct: Different periods of the Stone Age in India are identified based on the type and technology of stone tools (Paleolithic uses hand axes, Mesolithic uses microliths, Neolithic uses polished stone tools). Statement 2 is incorrect: There are regional variations in stone tool types (tools from Indus Valley differ from Deccan plateau). Statement 3 is incorrect: Stone Age cultures did not evolve uniformly — different cultural traditions developed in different parts of the subcontinent and interacted in complex ways.",
+        "Statement 1 is correct: Different periods of the Stone Age in India are identified based on the type and technology of stone tools (Paleolithic uses hand axes, Mesolithic uses microliths, Neolithic uses polished stone tools). Statement 2 is incorrect: There are regional variations in stone tool types (tools from Indus Valley differ from Deccan plateau). Statement 3 is incorrect: Stone Age cultures did not evolve uniformly - different cultural traditions developed in different parts of the subcontinent and interacted in complex ways.",
       topic: "Stone Age",
       difficulty: "Easy",
       pyqYear: 2020,
@@ -662,7 +662,7 @@ export const TEST_T42 = [{
       ],
       correct: "C",
       explanation:
-        "Both are correct. Statement I: Most Harappan cities had a rectangular grid pattern with roads cutting each other at right angles in a criss-cross pattern, dividing the city into several residential blocks. Statement II: The Indus Valley people used standardised burnt bricks as building material. These bricks were of a standardised ratio where the length and breadth were four times and twice the height respectively — and such standardised bricks were used at all Harappan settlements.",
+        "Both are correct. Statement I: Most Harappan cities had a rectangular grid pattern with roads cutting each other at right angles in a criss-cross pattern, dividing the city into several residential blocks. Statement II: The Indus Valley people used standardised burnt bricks as building material. These bricks were of a standardised ratio where the length and breadth were four times and twice the height respectively - and such standardised bricks were used at all Harappan settlements.",
       topic: "Indus Valley Civilization",
       difficulty: "Easy",
       pyqYear: null,
@@ -698,7 +698,7 @@ export const TEST_T42 = [{
       ],
       correct: "D",
       explanation:
-        "Statement I is incorrect: The Harappan script was mostly written from right to left. In a few seals, the boustrophedon method (writing in reverse direction in alternative lines) was adopted. Statement II is incorrect: Most Harappan inscriptions are short, the longest containing about 26 signs; average length is about five signs. Statement III is incorrect: The script was evidently not alphabetical — it was pictographic containing a number of images of animals and signs, with 375–400 signs in total.",
+        "Statement I is incorrect: The Harappan script was mostly written from right to left. In a few seals, the boustrophedon method (writing in reverse direction in alternative lines) was adopted. Statement II is incorrect: Most Harappan inscriptions are short, the longest containing about 26 signs; average length is about five signs. Statement III is incorrect: The script was evidently not alphabetical - it was pictographic containing a number of images of animals and signs, with 375–400 signs in total.",
       topic: "Indus Valley Civilization",
       difficulty: "Medium",
       pyqYear: null,
@@ -734,7 +734,7 @@ export const TEST_T42 = [{
       ],
       correct: "A",
       explanation:
-        "Statement I is correct: Punch-marked coins of silver and copper (c. 6th century BCE onwards) were among the earliest minted and used. Statement II is correct: The Indo-Greeks were the first to issue gold coins in India. Statement III is incorrect: Indo-Greeks (not Kushanas) introduced the fashion of showing the bust/head of the ruler on coins. Statement IV is incorrect: Many rulers issued bilingual coins — Indo-Greek coins were bilingual in Greek on one side and Pali on the other; Satavahanas also issued bilingual coins.",
+        "Statement I is correct: Punch-marked coins of silver and copper (c. 6th century BCE onwards) were among the earliest minted and used. Statement II is correct: The Indo-Greeks were the first to issue gold coins in India. Statement III is incorrect: Indo-Greeks (not Kushanas) introduced the fashion of showing the bust/head of the ruler on coins. Statement IV is incorrect: Many rulers issued bilingual coins - Indo-Greek coins were bilingual in Greek on one side and Pali on the other; Satavahanas also issued bilingual coins.",
       topic: "Post-Mauryan Era",
       difficulty: "Medium",
       pyqYear: null,
@@ -752,7 +752,7 @@ export const TEST_T42 = [{
       ],
       correct: "A",
       explanation:
-        "Statement I is correct: The early Aryans were primarily pastoral and nomadic, with social/political organization revolving around kinship ties, tribal groups, and a decentralized system — no state in the modern sense. Statement II is correct: In early Aryan society, kingship was synonymous with tribal chieftainship. The 'Rajan' was the tribal chief who held authority over his people, stemming from being a military leader rather than governing over a specific territory. Statement II correctly explains Statement I — because kingship was tribal/personal (not territorial), no true 'state' emerged.",
+        "Statement I is correct: The early Aryans were primarily pastoral and nomadic, with social/political organization revolving around kinship ties, tribal groups, and a decentralized system - no state in the modern sense. Statement II is correct: In early Aryan society, kingship was synonymous with tribal chieftainship. The 'Rajan' was the tribal chief who held authority over his people, stemming from being a military leader rather than governing over a specific territory. Statement II correctly explains Statement I - because kingship was tribal/personal (not territorial), no true 'state' emerged.",
       topic: "Vedic Age",
       difficulty: "Medium",
       pyqYear: 2017,
@@ -788,7 +788,7 @@ export const TEST_T42 = [{
       ],
       correct: "B",
       explanation:
-        "Option I is correct: Vajji (Vṛijji) was a confederation of clans where power rested with the assembly, not a hereditary king — a republican (gana-sangha) state. Option II is correct: Malla followed a system of Sabha and Samiti where the sabha played a decisive role in governance — also a republican state. Option III is incorrect: Anga was a monarchical Mahajanapada with a hereditary king and fixed capital. Option IV is incorrect: Vatsa was ruled by kings following a monarchical system. Two (Vajji and Malla) were republican states.",
+        "Option I is correct: Vajji (Vṛijji) was a confederation of clans where power rested with the assembly, not a hereditary king - a republican (gana-sangha) state. Option II is correct: Malla followed a system of Sabha and Samiti where the sabha played a decisive role in governance - also a republican state. Option III is incorrect: Anga was a monarchical Mahajanapada with a hereditary king and fixed capital. Option IV is incorrect: Vatsa was ruled by kings following a monarchical system. Two (Vajji and Malla) were republican states.",
       topic: "Mahajanapadas",
       difficulty: "Medium",
       pyqYear: null,
@@ -886,7 +886,7 @@ export const TEST_T42 = [{
     {
       id: "t42_q49",
       qNo: 49,
-      text: "Consider the following information in context of Buddhist Councils:\n\nBuddhist Council — Held at — Important outcome\nI. Second Buddhist Council — Patliputra — Teachings compiled into three Pitakas\nII. Third Buddhist Council — Rajagriha (Rajgir) — Addition of 'Kathavatthu' to Abhidhamma Pitaka\nIII. Fourth Buddhist Council — Kashmir — Division of Buddhism into Mahayana and Hinayana sects\n\nIn how many of the above rows is the given information correctly matched?",
+      text: "Consider the following information in context of Buddhist Councils:\n\nBuddhist Council - Held at - Important outcome\nI. Second Buddhist Council - Patliputra - Teachings compiled into three Pitakas\nII. Third Buddhist Council - Rajagriha (Rajgir) - Addition of 'Kathavatthu' to Abhidhamma Pitaka\nIII. Fourth Buddhist Council - Kashmir - Division of Buddhism into Mahayana and Hinayana sects\n\nIn how many of the above rows is the given information correctly matched?",
       suffix: "",
       options: [
         { id: "A", text: "Only one" },
@@ -896,7 +896,7 @@ export const TEST_T42 = [{
       ],
       correct: "A",
       explanation:
-        "Row I is incorrect: The teachings were compiled at the First Buddhist Council (483 BCE, Rajgriha under Ajatasatru), not the Second. The Second Council was held at Vaishali (not Patliputra) around 383 BCE during Kalashoka's reign, resulting in the first major schism. Row II is incorrect: The Third Buddhist Council was held at Pataliputra (not Rajgriha) around 250 BCE under Ashoka's patronage, presided by Moggaliputta Tissa. 'Kathavatthu' was added to the Abhidhamma Pitaka during this council — the location is wrong. Row III is correct: The Fourth Buddhist Council was convened in the 1st century CE in Kundalvan, Kashmir during Kanishka's reign, resulting in the formal division of Buddhism into Mahayana and Hinayana sects. Only Row III is correct.",
+        "Row I is incorrect: The teachings were compiled at the First Buddhist Council (483 BCE, Rajgriha under Ajatasatru), not the Second. The Second Council was held at Vaishali (not Patliputra) around 383 BCE during Kalashoka's reign, resulting in the first major schism. Row II is incorrect: The Third Buddhist Council was held at Pataliputra (not Rajgriha) around 250 BCE under Ashoka's patronage, presided by Moggaliputta Tissa. 'Kathavatthu' was added to the Abhidhamma Pitaka during this council - the location is wrong. Row III is correct: The Fourth Buddhist Council was convened in the 1st century CE in Kundalvan, Kashmir during Kanishka's reign, resulting in the formal division of Buddhism into Mahayana and Hinayana sects. Only Row III is correct.",
       topic: "Buddhism and Jainism",
       difficulty: "Hard",
       pyqYear: null,
@@ -914,7 +914,7 @@ export const TEST_T42 = [{
       ],
       correct: "C",
       explanation:
-        "Statement I is incorrect: Arhats are individuals who have attained nirvana through their own effort (central to Theravada). Unlike Bodhisattvas, Arhats achieve personal liberation and do not delay nirvana for others. Statement II is incorrect: Bodhisattvas are beings on the path to Buddhahood who choose to refrain from taking the final step into nirvana in order to help others achieve it — they are central to Mahayana Buddhism. Famous Bodhisattvas include Avalokiteshvara and Manjushri. Statement III is correct: Sotapanna (Stream-enterer) is the first stage of enlightenment in Theravada Buddhism; a Sotapanna is destined to achieve nirvana within a maximum of seven rebirths.",
+        "Statement I is incorrect: Arhats are individuals who have attained nirvana through their own effort (central to Theravada). Unlike Bodhisattvas, Arhats achieve personal liberation and do not delay nirvana for others. Statement II is incorrect: Bodhisattvas are beings on the path to Buddhahood who choose to refrain from taking the final step into nirvana in order to help others achieve it - they are central to Mahayana Buddhism. Famous Bodhisattvas include Avalokiteshvara and Manjushri. Statement III is correct: Sotapanna (Stream-enterer) is the first stage of enlightenment in Theravada Buddhism; a Sotapanna is destined to achieve nirvana within a maximum of seven rebirths.",
       topic: "Buddhism and Jainism",
       difficulty: "Medium",
       pyqYear: null,

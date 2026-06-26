@@ -6,7 +6,7 @@
 export const TEST_T1 = [
   {
     id: "sfg2026-t01",
-    title: "SFG 2026 — Level 1 · Test 1",
+    title: "SFG 2026 - Level 1 · Test 1",
     testCode: "321101",
     subject: "Polity",
     topic: "Constitution, Citizenship & Democracy",
@@ -87,7 +87,7 @@ export const TEST_T1 = [
         ],
         correct: "C",
         explanation:
-          "Statement I is partially incorrect — members from British Indian provinces were elected by Provincial Legislative Assemblies, but representatives from Princely States were nominated, not elected. Statement II is correct — roughly one seat per 10 lakh population. Statement III is correct — the Cabinet Mission Plan 1946 outlined the composition of the Constituent Assembly. Answer: C.",
+          "Statement I is partially incorrect - members from British Indian provinces were elected by Provincial Legislative Assemblies, but representatives from Princely States were nominated, not elected. Statement II is correct - roughly one seat per 10 lakh population. Statement III is correct - the Cabinet Mission Plan 1946 outlined the composition of the Constituent Assembly. Answer: C.",
         topic: "Constituent Assembly",
         difficulty: "Medium",
         pyqYear: null,
@@ -105,7 +105,7 @@ export const TEST_T1 = [
         ],
         correct: "A",
         explanation:
-          "Statement 1 is correct — Parliament can add laws to the Ninth Schedule through constitutional amendment. Statement 2 is incorrect — In I.R. Coelho case (2007), the Supreme Court held that laws in the Ninth Schedule can be examined by courts if they violate the basic structure of the Constitution, particularly fundamental rights under Articles 14, 15, 19, 21. Answer: A.",
+          "Statement 1 is correct - Parliament can add laws to the Ninth Schedule through constitutional amendment. Statement 2 is incorrect - In I.R. Coelho case (2007), the Supreme Court held that laws in the Ninth Schedule can be examined by courts if they violate the basic structure of the Constitution, particularly fundamental rights under Articles 14, 15, 19, 21. Answer: A.",
         topic: "Constitutional Schedules",
         difficulty: "Medium",
         pyqYear: 2010,
@@ -123,7 +123,7 @@ export const TEST_T1 = [
         ],
         correct: "B",
         explanation:
-          "Statement I is incorrect — the Objectives Resolution was moved by Jawaharlal Nehru, not Dr. Ambedkar (December 13, 1946). Statement II is correct. Statement III is correct — it declared sovereignty derived from the people. Statement IV is incorrect — it was adopted on January 22, 1947, not November 26, 1949. Answer: B.",
+          "Statement I is incorrect - the Objectives Resolution was moved by Jawaharlal Nehru, not Dr. Ambedkar (December 13, 1946). Statement II is correct. Statement III is correct - it declared sovereignty derived from the people. Statement IV is incorrect - it was adopted on January 22, 1947, not November 26, 1949. Answer: B.",
         topic: "Constituent Assembly",
         difficulty: "Medium",
         pyqYear: null,
@@ -131,7 +131,7 @@ export const TEST_T1 = [
       {
         id: "t01_q07",
         qNo: 7,
-        text: "While framing the Constitution, the makers of the Indian Constitution drew inspiration from various sources. Consider the following pairs:\n\nProvisions in the Indian Constitution — Inspired from the Constitution of\nI. Prerogative Writs — United Kingdom\nII. Concurrent List of the Seventh Schedule — Canada\nIII. The process of impeachment of the President — Australia\nIV. Vesting of residuary powers with the Union Government — United States of America",
+        text: "While framing the Constitution, the makers of the Indian Constitution drew inspiration from various sources. Consider the following pairs:\n\nProvisions in the Indian Constitution - Inspired from the Constitution of\nI. Prerogative Writs - United Kingdom\nII. Concurrent List of the Seventh Schedule - Canada\nIII. The process of impeachment of the President - Australia\nIV. Vesting of residuary powers with the Union Government - United States of America",
         suffix: "How many of the pairs given above are correctly matched?",
         options: [
           { id: "A", text: "Only one" },
@@ -141,7 +141,7 @@ export const TEST_T1 = [
         ],
         correct: "B",
         explanation:
-          "Pair I is correct — Writs (Prerogative Writs) are borrowed from the UK. Pair II is correct — Concurrent List is from Australia (not Canada; Canada's constitution inspired the strong Centre). Pair III is incorrect — Impeachment process is from USA, not Australia. Pair IV is incorrect — Residuary powers with Centre are from Canada, not USA (in USA, residuary powers are with states). Only pairs I and II are correct → Answer: B (Only two).",
+          "Pair I is correct - Writs (Prerogative Writs) are borrowed from the UK. Pair II is correct - Concurrent List is from Australia (not Canada; Canada's constitution inspired the strong Centre). Pair III is incorrect - Impeachment process is from USA, not Australia. Pair IV is incorrect - Residuary powers with Centre are from Canada, not USA (in USA, residuary powers are with states). Only pairs I and II are correct → Answer: B (Only two).",
         topic: "Sources of Constitution",
         difficulty: "Hard",
         pyqYear: null,
@@ -172,7 +172,7 @@ export const TEST_T1 = [
         ],
         correct: "A",
         explanation:
-          "All three statements are correct. The Constitution (1950) pre-dates the first elected Parliament (1952). The Constitution defines Parliament's composition and powers — this is precisely what makes India follow constitutional supremacy: the Constitution came first and defines/limits Parliament. Both II and III explain I. Answer: A.",
+          "All three statements are correct. The Constitution (1950) pre-dates the first elected Parliament (1952). The Constitution defines Parliament's composition and powers - this is precisely what makes India follow constitutional supremacy: the Constitution came first and defines/limits Parliament. Both II and III explain I. Answer: A.",
         topic: "Constitutional Supremacy",
         difficulty: "Medium",
         pyqYear: null,
@@ -221,7 +221,7 @@ export const TEST_T1 = [
         ],
         correct: "A",
         explanation:
-          "Statement I is correct — Indian Constitution balances individual rights (Part III) with social justice (DPSPs, Part IV), unlike classical Western liberalism's emphasis on individual rights. Statement II is incorrect — Western secularism advocates strict separation of Church and State (wall of separation), whereas Indian secularism is 'principled distance' — the state can intervene in religious affairs for social reform. Answer: A.",
+          "Statement I is correct - Indian Constitution balances individual rights (Part III) with social justice (DPSPs, Part IV), unlike classical Western liberalism's emphasis on individual rights. Statement II is incorrect - Western secularism advocates strict separation of Church and State (wall of separation), whereas Indian secularism is 'principled distance' - the state can intervene in religious affairs for social reform. Answer: A.",
         topic: "Secularism & Political Philosophy",
         difficulty: "Hard",
         pyqYear: null,
@@ -251,7 +251,7 @@ export const TEST_T1 = [
         ],
         correct: "B",
         explanation:
-          "The Indian Independence Act 1947 did NOT lay down a Constitution for India — it simply transferred power and allowed each Dominion's Constituent Assembly to frame its own Constitution freely. The Act left the drafting entirely to the Constituent Assemblies; it did not impose any constitutional framework. Answer: B.",
+          "The Indian Independence Act 1947 did NOT lay down a Constitution for India - it simply transferred power and allowed each Dominion's Constituent Assembly to frame its own Constitution freely. The Act left the drafting entirely to the Constituent Assemblies; it did not impose any constitutional framework. Answer: B.",
         topic: "Indian Independence Act 1947",
         difficulty: "Medium",
         pyqYear: null,
@@ -270,7 +270,7 @@ export const TEST_T1 = [
         ],
         correct: "B",
         explanation:
-          "The four essential elements of a State (as per political science — Aristotle, Laski etc.) are: Population, Territory, Government, and Sovereignty. International Recognition and Written Constitution are NOT essential — for example, Israel had no formal recognition initially, and the UK has no written constitution yet is a state. Answer: B (Only four).",
+          "The four essential elements of a State (as per political science - Aristotle, Laski etc.) are: Population, Territory, Government, and Sovereignty. International Recognition and Written Constitution are NOT essential - for example, Israel had no formal recognition initially, and the UK has no written constitution yet is a state. Answer: B (Only four).",
         topic: "State in Political Theory",
         difficulty: "Easy",
         pyqYear: null,
@@ -319,7 +319,7 @@ export const TEST_T1 = [
         ],
         correct: "D",
         explanation:
-          "Statement I is incorrect — the UK is the best example of a democracy thriving without a written constitution. Democracy can survive under unwritten constitutional conventions. Statement II is correct — a written Constitution does limit government powers by codifying rights, separating powers, and providing for judicial review. Answer: D.",
+          "Statement I is incorrect - the UK is the best example of a democracy thriving without a written constitution. Democracy can survive under unwritten constitutional conventions. Statement II is correct - a written Constitution does limit government powers by codifying rights, separating powers, and providing for judicial review. Answer: D.",
         topic: "Constitutional Theory",
         difficulty: "Medium",
         pyqYear: null,
@@ -337,7 +337,7 @@ export const TEST_T1 = [
         ],
         correct: "B",
         explanation:
-          "The Seventh Schedule (Articles 246, 248) contains three lists — Union List, State List, and Concurrent List. Taxation entries are distributed across these lists (e.g., Entry 82-92 of Union List deal with taxes). The right to impose taxes is in the Seventh Schedule. Answer: B.",
+          "The Seventh Schedule (Articles 246, 248) contains three lists - Union List, State List, and Concurrent List. Taxation entries are distributed across these lists (e.g., Entry 82-92 of Union List deal with taxes). The right to impose taxes is in the Seventh Schedule. Answer: B.",
         topic: "Constitutional Schedules",
         difficulty: "Easy",
         pyqYear: null,
@@ -367,7 +367,7 @@ export const TEST_T1 = [
         ],
         correct: "D",
         explanation:
-          "The primary reason cited by the framers of the Constitution for preferring the Parliamentary system over the Presidential system was accountability — the executive (Council of Ministers) is collectively responsible to the legislature (Lok Sabha). This ensures responsible government. Answer: D.",
+          "The primary reason cited by the framers of the Constitution for preferring the Parliamentary system over the Presidential system was accountability - the executive (Council of Ministers) is collectively responsible to the legislature (Lok Sabha). This ensures responsible government. Answer: D.",
         topic: "Parliamentary System",
         difficulty: "Easy",
         pyqYear: null,
@@ -405,7 +405,7 @@ export const TEST_T1 = [
         ],
         correct: "A",
         explanation:
-          "Universal Adult Franchise (including women): UK (Britain) — 1928 (equal voting age for women); USA — 1965 (Voting Rights Act; earlier 1920 for women but racial restrictions until 1965); France — 1944 (women's vote); India — 1950 (Constitution). However, as basic adult franchise: UK 1928 → USA 1920/1965 → France 1944 → India 1950. Order: III (UK, 1928) → IV (USA) → II (France, 1944) → I (India, 1950). Answer: A.",
+          "Universal Adult Franchise (including women): UK (Britain) - 1928 (equal voting age for women); USA - 1965 (Voting Rights Act; earlier 1920 for women but racial restrictions until 1965); France - 1944 (women's vote); India - 1950 (Constitution). However, as basic adult franchise: UK 1928 → USA 1920/1965 → France 1944 → India 1950. Order: III (UK, 1928) → IV (USA) → II (France, 1944) → I (India, 1950). Answer: A.",
         topic: "Democracy & Franchise",
         difficulty: "Hard",
         pyqYear: null,
@@ -424,7 +424,7 @@ export const TEST_T1 = [
         ],
         correct: "A",
         explanation:
-          "Federal features include: written constitution, division of powers, supremacy of constitution, independent judiciary, bicameralism. UNITARY features (anti-federal) include: Single citizenship (I — unitary), Appointment of Governors by Centre (III — unitary), Emergency Provisions centralizing power (IV — unitary). Independent Judiciary (II) is a FEDERAL feature. Only one (II) is a federal feature. Answer: A.",
+          "Federal features include: written constitution, division of powers, supremacy of constitution, independent judiciary, bicameralism. UNITARY features (anti-federal) include: Single citizenship (I - unitary), Appointment of Governors by Centre (III - unitary), Emergency Provisions centralizing power (IV - unitary). Independent Judiciary (II) is a FEDERAL feature. Only one (II) is a federal feature. Answer: A.",
         topic: "Federal vs Unitary Features",
         difficulty: "Medium",
         pyqYear: null,
@@ -443,7 +443,7 @@ export const TEST_T1 = [
         ],
         correct: "C",
         explanation:
-          "I (one person, one vote, one value ✓), II (Rule of law ✓), and III (Free and fair elections ✓) are essential democratic principles. IV (Reservation of seats for minorities) is a special provision that some democracies may or may not have — it is not universally considered essential to democracy itself. Answer: C (Only three).",
+          "I (one person, one vote, one value ✓), II (Rule of law ✓), and III (Free and fair elections ✓) are essential democratic principles. IV (Reservation of seats for minorities) is a special provision that some democracies may or may not have - it is not universally considered essential to democracy itself. Answer: C (Only three).",
         topic: "Democracy",
         difficulty: "Medium",
         pyqYear: null,
@@ -467,7 +467,7 @@ export const TEST_T1 = [
         ],
         correct: "A",
         explanation:
-          "This is a classic statement about democracy by A.D. Lindsay (or similar political theorists) — democracy's virtue is that it harnesses the intelligence and moral character of ordinary citizens, unlike autocracy which relies on a single superior leader. Answer: A.",
+          "This is a classic statement about democracy by A.D. Lindsay (or similar political theorists) - democracy's virtue is that it harnesses the intelligence and moral character of ordinary citizens, unlike autocracy which relies on a single superior leader. Answer: A.",
         topic: "Democracy",
         difficulty: "Easy",
         pyqYear: null,
@@ -535,7 +535,7 @@ export const TEST_T1 = [
         ],
         correct: "A",
         explanation:
-          "Both statements are correct. The GoI Act 1919 introduced Dyarchy at the provincial level — subjects were divided into transferred (administered by Indian ministers responsible to legislature) and reserved (administered by Governor). This system of limited responsible government (Dyarchy) explains Statement I. Statement II explains Statement I perfectly. Answer: A.",
+          "Both statements are correct. The GoI Act 1919 introduced Dyarchy at the provincial level - subjects were divided into transferred (administered by Indian ministers responsible to legislature) and reserved (administered by Governor). This system of limited responsible government (Dyarchy) explains Statement I. Statement II explains Statement I perfectly. Answer: A.",
         topic: "Constitutional History",
         difficulty: "Medium",
         pyqYear: null,
@@ -571,7 +571,7 @@ export const TEST_T1 = [
         ],
         correct: "D",
         explanation:
-          "Dr. B.R. Ambedkar in his speech to the Constituent Assembly on November 25, 1949 (the day before adoption) spoke about Liberty, Equality and Fraternity as a 'union of trinity' from the French Revolution — emphasizing that they are inseparable and together form the foundation of democracy. Answer: D.",
+          "Dr. B.R. Ambedkar in his speech to the Constituent Assembly on November 25, 1949 (the day before adoption) spoke about Liberty, Equality and Fraternity as a 'union of trinity' from the French Revolution - emphasizing that they are inseparable and together form the foundation of democracy. Answer: D.",
         topic: "Constituent Assembly",
         difficulty: "Medium",
         pyqYear: null,
@@ -602,7 +602,7 @@ export const TEST_T1 = [
         ],
         correct: "D",
         explanation:
-          "Statement I is incorrect — India became a Republic on January 26, 1950 (not November 26, 1949). November 26, 1949 was when the Constitution was adopted but not fully enforced. Statement II is correct — the Constitution was adopted by the Constituent Assembly on November 26, 1949. Answer: D.",
+          "Statement I is incorrect - India became a Republic on January 26, 1950 (not November 26, 1949). November 26, 1949 was when the Constitution was adopted but not fully enforced. Statement II is correct - the Constitution was adopted by the Constituent Assembly on November 26, 1949. Answer: D.",
         topic: "Commencement of Constitution",
         difficulty: "Easy",
         pyqYear: null,
@@ -621,7 +621,7 @@ export const TEST_T1 = [
         ],
         correct: "A",
         explanation:
-          "The 42nd Constitutional Amendment Act (1976) added only two words to the Preamble: 'Socialist' and 'Secular'. Fraternity, Equality of opportunity, and Dignity of the individual were already in the original Preamble. Answer: A (Only two — Socialist and Secular).",
+          "The 42nd Constitutional Amendment Act (1976) added only two words to the Preamble: 'Socialist' and 'Secular'. Fraternity, Equality of opportunity, and Dignity of the individual were already in the original Preamble. Answer: A (Only two - Socialist and Secular).",
         topic: "Preamble",
         difficulty: "Easy",
         pyqYear: 2015,
@@ -639,7 +639,7 @@ export const TEST_T1 = [
         ],
         correct: "A",
         explanation:
-          "Statement I is correct — in a republic, the head of state holds office for a fixed, prescribed term (India's President: 5 years). Statement II is incorrect — the UK is a constitutional monarchy (not a republic) yet is a democracy. Statement III is debatable and broadly incorrect — the concept of republic has ancient roots; France is also a republic. Answer: A.",
+          "Statement I is correct - in a republic, the head of state holds office for a fixed, prescribed term (India's President: 5 years). Statement II is incorrect - the UK is a constitutional monarchy (not a republic) yet is a democracy. Statement III is debatable and broadly incorrect - the concept of republic has ancient roots; France is also a republic. Answer: A.",
         topic: "Republican Character",
         difficulty: "Medium",
         pyqYear: null,
@@ -670,7 +670,7 @@ export const TEST_T1 = [
         ],
         correct: "A",
         explanation:
-          "Positive liberty means freedom to achieve one's potential with state support. Statement II (State can impose reasonable restrictions) and Statement III (State facilitates rights/opportunities through DPSPs) both explain positive liberty — the State is not just passive but actively enables liberty. Both II and III are correct and explain I. Answer: A.",
+          "Positive liberty means freedom to achieve one's potential with state support. Statement II (State can impose reasonable restrictions) and Statement III (State facilitates rights/opportunities through DPSPs) both explain positive liberty - the State is not just passive but actively enables liberty. Both II and III are correct and explain I. Answer: A.",
         topic: "Liberty & Political Theory",
         difficulty: "Hard",
         pyqYear: null,
@@ -688,7 +688,7 @@ export const TEST_T1 = [
         ],
         correct: "A",
         explanation:
-          "Equality in society implies the absence of special privileges — no person or group should enjoy unearned advantages by birth, status, or other arbitrary factors. Equality means equal treatment under law and removal of hereditary privileges. Answer: A.",
+          "Equality in society implies the absence of special privileges - no person or group should enjoy unearned advantages by birth, status, or other arbitrary factors. Equality means equal treatment under law and removal of hereditary privileges. Answer: A.",
         topic: "Equality",
         difficulty: "Easy",
         pyqYear: null,
@@ -706,15 +706,15 @@ export const TEST_T1 = [
         ],
         correct: "A",
         explanation:
-          "Statement I is correct — Both NRIs and OCI cardholders are prohibited from purchasing agricultural land, plantation property, or farmhouses in India under FEMA regulations. Statement II is incorrect — NRIs are Indian citizens and do not need police registration. OCI cardholders were exempted from police registration requirements under the OCI scheme. Answer: A.",
-        topic: "Citizenship — NRI & OCI",
+          "Statement I is correct - Both NRIs and OCI cardholders are prohibited from purchasing agricultural land, plantation property, or farmhouses in India under FEMA regulations. Statement II is incorrect - NRIs are Indian citizens and do not need police registration. OCI cardholders were exempted from police registration requirements under the OCI scheme. Answer: A.",
+        topic: "Citizenship - NRI & OCI",
         difficulty: "Hard",
         pyqYear: null,
       },
       {
         id: "t01_q33",
         qNo: 33,
-        text: "Consider the following pairs:\n\nParts of the Indian Constitution — Subject Matter\nI. Part VIII — The Union Territories\nII. Part X — The Scheduled and Tribal Areas\nIII. Part XI — Relations between the Union and the States\nIV. Part XII — Elections",
+        text: "Consider the following pairs:\n\nParts of the Indian Constitution - Subject Matter\nI. Part VIII - The Union Territories\nII. Part X - The Scheduled and Tribal Areas\nIII. Part XI - Relations between the Union and the States\nIV. Part XII - Elections",
         suffix: "How many of the pairs given above are correctly matched?",
         options: [
           { id: "A", text: "Only one" },
@@ -724,7 +724,7 @@ export const TEST_T1 = [
         ],
         correct: "C",
         explanation:
-          "Part VIII (Union Territories) ✓; Part X (Scheduled and Tribal Areas) ✓; Part XI (Relations between Union and States) ✓; Part XII is NOT Elections — Part XII deals with Finance, Property, Contracts and Suits. Part XV deals with Elections. Three pairs are correct. Answer: C.",
+          "Part VIII (Union Territories) ✓; Part X (Scheduled and Tribal Areas) ✓; Part XI (Relations between Union and States) ✓; Part XII is NOT Elections - Part XII deals with Finance, Property, Contracts and Suits. Part XV deals with Elections. Three pairs are correct. Answer: C.",
         topic: "Parts of Constitution",
         difficulty: "Medium",
         pyqYear: null,
@@ -754,7 +754,7 @@ export const TEST_T1 = [
         ],
         correct: "B",
         explanation:
-          "The primary function of a Constitution is to express the fundamental values and political identity of a people — it embodies their ideals, aspirations, and principles of governance. While it also separates powers, distributes resources, etc., the core function is providing a foundational framework of values. Answer: B.",
+          "The primary function of a Constitution is to express the fundamental values and political identity of a people - it embodies their ideals, aspirations, and principles of governance. While it also separates powers, distributes resources, etc., the core function is providing a foundational framework of values. Answer: B.",
         topic: "Constitutional Theory",
         difficulty: "Easy",
         pyqYear: null,
@@ -803,7 +803,7 @@ export const TEST_T1 = [
         ],
         correct: "B",
         explanation:
-          "Both are correct. The Supreme Court is the guardian/custodian of the Constitution through judicial review. India has a single integrated judiciary with SC at the apex. However, Statement II does not explain I — being the apex court in an integrated system is separate from being the Constitution's custodian (the latter arises from the power of judicial review). Answer: B.",
+          "Both are correct. The Supreme Court is the guardian/custodian of the Constitution through judicial review. India has a single integrated judiciary with SC at the apex. However, Statement II does not explain I - being the apex court in an integrated system is separate from being the Constitution's custodian (the latter arises from the power of judicial review). Answer: B.",
         topic: "Judiciary",
         difficulty: "Medium",
         pyqYear: null,
@@ -821,7 +821,7 @@ export const TEST_T1 = [
         ],
         correct: "D",
         explanation:
-          "Constitutionalism means limiting government power through a constitution. All four — Rule of Law, Fundamental Rights, Separation of Powers, and Judicial Review — are essential pillars of constitutionalism in India. They collectively ensure limited, accountable government. Answer: D.",
+          "Constitutionalism means limiting government power through a constitution. All four - Rule of Law, Fundamental Rights, Separation of Powers, and Judicial Review - are essential pillars of constitutionalism in India. They collectively ensure limited, accountable government. Answer: D.",
         topic: "Constitutionalism",
         difficulty: "Medium",
         pyqYear: null,
@@ -857,7 +857,7 @@ export const TEST_T1 = [
         ],
         correct: "C",
         explanation:
-          "Statement I is correct — in Kesavananda Bharati (1973), the SC held the Preamble can be amended as it is part of the Constitution, subject to the basic structure doctrine. The amendment procedure requires 2/3 majority of members present and voting + majority of total membership. Statement II is correct — the Preamble is not a legislative source of power but an aid to interpretation (Berubari Case 1960). Answer: C.",
+          "Statement I is correct - in Kesavananda Bharati (1973), the SC held the Preamble can be amended as it is part of the Constitution, subject to the basic structure doctrine. The amendment procedure requires 2/3 majority of members present and voting + majority of total membership. Statement II is correct - the Preamble is not a legislative source of power but an aid to interpretation (Berubari Case 1960). Answer: C.",
         topic: "Preamble",
         difficulty: "Medium",
         pyqYear: null,
@@ -875,7 +875,7 @@ export const TEST_T1 = [
         ],
         correct: "C",
         explanation:
-          "The term 'Union of States' (Article 1 — India, that is Bharat, shall be a Union of States) was inspired by the British North America Act (now the Constitution Act, 1867) of Canada. Canada's constitution uses 'union' to describe its federation, emphasizing the indestructibility of the federation. Answer: C.",
+          "The term 'Union of States' (Article 1 - India, that is Bharat, shall be a Union of States) was inspired by the British North America Act (now the Constitution Act, 1867) of Canada. Canada's constitution uses 'union' to describe its federation, emphasizing the indestructibility of the federation. Answer: C.",
         topic: "Sources of Constitution",
         difficulty: "Hard",
         pyqYear: null,
@@ -893,7 +893,7 @@ export const TEST_T1 = [
         ],
         correct: "D",
         explanation:
-          "Separation of powers (Montesquieu) is the best safeguard of liberty — when legislative, executive, and judicial powers are separated, no single authority can become tyrannical. While an independent judiciary is important, structural separation of powers is more foundational. Answer: D.",
+          "Separation of powers (Montesquieu) is the best safeguard of liberty - when legislative, executive, and judicial powers are separated, no single authority can become tyrannical. While an independent judiciary is important, structural separation of powers is more foundational. Answer: D.",
         topic: "Liberty & Separation of Powers",
         difficulty: "Easy",
         pyqYear: 2021,
@@ -911,7 +911,7 @@ export const TEST_T1 = [
         ],
         correct: "A",
         explanation:
-          "S.K. Dhar Commission (1948) — first commission set up to examine linguistic states, recommended against linguistic basis. JVP Committee (Jawaharlal, Vallabhbhai, Pattabhi — 1949) — reexamined the issue. States Reorganisation Commission/Fazl Ali Commission (1953-55) — recommended reorganization on linguistic basis. Chronological order: I → III → II. Answer: A.",
+          "S.K. Dhar Commission (1948) - first commission set up to examine linguistic states, recommended against linguistic basis. JVP Committee (Jawaharlal, Vallabhbhai, Pattabhi - 1949) - reexamined the issue. States Reorganisation Commission/Fazl Ali Commission (1953-55) - recommended reorganization on linguistic basis. Chronological order: I → III → II. Answer: A.",
         topic: "States Reorganisation",
         difficulty: "Medium",
         pyqYear: null,
@@ -1018,7 +1018,7 @@ export const TEST_T1 = [
         ],
         correct: "C",
         explanation:
-          "Statement I is correct — India follows jus sanguinis (citizenship by descent/blood), where a child's citizenship is determined by parents' citizenship. Statement II is incorrect — India does NOT follow jus soli (citizenship by place of birth) for most purposes; if a child is born in India to foreign parents, they may not automatically get citizenship. Answer: C.",
+          "Statement I is correct - India follows jus sanguinis (citizenship by descent/blood), where a child's citizenship is determined by parents' citizenship. Statement II is incorrect - India does NOT follow jus soli (citizenship by place of birth) for most purposes; if a child is born in India to foreign parents, they may not automatically get citizenship. Answer: C.",
         topic: "Citizenship",
         difficulty: "Medium",
         pyqYear: null,
@@ -1026,7 +1026,7 @@ export const TEST_T1 = [
       {
         id: "t01_q48",
         qNo: 48,
-        text: "With reference to the Committees formed by the Constituent Assembly of India, consider the following pairs:\n\nCommittees — Headed by\nI. States Committee — Vallabhbhai Patel\nII. Union Powers Committee — Jawaharlal Nehru\nIII. Committee on Rules of Procedure — Rajendra Prasad",
+        text: "With reference to the Committees formed by the Constituent Assembly of India, consider the following pairs:\n\nCommittees - Headed by\nI. States Committee - Vallabhbhai Patel\nII. Union Powers Committee - Jawaharlal Nehru\nIII. Committee on Rules of Procedure - Rajendra Prasad",
         suffix: "How many of the pairs given above are correctly matched?",
         options: [
           { id: "A", text: "Only one" },
@@ -1054,7 +1054,7 @@ export const TEST_T1 = [
         ],
         correct: "C",
         explanation:
-          "The Indian Councils Act 1909 (Morley-Minto Reforms) provided for the inclusion of Indians in the Viceroy's Executive Council for the first time — Satyendra Prasad Sinha was appointed as the first Indian member of the Viceroy's Executive Council. Answer: C.",
+          "The Indian Councils Act 1909 (Morley-Minto Reforms) provided for the inclusion of Indians in the Viceroy's Executive Council for the first time - Satyendra Prasad Sinha was appointed as the first Indian member of the Viceroy's Executive Council. Answer: C.",
         topic: "Constitutional History",
         difficulty: "Medium",
         pyqYear: null,

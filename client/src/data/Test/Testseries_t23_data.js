@@ -7,7 +7,7 @@
 export const TEST_T23 = [
   {
     id: "sfg2026-t23",
-    title: "SFG 2026 — Level 1 · Test 23",
+    title: "SFG 2026 - Level 1 · Test 23",
     subject: "Biodiversity & Environment",
     topic: "Biodiversity, Ecology, Conservation & Environmental Laws",
     totalQuestions: 50,
@@ -30,8 +30,8 @@ export const TEST_T23 = [
         ],
         correct: "D",
         explanation:
-          "The Peacock tarantula (Poecilotheria metallica) is NOT a crustacean — it is an arachnid (spider), so Statement I is wrong. Its natural habitat is restricted to certain forest areas in Andhra Pradesh (Nallamala forest region) — Statement II is correct. It is arboreal, living in tree hollows — Statement III is correct.",
-        topic: "Species — Tarantula",
+          "The Peacock tarantula (Poecilotheria metallica) is NOT a crustacean - it is an arachnid (spider), so Statement I is wrong. Its natural habitat is restricted to certain forest areas in Andhra Pradesh (Nallamala forest region) - Statement II is correct. It is arboreal, living in tree hollows - Statement III is correct.",
+        topic: "Species - Tarantula",
       },
       {
         id: "t23_q02",
@@ -47,7 +47,7 @@ export const TEST_T23 = [
         correct: "A",
         explanation:
           "Statement A is NOT correct. More than 70% of all recorded species are animals, not plants. Plants account for around 22% of recorded species. Among animals, insects dominate. Fungi species do outnumber fishes + amphibians + reptiles + mammals combined. Fishes are indeed the most species-rich vertebrate group.",
-        topic: "Biodiversity — Global Distribution",
+        topic: "Biodiversity - Global Distribution",
       },
       {
         id: "t23_q03",
@@ -62,8 +62,8 @@ export const TEST_T23 = [
         ],
         correct: "D",
         explanation:
-          "All four — Venezuela, Papua New Guinea, Democratic Republic of Congo, and China — are among the 17 mega-diverse countries recognised by WCMC-UNEP. The 17 include: Australia, Brazil, China, Colombia, DRC, Ecuador, India, Indonesia, Madagascar, Malaysia, Mexico, Papua New Guinea, Peru, Philippines, South Africa, USA, and Venezuela.",
-        topic: "Biodiversity — Mega-diverse Countries",
+          "All four - Venezuela, Papua New Guinea, Democratic Republic of Congo, and China - are among the 17 mega-diverse countries recognised by WCMC-UNEP. The 17 include: Australia, Brazil, China, Colombia, DRC, Ecuador, India, Indonesia, Madagascar, Malaysia, Mexico, Papua New Guinea, Peru, Philippines, South Africa, USA, and Venezuela.",
+        topic: "Biodiversity - Mega-diverse Countries",
       },
       {
         id: "t23_q04",
@@ -79,7 +79,7 @@ export const TEST_T23 = [
         correct: "C",
         explanation:
           "All three illustrate genetic diversity. Different strains of rice within one species = intraspecific genetic variation. Different indigenous buffalo breeds (Murrah, Jaffarabadi) = genetic diversity within the buffalo species. Five big cat species in India also reflects species-level genetic distinctiveness. All three = genetic diversity.",
-        topic: "Biodiversity — Types",
+        topic: "Biodiversity - Types",
       },
       {
         id: "t23_q05",
@@ -95,7 +95,7 @@ export const TEST_T23 = [
         correct: "C",
         explanation:
           "Cicada (Order Hemiptera), Froghopper (Order Hemiptera), and Pond skater/water strider (Order Hemiptera) are all insects. All three belong to the order Hemiptera (true bugs).",
-        topic: "Species Identification — Insects",
+        topic: "Species Identification - Insects",
       },
       {
         id: "t23_q06",
@@ -111,7 +111,7 @@ export const TEST_T23 = [
         correct: "D",
         explanation:
           "All three are correct. The Cartagena Protocol on Biosafety (2000) is a supplementary protocol to the CBD (I ✓). It regulates transboundary movement of LMOs from modern biotechnology (II ✓). LMOs that are pharmaceuticals for humans are explicitly excluded from its scope (III ✓).",
-        topic: "International Conventions — Cartagena Protocol",
+        topic: "International Conventions - Cartagena Protocol",
       },
       {
         id: "t23_q07",
@@ -127,7 +127,7 @@ export const TEST_T23 = [
         correct: "A",
         explanation:
           "Statement I is a well-established fact. Both Statements II and III are correct and both provide accepted scientific explanations for why tropical regions have greater biodiversity: (II) stable, less seasonal conditions allow greater specialisation; (III) longer evolutionary time without glaciation disruption allows more speciation.",
-        topic: "Biodiversity — Latitudinal Gradient",
+        topic: "Biodiversity - Latitudinal Gradient",
       },
       {
         id: "t23_q08",
@@ -142,8 +142,8 @@ export const TEST_T23 = [
         ],
         correct: "C",
         explanation:
-          "Quagga (extinct 1883, southern Africa), Steller's Sea Cow (extinct 1768, hunted to extinction), and Thylacine/Tasmanian Tiger (extinct 1936) all went extinct in recent/modern times primarily due to human activities — hunting, habitat destruction, and introduction of competitors.",
-        topic: "Biodiversity — Extinction",
+          "Quagga (extinct 1883, southern Africa), Steller's Sea Cow (extinct 1768, hunted to extinction), and Thylacine/Tasmanian Tiger (extinct 1936) all went extinct in recent/modern times primarily due to human activities - hunting, habitat destruction, and introduction of competitors.",
+        topic: "Biodiversity - Extinction",
       },
       {
         id: "t23_q09",
@@ -158,8 +158,8 @@ export const TEST_T23 = [
         ],
         correct: "B",
         explanation:
-          "Statement I is incorrect — IPBES is NOT a specialised UN agency; it is an intergovernmental platform that provides assessments. Statement II is correct — UNEP hosts the IPBES Secretariat in Bonn, Germany. Statement III is correct — India was among the founding members when IPBES was established in 2012.",
-        topic: "International Bodies — IPBES",
+          "Statement I is incorrect - IPBES is NOT a specialised UN agency; it is an intergovernmental platform that provides assessments. Statement II is correct - UNEP hosts the IPBES Secretariat in Bonn, Germany. Statement III is correct - India was among the founding members when IPBES was established in 2012.",
+        topic: "International Bodies - IPBES",
       },
       {
         id: "t23_q10",
@@ -174,8 +174,8 @@ export const TEST_T23 = [
         ],
         correct: "D",
         explanation:
-          "All three are correct. Dendrochronology can reveal: (I) past climate — ring width reflects rainfall and temperature; (II) age of the tree — one ring per year; (III) past flooding/water availability — isotope analysis and ring characteristics reveal moisture conditions.",
-        topic: "Ecology — Dendrochronology",
+          "All three are correct. Dendrochronology can reveal: (I) past climate - ring width reflects rainfall and temperature; (II) age of the tree - one ring per year; (III) past flooding/water availability - isotope analysis and ring characteristics reveal moisture conditions.",
+        topic: "Ecology - Dendrochronology",
       },
       {
         id: "t23_q11",
@@ -191,7 +191,7 @@ export const TEST_T23 = [
         correct: "A",
         explanation:
           "Golden Mahseer is a freshwater fish (Tor putitora), not a bird. Indian Nightjar, Spoonbill, and White Ibis are all birds.",
-        topic: "Species Identification — Vertebrates",
+        topic: "Species Identification - Vertebrates",
       },
       {
         id: "t23_q12",
@@ -206,7 +206,7 @@ export const TEST_T23 = [
         ],
         correct: "C",
         explanation:
-          "Chromolaena odorata, Lantana camara, and Prosopis juliflora are all classified as invasive alien species in India — they were introduced and have spread aggressively. Cypripedium calceolus (Lady's Slipper Orchid) is a native/endemic species found in the Himalayas and is NOT invasive.",
+          "Chromolaena odorata, Lantana camara, and Prosopis juliflora are all classified as invasive alien species in India - they were introduced and have spread aggressively. Cypripedium calceolus (Lady's Slipper Orchid) is a native/endemic species found in the Himalayas and is NOT invasive.",
         topic: "Invasive Species",
       },
       {
@@ -223,7 +223,7 @@ export const TEST_T23 = [
         correct: "B",
         explanation:
           "The Cold Desert Biosphere Reserve (Himachal Pradesh) is located in the trans-Himalayan region, characterised by extreme cold, low precipitation and high altitude. It was added to UNESCO's World Network of Biosphere Reserves in 2025.",
-        topic: "Biosphere Reserves — India",
+        topic: "Biosphere Reserves - India",
       },
       {
         id: "t23_q14",
@@ -238,8 +238,8 @@ export const TEST_T23 = [
         ],
         correct: "C",
         explanation:
-          "Bats (chiropterophily), Moths (phalaenophily), and Hummingbirds (ornithophily) are all known pollinators. Fireflies are NOT pollinators — they are predators/scavengers and their light is for mating communication, not pollination.",
-        topic: "Ecology — Pollination",
+          "Bats (chiropterophily), Moths (phalaenophily), and Hummingbirds (ornithophily) are all known pollinators. Fireflies are NOT pollinators - they are predators/scavengers and their light is for mating communication, not pollination.",
+        topic: "Ecology - Pollination",
       },
       {
         id: "t23_q15",
@@ -254,8 +254,8 @@ export const TEST_T23 = [
         ],
         correct: "C",
         explanation:
-          "Statement I is correct — marsupials are naturally found only in Australia, New Guinea, and the Americas, not in India. Statement II is incorrect — marsupials inhabit diverse habitats including forests, grasslands, and deserts, and coexist with predators in their native ranges.",
-        topic: "Species Distribution — Marsupials",
+          "Statement I is correct - marsupials are naturally found only in Australia, New Guinea, and the Americas, not in India. Statement II is incorrect - marsupials inhabit diverse habitats including forests, grasslands, and deserts, and coexist with predators in their native ranges.",
+        topic: "Species Distribution - Marsupials",
       },
       {
         id: "t23_q16",
@@ -270,13 +270,13 @@ export const TEST_T23 = [
         ],
         correct: "A",
         explanation:
-          "Statements I and II are correct. UNCCD (1994) is the only legally binding international agreement specifically addressing desertification. The Peace Forest Initiative is indeed a UNCCD flagship initiative. Statement III is incorrect — in India, the Ministry of Environment, Forest and Climate Change (MoEFCC) is the nodal/focal point for UNCCD, not NITI Aayog.",
-        topic: "International Conventions — UNCCD",
+          "Statements I and II are correct. UNCCD (1994) is the only legally binding international agreement specifically addressing desertification. The Peace Forest Initiative is indeed a UNCCD flagship initiative. Statement III is incorrect - in India, the Ministry of Environment, Forest and Climate Change (MoEFCC) is the nodal/focal point for UNCCD, not NITI Aayog.",
+        topic: "International Conventions - UNCCD",
       },
       {
         id: "t23_q17",
         qNo: 17,
-        text: "With reference to the terms related to Biodiversity, consider the following pairs:\nTerm — Refers to\nI. Bioprospecting — Exploring molecular, genetic and species-level diversity for products of economic importance\nII. Biopiracy — Conversion of natural biological resources into synthetic substitutes to conserve biodiversity.\nIII. Genetic erosion — Deliberate dissemination of biological agents like virus and bacteria in a country by any state or non-state actors with the intent to cause harm\nHow many of the pairs given above are correctly matched?",
+        text: "With reference to the terms related to Biodiversity, consider the following pairs:\nTerm - Refers to\nI. Bioprospecting - Exploring molecular, genetic and species-level diversity for products of economic importance\nII. Biopiracy - Conversion of natural biological resources into synthetic substitutes to conserve biodiversity.\nIII. Genetic erosion - Deliberate dissemination of biological agents like virus and bacteria in a country by any state or non-state actors with the intent to cause harm\nHow many of the pairs given above are correctly matched?",
         suffix: "",
         options: [
           { id: "A", text: "Only one" },
@@ -287,7 +287,7 @@ export const TEST_T23 = [
         correct: "A",
         explanation:
           "Only Pair I is correctly matched. Bioprospecting = exploring biodiversity for economically valuable compounds/genes. Biopiracy = misappropriation/unauthorised use of biological resources and associated traditional knowledge by external entities without fair benefit sharing (not conversion to synthetics). Genetic erosion = loss of genetic diversity within a species over time (not bioterrorism). Answer: Only one.",
-        topic: "Biodiversity — Key Terms",
+        topic: "Biodiversity - Key Terms",
       },
       {
         id: "t23_q18",
@@ -303,7 +303,7 @@ export const TEST_T23 = [
         correct: "B",
         explanation:
           "Both the Wallace Line (separating Asian and Australian fauna in Indonesia) and the Kangar-Pattani Line (separating distinct plant communities in the Thai-Malay Peninsula) are biogeographical boundaries that demarcate transitions between distinct floral and faunal zones.",
-        topic: "Biogeography — Boundary Lines",
+        topic: "Biogeography - Boundary Lines",
       },
       {
         id: "t23_q19",
@@ -319,7 +319,7 @@ export const TEST_T23 = [
         correct: "D",
         explanation:
           "The word 'Cheetah' is derived from the Sanskrit word 'Chitrakāya' (चित्रकाय) meaning 'spotted body.' It passed into Hindi as 'Chita' and then into English as Cheetah.",
-        topic: "Species — Cheetah",
+        topic: "Species - Cheetah",
       },
       {
         id: "t23_q20",
@@ -334,8 +334,8 @@ export const TEST_T23 = [
         ],
         correct: "C",
         explanation:
-          "Darwin's finches are the classic example of adaptive radiation — divergence of one ancestral species into multiple species, each adapted to different ecological niches. This is adaptive radiation, not convergent evolution (unrelated species developing similar traits) or co-evolution (two species evolving together).",
-        topic: "Evolution — Adaptive Radiation",
+          "Darwin's finches are the classic example of adaptive radiation - divergence of one ancestral species into multiple species, each adapted to different ecological niches. This is adaptive radiation, not convergent evolution (unrelated species developing similar traits) or co-evolution (two species evolving together).",
+        topic: "Evolution - Adaptive Radiation",
       },
       {
         id: "t23_q21",
@@ -350,13 +350,13 @@ export const TEST_T23 = [
         ],
         correct: "D",
         explanation:
-          "All four are correct. Medicinal mushrooms (Reishi, Shiitake — immune properties). Psychoactive mushrooms (Psilocybe species). Insecticidal — some fungi produce compounds toxic to insects. Bioluminescent mushrooms (Mycena chlorophos and others glow in the dark).",
-        topic: "Fungi — Properties",
+          "All four are correct. Medicinal mushrooms (Reishi, Shiitake - immune properties). Psychoactive mushrooms (Psilocybe species). Insecticidal - some fungi produce compounds toxic to insects. Bioluminescent mushrooms (Mycena chlorophos and others glow in the dark).",
+        topic: "Fungi - Properties",
       },
       {
         id: "t23_q22",
         qNo: 22,
-        text: "With reference to biological classification, consider the following pairs:\nSpecies — Taxonomic Group\nI. Salamander — Reptile\nII. Flying fox — Bird\nIII. Penguin — Mammal\nIV. Seahorse — Fish\nHow many of the pairs given above are correctly matched?",
+        text: "With reference to biological classification, consider the following pairs:\nSpecies - Taxonomic Group\nI. Salamander - Reptile\nII. Flying fox - Bird\nIII. Penguin - Mammal\nIV. Seahorse - Fish\nHow many of the pairs given above are correctly matched?",
         suffix: "",
         options: [
           { id: "A", text: "Only one" },
@@ -367,7 +367,7 @@ export const TEST_T23 = [
         correct: "A",
         explanation:
           "Only Seahorse–Fish is correctly matched (IV ✓). Salamander is an Amphibian, not Reptile (I ✗). Flying fox is a bat (Mammal), not Bird (II ✗). Penguin is a Bird, not Mammal (III ✗). Answer: Only one.",
-        topic: "Taxonomy — Classification",
+        topic: "Taxonomy - Classification",
       },
       {
         id: "t23_q23",
@@ -382,8 +382,8 @@ export const TEST_T23 = [
         ],
         correct: "B",
         explanation:
-          "Statement I is incorrect — WCCB is NOT a statutory body under WPA 1972; it is an administrative/executive body under MoEFCC. Statements II and III are correct — WCCB collects and disseminates wildlife crime intelligence, and is India's CITES enforcement nodal agency.",
-        topic: "Wildlife Governance — WCCB",
+          "Statement I is incorrect - WCCB is NOT a statutory body under WPA 1972; it is an administrative/executive body under MoEFCC. Statements II and III are correct - WCCB collects and disseminates wildlife crime intelligence, and is India's CITES enforcement nodal agency.",
+        topic: "Wildlife Governance - WCCB",
       },
       {
         id: "t23_q24",
@@ -398,7 +398,7 @@ export const TEST_T23 = [
         ],
         correct: "C",
         explanation:
-          "Statement I is correct — the criteria for a biodiversity hotspot are: ≥1,500 endemic vascular plant species AND ≥70% loss of original habitat. Statement II is incorrect — biodiversity hotspots are identified and listed by Conservation International (CI), not UNESCO.",
+          "Statement I is correct - the criteria for a biodiversity hotspot are: ≥1,500 endemic vascular plant species AND ≥70% loss of original habitat. Statement II is incorrect - biodiversity hotspots are identified and listed by Conservation International (CI), not UNESCO.",
         topic: "Biodiversity Hotspots",
       },
       {
@@ -414,8 +414,8 @@ export const TEST_T23 = [
         ],
         correct: "C",
         explanation:
-          "Statement I is true — chameleons do change colour, though primarily for communication and temperature regulation, not just camouflage. Statement II is false — chameleons change colour by reorganising nanocrystals (iridophores) in their skin cells, NOT through fluorescence.",
-        topic: "Animal Physiology — Chameleon",
+          "Statement I is true - chameleons do change colour, though primarily for communication and temperature regulation, not just camouflage. Statement II is false - chameleons change colour by reorganising nanocrystals (iridophores) in their skin cells, NOT through fluorescence.",
+        topic: "Animal Physiology - Chameleon",
       },
       {
         id: "t23_q26",
@@ -431,12 +431,12 @@ export const TEST_T23 = [
         correct: "C",
         explanation:
           "Frogs breathe through both lungs (pulmonary respiration) and skin (cutaneous respiration). This dual mode of respiration is characteristic of amphibians. Earthworms breathe only through skin; cockroaches breathe through spiracles; rats use only lungs.",
-        topic: "Animal Physiology — Respiration",
+        topic: "Animal Physiology - Respiration",
       },
       {
         id: "t23_q27",
         qNo: 27,
-        text: "With reference to the Protected Areas in India, consider the following information:\nNational Park — Located in — Native Species\nI. Keibul Lamjao National Park — Manipur — Sangai Deer\nII. Dachigam National Park — Jammu and Kashmir — Hangul\nIII. Papikonda National Park — Tamil Nadu — Swamp deer\nIV. Eravikulam National Park — Kerala — Nilgiri Tahr\nIn how many of the above rows is the given information correctly matched?",
+        text: "With reference to the Protected Areas in India, consider the following information:\nNational Park - Located in - Native Species\nI. Keibul Lamjao National Park - Manipur - Sangai Deer\nII. Dachigam National Park - Jammu and Kashmir - Hangul\nIII. Papikonda National Park - Tamil Nadu - Swamp deer\nIV. Eravikulam National Park - Kerala - Nilgiri Tahr\nIn how many of the above rows is the given information correctly matched?",
         suffix: "",
         options: [
           { id: "A", text: "Only one" },
@@ -446,8 +446,8 @@ export const TEST_T23 = [
         ],
         correct: "C",
         explanation:
-          "Three rows are correct. Keibul Lamjao (Manipur) — Sangai (I ✓). Dachigam (J&K) — Hangul/Kashmir Stag (II ✓). Eravikulam (Kerala) — Nilgiri Tahr (IV ✓). Papikonda National Park is in Andhra Pradesh, NOT Tamil Nadu — (III ✗). Answer: three.",
-        topic: "Protected Areas — India",
+          "Three rows are correct. Keibul Lamjao (Manipur) - Sangai (I ✓). Dachigam (J&K) - Hangul/Kashmir Stag (II ✓). Eravikulam (Kerala) - Nilgiri Tahr (IV ✓). Papikonda National Park is in Andhra Pradesh, NOT Tamil Nadu - (III ✗). Answer: three.",
+        topic: "Protected Areas - India",
       },
       {
         id: "t23_q28",
@@ -462,8 +462,8 @@ export const TEST_T23 = [
         ],
         correct: "C",
         explanation:
-          "Statement I is incorrect — Aestivation is dormancy during extreme heat/drought (summer), not winter (that is hibernation). Statements II and III are correct — metabolic rate slows during aestivation, and both certain crocodile species and earthworms are known to aestivate during hot/dry periods.",
-        topic: "Animal Behaviour — Aestivation",
+          "Statement I is incorrect - Aestivation is dormancy during extreme heat/drought (summer), not winter (that is hibernation). Statements II and III are correct - metabolic rate slows during aestivation, and both certain crocodile species and earthworms are known to aestivate during hot/dry periods.",
+        topic: "Animal Behaviour - Aestivation",
       },
       {
         id: "t23_q29",
@@ -479,7 +479,7 @@ export const TEST_T23 = [
         correct: "A",
         explanation:
           "Only Jerdon's Courser (II) is Critically Endangered. Rhesus Macaque is Least Concern. Leopard Cat is Least Concern. Egyptian Vulture is Endangered (not CR). Answer: Only one (Jerdon's Courser).",
-        topic: "IUCN Red List — India Species",
+        topic: "IUCN Red List - India Species",
       },
       {
         id: "t23_q30",
@@ -494,8 +494,8 @@ export const TEST_T23 = [
         ],
         correct: "B",
         explanation:
-          "Statements I and IV are correct. WII conducted the SAIEE under Project Elephant/MoEFCC. Karnataka has the highest elephant population in India (~6,395). Statement II is incorrect — the population showed a decline from ~29,000 to ~22,000. Statement III is incorrect — the Southern Western Ghats has a much larger elephant population than Central India & Eastern Ghats.",
-        topic: "Elephant Conservation — India",
+          "Statements I and IV are correct. WII conducted the SAIEE under Project Elephant/MoEFCC. Karnataka has the highest elephant population in India (~6,395). Statement II is incorrect - the population showed a decline from ~29,000 to ~22,000. Statement III is incorrect - the Southern Western Ghats has a much larger elephant population than Central India & Eastern Ghats.",
+        topic: "Elephant Conservation - India",
       },
       {
         id: "t23_q31",
@@ -511,7 +511,7 @@ export const TEST_T23 = [
         correct: "C",
         explanation:
           "All three are correct. Hyperthermophiles (e.g., Pyrococcus) thrive above 100°C near deep-sea hydrothermal vents. Psychrophiles survive below 0°C in Antarctic ice. Acidophiles (e.g., Acidithiobacillus) thrive at pH < 3 in acid mine drainage.",
-        topic: "Extremophiles — Microbiology",
+        topic: "Extremophiles - Microbiology",
       },
       {
         id: "t23_q32",
@@ -526,8 +526,8 @@ export const TEST_T23 = [
         ],
         correct: "A",
         explanation:
-          "Statement II explains Statement I. Carnivorous plants grow in nutrient-poor (especially nitrogen-poor) soils — this is why they evolved to trap insects as a supplementary nitrogen source. Statement I is essentially correct in this context (insects supplement their nutrition). II explains I perfectly.",
-        topic: "Plant Adaptations — Carnivorous Plants",
+          "Statement II explains Statement I. Carnivorous plants grow in nutrient-poor (especially nitrogen-poor) soils - this is why they evolved to trap insects as a supplementary nitrogen source. Statement I is essentially correct in this context (insects supplement their nutrition). II explains I perfectly.",
+        topic: "Plant Adaptations - Carnivorous Plants",
       },
       {
         id: "t23_q33",
@@ -543,7 +543,7 @@ export const TEST_T23 = [
         correct: "B",
         explanation:
           "The World Commission on Protected Areas (WCPA) is the world's premier network for protected areas expertise and is a commission of the International Union for Conservation of Nature (IUCN).",
-        topic: "International Bodies — IUCN",
+        topic: "International Bodies - IUCN",
       },
       {
         id: "t23_q34",
@@ -558,8 +558,8 @@ export const TEST_T23 = [
         ],
         correct: "B",
         explanation:
-          "Statement I is incorrect — the Chief Wildlife Warden is appointed under the Wildlife (Protection) Act 1972, not the Forest (Conservation) Act 1980. Statement II is incorrect — the CWLW is appointed by the State Government, not the Central Government. Statement III is correct — under WPA 1972, the CWLW is the Member-Secretary of the State Board for Wildlife.",
-        topic: "Wildlife Governance — Chief Wildlife Warden",
+          "Statement I is incorrect - the Chief Wildlife Warden is appointed under the Wildlife (Protection) Act 1972, not the Forest (Conservation) Act 1980. Statement II is incorrect - the CWLW is appointed by the State Government, not the Central Government. Statement III is correct - under WPA 1972, the CWLW is the Member-Secretary of the State Board for Wildlife.",
+        topic: "Wildlife Governance - Chief Wildlife Warden",
       },
       {
         id: "t23_q35",
@@ -575,7 +575,7 @@ export const TEST_T23 = [
         correct: "B",
         explanation:
           "Parasitoid species are found in Carabid beetles (some are parasitoids), Flies (e.g., tachinid flies are parasitoids), and Wasps (ichneumon and braconid wasps are classic parasitoids). Centipedes are predators, not parasitoids. Termites are detritivores/wood feeders. Answer: three.",
-        topic: "Ecology — Parasitoids",
+        topic: "Ecology - Parasitoids",
       },
       {
         id: "t23_q36",
@@ -590,8 +590,8 @@ export const TEST_T23 = [
         ],
         correct: "C",
         explanation:
-          "Statement I is incorrect — Appendix I lists species threatened with extinction where trade is permitted only in exceptional circumstances (not just regulated). Appendix II (not I) covers species not necessarily threatened but requiring regulated trade. Statements II and III are correct — CITES Secretariat is administered by UNEP, and CITES is a legally binding treaty.",
-        topic: "International Conventions — CITES",
+          "Statement I is incorrect - Appendix I lists species threatened with extinction where trade is permitted only in exceptional circumstances (not just regulated). Appendix II (not I) covers species not necessarily threatened but requiring regulated trade. Statements II and III are correct - CITES Secretariat is administered by UNEP, and CITES is a legally binding treaty.",
+        topic: "International Conventions - CITES",
       },
       {
         id: "t23_q37",
@@ -606,7 +606,7 @@ export const TEST_T23 = [
         ],
         correct: "A",
         explanation:
-          "Statements I and II are correct. Asiatic lions exist only in the Gir landscape (I ✓). Population has grown from ~411 (2010) to ~674 (2020), an increase of over 60% (II ✓). Statement III is incorrect — Asiatic lions form smaller prides with typically ONE adult male (unlike African lions which have multiple males in a pride). Answer: A.",
+          "Statements I and II are correct. Asiatic lions exist only in the Gir landscape (I ✓). Population has grown from ~411 (2010) to ~674 (2020), an increase of over 60% (II ✓). Statement III is incorrect - Asiatic lions form smaller prides with typically ONE adult male (unlike African lions which have multiple males in a pride). Answer: A.",
         topic: "Asiatic Lion Conservation",
       },
       {
@@ -623,7 +623,7 @@ export const TEST_T23 = [
         correct: "A",
         explanation:
           "In descending order of numbers in India: Wildlife Sanctuaries (~566) > Conservation Reserves (~218) > Community Reserves (~100+) > National Parks (~106). So the order is II > III > IV > I.",
-        topic: "Protected Areas — Numbers in India",
+        topic: "Protected Areas - Numbers in India",
       },
       {
         id: "t23_q39",
@@ -638,8 +638,8 @@ export const TEST_T23 = [
         ],
         correct: "C",
         explanation:
-          "Statements I and III are correct. Total forest and tree cover is ~25.17% of India's area (I ✓). MP has the largest forest cover, followed by Arunachal Pradesh, then Chhattisgarh (III ✓). Statement II is incorrect — India ranks 10th globally in total forest area, not 6th.",
-        topic: "Forest Cover — India Statistics",
+          "Statements I and III are correct. Total forest and tree cover is ~25.17% of India's area (I ✓). MP has the largest forest cover, followed by Arunachal Pradesh, then Chhattisgarh (III ✓). Statement II is incorrect - India ranks 10th globally in total forest area, not 6th.",
+        topic: "Forest Cover - India Statistics",
       },
       {
         id: "t23_q40",
@@ -655,7 +655,7 @@ export const TEST_T23 = [
         correct: "A",
         explanation:
           "Only the Living Planet Report (I) is a WWF initiative, published biennially. The International Big Cat Alliance (II) is an Indian government-led initiative. The Great Green Wall Initiative (III) is an African Union initiative to combat desertification. Answer: Only one.",
-        topic: "Conservation Initiatives — WWF",
+        topic: "Conservation Initiatives - WWF",
       },
       {
         id: "t23_q41",
@@ -671,7 +671,7 @@ export const TEST_T23 = [
         correct: "B",
         explanation:
           "Malabar Civet and Sambar Deer are nocturnal/crepuscular. Lion-tailed Macaque is diurnal (active during the day). So two of the three are nocturnal/active after sunset.",
-        topic: "Animal Behaviour — Activity Patterns",
+        topic: "Animal Behaviour - Activity Patterns",
       },
       {
         id: "t23_q42",
@@ -686,8 +686,8 @@ export const TEST_T23 = [
         ],
         correct: "C",
         explanation:
-          "Statement I is incorrect — the Minister of Environment, Forest and Climate Change (not the PM) serves as ex-officio Chairperson of the Central Zoo Authority. Statements II and III are correct — CZA has powers to recognise/de-recognise zoos and regulates exchange of Schedule I and II animals.",
-        topic: "Wildlife Governance — CZA",
+          "Statement I is incorrect - the Minister of Environment, Forest and Climate Change (not the PM) serves as ex-officio Chairperson of the Central Zoo Authority. Statements II and III are correct - CZA has powers to recognise/de-recognise zoos and regulates exchange of Schedule I and II animals.",
+        topic: "Wildlife Governance - CZA",
       },
       {
         id: "t23_q43",
@@ -702,13 +702,13 @@ export const TEST_T23 = [
         ],
         correct: "B",
         explanation:
-          "Mulethi (Glycyrrhiza glabra — liquorice), Kalahari (may refer to bitter plant species), Guggle/Guggal (Commiphora wightii), and Kutki (Picrorhiza kurroa) are all well-known medicinal plants in Indian traditional medicine (Ayurveda).",
-        topic: "Medicinal Plants — India",
+          "Mulethi (Glycyrrhiza glabra - liquorice), Kalahari (may refer to bitter plant species), Guggle/Guggal (Commiphora wightii), and Kutki (Picrorhiza kurroa) are all well-known medicinal plants in Indian traditional medicine (Ayurveda).",
+        topic: "Medicinal Plants - India",
       },
       {
         id: "t23_q44",
         qNo: 44,
-        text: "With reference to the Ramsar Sites in India, consider the following information:\nRamsar Site — State — Associated River\nI. Udhwa Lake Bird Sanctuary — Jharkhand — Ganga\nII. Khachoedpalri Wetland — Assam — Barak\nIII. Udaipur Jheel — Bihar — Gandaki\nIV. Khichan Wetland — Madhya Pradesh — Bhavani\nIn how many of the above rows is the information correctly matched?",
+        text: "With reference to the Ramsar Sites in India, consider the following information:\nRamsar Site - State - Associated River\nI. Udhwa Lake Bird Sanctuary - Jharkhand - Ganga\nII. Khachoedpalri Wetland - Assam - Barak\nIII. Udaipur Jheel - Bihar - Gandaki\nIV. Khichan Wetland - Madhya Pradesh - Bhavani\nIn how many of the above rows is the information correctly matched?",
         suffix: "",
         options: [
           { id: "A", text: "Only one" },
@@ -719,7 +719,7 @@ export const TEST_T23 = [
         correct: "A",
         explanation:
           "Only Row I (Udhwa Lake, Jharkhand, Ganga) is correctly matched. Khachoedpalri Wetland is in Sikkim, not Assam (II ✗). Udaipur Jheel is in Tripura, not Bihar (III ✗). Khichan Wetland is in Rajasthan, not Madhya Pradesh (IV ✗). Answer: Only one.",
-        topic: "Ramsar Sites — India",
+        topic: "Ramsar Sites - India",
       },
       {
         id: "t23_q45",
@@ -735,7 +735,7 @@ export const TEST_T23 = [
         correct: "A",
         explanation:
           "Only Red sanders (Pterocarpus santalinus) is native to India (Eastern Ghats). Cashew (Anacardium occidentale) is native to Brazil (introduced to India by Portuguese). Papaya (Carica papaya) is native to Central America. Answer: Only one.",
-        topic: "Plant Origin — Native vs Introduced",
+        topic: "Plant Origin - Native vs Introduced",
       },
       {
         id: "t23_q46",
@@ -751,7 +751,7 @@ export const TEST_T23 = [
         correct: "D",
         explanation:
           "From west to east in Assam: Buxa (West Bengal border area) → Manas → Orang → Kaziranga. So the order is III (Buxa) → II (Manas) → IV (Orang) → I (Kaziranga).",
-        topic: "Tiger Reserves — Geographic Location",
+        topic: "Tiger Reserves - Geographic Location",
       },
       {
         id: "t23_q47",
@@ -766,8 +766,8 @@ export const TEST_T23 = [
         ],
         correct: "C",
         explanation:
-          "Statement I is correct — under WPA 1972, boundaries of National Parks/Sanctuaries cannot be altered without NBWL recommendation. Statement II is incorrect — NWIS was developed by Wildlife Institute of India (WII), not NBWL. Statement III is incorrect — financial assistance under Project Tiger is provided by the National Tiger Conservation Authority (NTCA), not NBWL.",
-        topic: "Wildlife Governance — NBWL",
+          "Statement I is correct - under WPA 1972, boundaries of National Parks/Sanctuaries cannot be altered without NBWL recommendation. Statement II is incorrect - NWIS was developed by Wildlife Institute of India (WII), not NBWL. Statement III is incorrect - financial assistance under Project Tiger is provided by the National Tiger Conservation Authority (NTCA), not NBWL.",
+        topic: "Wildlife Governance - NBWL",
       },
       {
         id: "t23_q48",
@@ -783,7 +783,7 @@ export const TEST_T23 = [
         correct: "D",
         explanation:
           "The Central Asian Mammals Initiative (CAMI) is a specialised agreement under the Convention on the Conservation of Migratory Species of Wild Animals (CMS/Bonn Convention), aimed at conserving migratory mammals in Central Asia.",
-        topic: "International Conventions — CMS",
+        topic: "International Conventions - CMS",
       },
       {
         id: "t23_q49",
@@ -799,12 +799,12 @@ export const TEST_T23 = [
         correct: "A",
         explanation:
           "Gandhi Sagar Wildlife Sanctuary (Madhya Pradesh) is an IBA, is divided by the Chambal river, lies in the Khathiar-Gir dry deciduous ecoregion, and has been proposed as the second site for cheetah reintroduction in India after Kuno National Park.",
-        topic: "Protected Areas — Gandhi Sagar",
+        topic: "Protected Areas - Gandhi Sagar",
       },
       {
         id: "t23_q50",
         qNo: 50,
-        text: "With reference to the various crocodile species in India, consider the following information:\nCrocodile Species — Naturally found in — Status under IUCN Red List\nI. Mugger crocodile — Satkosia Gorge Sanctuary — Vulnerable\nII. Saltwater crocodile — Bhitarkanika Mangroves — Critically Endangered\nIII. Gharial — National Chambal Sanctuary — Near Threatened\nIn how many of the above rows is the information correctly matched?",
+        text: "With reference to the various crocodile species in India, consider the following information:\nCrocodile Species - Naturally found in - Status under IUCN Red List\nI. Mugger crocodile - Satkosia Gorge Sanctuary - Vulnerable\nII. Saltwater crocodile - Bhitarkanika Mangroves - Critically Endangered\nIII. Gharial - National Chambal Sanctuary - Near Threatened\nIn how many of the above rows is the information correctly matched?",
         suffix: "",
         options: [
           { id: "A", text: "Only one" },
@@ -814,8 +814,8 @@ export const TEST_T23 = [
         ],
         correct: "A",
         explanation:
-          "Only Row I is correctly matched — Mugger crocodile is found in Satkosia and is Vulnerable (I ✓). Saltwater crocodile is Least Concern (not Critically Endangered) on IUCN — (II ✗). Gharial is Critically Endangered (not Near Threatened) on IUCN — (III ✗). Answer: Only one.",
-        topic: "Crocodile Species — India",
+          "Only Row I is correctly matched - Mugger crocodile is found in Satkosia and is Vulnerable (I ✓). Saltwater crocodile is Least Concern (not Critically Endangered) on IUCN - (II ✗). Gharial is Critically Endangered (not Near Threatened) on IUCN - (III ✗). Answer: Only one.",
+        topic: "Crocodile Species - India",
       },
     ],
   },

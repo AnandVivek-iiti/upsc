@@ -1,15 +1,15 @@
 /**
  * UserTimeline.jsx
  * ─────────────────────────────────────────────────────────────────────────────
- * Feature 8 — Study Session Timeline
+ * Feature 8 - Study Session Timeline
  *
  * Renders a chronological event log of study sessions.
  * Can be used in two modes:
  *
- *   Mode A — Today's inline timeline (pass `events` prop from useSubjectTimer):
+ *   Mode A - Today's inline timeline (pass `events` prop from useSubjectTimer):
  *     <UserTimeline events={todayTimeline} compact />
  *
- *   Mode B — Full paginated history (fetches from GET /api/subject-sessions/timeline):
+ *   Mode B - Full paginated history (fetches from GET /api/subject-sessions/timeline):
  *     <UserTimeline userId={userId} isLoggedIn={isLoggedIn} />
  *
  * Visual design:
@@ -125,10 +125,10 @@ function TimelineEvent({ event, isLast }) {
 // ─── Main UserTimeline ────────────────────────────────────────────────────────
 /**
  * Props:
- *   events      — pre-fetched events array (today's timeline from useSubjectTimer)
- *   compact     — if true, shows only 6 events with no pagination
- *   userId      — enables self-fetching mode (full timeline)
- *   isLoggedIn  — guards the self-fetching mode
+ *   events      - pre-fetched events array (today's timeline from useSubjectTimer)
+ *   compact     - if true, shows only 6 events with no pagination
+ *   userId      - enables self-fetching mode (full timeline)
+ *   isLoggedIn  - guards the self-fetching mode
  */
 export default function UserTimeline({
   events:    externalEvents = null,
@@ -143,7 +143,7 @@ export default function UserTimeline({
 
   const LIMIT = compact ? 6 : 30;
 
-  // Self-fetch mode — only used when no externalEvents provided
+  // Self-fetch mode - only used when no externalEvents provided
   const fetchEvents = useCallback(async (newOffset = 0) => {
     if (!isLoggedIn || !userId || externalEvents !== null) return;
     setLoading(true);

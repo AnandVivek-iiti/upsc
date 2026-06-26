@@ -33,7 +33,7 @@ export function useRevisionQueue() {
         // unpin
         next = prev.filter((q) => (q._id || q.id) !== id);
       } else {
-        // pin — merge in subject/paper metadata
+        // pin - merge in subject/paper metadata
         next = [{ ...question, ...meta }, ...prev];
       }
       save(next);

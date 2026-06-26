@@ -6,7 +6,7 @@
 export const TEST_T18 = [
   {
   id: "sfg2026-t18",
-  title: "SFG 2026 — Level 1 · Test 18",
+  title: "SFG 2026 - Level 1 · Test 18",
   testCode: "321116",
   subject: "Economics",
   topic: "External Sector, BOP & International Trade",
@@ -50,7 +50,7 @@ export const TEST_T18 = [
       ],
       correct: "D",
       explanation:
-        "Statement I is incorrect — when foreigners buy goods from India (exports), it is an injection into the circular flow, not a leakage. Leakages are savings, taxes, and imports. Exports bring money INTO the economy. Statement II is correct — India's exports increase demand for domestically produced goods, boosting aggregate demand. Answer: D.",
+        "Statement I is incorrect - when foreigners buy goods from India (exports), it is an injection into the circular flow, not a leakage. Leakages are savings, taxes, and imports. Exports bring money INTO the economy. Statement II is correct - India's exports increase demand for domestically produced goods, boosting aggregate demand. Answer: D.",
       topic: "Circular Flow & Exports",
       difficulty: "Medium",
       pyqYear: null,
@@ -68,7 +68,7 @@ export const TEST_T18 = [
       ],
       correct: "B",
       explanation:
-        "Capital Account components: financial transactions creating assets/liabilities. ECB (II ✓) — capital account (borrowing); Foreign offshore funds/FII (IV ✓) — capital account (portfolio investment). Net investment income (I) — Current Account (factor income). Gifts (III) — Current Account (transfers/invisibles). Two items (II and IV) belong to Capital Account. Answer: B.",
+        "Capital Account components: financial transactions creating assets/liabilities. ECB (II ✓) - capital account (borrowing); Foreign offshore funds/FII (IV ✓) - capital account (portfolio investment). Net investment income (I) - Current Account (factor income). Gifts (III) - Current Account (transfers/invisibles). Two items (II and IV) belong to Capital Account. Answer: B.",
       topic: "Balance of Payments",
       difficulty: "Hard",
       pyqYear: null,
@@ -86,7 +86,7 @@ export const TEST_T18 = [
       ],
       correct: "B",
       explanation:
-        "Trade balance (or Balance of Trade) refers specifically to the difference between merchandise (goods) exports and imports only — it is NOT the same as the current account balance. A positive trade balance means goods exports > goods imports. Services are part of the current account but not the trade balance. Answer: B.",
+        "Trade balance (or Balance of Trade) refers specifically to the difference between merchandise (goods) exports and imports only - it is NOT the same as the current account balance. A positive trade balance means goods exports > goods imports. Services are part of the current account but not the trade balance. Answer: B.",
       topic: "Balance of Trade",
       difficulty: "Easy",
       pyqYear: null,
@@ -104,7 +104,7 @@ export const TEST_T18 = [
       ],
       correct: "D",
       explanation:
-        "Statement I is incorrect — the USA is the world's largest ethanol producer (from corn), while Brazil is the second largest (from sugarcane). Statement II is correct — the USA uses corn as principal feedstock while Brazil uses sugarcane. Answer: D.",
+        "Statement I is incorrect - the USA is the world's largest ethanol producer (from corn), while Brazil is the second largest (from sugarcane). Statement II is correct - the USA uses corn as principal feedstock while Brazil uses sugarcane. Answer: D.",
       topic: "Ethanol & Energy",
       difficulty: "Medium",
       pyqYear: 2023,
@@ -123,7 +123,7 @@ export const TEST_T18 = [
       correct: "C",
       explanation:
         "Invisibles under Current Account = Services + Transfers + Investment Income. I (Tourism/Travel services ✓), II (Remittance/Transfer ✓), IV (IT services ✓), V (Education services/payment abroad ✓). Item III (German company setting up plant = FDI) belongs to the Capital/Financial Account, not Current Account. Four items (I, II, IV, V) are invisibles. Answer: C.",
-      topic: "BOP — Invisibles",
+      topic: "BOP - Invisibles",
       difficulty: "Medium",
       pyqYear: null,
     },
@@ -140,8 +140,8 @@ export const TEST_T18 = [
       ],
       correct: "B",
       explanation:
-        "When an Indian company sells shares to a foreign (American) investor, foreign capital flows INTO India (portfolio investment/FII). This is a capital inflow, recorded as a CREDIT in the Capital/Financial Account of India's BOP (it represents a liability — India owes the investor returns). Answer: B.",
-      topic: "BOP — Capital Account",
+        "When an Indian company sells shares to a foreign (American) investor, foreign capital flows INTO India (portfolio investment/FII). This is a capital inflow, recorded as a CREDIT in the Capital/Financial Account of India's BOP (it represents a liability - India owes the investor returns). Answer: B.",
+      topic: "BOP - Capital Account",
       difficulty: "Medium",
       pyqYear: null,
     },
@@ -158,7 +158,7 @@ export const TEST_T18 = [
       ],
       correct: "A",
       explanation:
-        "Statement I is correct — exports are above-the-line items (autonomous transactions). Statement II is correct — exports are autonomous transactions made independently of BOP state. Statement III is correct — exports are credit items in Current Account. Both II and III explain I because 'above-the-line' means autonomous transactions (II) that are recorded as credits in the current account (III). Answer: A.",
+        "Statement I is correct - exports are above-the-line items (autonomous transactions). Statement II is correct - exports are autonomous transactions made independently of BOP state. Statement III is correct - exports are credit items in Current Account. Both II and III explain I because 'above-the-line' means autonomous transactions (II) that are recorded as credits in the current account (III). Answer: A.",
       topic: "BOP Concepts",
       difficulty: "Hard",
       pyqYear: null,
@@ -176,7 +176,7 @@ export const TEST_T18 = [
       ],
       correct: "D",
       explanation:
-        "Statement I is incorrect — higher interest rates attract foreign capital inflows, increasing demand for the Indian rupee, which causes APPRECIATION not depreciation. Statement II is correct — higher interest rates make Indian assets more attractive to foreign investors, leading to higher capital inflows. Answer: D.",
+        "Statement I is incorrect - higher interest rates attract foreign capital inflows, increasing demand for the Indian rupee, which causes APPRECIATION not depreciation. Statement II is correct - higher interest rates make Indian assets more attractive to foreign investors, leading to higher capital inflows. Answer: D.",
       topic: "Exchange Rate & Interest Rates",
       difficulty: "Medium",
       pyqYear: null,
@@ -231,7 +231,7 @@ export const TEST_T18 = [
       correct: "D",
       explanation:
         "NEER is the weighted average of exchange rates against a basket of currencies. An increase in NEER means the domestic currency has APPRECIATED (become stronger), not depreciated. Appreciation makes exports more expensive and LESS competitive, not more. Both statements are incorrect. Answer: D.",
-      topic: "Exchange Rates — NEER/REER",
+      topic: "Exchange Rates - NEER/REER",
       difficulty: "Hard",
       pyqYear: null,
     },
@@ -266,7 +266,7 @@ export const TEST_T18 = [
       ],
       correct: "A",
       explanation:
-        "When official reserve transactions are zero, it means the central bank has not intervened — there is no need to draw down or add to reserves. This occurs when the BOP is in overall equilibrium (all above-the-line transactions balance out without needing reserve adjustments). Answer: A.",
+        "When official reserve transactions are zero, it means the central bank has not intervened - there is no need to draw down or add to reserves. This occurs when the BOP is in overall equilibrium (all above-the-line transactions balance out without needing reserve adjustments). Answer: A.",
       topic: "BOP Equilibrium",
       difficulty: "Hard",
       pyqYear: null,
@@ -284,7 +284,7 @@ export const TEST_T18 = [
       ],
       correct: "B",
       explanation:
-        "Factors reducing currency crisis risk are those that strengthen foreign exchange reserves and current account. IT sector earnings (1 ✓) bring in forex. Remittances (3 ✓) bring in forex. Increasing government expenditure (2) can worsen fiscal deficit and inflation, potentially worsening the currency — it does NOT reduce currency crisis risk. Answer: B.",
+        "Factors reducing currency crisis risk are those that strengthen foreign exchange reserves and current account. IT sector earnings (1 ✓) bring in forex. Remittances (3 ✓) bring in forex. Increasing government expenditure (2) can worsen fiscal deficit and inflation, potentially worsening the currency - it does NOT reduce currency crisis risk. Answer: B.",
       topic: "Currency Crisis",
       difficulty: "Medium",
       pyqYear: 2022,
@@ -338,7 +338,7 @@ export const TEST_T18 = [
       ],
       correct: "D",
       explanation:
-        "Marginal Propensity to Import (MPM) = ΔM/ΔY — the change in imports resulting from a unit change in national income. It measures how much of each additional unit of income is spent on imports. Answer: D.",
+        "Marginal Propensity to Import (MPM) = ΔM/ΔY - the change in imports resulting from a unit change in national income. It measures how much of each additional unit of income is spent on imports. Answer: D.",
       topic: "MPM & Trade",
       difficulty: "Easy",
       pyqYear: null,
@@ -356,7 +356,7 @@ export const TEST_T18 = [
       ],
       correct: "A",
       explanation:
-        "Advantages of flexible exchange rate: No need to maintain large reserves to defend a peg (I ✓), greater monetary policy autonomy (II ✓). Statement III is incorrect — a flexible exchange rate does not automatically ensure full capital account convertibility; CAC is a separate policy decision. Answer: A.",
+        "Advantages of flexible exchange rate: No need to maintain large reserves to defend a peg (I ✓), greater monetary policy autonomy (II ✓). Statement III is incorrect - a flexible exchange rate does not automatically ensure full capital account convertibility; CAC is a separate policy decision. Answer: A.",
       topic: "Exchange Rate Systems",
       difficulty: "Medium",
       pyqYear: null,
@@ -392,8 +392,8 @@ export const TEST_T18 = [
       ],
       correct: "C",
       explanation:
-        "Statement I is correct — Switzerland is a major gold exporter/refiner/trader (gold forms a large part of Swiss exports). Statement II is incorrect — the USA holds the world's largest gold reserves, followed by Germany; Switzerland does not hold the second largest. Answer: C.",
-      topic: "International Trade — Gold",
+        "Statement I is correct - Switzerland is a major gold exporter/refiner/trader (gold forms a large part of Swiss exports). Statement II is incorrect - the USA holds the world's largest gold reserves, followed by Germany; Switzerland does not hold the second largest. Answer: C.",
+      topic: "International Trade - Gold",
       difficulty: "Medium",
       pyqYear: null,
     },
@@ -410,7 +410,7 @@ export const TEST_T18 = [
       ],
       correct: "C",
       explanation:
-        "IMF quotas are determined by a formula based on GDP, openness (trade/capital flows), economic variability (fluctuations in capital flows), and international reserves. Per capita income (I) is NOT a factor in the quota formula — it's about the size and openness of the economy, not per capita. Three factors (II, III, IV) are used. Answer: C.",
+        "IMF quotas are determined by a formula based on GDP, openness (trade/capital flows), economic variability (fluctuations in capital flows), and international reserves. Per capita income (I) is NOT a factor in the quota formula - it's about the size and openness of the economy, not per capita. Three factors (II, III, IV) are used. Answer: C.",
       topic: "IMF Quota",
       difficulty: "Hard",
       pyqYear: null,
@@ -428,7 +428,7 @@ export const TEST_T18 = [
       ],
       correct: "D",
       explanation:
-        "The J-Curve Effect describes the trade balance response to currency depreciation. Initially, the trade balance worsens (because import prices rise immediately in domestic currency while export volumes take time to adjust). Over time, as exports increase and imports decrease due to price changes, the trade balance improves — creating a J-shaped curve. Answer: D.",
+        "The J-Curve Effect describes the trade balance response to currency depreciation. Initially, the trade balance worsens (because import prices rise immediately in domestic currency while export volumes take time to adjust). Over time, as exports increase and imports decrease due to price changes, the trade balance improves - creating a J-shaped curve. Answer: D.",
       topic: "J-Curve Effect",
       difficulty: "Medium",
       pyqYear: null,
@@ -446,7 +446,7 @@ export const TEST_T18 = [
       ],
       correct: "C",
       explanation:
-        "Statement I is correct — RoDTEP neutralizes embedded taxes/duties in exported goods. Statement II is incorrect — RoDTEP is administered by the Department of Revenue (Ministry of Finance), not Department of Commerce. Statement III is correct — benefits are in the form of transferable electronic scrips for paying customs duty. Answer: C.",
+        "Statement I is correct - RoDTEP neutralizes embedded taxes/duties in exported goods. Statement II is incorrect - RoDTEP is administered by the Department of Revenue (Ministry of Finance), not Department of Commerce. Statement III is correct - benefits are in the form of transferable electronic scrips for paying customs duty. Answer: C.",
       topic: "Export Promotion Schemes",
       difficulty: "Hard",
       pyqYear: null,
@@ -500,7 +500,7 @@ export const TEST_T18 = [
       ],
       correct: "C",
       explanation:
-        "Statement I is correct — compulsory licensing allows third parties to produce a patented product without the patent holder's consent (in public interest). Statement II is incorrect — TRIPS does NOT mandate national emergency as the only or compulsory ground. The Doha Declaration (2001) clarified that countries have flexibility in defining grounds for compulsory licensing, including national emergencies, but it's not mandated as the only ground. Answer: C.",
+        "Statement I is correct - compulsory licensing allows third parties to produce a patented product without the patent holder's consent (in public interest). Statement II is incorrect - TRIPS does NOT mandate national emergency as the only or compulsory ground. The Doha Declaration (2001) clarified that countries have flexibility in defining grounds for compulsory licensing, including national emergencies, but it's not mandated as the only ground. Answer: C.",
       topic: "TRIPS & Intellectual Property",
       difficulty: "Medium",
       pyqYear: null,
@@ -554,7 +554,7 @@ export const TEST_T18 = [
       ],
       correct: "A",
       explanation:
-        "Statements I, II and IV are correct. Statement III is incorrect — India follows a managed floating exchange rate system, not a fixed pre-determined value. RBI intervenes to prevent excessive volatility, not to maintain a fixed rate. Answer: A.",
+        "Statements I, II and IV are correct. Statement III is incorrect - India follows a managed floating exchange rate system, not a fixed pre-determined value. RBI intervenes to prevent excessive volatility, not to maintain a fixed rate. Answer: A.",
       topic: "Foreign Exchange Reserves",
       difficulty: "Medium",
       pyqYear: null,
@@ -572,7 +572,7 @@ export const TEST_T18 = [
       ],
       correct: "A",
       explanation:
-        "Both are correct and II explains I. US Treasury bonds are backed by the 'full faith and credit' of the US government — there are no hard assets (gold, property) backing them. If the US defaults, bondholders cannot claim physical assets, only rely on the government's promise. Statement II explains why Statement I would hold true in a default scenario. Answer: A.",
+        "Both are correct and II explains I. US Treasury bonds are backed by the 'full faith and credit' of the US government - there are no hard assets (gold, property) backing them. If the US defaults, bondholders cannot claim physical assets, only rely on the government's promise. Statement II explains why Statement I would hold true in a default scenario. Answer: A.",
       topic: "Sovereign Debt",
       difficulty: "Hard",
       pyqYear: null,
@@ -590,8 +590,8 @@ export const TEST_T18 = [
       ],
       correct: "D",
       explanation:
-        "Downstream investment (under FEMA/RBI guidelines) refers to investment by an Indian company that has total foreign investment in it (or an Investment Vehicle) into the capital of another Indian company. This is about foreign-owned Indian entities investing further into other Indian entities — hence 'downstream' in the investment chain. Answer: D.",
-      topic: "FDI — Downstream Investment",
+        "Downstream investment (under FEMA/RBI guidelines) refers to investment by an Indian company that has total foreign investment in it (or an Investment Vehicle) into the capital of another Indian company. This is about foreign-owned Indian entities investing further into other Indian entities - hence 'downstream' in the investment chain. Answer: D.",
+      topic: "FDI - Downstream Investment",
       difficulty: "Hard",
       pyqYear: null,
     },
@@ -626,7 +626,7 @@ export const TEST_T18 = [
       ],
       correct: "B",
       explanation:
-        "Statement I is incorrect — BCBS was established by the G10 central bank governors (not OECD) in 1974, hosted at BIS in Basel. Statement II is correct — BIS provides BCBS's secretariat. Statement III is incorrect — Basel standards are voluntary/non-binding; member countries incorporate them according to their own discretion (though peer pressure and market forces encourage compliance). Answer: B.",
+        "Statement I is incorrect - BCBS was established by the G10 central bank governors (not OECD) in 1974, hosted at BIS in Basel. Statement II is correct - BIS provides BCBS's secretariat. Statement III is incorrect - Basel standards are voluntary/non-binding; member countries incorporate them according to their own discretion (though peer pressure and market forces encourage compliance). Answer: B.",
       topic: "Basel Committee & BIS",
       difficulty: "Medium",
       pyqYear: null,
@@ -662,7 +662,7 @@ export const TEST_T18 = [
       ],
       correct: "C",
       explanation:
-        "Non-tariff barriers (NTBs) are all trade barriers that are NOT tariffs/duties. Quotas (I ✓), Licenses (II ✓), SPS measures (IV ✓), Trade Embargo (V ✓) are all NTBs. Ad-valorem duty (III) is a tariff (a tax on imports expressed as a percentage of value) — NOT a non-tariff barrier. Four items are NTBs. Answer: C.",
+        "Non-tariff barriers (NTBs) are all trade barriers that are NOT tariffs/duties. Quotas (I ✓), Licenses (II ✓), SPS measures (IV ✓), Trade Embargo (V ✓) are all NTBs. Ad-valorem duty (III) is a tariff (a tax on imports expressed as a percentage of value) - NOT a non-tariff barrier. Four items are NTBs. Answer: C.",
       topic: "Non-Tariff Barriers",
       difficulty: "Medium",
       pyqYear: null,
@@ -680,7 +680,7 @@ export const TEST_T18 = [
       ],
       correct: "A",
       explanation:
-        "Both are correct and II explains I. SEZs in India are treated as deemed foreign territory for trade operations and tariffs — goods moving from the Domestic Tariff Area (DTA) to SEZ are treated as exports and vice versa. Because the SEZ is 'foreign territory,' units there don't need import licenses for goods coming from abroad. Answer: A.",
+        "Both are correct and II explains I. SEZs in India are treated as deemed foreign territory for trade operations and tariffs - goods moving from the Domestic Tariff Area (DTA) to SEZ are treated as exports and vice versa. Because the SEZ is 'foreign territory,' units there don't need import licenses for goods coming from abroad. Answer: A.",
       topic: "Special Economic Zones",
       difficulty: "Medium",
       pyqYear: null,
@@ -698,7 +698,7 @@ export const TEST_T18 = [
       ],
       correct: "B",
       explanation:
-        "Statement I ✓ — ECBs cannot be used for investment in capital markets/real estate. Statement II ✗ — The minimum maturity period varies by track; for Track I it's 3-5 years (not uniformly 10). Statement III ✓ — NGOs/cooperatives engaged in microfinance are eligible. Statement IV ✓ — Rupee-denominated ECBs (Masala Bonds) are allowed. Answer: B (I, III and IV).",
+        "Statement I ✓ - ECBs cannot be used for investment in capital markets/real estate. Statement II ✗ - The minimum maturity period varies by track; for Track I it's 3-5 years (not uniformly 10). Statement III ✓ - NGOs/cooperatives engaged in microfinance are eligible. Statement IV ✓ - Rupee-denominated ECBs (Masala Bonds) are allowed. Answer: B (I, III and IV).",
       topic: "External Commercial Borrowings",
       difficulty: "Hard",
       pyqYear: null,
@@ -716,7 +716,7 @@ export const TEST_T18 = [
       ],
       correct: "C",
       explanation:
-        "Reverse Flipping refers to the process where an Indian startup that had earlier moved its legal domicile/headquarters to a foreign jurisdiction (like Singapore, US, Cayman Islands — 'flipping') now moves back to India. Companies like Razorpay, PhonePe did reverse flipping. Option A describes 'flipping' (not reverse). Answer: C.",
+        "Reverse Flipping refers to the process where an Indian startup that had earlier moved its legal domicile/headquarters to a foreign jurisdiction (like Singapore, US, Cayman Islands - 'flipping') now moves back to India. Companies like Razorpay, PhonePe did reverse flipping. Option A describes 'flipping' (not reverse). Answer: C.",
       topic: "Startup Ecosystem",
       difficulty: "Medium",
       pyqYear: null,
@@ -752,7 +752,7 @@ export const TEST_T18 = [
       ],
       correct: "A",
       explanation:
-        "Devaluation makes the domestic currency cheaper, so exports become cheaper for foreigners — this necessarily improves competitiveness of exports (1 ✓). Statement 2 is incorrect — devaluation REDUCES the foreign value of domestic currency. Statement 3 is incorrect — devaluation doesn't necessarily improve trade balance (J-curve effect; if Marshall-Lerner condition isn't met, trade balance may worsen). Only 1 is necessarily correct. Answer: A.",
+        "Devaluation makes the domestic currency cheaper, so exports become cheaper for foreigners - this necessarily improves competitiveness of exports (1 ✓). Statement 2 is incorrect - devaluation REDUCES the foreign value of domestic currency. Statement 3 is incorrect - devaluation doesn't necessarily improve trade balance (J-curve effect; if Marshall-Lerner condition isn't met, trade balance may worsen). Only 1 is necessarily correct. Answer: A.",
       topic: "Devaluation",
       difficulty: "Medium",
       pyqYear: 2021,
@@ -770,7 +770,7 @@ export const TEST_T18 = [
       ],
       correct: "B",
       explanation:
-        "Statement I is incorrect — the LRS limit is USD 2,50,000 (not 3,50,000) per financial year per resident individual. Statement II is correct — LRS applies only to resident individuals (including minors through natural guardians); it does NOT apply to corporates, partnership firms, HUFs, trusts, etc. Answer: B.",
+        "Statement I is incorrect - the LRS limit is USD 2,50,000 (not 3,50,000) per financial year per resident individual. Statement II is correct - LRS applies only to resident individuals (including minors through natural guardians); it does NOT apply to corporates, partnership firms, HUFs, trusts, etc. Answer: B.",
       topic: "Liberalised Remittance Scheme",
       difficulty: "Medium",
       pyqYear: null,
@@ -788,7 +788,7 @@ export const TEST_T18 = [
       ],
       correct: "B",
       explanation:
-        "Statement I ✓ — NDB HQ is in Shanghai (not Beijing). Wait — this should be verified: NDB headquarters is in Shanghai. So I is incorrect. Statement II ✓ — NDB founding members have equal voting rights. Statement III ✓ — NDB finances infrastructure in BRICS and other developing countries. Statement IV ✓ — Membership is open to UN member states. Actually I is WRONG (Shanghai, not Beijing). Answer depends on Shanghai vs Beijing distinction. Given the options and standard answer key: B (I, III and IV) — but I (Beijing) should be incorrect. The correct answer per the exam is B.",
+        "Statement I ✓ - NDB HQ is in Shanghai (not Beijing). Wait - this should be verified: NDB headquarters is in Shanghai. So I is incorrect. Statement II ✓ - NDB founding members have equal voting rights. Statement III ✓ - NDB finances infrastructure in BRICS and other developing countries. Statement IV ✓ - Membership is open to UN member states. Actually I is WRONG (Shanghai, not Beijing). Answer depends on Shanghai vs Beijing distinction. Given the options and standard answer key: B (I, III and IV) - but I (Beijing) should be incorrect. The correct answer per the exam is B.",
       topic: "New Development Bank",
       difficulty: "Medium",
       pyqYear: null,
@@ -806,7 +806,7 @@ export const TEST_T18 = [
       ],
       correct: "A",
       explanation:
-        "World Development Report (I) — World Bank; Global Financial Stability Report (II) — IMF; World Economic Outlook (III) — IMF; Global Risks Report (IV) — World Economic Forum (NOT World Bank); Global Economic Prospects (V) — World Bank. Two reports (I and V) are by World Bank Group. Answer: A.",
+        "World Development Report (I) - World Bank; Global Financial Stability Report (II) - IMF; World Economic Outlook (III) - IMF; Global Risks Report (IV) - World Economic Forum (NOT World Bank); Global Economic Prospects (V) - World Bank. Two reports (I and V) are by World Bank Group. Answer: A.",
       topic: "International Reports",
       difficulty: "Medium",
       pyqYear: null,
@@ -842,8 +842,8 @@ export const TEST_T18 = [
       ],
       correct: "D",
       explanation:
-        "Statement I is incorrect — TRIMs applies only to investment measures related to TRADE IN GOODS (not services; services are covered under GATS). Statement II is incorrect — TRIMs does NOT permit local content requirements; rather, it prohibits them as they violate national treatment and quantitative restriction rules. Developing countries got transition periods but cannot use local content requirements as a permanent exception. Answer: D.",
-      topic: "WTO — TRIMs",
+        "Statement I is incorrect - TRIMs applies only to investment measures related to TRADE IN GOODS (not services; services are covered under GATS). Statement II is incorrect - TRIMs does NOT permit local content requirements; rather, it prohibits them as they violate national treatment and quantitative restriction rules. Developing countries got transition periods but cannot use local content requirements as a permanent exception. Answer: D.",
+      topic: "WTO - TRIMs",
       difficulty: "Hard",
       pyqYear: null,
     },
@@ -860,7 +860,7 @@ export const TEST_T18 = [
       ],
       correct: "D",
       explanation:
-        "Terms of Trade (ToT) = (Export Price Index / Import Price Index) × 100. It measures the relative price of exports in terms of imports — how many units of imports can be purchased per unit of exports. Improvement in ToT means exports command higher prices relative to imports. Answer: D.",
+        "Terms of Trade (ToT) = (Export Price Index / Import Price Index) × 100. It measures the relative price of exports in terms of imports - how many units of imports can be purchased per unit of exports. Improvement in ToT means exports command higher prices relative to imports. Answer: D.",
       topic: "Terms of Trade",
       difficulty: "Easy",
       pyqYear: null,
@@ -878,7 +878,7 @@ export const TEST_T18 = [
       ],
       correct: "C",
       explanation:
-        "Statement I is correct — SDR allocations to countries are like reserve assets, not loans — they don't create debt obligation unless countries use SDRs beyond their allocations. Statement II is incorrect — SDR value is based on a basket of FIVE currencies (USD, EUR, JPY, GBP, CNY/RMB since 2016), not six. Statement III is correct — SDRs can only be held by IMF member countries and certain official holders; private entities/individuals cannot hold them. Answer: C.",
+        "Statement I is correct - SDR allocations to countries are like reserve assets, not loans - they don't create debt obligation unless countries use SDRs beyond their allocations. Statement II is incorrect - SDR value is based on a basket of FIVE currencies (USD, EUR, JPY, GBP, CNY/RMB since 2016), not six. Statement III is correct - SDRs can only be held by IMF member countries and certain official holders; private entities/individuals cannot hold them. Answer: C.",
       topic: "Special Drawing Rights",
       difficulty: "Hard",
       pyqYear: null,
@@ -896,15 +896,15 @@ export const TEST_T18 = [
       ],
       correct: "A",
       explanation:
-        "Statement I ✓ — IBRD was established (1944, Bretton Woods) primarily to help reconstruct war-torn Europe and later for development. Statement II ✓ — IBRD lends only to sovereign governments or with sovereign guarantees (IFC, not IBRD, lends to private sector). Statement III ✗ — India is a founding member of IBRD/IMF (1945). Actually India IS a founding member. So answer should be D. But given the exam key says A, Statement III may be contested. Standard answer: A.",
-      topic: "World Bank — IBRD",
+        "Statement I ✓ - IBRD was established (1944, Bretton Woods) primarily to help reconstruct war-torn Europe and later for development. Statement II ✓ - IBRD lends only to sovereign governments or with sovereign guarantees (IFC, not IBRD, lends to private sector). Statement III ✗ - India is a founding member of IBRD/IMF (1945). Actually India IS a founding member. So answer should be D. But given the exam key says A, Statement III may be contested. Standard answer: A.",
+      topic: "World Bank - IBRD",
       difficulty: "Medium",
       pyqYear: null,
     },
     {
       id: "t18_q50",
       qNo: 50,
-      text: "With reference to the World Bank Group, consider the following pairs:\n\nWorld Bank institution — Primary functions\nI. International Development Association (IDA) — Provides grants and low-interest loans that help countries invest in their futures, improve lives, and create safer, more prosperous communities worldwide.\nII. International Finance Corporation (IFC) — Financing private sector companies in developing countries based on government guarantee only.\nIII. Multilateral Investment Guarantee Agency (MIGA) — Provides guarantees against commercial risks to facilitate the flow of foreign investment in developing countries.",
+      text: "With reference to the World Bank Group, consider the following pairs:\n\nWorld Bank institution - Primary functions\nI. International Development Association (IDA) - Provides grants and low-interest loans that help countries invest in their futures, improve lives, and create safer, more prosperous communities worldwide.\nII. International Finance Corporation (IFC) - Financing private sector companies in developing countries based on government guarantee only.\nIII. Multilateral Investment Guarantee Agency (MIGA) - Provides guarantees against commercial risks to facilitate the flow of foreign investment in developing countries.",
       suffix: "How many of the pairs given above are correctly matched?",
       options: [
         { id: "A", text: "Only one" },
@@ -914,7 +914,7 @@ export const TEST_T18 = [
       ],
       correct: "B",
       explanation:
-        "Pair I ✓ — IDA provides grants and low-interest/interest-free loans to poorest countries. Pair II ✗ — IFC finances private sector WITHOUT government guarantees (that's IFC's key feature — it lends to private companies directly). Pair III ✓ — MIGA provides political risk insurance/guarantees to encourage private investment. Two pairs (I and III) are correct. Answer: B.",
+        "Pair I ✓ - IDA provides grants and low-interest/interest-free loans to poorest countries. Pair II ✗ - IFC finances private sector WITHOUT government guarantees (that's IFC's key feature - it lends to private companies directly). Pair III ✓ - MIGA provides political risk insurance/guarantees to encourage private investment. Two pairs (I and III) are correct. Answer: B.",
       topic: "World Bank Group",
       difficulty: "Medium",
       pyqYear: null,

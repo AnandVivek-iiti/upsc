@@ -2,7 +2,7 @@
 // Bug fixed: code was using `new Date().toISOString().split("T")[0]`, which
 // reads the date in UTC. Render/most hosts run servers in UTC, so for an
 // India-based user (UTC+5:30) the "day" doesn't roll over until 5:30 AM IST
-// instead of 12:00 AM IST — that's why streaks/daily-logs weren't resetting
+// instead of 12:00 AM IST - that's why streaks/daily-logs weren't resetting
 // at midnight. These helpers shift to IST wall-clock time before formatting,
 // regardless of the server's actual system timezone.
 

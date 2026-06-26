@@ -20,8 +20,8 @@ async function request(url, options = {}) {
   try {
     res = await fetch(url, options);
   } catch (networkErr) {
-    // fetch() itself rejected — offline, DNS failure, CORS, timeout, etc.
-    throw new Error("Network error — check your connection and try again.");
+    // fetch() itself rejected - offline, DNS failure, CORS, timeout, etc.
+    throw new Error("Network error - check your connection and try again.");
   }
 
   let json = null;
@@ -66,7 +66,7 @@ export async function evaluateAnswer({ question, answer, paper }) {
 }
 
 // ─── POST /api/evaluate/answer (handwritten image) ───────────────────────────
-// Same endpoint — the controller branches on the presence of `image.data`.
+// Same endpoint - the controller branches on the presence of `image.data`.
 // `image` must be the full data URI from FileReader.readAsDataURL(), e.g.
 // "data:image/jpeg;base64,/9j/4AAQ…"  (JPG · JPEG · PNG · WEBP, max 10 MB).
 //
@@ -81,7 +81,7 @@ export async function evaluateAnswerImage({ question, paper, image }) {
     body: JSON.stringify({
       question,
       paper,
-      image: { data: image }, // full data URI — parseImageDataUri() on the server splits mimeType + base64
+      image: { data: image }, // full data URI - parseImageDataUri() on the server splits mimeType + base64
     }),
   });
 }
@@ -124,7 +124,7 @@ export async function getChatHistory() {
   return listChatThreads();
 }
 export async function clearChatHistory() {
-  // No-op in threads model — individual threads are deleted via deleteChatThread
+  // No-op in threads model - individual threads are deleted via deleteChatThread
   return { success: true };
 }
 
@@ -179,7 +179,7 @@ export async function submitTestResult(payload) {
 }
 
 // ─── GET /api/tests ───────────────────────────────────────────────────────────
-// Lightweight history list (no full ai_analysis blob) — most recent first.
+// Lightweight history list (no full ai_analysis blob) - most recent first.
 export async function getTestHistory(limit = 20) {
   return request(`${BASE}/tests?limit=${limit}`, {
     headers: authHeaders(),

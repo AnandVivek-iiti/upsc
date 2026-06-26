@@ -6,7 +6,7 @@
 export const TEST_T06 = [
   {
     id: "sfg2026-t06",
-    title: "SFG 2026 — Level 1 · Test 6",
+    title: "SFG 2026 - Level 1 · Test 6",
     testCode: "321105",
     subject: "Indian Polity",
     topic: "Parliament, Legislature & Constitutional Provisions",
@@ -50,7 +50,7 @@ export const TEST_T06 = [
         ],
         correct: "A",
         explanation:
-          "Statement I is correct — The Speaker can change the timing of Question Hour. Statement II is correct — Questions can be addressed to private members who are in charge of a Bill or resolution. Statement III is incorrect — A Question with an asterisk (*) is a Starred Question, which requires an oral answer (not written); questions without asterisk are Unstarred Questions requiring written answers.",
+          "Statement I is correct - The Speaker can change the timing of Question Hour. Statement II is correct - Questions can be addressed to private members who are in charge of a Bill or resolution. Statement III is incorrect - A Question with an asterisk (*) is a Starred Question, which requires an oral answer (not written); questions without asterisk are Unstarred Questions requiring written answers.",
         topic: "Parliamentary Procedures",
         difficulty: "Medium",
         pyqYear: null,
@@ -68,7 +68,7 @@ export const TEST_T06 = [
         ],
         correct: "C",
         explanation:
-          "States with bicameral legislature (Legislative Council): Telangana (Yes), Karnataka (Yes), Maharashtra (Yes), Uttar Pradesh (Yes). Madhya Pradesh does NOT have a Legislative Council — it had one but it was abolished. So 4 of the 5 states listed have bicameral legislatures.",
+          "States with bicameral legislature (Legislative Council): Telangana (Yes), Karnataka (Yes), Maharashtra (Yes), Uttar Pradesh (Yes). Madhya Pradesh does NOT have a Legislative Council - it had one but it was abolished. So 4 of the 5 states listed have bicameral legislatures.",
         topic: "State Legislature",
         difficulty: "Medium",
         pyqYear: null,
@@ -86,7 +86,7 @@ export const TEST_T06 = [
         ],
         correct: "C",
         explanation:
-          "Statement I is correct — The Constitution uses the term 'Council of States'; 'Rajya Sabha' is a popular name not mentioned in the Constitution itself. Statement II is correct — The Fourth Schedule of the Constitution allocates seats for the Council of States to States and UTs. Statement III is incorrect — The Constitution does NOT provide for a fixed 6-year tenure; members are elected for 6 years, but this comes from the Rajya Sabha Rules, not the Constitution directly. Also technically each member serves for 6 years (staggered). Statement IV is correct — A member elected to fill a casual vacancy serves only for the remainder of the predecessor's term.",
+          "Statement I is correct - The Constitution uses the term 'Council of States'; 'Rajya Sabha' is a popular name not mentioned in the Constitution itself. Statement II is correct - The Fourth Schedule of the Constitution allocates seats for the Council of States to States and UTs. Statement III is incorrect - The Constitution does NOT provide for a fixed 6-year tenure; members are elected for 6 years, but this comes from the Rajya Sabha Rules, not the Constitution directly. Also technically each member serves for 6 years (staggered). Statement IV is correct - A member elected to fill a casual vacancy serves only for the remainder of the predecessor's term.",
         topic: "Rajya Sabha",
         difficulty: "Hard",
         pyqYear: null,
@@ -122,7 +122,7 @@ export const TEST_T06 = [
         ],
         correct: "B",
         explanation:
-          "Judicial functions of Parliament include acting as a court in certain matters. I (Impeachment of President) — judicial function ✓. II (Removal of SC judges) — this is a constituent/electoral function. III (Punishing members for breach of privilege) — judicial function ✓. IV (Censuring minister) — this is a deliberative/oversight function. So only I and III are judicial functions. Answer: B (Only two).",
+          "Judicial functions of Parliament include acting as a court in certain matters. I (Impeachment of President) - judicial function ✓. II (Removal of SC judges) - this is a constituent/electoral function. III (Punishing members for breach of privilege) - judicial function ✓. IV (Censuring minister) - this is a deliberative/oversight function. So only I and III are judicial functions. Answer: B (Only two).",
         topic: "Functions of Parliament",
         difficulty: "Medium",
         pyqYear: null,
@@ -140,7 +140,7 @@ export const TEST_T06 = [
         ],
         correct: "A",
         explanation:
-          "Statement I is correct — Legislative control over the executive indeed ensures financial propriety. Statement II is correct — The Public Accounts Committee (PAC) examines the appropriation accounts and audit reports of the CAG; the legislature then discusses misuse of public funds based on these reports. Statement III is correct — Under Article 112, the President (on behalf of the executive) shall cause the Annual Financial Statement (Budget) to be laid before Parliament for approval. Both II and III are correct and both explain Statement I — II shows post-facto control and III shows prior approval mechanism. Answer: A.",
+          "Statement I is correct - Legislative control over the executive indeed ensures financial propriety. Statement II is correct - The Public Accounts Committee (PAC) examines the appropriation accounts and audit reports of the CAG; the legislature then discusses misuse of public funds based on these reports. Statement III is correct - Under Article 112, the President (on behalf of the executive) shall cause the Annual Financial Statement (Budget) to be laid before Parliament for approval. Both II and III are correct and both explain Statement I - II shows post-facto control and III shows prior approval mechanism. Answer: A.",
         topic: "Financial Control by Parliament",
         difficulty: "Medium",
         pyqYear: null,
@@ -158,7 +158,7 @@ export const TEST_T06 = [
         ],
         correct: "B",
         explanation:
-          "The President can dissolve the Lok Sabha on the advice of the Prime Minister/Council of Ministers under Article 85(2)(b). Constitutional validity: Situation I — If no stable government can be formed, the President can dissolve and call fresh elections ✓. Situation II — If the Council of Ministers loses majority, the PM may advise dissolution ✓. Situation III — The Speaker has NO role in advising dissolution; only the Prime Minister/Council of Ministers advises the President ✗. Answer: B (I and II only).",
+          "The President can dissolve the Lok Sabha on the advice of the Prime Minister/Council of Ministers under Article 85(2)(b). Constitutional validity: Situation I - If no stable government can be formed, the President can dissolve and call fresh elections ✓. Situation II - If the Council of Ministers loses majority, the PM may advise dissolution ✓. Situation III - The Speaker has NO role in advising dissolution; only the Prime Minister/Council of Ministers advises the President ✗. Answer: B (I and II only).",
         topic: "President & Lok Sabha",
         difficulty: "Medium",
         pyqYear: null,
@@ -176,7 +176,7 @@ export const TEST_T06 = [
         ],
         correct: "A",
         explanation:
-          "Statement I is correct — The Tenth Schedule (Anti-Defection Law) was added to the Constitution by the 52nd Constitutional Amendment Act, 1985. Statement II is incorrect — The Tenth Schedule does NOT disqualify a person from holding remunerative political posts in the future. The disqualification under the Tenth Schedule is only from membership of the House; there is no such future bar mentioned in the Schedule.",
+          "Statement I is correct - The Tenth Schedule (Anti-Defection Law) was added to the Constitution by the 52nd Constitutional Amendment Act, 1985. Statement II is incorrect - The Tenth Schedule does NOT disqualify a person from holding remunerative political posts in the future. The disqualification under the Tenth Schedule is only from membership of the House; there is no such future bar mentioned in the Schedule.",
         topic: "Anti-Defection Law",
         difficulty: "Medium",
         pyqYear: null,
@@ -212,7 +212,7 @@ export const TEST_T06 = [
         ],
         correct: "C",
         explanation:
-          "Statement 1 is correct — The Ethics Committee was initially constituted as an ad-hoc committee. Statement 2 is incorrect — Not only MPs but any citizen can file a complaint against a member of the Lok Sabha to the Ethics Committee. Statement 3 is correct — The Ethics Committee cannot take up sub-judice matters (matters already before a court of law).",
+          "Statement 1 is correct - The Ethics Committee was initially constituted as an ad-hoc committee. Statement 2 is incorrect - Not only MPs but any citizen can file a complaint against a member of the Lok Sabha to the Ethics Committee. Statement 3 is correct - The Ethics Committee cannot take up sub-judice matters (matters already before a court of law).",
         topic: "Parliamentary Committees",
         difficulty: "Hard",
         pyqYear: null,
@@ -248,7 +248,7 @@ export const TEST_T06 = [
         ],
         correct: "B",
         explanation:
-          "Statement I proves the President is integral — a bill cannot become law without Presidential assent, showing the President's role is part of the legislative process. Statement III directly proves it — Article 79 explicitly states 'There shall be a Parliament of the Union which shall consist of the President and two Houses.' Statement II is incorrect (a bill may have a different commencement date specified). So I and III prove the President is part of Parliament. Answer: B.",
+          "Statement I proves the President is integral - a bill cannot become law without Presidential assent, showing the President's role is part of the legislative process. Statement III directly proves it - Article 79 explicitly states 'There shall be a Parliament of the Union which shall consist of the President and two Houses.' Statement II is incorrect (a bill may have a different commencement date specified). So I and III prove the President is part of Parliament. Answer: B.",
         topic: "Parliament & President",
         difficulty: "Medium",
         pyqYear: null,
@@ -284,8 +284,8 @@ export const TEST_T06 = [
         ],
         correct: "A",
         explanation:
-          "Statement 1 is correct — Under Article 179, the Speaker vacates office if s/he ceases to be a member of the Assembly. Statement 2 is incorrect — When the Legislative Assembly is dissolved, the Speaker does NOT vacate office immediately; s/he continues to hold office until just before the first meeting of the new Assembly (Article 179(c)). Answer: A.",
-        topic: "State Legislature — Speaker",
+          "Statement 1 is correct - Under Article 179, the Speaker vacates office if s/he ceases to be a member of the Assembly. Statement 2 is incorrect - When the Legislative Assembly is dissolved, the Speaker does NOT vacate office immediately; s/he continues to hold office until just before the first meeting of the new Assembly (Article 179(c)). Answer: A.",
+        topic: "State Legislature - Speaker",
         difficulty: "Medium",
         pyqYear: null,
       },
@@ -302,8 +302,8 @@ export const TEST_T06 = [
         ],
         correct: "D",
         explanation:
-          "As per the Fourth Schedule, the UTs allotted seats in the Rajya Sabha are: Delhi (3 seats), Jammu & Kashmir (4 seats — now a UT), and Puducherry (1 seat). Ladakh and Lakshadweep are NOT allotted seats in the Rajya Sabha. Answer: D (I, II and V).",
-        topic: "Rajya Sabha — Composition",
+          "As per the Fourth Schedule, the UTs allotted seats in the Rajya Sabha are: Delhi (3 seats), Jammu & Kashmir (4 seats - now a UT), and Puducherry (1 seat). Ladakh and Lakshadweep are NOT allotted seats in the Rajya Sabha. Answer: D (I, II and V).",
+        topic: "Rajya Sabha - Composition",
         difficulty: "Hard",
         pyqYear: null,
       },
@@ -320,7 +320,7 @@ export const TEST_T06 = [
         ],
         correct: "B",
         explanation:
-          "Age qualifications: Lok Sabha — 25 years (Mrs. Y at 27 qualifies ✓). Rajya Sabha — 30 years (Mrs. Y at 27 does NOT qualify ✗). Legislative Assembly — 25 years (qualifies ✓). Legislative Council — 30 years? No, 25 years for Vidhan Parishad members (qualifies ✓). Wait — for Legislative Council the minimum age is 30 years. Actually for Rajya Sabha and Legislative Council the age is 30. Mrs. Y at 27 does NOT qualify for Rajya Sabha (II) ✗ or Legislative Council (IV — min 30) ✗. She qualifies for Lok Sabha (I) and Legislative Assembly (III). Answer: A (I and III only).",
+          "Age qualifications: Lok Sabha - 25 years (Mrs. Y at 27 qualifies ✓). Rajya Sabha - 30 years (Mrs. Y at 27 does NOT qualify ✗). Legislative Assembly - 25 years (qualifies ✓). Legislative Council - 30 years? No, 25 years for Vidhan Parishad members (qualifies ✓). Wait - for Legislative Council the minimum age is 30 years. Actually for Rajya Sabha and Legislative Council the age is 30. Mrs. Y at 27 does NOT qualify for Rajya Sabha (II) ✗ or Legislative Council (IV - min 30) ✗. She qualifies for Lok Sabha (I) and Legislative Assembly (III). Answer: A (I and III only).",
         topic: "Qualifications for Membership",
         difficulty: "Medium",
         pyqYear: null,
@@ -338,7 +338,7 @@ export const TEST_T06 = [
         ],
         correct: "A",
         explanation:
-          "The disqualification of MPs from holding an office of profit is rooted in the Doctrine of Separation of Powers. The idea is to maintain independence of the legislature from the executive — if an MP holds an office under the government, s/he may be unduly influenced by the executive, compromising the independence of the legislature.",
+          "The disqualification of MPs from holding an office of profit is rooted in the Doctrine of Separation of Powers. The idea is to maintain independence of the legislature from the executive - if an MP holds an office under the government, s/he may be unduly influenced by the executive, compromising the independence of the legislature.",
         topic: "Disqualification of MPs",
         difficulty: "Medium",
         pyqYear: null,
@@ -356,7 +356,7 @@ export const TEST_T06 = [
         ],
         correct: "A",
         explanation:
-          "Statement I is correct — Paragraph 2(1)(b) of the Tenth Schedule exempts Rajya Sabha elections from anti-defection provisions related to voting against party instructions. Statement II is correct — Rajya Sabha elections use an open ballot system (introduced by the Representation of the People (Amendment) Act, 2003); the voter must show the ballot to the party agent. Statement II explains Statement I — because the voting is open (transparent), the anti-defection provisions for secret ballot do not apply in the same way; the open ballot itself ensures party loyalty.",
+          "Statement I is correct - Paragraph 2(1)(b) of the Tenth Schedule exempts Rajya Sabha elections from anti-defection provisions related to voting against party instructions. Statement II is correct - Rajya Sabha elections use an open ballot system (introduced by the Representation of the People (Amendment) Act, 2003); the voter must show the ballot to the party agent. Statement II explains Statement I - because the voting is open (transparent), the anti-defection provisions for secret ballot do not apply in the same way; the open ballot itself ensures party loyalty.",
         topic: "Anti-Defection Law & Rajya Sabha Elections",
         difficulty: "Hard",
         pyqYear: null,
@@ -392,7 +392,7 @@ export const TEST_T06 = [
         ],
         correct: "B",
         explanation:
-          "Statement 1 is incorrect — The Committee on Public Undertakings consists of 22 members: 15 from Lok Sabha and 7 from Rajya Sabha. So Lok Sabha members are more, not Rajya Sabha. Statement 2 is correct — The Chairperson of the Committee on Public Undertakings is appointed by the Speaker of the Lok Sabha from among the members of the committee.",
+          "Statement 1 is incorrect - The Committee on Public Undertakings consists of 22 members: 15 from Lok Sabha and 7 from Rajya Sabha. So Lok Sabha members are more, not Rajya Sabha. Statement 2 is correct - The Chairperson of the Committee on Public Undertakings is appointed by the Speaker of the Lok Sabha from among the members of the committee.",
         topic: "Parliamentary Committees",
         difficulty: "Medium",
         pyqYear: null,
@@ -410,7 +410,7 @@ export const TEST_T06 = [
         ],
         correct: "B",
         explanation:
-          "Option A is incorrect — Some states have fewer than 60 members (e.g., Goa has 40, Sikkim has 32, Mizoram has 40). Option B is correct — Under Article 170, the seats in Legislative Assemblies are readjusted after each census; currently frozen till 2026 based on 2001 census. Option C is incorrect — In states with Legislative Councils (bicameral), some members of the Legislative Assembly are elected indirectly. Option D is incorrect — The Governor can nominate one member from the Anglo-Indian community (though this provision was discontinued in 2020 by the 104th Amendment for the national level, this may differ at state level).",
+          "Option A is incorrect - Some states have fewer than 60 members (e.g., Goa has 40, Sikkim has 32, Mizoram has 40). Option B is correct - Under Article 170, the seats in Legislative Assemblies are readjusted after each census; currently frozen till 2026 based on 2001 census. Option C is incorrect - In states with Legislative Councils (bicameral), some members of the Legislative Assembly are elected indirectly. Option D is incorrect - The Governor can nominate one member from the Anglo-Indian community (though this provision was discontinued in 2020 by the 104th Amendment for the national level, this may differ at state level).",
         topic: "State Legislature",
         difficulty: "Medium",
         pyqYear: null,
@@ -428,7 +428,7 @@ export const TEST_T06 = [
         ],
         correct: "D",
         explanation:
-          "All three situations lead to vacation of seat: I — Under Article 101, if an MP is absent for 60 days (not 30 days per se; the House may declare the seat vacant after 60 days of unauthorized absence) — actually Article 101(4) says 60 days. However per standard UPSC material it is treated as 60 days. If official answer is D, all three are accepted. II — Failure to take oath within the prescribed time leads to vacation of seat. III — If elected President, an MP must vacate their parliamentary seat. Answer: D.",
+          "All three situations lead to vacation of seat: I - Under Article 101, if an MP is absent for 60 days (not 30 days per se; the House may declare the seat vacant after 60 days of unauthorized absence) - actually Article 101(4) says 60 days. However per standard UPSC material it is treated as 60 days. If official answer is D, all three are accepted. II - Failure to take oath within the prescribed time leads to vacation of seat. III - If elected President, an MP must vacate their parliamentary seat. Answer: D.",
         topic: "Vacation of Seats",
         difficulty: "Medium",
         pyqYear: null,
@@ -446,7 +446,7 @@ export const TEST_T06 = [
         ],
         correct: "B",
         explanation:
-          "Statement I is correct — The Speaker is elected by members of the Lok Sabha by a simple majority. Statement II is incorrect — The date of election is fixed by the President of India, not the pro tem Speaker. Statement III is correct — The Speaker of the Lok Sabha is the ex-officio Chairperson of the Conference of Presiding Officers of Legislative Bodies in India. Statement IV is incorrect — The Deputy Speaker is elected by the members of Lok Sabha, not appointed by the Speaker. Answer: B (I and III only).",
+          "Statement I is correct - The Speaker is elected by members of the Lok Sabha by a simple majority. Statement II is incorrect - The date of election is fixed by the President of India, not the pro tem Speaker. Statement III is correct - The Speaker of the Lok Sabha is the ex-officio Chairperson of the Conference of Presiding Officers of Legislative Bodies in India. Statement IV is incorrect - The Deputy Speaker is elected by the members of Lok Sabha, not appointed by the Speaker. Answer: B (I and III only).",
         topic: "Speaker of Lok Sabha",
         difficulty: "Medium",
         pyqYear: null,
@@ -464,7 +464,7 @@ export const TEST_T06 = [
         ],
         correct: "B",
         explanation:
-          "Statement 1 is correct — Article 108 is an enabling provision; the President may (not must) summon a joint sitting. Statement 2 is correct — It is discretionary, not obligatory. Statement 3 is correct — The joint sitting is notified by the President. Statement 4 is incorrect — Joint sessions are rarely convened (only 3 times in Indian history); they are not frequently resorted to. Answer: B (1, 2 and 3).",
+          "Statement 1 is correct - Article 108 is an enabling provision; the President may (not must) summon a joint sitting. Statement 2 is correct - It is discretionary, not obligatory. Statement 3 is correct - The joint sitting is notified by the President. Statement 4 is incorrect - Joint sessions are rarely convened (only 3 times in Indian history); they are not frequently resorted to. Answer: B (1, 2 and 3).",
         topic: "Joint Session of Parliament",
         difficulty: "Medium",
         pyqYear: null,
@@ -482,8 +482,8 @@ export const TEST_T06 = [
         ],
         correct: "D",
         explanation:
-          "Statement I is incorrect — A one-line whip is advisory (attend if convenient); a two-line whip directs members to be present; a three-line whip compels them to vote in a particular way. Statement II is incorrect — Defying a whip on voting can lead to disqualification only if it is a three-line whip and the party seeks disqualification; not every defiance automatically leads to disqualification. Statement III is incorrect — The Chief Whip does not enjoy the same rank as a Cabinet Minister in the table of precedence. Answer: D (None of the above are fully correct as stated).",
-        topic: "Parliamentary Procedures — Whip",
+          "Statement I is incorrect - A one-line whip is advisory (attend if convenient); a two-line whip directs members to be present; a three-line whip compels them to vote in a particular way. Statement II is incorrect - Defying a whip on voting can lead to disqualification only if it is a three-line whip and the party seeks disqualification; not every defiance automatically leads to disqualification. Statement III is incorrect - The Chief Whip does not enjoy the same rank as a Cabinet Minister in the table of precedence. Answer: D (None of the above are fully correct as stated).",
+        topic: "Parliamentary Procedures - Whip",
         difficulty: "Hard",
         pyqYear: null,
       },
@@ -500,7 +500,7 @@ export const TEST_T06 = [
         ],
         correct: "C",
         explanation:
-          "Mr. K raised a Point of Order — a parliamentary device used to draw the attention of the presiding officer to a breach of rule or convention of the House. By citing earlier rulings of the Rajya Sabha Chairman, Mr. K was pointing out that the proceedings were being conducted contrary to established rules/conventions, which is exactly what a Point of Order is meant for.",
+          "Mr. K raised a Point of Order - a parliamentary device used to draw the attention of the presiding officer to a breach of rule or convention of the House. By citing earlier rulings of the Rajya Sabha Chairman, Mr. K was pointing out that the proceedings were being conducted contrary to established rules/conventions, which is exactly what a Point of Order is meant for.",
         topic: "Parliamentary Procedures",
         difficulty: "Medium",
         pyqYear: null,
@@ -518,7 +518,7 @@ export const TEST_T06 = [
         ],
         correct: "A",
         explanation:
-          "Statement I is incorrect — The date of election of Deputy Chairman of Rajya Sabha is decided by the Chairman of Rajya Sabha (Vice President), not the President. Statement II is correct — The Deputy Chairman, when presiding, has an original vote and also a casting vote in case of a tie. Statement III is incorrect — The Deputy Chairman can be removed by a resolution passed by a majority of all the then members of the Rajya Sabha (effective majority), not two-thirds. Statement IV is incorrect — There is no constitutional provision mandating election within 6 months. Answer: A (II only).",
+          "Statement I is incorrect - The date of election of Deputy Chairman of Rajya Sabha is decided by the Chairman of Rajya Sabha (Vice President), not the President. Statement II is correct - The Deputy Chairman, when presiding, has an original vote and also a casting vote in case of a tie. Statement III is incorrect - The Deputy Chairman can be removed by a resolution passed by a majority of all the then members of the Rajya Sabha (effective majority), not two-thirds. Statement IV is incorrect - There is no constitutional provision mandating election within 6 months. Answer: A (II only).",
         topic: "Deputy Chairman of Rajya Sabha",
         difficulty: "Hard",
         pyqYear: null,
@@ -526,7 +526,7 @@ export const TEST_T06 = [
       {
         id: "t06_q29",
         qNo: 29,
-        text: "In the context of Indian Parliament, consider the following information:\n\nAction — Implication — It is done by\nI. Adjournment of the House — It terminates the sitting of the House for a specified period — Presiding Officer of the House\nII. Prorogation of the House — It terminates all bills and other business pending before the House — President of India\nIII. Adjournment Sine Die — It terminates both the sitting as well as the session of the House — Presiding Officer of the House",
+        text: "In the context of Indian Parliament, consider the following information:\n\nAction - Implication - It is done by\nI. Adjournment of the House - It terminates the sitting of the House for a specified period - Presiding Officer of the House\nII. Prorogation of the House - It terminates all bills and other business pending before the House - President of India\nIII. Adjournment Sine Die - It terminates both the sitting as well as the session of the House - Presiding Officer of the House",
         suffix: "In how many of the above rows is the information correctly matched?",
         options: [
           { id: "A", text: "Only one" },
@@ -536,7 +536,7 @@ export const TEST_T06 = [
         ],
         correct: "B",
         explanation:
-          "Row I is correct — Adjournment terminates a sitting for a specified period and is done by the Presiding Officer ✓. Row II is incorrect — Prorogation does NOT terminate all pending bills (pending bills in Rajya Sabha do not lapse; bills passed by both houses but awaiting Presidential assent also do not lapse). Prorogation is done by the President, but the implication is wrong ✗. Row III is incorrect — Adjournment Sine Die terminates the sitting (not the session); it is done by the Presiding Officer, but it only ends the sitting indefinitely, not the session (the session is ended by Prorogation). ✗. Answer: A (Only one — Row I).",
+          "Row I is correct - Adjournment terminates a sitting for a specified period and is done by the Presiding Officer ✓. Row II is incorrect - Prorogation does NOT terminate all pending bills (pending bills in Rajya Sabha do not lapse; bills passed by both houses but awaiting Presidential assent also do not lapse). Prorogation is done by the President, but the implication is wrong ✗. Row III is incorrect - Adjournment Sine Die terminates the sitting (not the session); it is done by the Presiding Officer, but it only ends the sitting indefinitely, not the session (the session is ended by Prorogation). ✗. Answer: A (Only one - Row I).",
         topic: "Parliamentary Procedures",
         difficulty: "Hard",
         pyqYear: null,
@@ -544,7 +544,7 @@ export const TEST_T06 = [
       {
         id: "t06_q30",
         qNo: 30,
-        text: "With reference to method of passage of a bill/resolution in Parliament, consider the following pairs:\n\nI. A resolution altering the boundaries and names of certain States and Union Territories — Support of at least half of the members present and voting in each house of Parliament.\nII. A bill that reallocates the Rajya Sabha seats among the States — Support of at least half of the total strength of the respective House of Parliament.\nIII. A resolution that provides for creation of a State Legislative Council — Support of at least three-fourth of the members of each House of Parliament present and voting.",
+        text: "With reference to method of passage of a bill/resolution in Parliament, consider the following pairs:\n\nI. A resolution altering the boundaries and names of certain States and Union Territories - Support of at least half of the members present and voting in each house of Parliament.\nII. A bill that reallocates the Rajya Sabha seats among the States - Support of at least half of the total strength of the respective House of Parliament.\nIII. A resolution that provides for creation of a State Legislative Council - Support of at least three-fourth of the members of each House of Parliament present and voting.",
         suffix: "How many of the above given pairs are correctly matched?",
         options: [
           { id: "A", text: "Only one" },
@@ -554,7 +554,7 @@ export const TEST_T06 = [
         ],
         correct: "A",
         explanation:
-          "Pair I is incorrect — A resolution to alter State boundaries/names under Article 3 requires only a simple majority in both Houses; it is NOT a special majority. Pair II is incorrect — Reallocation of Rajya Sabha seats requires a constitutional amendment under Article 4 read with Article 368, which requires a special majority (2/3 of members present and voting + majority of total membership). Pair III is incorrect — A resolution for creating a State Legislative Council under Article 169 requires a majority of the total membership of the State Legislative Assembly and 2/3 of members present and voting in the Assembly, then Parliament passes a simple law. None are correctly matched as stated. Answer: D (None). [Note: If official key is A, re-evaluation may be needed.]",
+          "Pair I is incorrect - A resolution to alter State boundaries/names under Article 3 requires only a simple majority in both Houses; it is NOT a special majority. Pair II is incorrect - Reallocation of Rajya Sabha seats requires a constitutional amendment under Article 4 read with Article 368, which requires a special majority (2/3 of members present and voting + majority of total membership). Pair III is incorrect - A resolution for creating a State Legislative Council under Article 169 requires a majority of the total membership of the State Legislative Assembly and 2/3 of members present and voting in the Assembly, then Parliament passes a simple law. None are correctly matched as stated. Answer: D (None). [Note: If official key is A, re-evaluation may be needed.]",
         topic: "Constitutional Amendments & Parliamentary Majority",
         difficulty: "Hard",
         pyqYear: null,
@@ -572,7 +572,7 @@ export const TEST_T06 = [
         ],
         correct: "B",
         explanation:
-          "Statement 1 is incorrect — The Panel of Chairpersons is not restricted to the ruling party; it includes members from different parties. Statement 2 is correct — The Speaker nominates members to the panel from different political parties. Statement 3 is correct — The Panel of Chairpersons consists of 10 members; when both the Speaker and Deputy Speaker are absent, a member from the panel presides over the House.",
+          "Statement 1 is incorrect - The Panel of Chairpersons is not restricted to the ruling party; it includes members from different parties. Statement 2 is correct - The Speaker nominates members to the panel from different political parties. Statement 3 is correct - The Panel of Chairpersons consists of 10 members; when both the Speaker and Deputy Speaker are absent, a member from the panel presides over the House.",
         topic: "Panel of Chairpersons",
         difficulty: "Medium",
         pyqYear: null,
@@ -608,7 +608,7 @@ export const TEST_T06 = [
         ],
         correct: "A",
         explanation:
-          "On dissolution of Lok Sabha: I is correct — Bills pending in Lok Sabha lapse ✓. II is correct — Bills passed by Rajya Sabha but pending in Lok Sabha also lapse ✓. III is incorrect — Bills passed by both Houses but pending Presidential assent do NOT lapse; Presidential assent is still valid ✗. IV is incorrect — If the President has notified intention of joint sitting before dissolution, the bill does not lapse (it can still be taken up in joint sitting after fresh elections) ✗. Answer: A.",
+          "On dissolution of Lok Sabha: I is correct - Bills pending in Lok Sabha lapse ✓. II is correct - Bills passed by Rajya Sabha but pending in Lok Sabha also lapse ✓. III is incorrect - Bills passed by both Houses but pending Presidential assent do NOT lapse; Presidential assent is still valid ✗. IV is incorrect - If the President has notified intention of joint sitting before dissolution, the bill does not lapse (it can still be taken up in joint sitting after fresh elections) ✗. Answer: A.",
         topic: "Lapse of Bills",
         difficulty: "Hard",
         pyqYear: null,
@@ -626,7 +626,7 @@ export const TEST_T06 = [
         ],
         correct: "B",
         explanation:
-          "Statement I is correct — A No-confidence motion is moved against the entire Council of Ministers (Cabinet), not against an individual minister. Statement II is correct — Under Article 75(3), the Council of Ministers is collectively responsible to the House of People (Lok Sabha). Statement II explains Statement I — collective responsibility means the no-confidence must target the collective body. Statement III is correct — Under Article 75(5), a minister need not be a member of Parliament at the time of appointment but must become one within 6 months. Statement III does NOT explain Statement I (it is about individual ministerial membership, not collective responsibility). Answer: B.",
+          "Statement I is correct - A No-confidence motion is moved against the entire Council of Ministers (Cabinet), not against an individual minister. Statement II is correct - Under Article 75(3), the Council of Ministers is collectively responsible to the House of People (Lok Sabha). Statement II explains Statement I - collective responsibility means the no-confidence must target the collective body. Statement III is correct - Under Article 75(5), a minister need not be a member of Parliament at the time of appointment but must become one within 6 months. Statement III does NOT explain Statement I (it is about individual ministerial membership, not collective responsibility). Answer: B.",
         topic: "Council of Ministers",
         difficulty: "Medium",
         pyqYear: null,
@@ -644,7 +644,7 @@ export const TEST_T06 = [
         ],
         correct: "A",
         explanation:
-          "Under Article 96, when a resolution for removal of the Speaker is under consideration: Statement 1 is correct — The Speaker shall not preside over the sitting ✓. Statement 2 is incorrect — The Speaker has the right to speak and take part in proceedings even while the removal resolution is under consideration ✓ (s/he can speak). Statement 3 is incorrect — The Speaker is entitled to vote in the first instance (not just casting vote) on such a resolution. The Speaker does have the right to vote on this resolution. Answer: A (1 only).",
+          "Under Article 96, when a resolution for removal of the Speaker is under consideration: Statement 1 is correct - The Speaker shall not preside over the sitting ✓. Statement 2 is incorrect - The Speaker has the right to speak and take part in proceedings even while the removal resolution is under consideration ✓ (s/he can speak). Statement 3 is incorrect - The Speaker is entitled to vote in the first instance (not just casting vote) on such a resolution. The Speaker does have the right to vote on this resolution. Answer: A (1 only).",
         topic: "Speaker of Lok Sabha",
         difficulty: "Hard",
         pyqYear: null,
@@ -662,7 +662,7 @@ export const TEST_T06 = [
         ],
         correct: "A",
         explanation:
-          "Statement I is correct — The Annual Financial Statement (Union Budget) is prepared by the Ministry of Finance ✓. Statement II is incorrect — Article 112 states the President shall cause it to be laid before 'both Houses of Parliament' (not just the House of People) ✗. Statement III is incorrect — The Constitution does not mandate resignation of the PM/Council of Ministers if the budget is not passed; however, constitutionally it may trigger a confidence vote. The statement is not a specific constitutional provision ✗. Answer: A.",
+          "Statement I is correct - The Annual Financial Statement (Union Budget) is prepared by the Ministry of Finance ✓. Statement II is incorrect - Article 112 states the President shall cause it to be laid before 'both Houses of Parliament' (not just the House of People) ✗. Statement III is incorrect - The Constitution does not mandate resignation of the PM/Council of Ministers if the budget is not passed; however, constitutionally it may trigger a confidence vote. The statement is not a specific constitutional provision ✗. Answer: A.",
         topic: "Union Budget & Annual Financial Statement",
         difficulty: "Medium",
         pyqYear: null,
@@ -680,7 +680,7 @@ export const TEST_T06 = [
         ],
         correct: "D",
         explanation:
-          "All four are charged (not voted) expenditures on the Consolidated Fund of India under Article 112(3): I — CAG's office expenses are charged ✓. II — Grants-in-aid to States specified by Parliament are charged ✓. III — Salaries of HC judges are charged on the Consolidated Fund of the respective State (not of India directly) — however this may be counted as charged on the CFI in the context of this question. IV — Debt service charges (redemption of loans) are charged ✓. Answer: D (All four) as per official key.",
+          "All four are charged (not voted) expenditures on the Consolidated Fund of India under Article 112(3): I - CAG's office expenses are charged ✓. II - Grants-in-aid to States specified by Parliament are charged ✓. III - Salaries of HC judges are charged on the Consolidated Fund of the respective State (not of India directly) - however this may be counted as charged on the CFI in the context of this question. IV - Debt service charges (redemption of loans) are charged ✓. Answer: D (All four) as per official key.",
         topic: "Consolidated Fund of India",
         difficulty: "Hard",
         pyqYear: null,
@@ -716,7 +716,7 @@ export const TEST_T06 = [
         ],
         correct: "D",
         explanation:
-          "All three statements are correct. Statement I — The Contingency Fund of India was established by the Contingency Fund of India Act, 1950 (an Act of Parliament) ✓. Statement II — It is held by the Secretary, Ministry of Finance, on behalf of the President ✓. Statement III — Under Article 267, the President can make advances from this fund to meet unforeseen expenditure, pending Parliamentary approval ✓. Answer: D.",
+          "All three statements are correct. Statement I - The Contingency Fund of India was established by the Contingency Fund of India Act, 1950 (an Act of Parliament) ✓. Statement II - It is held by the Secretary, Ministry of Finance, on behalf of the President ✓. Statement III - Under Article 267, the President can make advances from this fund to meet unforeseen expenditure, pending Parliamentary approval ✓. Answer: D.",
         topic: "Contingency Fund of India",
         difficulty: "Medium",
         pyqYear: null,
@@ -734,7 +734,7 @@ export const TEST_T06 = [
         ],
         correct: "B",
         explanation:
-          "Statement I is correct — Under Article 169, Parliament can create a Legislative Council after the State Assembly passes a resolution with the specified special majority ✓. Statement II is correct — Such a law is NOT treated as a constitutional amendment under Article 368, even though it changes the Constitution; it is an ordinary law ✓. Statement III is incorrect — There is no provision requiring Presidential recommendation before introducing such a bill in Parliament ✗. Answer: B.",
+          "Statement I is correct - Under Article 169, Parliament can create a Legislative Council after the State Assembly passes a resolution with the specified special majority ✓. Statement II is correct - Such a law is NOT treated as a constitutional amendment under Article 368, even though it changes the Constitution; it is an ordinary law ✓. Statement III is incorrect - There is no provision requiring Presidential recommendation before introducing such a bill in Parliament ✗. Answer: B.",
         topic: "State Legislative Council",
         difficulty: "Medium",
         pyqYear: null,
@@ -752,7 +752,7 @@ export const TEST_T06 = [
         ],
         correct: "B",
         explanation:
-          "Statement I is incorrect — Under the Tenth Schedule (Para 6), the question of disqualification on grounds of defection is decided by the Speaker of Lok Sabha (or Chairman of Rajya Sabha), NOT by the President. The Supreme Court in Kihoto Hollohan case (1993) upheld this. Statement II is correct — The term 'political party' does not appear in the original text of the Constitution (it appears only in the Tenth Schedule added later). Answer: B.",
+          "Statement I is incorrect - Under the Tenth Schedule (Para 6), the question of disqualification on grounds of defection is decided by the Speaker of Lok Sabha (or Chairman of Rajya Sabha), NOT by the President. The Supreme Court in Kihoto Hollohan case (1993) upheld this. Statement II is correct - The term 'political party' does not appear in the original text of the Constitution (it appears only in the Tenth Schedule added later). Answer: B.",
         topic: "Anti-Defection Law",
         difficulty: "Hard",
         pyqYear: null,
@@ -770,7 +770,7 @@ export const TEST_T06 = [
         ],
         correct: "B",
         explanation:
-          "The Legislative Council has equal standing with the Legislative Assembly in: II — Both members of Legislative Assembly AND Legislative Council participate in electing Rajya Sabha members ✓. III — CAG reports are laid before both Houses of State legislature ✓. IV — Constitutional Amendment Bills (Article 368) must be ratified by both Houses of the State Legislature (where bicameral) ✓. I — Ordinances promulgated by the Governor need to be laid before and approved by the Legislative Assembly; the Legislative Council's role is secondary ✗. Answer: B.",
+          "The Legislative Council has equal standing with the Legislative Assembly in: II - Both members of Legislative Assembly AND Legislative Council participate in electing Rajya Sabha members ✓. III - CAG reports are laid before both Houses of State legislature ✓. IV - Constitutional Amendment Bills (Article 368) must be ratified by both Houses of the State Legislature (where bicameral) ✓. I - Ordinances promulgated by the Governor need to be laid before and approved by the Legislative Assembly; the Legislative Council's role is secondary ✗. Answer: B.",
         topic: "State Legislative Council",
         difficulty: "Hard",
         pyqYear: null,
@@ -788,8 +788,8 @@ export const TEST_T06 = [
         ],
         correct: "C",
         explanation:
-          "Statement I is incorrect — The PAC was first set up in 1921 (not 1935) under the Government of India Act, 1919 (Montagu-Chelmsford Reforms). Statement II is correct — Initially before independence, it had only Lok Sabha (Central Legislative Assembly) members ✓. Statement III is incorrect — The Chairman of PAC is elected from among its members, typically from the Opposition party (by convention). The Speaker appoints/nominates, but it is not necessarily the 'senior-most' member. Answer: C.",
-        topic: "Parliamentary Committees — PAC",
+          "Statement I is incorrect - The PAC was first set up in 1921 (not 1935) under the Government of India Act, 1919 (Montagu-Chelmsford Reforms). Statement II is correct - Initially before independence, it had only Lok Sabha (Central Legislative Assembly) members ✓. Statement III is incorrect - The Chairman of PAC is elected from among its members, typically from the Opposition party (by convention). The Speaker appoints/nominates, but it is not necessarily the 'senior-most' member. Answer: C.",
+        topic: "Parliamentary Committees - PAC",
         difficulty: "Hard",
         pyqYear: null,
       },
@@ -806,7 +806,7 @@ export const TEST_T06 = [
         ],
         correct: "C",
         explanation:
-          "Committees headed by the Speaker of the Lok Sabha: I — Business Advisory Committee — Chairperson is the Speaker ✓. II — Committee on Petitions — NOT chaired by Speaker (chaired by a senior MP). III — General Purposes Committee — Chairperson is the Speaker ✓. IV — Committee on Private Members' Bills and Resolutions — Chairperson is the Deputy Speaker ✗. So only I and III are chaired by the Speaker. Answer: A (Only two — I and III). [If official key is C, it includes Committee on Petitions.] Answer: B (Only two) based on standard sources.",
+          "Committees headed by the Speaker of the Lok Sabha: I - Business Advisory Committee - Chairperson is the Speaker ✓. II - Committee on Petitions - NOT chaired by Speaker (chaired by a senior MP). III - General Purposes Committee - Chairperson is the Speaker ✓. IV - Committee on Private Members' Bills and Resolutions - Chairperson is the Deputy Speaker ✗. So only I and III are chaired by the Speaker. Answer: A (Only two - I and III). [If official key is C, it includes Committee on Petitions.] Answer: B (Only two) based on standard sources.",
         topic: "Parliamentary Committees",
         difficulty: "Hard",
         pyqYear: null,
@@ -842,7 +842,7 @@ export const TEST_T06 = [
         ],
         correct: "C",
         explanation:
-          "Statement I is correct — Money Bills can only be introduced in the Lok Sabha, not Rajya Sabha (Article 109) ✓. Statement II is correct — Money Bills can only be introduced on the recommendation of the President; since private members cannot get Presidential recommendation for a Money Bill, they cannot introduce it ✓. Statement III is incorrect — A bill providing only for imposition of fines/penalties is NOT a Money Bill (Article 110 explicitly excludes this) ✗. Statement IV is incorrect — The Rajya Sabha can only recommend amendments, not make them; and the Lok Sabha may or may not accept ✗. Answer: C.",
+          "Statement I is correct - Money Bills can only be introduced in the Lok Sabha, not Rajya Sabha (Article 109) ✓. Statement II is correct - Money Bills can only be introduced on the recommendation of the President; since private members cannot get Presidential recommendation for a Money Bill, they cannot introduce it ✓. Statement III is incorrect - A bill providing only for imposition of fines/penalties is NOT a Money Bill (Article 110 explicitly excludes this) ✗. Statement IV is incorrect - The Rajya Sabha can only recommend amendments, not make them; and the Lok Sabha may or may not accept ✗. Answer: C.",
         topic: "Money Bill",
         difficulty: "Medium",
         pyqYear: null,
@@ -860,7 +860,7 @@ export const TEST_T06 = [
         ],
         correct: "D",
         explanation:
-          "All three are grounds for disqualification under Article 102 of the Constitution of India: I — If declared of unsound mind by a competent court ✓. II — If an undischarged insolvent ✓. III — If voluntarily acquires citizenship of a foreign State OR is under acknowledgment of allegiance to a foreign State ✓. Answer: D.",
+          "All three are grounds for disqualification under Article 102 of the Constitution of India: I - If declared of unsound mind by a competent court ✓. II - If an undischarged insolvent ✓. III - If voluntarily acquires citizenship of a foreign State OR is under acknowledgment of allegiance to a foreign State ✓. Answer: D.",
         topic: "Disqualification of MPs",
         difficulty: "Easy",
         pyqYear: null,
@@ -878,7 +878,7 @@ export const TEST_T06 = [
         ],
         correct: "C",
         explanation:
-          "Statement I is correct — A Private Member's Bill is introduced by an MP who is not a minister ✓. Statement II is incorrect — The notice period for a Private Member's Bill is generally one month, but this is not universally fixed; for a motion for leave it is typically shorter. The standard reference says notice period is 1 month — actually this may be correct but the 'one month' specifics need verification. Statement III is correct — Only 14 Private Member's Bills have been passed (some sources say 6, but the widely cited number in UPSC context is 14 since independence; however the official key here is C suggesting Statement III is correct with 'four'). Answer: C (I and III).",
+          "Statement I is correct - A Private Member's Bill is introduced by an MP who is not a minister ✓. Statement II is incorrect - The notice period for a Private Member's Bill is generally one month, but this is not universally fixed; for a motion for leave it is typically shorter. The standard reference says notice period is 1 month - actually this may be correct but the 'one month' specifics need verification. Statement III is correct - Only 14 Private Member's Bills have been passed (some sources say 6, but the widely cited number in UPSC context is 14 since independence; however the official key here is C suggesting Statement III is correct with 'four'). Answer: C (I and III).",
         topic: "Private Member's Bill",
         difficulty: "Medium",
         pyqYear: null,
@@ -896,7 +896,7 @@ export const TEST_T06 = [
         ],
         correct: "B",
         explanation:
-          "Special exclusive powers of the Rajya Sabha: I — Resolution for removal of Vice President is initiated in Rajya Sabha (Article 67) ✓. II — Resolution under Article 249 to enable Parliament to legislate on State List subjects ✓. III — Resolution for discontinuance of Emergency under Article 352 can be passed by Lok Sabha alone (special sitting); Rajya Sabha does NOT have exclusive power here ✗. IV — Rajya Sabha can pass a resolution recommending creation of All-India Services under Article 312 ✓. Answer: B (I, II and IV only).",
+          "Special exclusive powers of the Rajya Sabha: I - Resolution for removal of Vice President is initiated in Rajya Sabha (Article 67) ✓. II - Resolution under Article 249 to enable Parliament to legislate on State List subjects ✓. III - Resolution for discontinuance of Emergency under Article 352 can be passed by Lok Sabha alone (special sitting); Rajya Sabha does NOT have exclusive power here ✗. IV - Rajya Sabha can pass a resolution recommending creation of All-India Services under Article 312 ✓. Answer: B (I, II and IV only).",
         topic: "Special Powers of Rajya Sabha",
         difficulty: "Hard",
         pyqYear: null,

@@ -96,9 +96,9 @@ function scoreColor(v) {
 function sanitizeAIError(raw) {
   if (!raw) return "Something went wrong. Try again.";
   if (/429|quota|rate limit|too many requests/i.test(raw))
-    return "Your AI mentor hit a provider's rate limit. This usually clears in a few seconds — tap Regenerate to try again.";
+    return "Your AI mentor hit a provider's rate limit. This usually clears in a few seconds - tap Regenerate to try again.";
   if (/too short|low-effort/i.test(raw))
-    return "That attempt came back too thin to be useful. Tap Regenerate — it'll try a stronger model.";
+    return "That attempt came back too thin to be useful. Tap Regenerate - it'll try a stronger model.";
   if (/network|fetch failed|econnreset|timeout|enotfound/i.test(raw))
     return "Couldn't reach the AI mentor. Check your connection and tap Regenerate.";
   if (/no ai providers configured|all ai providers failed/i.test(raw))
@@ -576,7 +576,7 @@ const EmptyNotesList = memo(function EmptyNotesList({ onCreate, filtered }) {
       <div>
         <p className="text-[14px] font-bold text-[var(--text-primary)]">{filtered?"No notes match":"No notes yet"}</p>
         <p className="text-[12px] text-[var(--text-muted)] mt-1 max-w-[220px]">
-          {filtered?"Try a different search or topic filter.":"Start your first set of UPSC notes — organised by topic, saved automatically."}
+          {filtered?"Try a different search or topic filter.":"Start your first set of UPSC notes - organised by topic, saved automatically."}
         </p>
       </div>
       {!filtered && (
@@ -598,7 +598,7 @@ const EmptyEditor = memo(function EmptyEditor({ onCreate }) {
       <div>
         <p className="font-display text-[19px] font-bold text-[var(--text-primary)]">Your second brain for UPSC</p>
         <p className="text-[13px] text-[var(--text-muted)] mt-2 max-w-[320px] leading-relaxed">
-          Capture concepts in your own words, tag them by subject, then let your AI mentor polish, audit and convert them — right when you need it.
+          Capture concepts in your own words, tag them by subject, then let your AI mentor polish, audit and convert them - right when you need it.
         </p>
       </div>
       <button onClick={onCreate}
@@ -1082,7 +1082,7 @@ export default function MentorNotes({ isLoggedIn = false, contextHint = "Notes s
     const report=parseMistakesReport(aiResult);
     if (!report||!activeId) return;
     const now=new Date().toISOString();
-    const block=`\n\n---\n## AI Review — ${new Date().toLocaleDateString(undefined,{month:"short",day:"numeric"})}\n**Scores:** Knowledge ${report.knowledge}/10 · Clarity ${report.clarity}/10 · Retention ${report.retention}/10\n\n**Missing Points**\n${report.missing.map(m=>`- ${m}`).join("\n")}\n\n**Memory Traps**\n${report.traps.map(t=>`- ${t}`).join("\n")}\n\n**30 Second Revision**\n${report.revision}\n`;
+    const block=`\n\n---\n## AI Review - ${new Date().toLocaleDateString(undefined,{month:"short",day:"numeric"})}\n**Scores:** Knowledge ${report.knowledge}/10 · Clarity ${report.clarity}/10 · Retention ${report.retention}/10\n\n**Missing Points**\n${report.missing.map(m=>`- ${m}`).join("\n")}\n\n**Memory Traps**\n${report.traps.map(t=>`- ${t}`).join("\n")}\n\n**30 Second Revision**\n${report.revision}\n`;
     const newContent=`${draft.content}${block}`;
     setDraft(d=>({...d,content:newContent}));
     setNotes(prev=>{ const u=prev.map(n=>n.id===activeId?{...n,content:newContent,updatedAt:now}:n); persistNotesToStorage(u); return u; });
@@ -1095,7 +1095,7 @@ export default function MentorNotes({ isLoggedIn = false, contextHint = "Notes s
   return (
     <>
       {/*
-        Root: takes exactly the full viewport height — min-h-screen + h-screen so there's
+        Root: takes exactly the full viewport height - min-h-screen + h-screen so there's
         zero extra space on both mobile and desktop. overflow-hidden prevents any double scroll.
       */}
       <div className="flex flex-col w-full h-screen min-h-screen overflow-hidden bg-[var(--bg-base)]" style={{ boxSizing:"border-box" }}>
@@ -1211,7 +1211,7 @@ export default function MentorNotes({ isLoggedIn = false, contextHint = "Notes s
                   onClearVersion={handleClearVersion}
                 />
 
-                {/* Content area — scrollable, fills remaining space */}
+                {/* Content area - scrollable, fills remaining space */}
                 <div className="flex-1 overflow-y-auto min-h-0 px-4 sm:px-6 py-5"
                   style={{
                     scrollbarWidth:"thin", scrollbarColor:"var(--bg-border) transparent",
@@ -1236,7 +1236,7 @@ export default function MentorNotes({ isLoggedIn = false, contextHint = "Notes s
                         </div>
                       ) : (
                         <textarea ref={textareaRef} value={draft.content} onChange={e=>setContent(e.target.value)}
-                          placeholder="Start writing — concepts, dates, articles, your own words…"
+                          placeholder="Start writing - concepts, dates, articles, your own words…"
                           className="w-full border-0 outline-none resize-none bg-transparent text-[var(--text-primary)] leading-[1.85] font-inherit placeholder-[var(--text-muted)]"
                           style={{ fontSize:"clamp(14.5px,1.6vw,15.5px)", minHeight:"40vh" }}
                           aria-label="Note content" />
@@ -1282,7 +1282,7 @@ export default function MentorNotes({ isLoggedIn = false, contextHint = "Notes s
                   </div>
                 </div>
 
-                {/* AI action rail — sticky on mobile, static on desktop */}
+                {/* AI action rail - sticky on mobile, static on desktop */}
                 {activeTab==="original"&&!readingMode && (
                   <div className="shrink-0 border-t border-[var(--bg-border)] bg-[var(--bg-surface)]
                     lg:static lg:border-t-0 lg:px-4 lg:pb-4 lg:pt-0

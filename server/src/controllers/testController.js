@@ -14,7 +14,7 @@ function round2(n) {
 }
 
 /**
- * Server-side scoring — never trust client-sent score/accuracy/percentage.
+ * Server-side scoring - never trust client-sent score/accuracy/percentage.
  * The client may send raw counts + marking scheme; we compute everything else.
  */
 function computeScoring({ correct_count, wrong_count, skipped_count, total_questions, marks_correct, marks_wrong, marks_skipped, max_marks }) {
@@ -61,7 +61,7 @@ function validateTopicBreakdown(topic_breakdown, total_questions) {
 // Submits a completed MCQ test, computes scoring server-side, persists the
 // attempt, and kicks off AI analysis synchronously (the analysis itself has
 // an offline deterministic fallback, so this endpoint never hangs/fails due
-// to AI provider outages — see ai-client.js runProviders()).
+// to AI provider outages - see ai-client.js runProviders()).
 const submitTest = async (req, res, next) => {
   try {
     const {
@@ -96,7 +96,7 @@ const submitTest = async (req, res, next) => {
     const scoringInput = {
       correct_count, wrong_count, skipped_count, total_questions,
       marks_correct: marks_correct ?? 2,
-      // -2/3 (not the rounded -0.67) — see TestAttempt.js comment on marks_wrong.
+      // -2/3 (not the rounded -0.67) - see TestAttempt.js comment on marks_wrong.
       marks_wrong:   marks_wrong   ?? -2 / 3,
       marks_skipped: marks_skipped ?? 0,
       max_marks:     max_marks     ?? 100,
@@ -208,7 +208,7 @@ async function pushWeakTopicsToRevision(userId, recommendations) {
     );
 
     if (existingIndex >= 0) {
-      // Refresh existing item — bump difficulty if the new gap is worse, reset review date
+      // Refresh existing item - bump difficulty if the new gap is worse, reset review date
       const existing = queue[existingIndex];
       const severityOrder = { easy: 0, medium: 1, hard: 2 };
       const worseDifficulty = severityOrder[difficulty] > severityOrder[existing.difficulty || "easy"]
@@ -266,7 +266,7 @@ const getTestAttempt = async (req, res, next) => {
 
 // ─── GET /api/tests ─────────────────────────────────────────────────────────
 // History list, most recent first. Lightweight projection (no full ai_analysis
-// blob) to keep the list view fast — fetch /api/tests/:id for full detail.
+// blob) to keep the list view fast - fetch /api/tests/:id for full detail.
 const listTestAttempts = async (req, res, next) => {
   try {
     const limit = Math.min(parseInt(req.query.limit) || 20, 100);

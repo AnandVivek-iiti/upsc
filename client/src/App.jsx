@@ -188,7 +188,7 @@ export default function App() {
 
   const handleQuoteClick = (quote) => {
     setAiMentorPrefill(
-      `Tell me more about this quote by ${quote.src}: "${quote.text}" — its historical context, deeper philosophical meaning, and how I can use it effectively in a UPSC essay or GS answer.`
+      `Tell me more about this quote by ${quote.src}: "${quote.text}" - its historical context, deeper philosophical meaning, and how I can use it effectively in a UPSC essay or GS answer.`
     );
     handleViewChange("ai-mentor");
   };

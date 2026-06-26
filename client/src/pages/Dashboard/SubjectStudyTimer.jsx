@@ -23,7 +23,7 @@ function fmtHM(secs) {
 
 // ─── SubjectPicker ────────────────────────────────────────────────────────────
 // Single prompt for "today's topic": pick a subject (required) and, optionally,
-// a chapter/topic detail. Nothing starts until the student confirms — this is
+// a chapter/topic detail. Nothing starts until the student confirms - this is
 // the gate that stops the timer ever running without a topic attached, and
 // keeps the topic shown in sync with the subject actually being timed.
 function SubjectPicker({ initialSubject = null, initialChapter = "", onConfirm, onCancel, confirmLabel = "Start Studying" }) {
@@ -70,7 +70,7 @@ function SubjectPicker({ initialSubject = null, initialChapter = "", onConfirm, 
         })}
       </div>
 
-      {/* Chapter / topic — optional, kept on the same prompt so it's always in sync with the subject */}
+      {/* Chapter / topic - optional, kept on the same prompt so it's always in sync with the subject */}
       <div className="space-y-1.5">
         <label className="flex items-center gap-1.5 text-[10px] font-mono text-text-muted uppercase tracking-wider">
           <BookOpen size={10} /> Chapter / topic <span className="text-text-muted/60 normal-case">(optional)</span>
@@ -128,7 +128,7 @@ export default function SubjectStudyTimer({
   const previousPhaseRef = useRef(phase);
 
   // Opens the subject/topic picker. If a session is currently running, it is
-  // paused (and its hours synced) first — this is what keeps "today's topic"
+  // paused (and its hours synced) first - this is what keeps "today's topic"
   // and "the subject actually being timed" from ever drifting apart: you can
   // never have a new topic selected while an old one is still silently ticking.
   const openPicker = useCallback(async () => {
@@ -178,7 +178,7 @@ export default function SubjectStudyTimer({
       setSyncState("syncing");
       try {
         const note = subject
-          ? (chapter ? `${subject} — ${chapter} session` : `${subject} session`)
+          ? (chapter ? `${subject} - ${chapter} session` : `${subject} session`)
           : "Timer session";
         await onLogHours(hours, note);
         setSyncState("synced");
@@ -241,7 +241,7 @@ export default function SubjectStudyTimer({
         {subject && (
           <span className="flex items-center gap-1.5">
             <span className="text-[10px] font-mono px-2 py-0.5 rounded-full" style={{ background: `${SUBJECT_COLORS[subject]}18`, color: SUBJECT_COLORS[subject], border: `0.5px solid ${SUBJECT_COLORS[subject]}40` }}>
-              {SUBJECT_ICONS[subject]} {subject}{chapter ? ` — ${chapter}` : ""}
+              {SUBJECT_ICONS[subject]} {subject}{chapter ? ` - ${chapter}` : ""}
             </span>
             {phase !== "selecting" && (
               <button
@@ -262,7 +262,7 @@ export default function SubjectStudyTimer({
       {/* Error banner */}
       {error && <p className="text-[11px] font-mono text-red-400 bg-red-400/10 px-3 py-2 rounded-lg">{error}</p>}
 
-      {/* Subject picker — this is "today's topic": one prompt, then the timer starts */}
+      {/* Subject picker - this is "today's topic": one prompt, then the timer starts */}
       {phase === "selecting" && (
         <SubjectPicker
           initialSubject={subject}

@@ -1,5 +1,5 @@
 /**
- * TodaysMission — "What should I do today?" widget for the Dashboard.
+ * TodaysMission - "What should I do today?" widget for the Dashboard.
  *
  * This is a self-contained component that composes Today's Mission from
  * the same props already flowing through Dashboard.jsx. It sits just below
@@ -16,7 +16,7 @@
  * state instead of an empty card.
  *
  * Also exports:
- * - ImprovedActionHub — reordered Start Studying cards (Practice → Mock →
+ * - ImprovedActionHub - reordered Start Studying cards (Practice → Mock →
  *   Answer Eval → Notes Auditor) matching the README's recommended hierarchy.
  *
  * Usage:
@@ -75,7 +75,7 @@ function buildMission({ userData, todayHours, overallProgress }) {
       color: "gold",
       label: "Study",
       text: studyDone
-        ? `${fmtHM(Math.round(studiedHours * 3600))} studied — target hit`
+        ? `${fmtHM(Math.round(studiedHours * 3600))} studied - target hit`
         : `Study ${targetHours}h today`,
       sub: studyDone ? null : `${fmtHM(Math.round(studiedHours * 3600))} / ${targetHours}h done`,
       done: studyDone,
@@ -156,7 +156,7 @@ export function TodaysMission({ userData, todayHours = 0, overallProgress = 0, o
             Today's mission complete.
           </p>
           <p className="text-xs text-text-secondary mt-0.5">
-            All daily targets hit — rest, or go deeper on your weak topics.
+            All daily targets hit - rest, or go deeper on your weak topics.
           </p>
         </div>
       </div>

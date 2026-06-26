@@ -12,7 +12,7 @@ export const NCERT_LAST_UPDATED = "June 14, 2026";
 //   title     : display title
 //   filePath  : absolute or relative path on your machine (served via /api/ncert/file)
 //   url       : PDF link  ← set to null if file not yet available
-//   done      : boolean — have you finished reading it?
+//   done      : boolean - have you finished reading it?
 // ─────────────────────────────────────────────────────────────────────────────
 
 export const SUBJECTS = [
@@ -35,7 +35,7 @@ export const SUBJECT_PAPER_MAP = {
 
 export const NCERT_BOOKS = [
 
-  // ─── CLASS 6 — no PDFs in folder yet ─────────────────────────────────────
+  // ─── CLASS 6 - no PDFs in folder yet ─────────────────────────────────────
   // {
   //   id: "geo-6-earth-habitat",
   //   class: 6,
@@ -64,7 +64,7 @@ export const NCERT_BOOKS = [
   //   done: false,
   // },
 
-  // // ─── CLASS 7 — no PDFs in folder yet ─────────────────────────────────────
+  // // ─── CLASS 7 - no PDFs in folder yet ─────────────────────────────────────
   // {
   //   id: "geo-7-environment",
   //   class: 7,
@@ -93,7 +93,7 @@ export const NCERT_BOOKS = [
   //   done: false,
   // },
 
-  // // ─── CLASS 8 — no PDFs in folder yet ─────────────────────────────────────
+  // // ─── CLASS 8 - no PDFs in folder yet ─────────────────────────────────────
   // {
   //   id: "geo-8-resources",
   //   class: 8,
@@ -122,7 +122,7 @@ export const NCERT_BOOKS = [
   //   done: false,
   // },
 
-  // // ─── CLASS 9 — no PDFs in folder yet ─────────────────────────────────────
+  // // ─── CLASS 9 - no PDFs in folder yet ─────────────────────────────────────
   // {
   //   id: "geo-9-contemporary",
   //   class: 9,
@@ -151,7 +151,7 @@ export const NCERT_BOOKS = [
   //   done: false,
   // },
 
-  // // ─── CLASS 10 — no PDFs in folder yet ────────────────────────────────────
+  // // ─── CLASS 10 - no PDFs in folder yet ────────────────────────────────────
   // {
   //   id: "eco-10-understanding",
   //   class: 10,
@@ -191,7 +191,7 @@ export const NCERT_BOOKS = [
 
   // ─── CLASS 11 ─────────────────────────────────────────────────────────────
 
-  // Art & Culture — only Heritage Crafts is available
+  // Art & Culture - only Heritage Crafts is available
   {
     id: "art-11-heritage-crafts",
     class: 11,
@@ -202,7 +202,7 @@ export const NCERT_BOOKS = [
     done: false,
   },
 
-  // Economics — file is in economy/ folder
+  // Economics - file is in economy/ folder
   {
     id: "eco-11-fundamentals",
     class: 11,
@@ -227,7 +227,7 @@ export const NCERT_BOOKS = [
     id: "geo-11-india",
     class: 11,
     subject: "Geography",
-    title: "India — Physical Environment",
+    title: "India - Physical Environment",
     filePath: null,
     url: "/assets/Books/NCERT11/geography/India Physical Environment (Class XI) 2.pdf",
     done: false,
@@ -331,7 +331,7 @@ export const NCERT_BOOKS = [
     id: "geo-12-india-people",
     class: 12,
     subject: "Geography",
-    title: "India — People and Economy",
+    title: "India - People and Economy",
     filePath: null,
     url: "/assets/Books/NCERT12/Geography/India People and Economy (Class XII).pdf",
     done: false,

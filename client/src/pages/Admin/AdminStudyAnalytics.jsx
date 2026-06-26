@@ -1,7 +1,7 @@
 /**
  * AdminStudyAnalytics.jsx
  * ─────────────────────────────────────────────────────────────────────────────
- * Features 7 & 9 — Admin analytics panel for founder / admin dashboard.
+ * Features 7 & 9 - Admin analytics panel for founder / admin dashboard.
  *
  * Answers the questions:
  *   Which subjects are most studied platform-wide?
@@ -287,7 +287,7 @@ function GlobalInsightsTab({ period }) {
       {/* Subject distribution */}
       <div>
         <p className="text-[10px] font-mono text-text-muted uppercase tracking-wider mb-2">
-          Subject Distribution — Platform Wide
+          Subject Distribution - Platform Wide
         </p>
         {subject_distribution.length === 0 ? (
           <p className="text-xs font-mono text-text-muted py-3">No data for this period.</p>

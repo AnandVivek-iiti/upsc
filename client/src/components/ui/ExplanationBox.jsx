@@ -1,20 +1,20 @@
 /**
  * ExplanationBox.jsx
  * ─────────────────────────────────────────────────────────────────────────────
- * UPSC PYQ — Central Explanation Rendering Engine
+ * UPSC PYQ - Central Explanation Rendering Engine
  *
  * Handles ALL known explanation patterns from the data corpus:
  *   1. Statement N is CORRECT/INCORRECT: ...          (Statement-type)
  *   2. Row N (Label): ...                             (Row/Column-type, colon + parens)
- *   3. Relationship N is CORRECT/INCORRECT — ...      (Relationship-type, em-dash)
- *   4. Project/Point N — Label is CORRECT/INCORRECT  (Project/point-type, em-dash first)
+ *   3. Relationship N is CORRECT/INCORRECT - ...      (Relationship-type, em-dash)
+ *   4. Project/Point N - Label is CORRECT/INCORRECT  (Project/point-type, em-dash first)
  *   5. Option A/B is CORRECT/INCORRECT: ...           (Option-type)
  *   6. Plain narrative paragraphs                     (No markers)
  *   7. "Therefore,/Hence,/Thus," terminal summaries   (Conclusion-type)
  *
  * Props:
- *   text        {string}  — raw explanation string from data
- *   accentColor {string}  — subject accent hex, e.g. "#4F8EF7"
+ *   text        {string}  - raw explanation string from data
+ *   accentColor {string}  - subject accent hex, e.g. "#4F8EF7"
  * ─────────────────────────────────────────────────────────────────────────────
  */
 
@@ -34,8 +34,8 @@
 //   C. "Option A is CORRECT/INCORRECT"            (colon or em-dash follows)
 //   D. "Row/Column/Pair/Point/Project N (…) is CORRECT/INCORRECT"
 //   E. "Row/Column/Pair N (…):"                   (no status word, parenthetical label)
-//   F. "Project/Point N — Label text is CORRECT/INCORRECT"   (em-dash, status at end)
-//   G. "A./B./C./D. Label — text"                 (lettered list items in match-type)
+//   F. "Project/Point N - Label text is CORRECT/INCORRECT"   (em-dash, status at end)
+//   G. "A./B./C./D. Label - text"                 (lettered list items in match-type)
 
 const BLOCK_REGEX =
   /(?:^|\n\n?|\. )(?:\(\d+\)\s*)?((?:Statement|Relationship|Option|Row|Column|Pair|Point|Project|Claim|Premise|Assertion)\s+(?:[IVX]+|\d+|[A-D])\s*(?:\([^)]*\))?\s*(?:—|–|--)?\s*(?:[^:—\n]{0,60}?)?\s*(?:is\s+(?:CORRECT|INCORRECT|correct|incorrect))?\s*[:—–])/gi;
@@ -47,10 +47,10 @@ const SEQ_TOKEN_RE =
 // Terminal conclusion detector
 const CONCLUSION_RE = /^(Therefore|Hence|Thus|So|Consequently|In conclusion|It follows that)[,\s]/i;
 
-// Status word extractor — finds CORRECT/INCORRECT in a header segment
+// Status word extractor - finds CORRECT/INCORRECT in a header segment
 const STATUS_RE = /\b(CORRECT|INCORRECT|correct|incorrect)\b/i;
 
-// Clean label extractor — strips status words, colons, dashes, extra spaces
+// Clean label extractor - strips status words, colons, dashes, extra spaces
 function extractLabel(raw) {
   return raw
     .replace(/\b(is\s+)?(CORRECT|INCORRECT|correct|incorrect)\b/gi, "")
@@ -98,7 +98,7 @@ function parseExplanation(text) {
   const blocks = [];
 
   if (!hasMarkers) {
-    // ── Plain narrative — render as paragraph(s) ──────────────────────────
+    // ── Plain narrative - render as paragraph(s) ──────────────────────────
     const paragraphs = mainText.split(/\n{2,}/).filter((p) => p.trim());
     paragraphs.forEach((para) => {
       blocks.push({ type: "narrative", content: para.trim() });
@@ -125,7 +125,7 @@ function parseExplanation(text) {
         const label = extractLabel(rawHeader);
         const status = extractStatus(rawHeader) || extractStatus(body.slice(0, 80));
 
-        // If status was in body (e.g. "Relationship 1 — ... is CORRECT"), strip it from body start
+        // If status was in body (e.g. "Relationship 1 - ... is CORRECT"), strip it from body start
         const cleanBody = body.replace(/^is\s+(CORRECT|INCORRECT)\s*/i, "").replace(/^[.:\s—–]+/, "").trim();
 
         blocks.push({
@@ -491,9 +491,9 @@ function SourcesRow({ sources }) {
 /**
  * ExplanationBox
  *
- * @param {string}   text        — raw explanation string
- * @param {string}   accentColor — subject hex color
- * @param {Array}    sources     — optional array of {name, chapter} objects
+ * @param {string}   text        - raw explanation string
+ * @param {string}   accentColor - subject hex color
+ * @param {Array}    sources     - optional array of {name, chapter} objects
  */
 export default function ExplanationBox({ text, accentColor = "#4F8EF7", sources }) {
   if (!text) return null;

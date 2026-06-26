@@ -80,7 +80,7 @@ function safeJSONParse(rawText) {
 }
 
 /**
- * Background memory extraction — given the student's current durable-memory
+ * Background memory extraction - given the student's current durable-memory
  * list and the text of the latest chat turn, asks Gemini for a refreshed,
  * merged list. Deliberately low-stakes: any failure just returns the memory
  * unchanged rather than throwing, since this should never block or break the
@@ -150,7 +150,7 @@ function getOpenRouterClient() {
 }
 
 // Builds a plain OpenAI-style chat messages array (system + history + latest
-// user turn) — shared by every provider's chatCall so the mentor chat feature
+// user turn) - shared by every provider's chatCall so the mentor chat feature
 // works the same way regardless of which provider answers.
 function toChatMessages(systemInstruction, history, message) {
   const historyMsgs = (history || []).map((m) => ({
@@ -183,7 +183,7 @@ const providers = [
       const result = await model.generateContent(userPrompt);
       const text = result.response.text();
       if (mode === "text" && minChars && text.trim().length < minChars) {
-        throw new Error(`response too short (${text.trim().length} chars, need ${minChars}) — likely a low-effort answer`);
+        throw new Error(`response too short (${text.trim().length} chars, need ${minChars}) - likely a low-effort answer`);
       }
       return mode === "text" ? text : safeJSONParse(text);
     },
@@ -223,7 +223,7 @@ const providers = [
         });
         const text = response.choices[0].message.content;
         if (!wantsJSON && minChars && text.trim().length < minChars) {
-          throw new Error(`response too short (${text.trim().length} chars, need ${minChars}) — likely a low-effort answer`);
+          throw new Error(`response too short (${text.trim().length} chars, need ${minChars}) - likely a low-effort answer`);
         }
         return wantsJSON ? safeJSONParse(text) : text;
       } catch (err) {
@@ -290,7 +290,7 @@ const providers = [
           const text = response.choices?.[0]?.message?.content;
           if (!text || !text.trim()) throw new Error("empty response");
           if (mode === "text" && minChars && text.trim().length < minChars) {
-            throw new Error(`response too short (${text.trim().length} chars, need ${minChars}) — likely a low-effort answer`);
+            throw new Error(`response too short (${text.trim().length} chars, need ${minChars}) - likely a low-effort answer`);
           }
           console.log(`[OpenRouter] success with model: ${model}`);
           return mode === "text" ? text : safeJSONParse(text);
@@ -307,7 +307,7 @@ const providers = [
                 messages: [
                   {
                     role: "system",
-                    content: `${systemInstruction}\nRespond with ONLY valid raw JSON — no markdown code fences, no commentary before or after.`,
+                    content: `${systemInstruction}\nRespond with ONLY valid raw JSON - no markdown code fences, no commentary before or after.`,
                   },
                   { role: "user", content: userPrompt },
                 ],
@@ -382,16 +382,16 @@ async function runWithProviders(userPrompt, systemInstruction, { mode = "json", 
 }
 
 /**
- * runMentorChat — same provider chain and fallback philosophy as
+ * runMentorChat - same provider chain and fallback philosophy as
  * runWithProviders, but for multi-turn conversational chat (the mentor chat
  * feature). Each provider exposes its own chatCall() because Gemini's SDK
  * wants history in its own {role, parts} shape via startChat(), while
- * OpenRouter/Groq just want a flat OpenAI-style messages array — this
+ * OpenRouter/Groq just want a flat OpenAI-style messages array - this
  * function hides that difference from the caller.
  *
  * @param {string} systemInstruction
- * @param {{role: string, content: string}[]} history — prior turns in the thread
- * @param {string} message — the new user message
+ * @param {{role: string, content: string}[]} history - prior turns in the thread
+ * @param {string} message - the new user message
  * @returns {Promise<{ response: string, provider: string }>}
  */
 async function runMentorChat(systemInstruction, history, message) {
@@ -418,7 +418,7 @@ async function runMentorChat(systemInstruction, history, message) {
 
 // Normalizes the raw evaluator JSON into the exact shape the frontend expects.
 // `extracted_answer` is only ever populated for handwritten/image submissions
-// (see evaluateAnswerImage below) — it's harmless and stays "" for typed
+// (see evaluateAnswerImage below) - it's harmless and stays "" for typed
 // answers, so this one function safely serves both flows.
 function normalizeEvaluation(result) {
   return {
@@ -446,17 +446,17 @@ async function evaluateAnswer(userPrompt, paper) {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-// HANDWRITTEN ANSWER (IMAGE) EVALUATION — Gemini Vision
+// HANDWRITTEN ANSWER (IMAGE) EVALUATION - Gemini Vision
 // ═══════════════════════════════════════════════════════════════════════════
 // Reuses the exact same per-paper system instruction + JSON schema as the
-// typed-answer flow above (getSystemInstruction / normalizeEvaluation) — we
+// typed-answer flow above (getSystemInstruction / normalizeEvaluation) - we
 // only append a transcription addendum so one Gemini Vision call does BOTH
 // the handwriting extraction and the full UPSC evaluation in a single pass.
 // No separate OCR service, no duplicated grading logic.
 //
 // Only Gemini supports multimodal (image) input in this provider chain, so
 // this intentionally does NOT go through runWithProviders' OpenRouter/Groq
-// fallback — those providers only ever receive plain text in this codebase.
+// fallback - those providers only ever receive plain text in this codebase.
 
 const EXTRACTION_FAILURE_MESSAGE =
   "Unable to confidently read the answer. Please upload a clearer image.";
@@ -477,33 +477,33 @@ HANDWRITTEN ANSWER MODE (IMAGE INPUT)
 ═══════════════════════════════════════
 You have been given a photograph of a handwritten UPSC Mains answer (a single page, a cropped section, or multiple pages stitched into one image). Before evaluating anything, you must:
 
-STEP 1 — FAITHFUL TRANSCRIPTION:
-Carefully transcribe the handwritten content into clean digital text. Preserve the candidate's own structure — headings, numbered points, bullet points, underlines (render as **bold**), diagrams or flowcharts (describe them briefly in words, e.g. "[diagram: flowchart showing X leading to Y leading to Z]"). Do NOT correct grammar, improve wording, or fill gaps — transcribe exactly what the candidate wrote, including their own mistakes. If a specific word or short phrase is illegible, write [illegible] in its place rather than guessing.
+STEP 1 - FAITHFUL TRANSCRIPTION:
+Carefully transcribe the handwritten content into clean digital text. Preserve the candidate's own structure - headings, numbered points, bullet points, underlines (render as **bold**), diagrams or flowcharts (describe them briefly in words, e.g. "[diagram: flowchart showing X leading to Y leading to Z]"). Do NOT correct grammar, improve wording, or fill gaps - transcribe exactly what the candidate wrote, including their own mistakes. If a specific word or short phrase is illegible, write [illegible] in its place rather than guessing.
 
 If the image is too blurry, poorly lit, rotated or cropped beyond use, or the handwriting is illegible across most of the answer such that you cannot responsibly produce a faithful transcription, STOP immediately and return ONLY this JSON object (nothing else, no other keys):
 { "extraction_failed": true, "extracted_answer": "", "extraction_note": "<one short sentence explaining why, e.g. 'Image too blurry to read reliably' or 'Most of the handwriting is illegible'>" }
 
-STEP 2 — EVALUATION:
-If transcription succeeded, evaluate the transcribed text exactly as you would a typed answer — apply every scoring rule, deduction, and the JSON schema defined above with NO changes to the evaluation logic itself. Then return the standard JSON schema from above with two additional top-level keys merged in:
+STEP 2 - EVALUATION:
+If transcription succeeded, evaluate the transcribed text exactly as you would a typed answer - apply every scoring rule, deduction, and the JSON schema defined above with NO changes to the evaluation logic itself. Then return the standard JSON schema from above with two additional top-level keys merged in:
 - "extracted_answer": the full faithful transcription from Step 1 (string)
 - "extraction_failed": false
 
-Return ONLY ONE final JSON object — either the extraction-failure object above, or the full evaluation schema plus the two additional keys. Never wrap it in markdown, and never return the two steps as separate objects.`;
+Return ONLY ONE final JSON object - either the extraction-failure object above, or the full evaluation schema plus the two additional keys. Never wrap it in markdown, and never return the two steps as separate objects.`;
 }
 
 function buildImageEvalPrompt({ question, paper }) {
-  return `**MAINS EVALUATION REQUEST — HANDWRITTEN ANSWER (IMAGE)**
+  return `**MAINS EVALUATION REQUEST - HANDWRITTEN ANSWER (IMAGE)**
 
 Paper: ${paper || "GS2"}
 
 **Question:**
 ${question.trim()}
 
-The student's answer is handwritten and attached as an image. Follow STEP 1 (transcription) and STEP 2 (evaluation) exactly as instructed in your system prompt above. The student has an engineering background, so they think analytically but may lack humanities-specific terminology and UPSC answer-writing conventions — evaluate accordingly, exactly as you would for a typed submission.`;
+The student's answer is handwritten and attached as an image. Follow STEP 1 (transcription) and STEP 2 (evaluation) exactly as instructed in your system prompt above. The student has an engineering background, so they think analytically but may lack humanities-specific terminology and UPSC answer-writing conventions - evaluate accordingly, exactly as you would for a typed submission.`;
 }
 
 /**
- * evaluateAnswerImage — handwritten-answer counterpart to evaluateAnswer().
+ * evaluateAnswerImage - handwritten-answer counterpart to evaluateAnswer().
  * One Gemini Vision call: transcribes the photo, then grades the transcription
  * with the same per-paper rubric used for typed answers.
  *
@@ -566,7 +566,7 @@ async function evaluateAnswerImage({ question, imageBase64, mimeType, paper }) {
   }
 
   const extractedAnswer = (parsed.extracted_answer || "").trim();
-  // Defensive floor matching the typed-answer minimum (20 chars) — if Gemini
+  // Defensive floor matching the typed-answer minimum (20 chars) - if Gemini
   // didn't set extraction_failed itself but produced a near-empty
   // transcription, treat it the same way rather than grading noise.
   if (extractedAnswer.length < 20) {
@@ -581,12 +581,12 @@ async function evaluateAnswerImage({ question, imageBase64, mimeType, paper }) {
 }
 
 /**
- * analyzeTestPerformance — runs the MCQ Test Series diagnostic AI.
- * Separate from evaluateAnswer (which is for Mains essays) — same provider
+ * analyzeTestPerformance - runs the MCQ Test Series diagnostic AI.
+ * Separate from evaluateAnswer (which is for Mains essays) - same provider
  * list and fallback philosophy, but its own system instruction and its own
  * deterministic offline fallback (generateSampleTestAnalysis).
  *
- * @param {object} payload — see buildTestAnalysisPrompt() below for shape.
+ * @param {object} payload - see buildTestAnalysisPrompt() below for shape.
  * @returns {{ result: object, provider: string }}
  */
 async function analyzeTestPerformance(payload) {
@@ -694,13 +694,13 @@ const NOTES_MIN_OUTPUT_CHARS = {
 };
 
 /**
- * runNotesAction — single entry point for all 4 Notes AI actions (Improve /
+ * runNotesAction - single entry point for all 4 Notes AI actions (Improve /
  * Find Mistakes / Generate Revision Notes / Convert to Mains Format). Each
  * action gets its own dedicated UPSC-examiner-grade system instruction (see
  * notesInstructions.js) and runs through the same multi-provider fallback
  * chain as the Mains evaluator (Gemini → OpenAI → Claude → Groq). Always
  * requested as plain text/markdown ("mode: text"), never JSON, since every
- * notes instruction is written to output markdown directly — this is what
+ * notes instruction is written to output markdown directly - this is what
  * lets "Convert to Mains Format" genuinely regenerate a full topper-standard
  * answer using the model's own UPSC knowledge, not just reformat the note.
  *

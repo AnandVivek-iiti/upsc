@@ -4,9 +4,9 @@ import { submitFeedback } from "../utils/api";
 
 // ─── FeedbackModal ─────────────────────────────────────────────────────────────
 // Owns all feedback state. Registers two globals on mount:
-//   window.openFeedbackModal()          — called by the Dashboard feedback button
-//   window.incrementFeedbackCounter(type) — called by feature pages (notes_auditor, ai_mentor)
-//   window.completeStudySession()        — called when a study session finishes
+//   window.openFeedbackModal()          - called by the Dashboard feedback button
+//   window.incrementFeedbackCounter(type) - called by feature pages (notes_auditor, ai_mentor)
+//   window.completeStudySession()        - called when a study session finishes
 // Auto-triggers the modal based on usage counters stored in localStorage.
 export default function FeedbackModal({ isLoggedIn, user }) {
   const [isOpen, setIsOpen] = useState(false);

@@ -7,7 +7,7 @@
 export const TEST_T32 = [
   {
     id: "sfg2026-t32",
-    title: "SFG 2026 — Level 1 · Test 32",
+    title: "SFG 2026 - Level 1 · Test 32",
     testCode: "321129",
     subject: "General Studies",
     topic: "History, Geography & Environment (Revision)",
@@ -23,7 +23,7 @@ export const TEST_T32 = [
       {
         id: "t32_q01",
         qNo: 1,
-        text: "With reference to educational institutions during colonial rule in India, consider the following pairs:\n\nInstitutions — Founder\nI. Sanskrit College at Benaras — William Jones\nII. Calcutta Madarsa — Warren Hastings\nIII. Fort William College — Arthur Wellesley",
+        text: "With reference to educational institutions during colonial rule in India, consider the following pairs:\n\nInstitutions - Founder\nI. Sanskrit College at Benaras - William Jones\nII. Calcutta Madarsa - Warren Hastings\nIII. Fort William College - Arthur Wellesley",
         suffix: "Which of the pairs given above is/are correct?",
         options: [
           { id: "A", text: "1 and 2" },
@@ -33,8 +33,8 @@ export const TEST_T32 = [
         ],
         correct: "B",
         explanation:
-          "Calcutta Madrasa was founded by Warren Hastings in 1781 — this is correct. Sanskrit College at Benaras was founded by Jonathan Duncan in 1791, not William Jones (Jones founded the Asiatic Society of Bengal). Fort William College was founded by Lord Wellesley (Richard Wellesley), not Arthur Wellesley. Only Pair II is correct.",
-        topic: "Modern Indian History — Education",
+          "Calcutta Madrasa was founded by Warren Hastings in 1781 - this is correct. Sanskrit College at Benaras was founded by Jonathan Duncan in 1791, not William Jones (Jones founded the Asiatic Society of Bengal). Fort William College was founded by Lord Wellesley (Richard Wellesley), not Arthur Wellesley. Only Pair II is correct.",
+        topic: "Modern Indian History - Education",
         difficulty: "Medium",
         pyqYear: null,
       },
@@ -52,7 +52,7 @@ export const TEST_T32 = [
         correct: "B",
         explanation:
           "Lysocline is the depth in the ocean at which the rate of dissolution of calcium carbonate (CaCO3) increases significantly. It lies between the surface and the Carbonate Compensation Depth (CCD). Option A describes halocline. Option C describes the compensation depth for photosynthesis. Option D describes thermocline.",
-        topic: "Geography — Oceanography",
+        topic: "Geography - Oceanography",
         difficulty: "Medium",
         pyqYear: null,
       },
@@ -69,8 +69,8 @@ export const TEST_T32 = [
         ],
         correct: "C",
         explanation:
-          "Statement I is correct — PSCs do accelerate stratospheric ozone depletion by providing surfaces for heterogeneous chemical reactions that release reactive chlorine. Statement II is incorrect — on PSC surfaces, chlorine nitrate (ClONO2) reacts with HCl (hydrochloric acid) via a hydrolysis/substitution reaction (not a redox reaction) to release molecular chlorine (Cl2), which then photolyzes to chlorine atoms. The reaction type described is not accurately a redox reaction.",
-        topic: "Environment — Atmosphere & Ozone",
+          "Statement I is correct - PSCs do accelerate stratospheric ozone depletion by providing surfaces for heterogeneous chemical reactions that release reactive chlorine. Statement II is incorrect - on PSC surfaces, chlorine nitrate (ClONO2) reacts with HCl (hydrochloric acid) via a hydrolysis/substitution reaction (not a redox reaction) to release molecular chlorine (Cl2), which then photolyzes to chlorine atoms. The reaction type described is not accurately a redox reaction.",
+        topic: "Environment - Atmosphere & Ozone",
         difficulty: "Hard",
         pyqYear: null,
       },
@@ -88,7 +88,7 @@ export const TEST_T32 = [
         correct: "D",
         explanation:
           "All four sites are identified as potential geothermal energy sites in India. India has about 340 identified geothermal hot spring locations. Major geothermal provinces include: Himalayan province (Manikaran, HP), Cambay basin (Tuwa, Gujarat), Sonata lineament zone (Surajkund, Jharkhand), and the NE province includes Bakreshwar (West Bengal). All four are well-documented geothermal potential sites.",
-        topic: "Geography — Energy Resources",
+        topic: "Geography - Energy Resources",
         difficulty: "Medium",
         pyqYear: null,
       },
@@ -105,8 +105,8 @@ export const TEST_T32 = [
         ],
         correct: "A",
         explanation:
-          "Correct chronological order: I. Least Developed Countries Fund (LDCF) — established at COP7, Marrakech, 2001, became operational around 2002. II. Green Climate Fund (GCF) — established at COP16, Cancun, 2010, became operational in 2015. III. Fund for Responding to Loss and Damage — agreed at COP27, Sharm el-Sheikh, 2022, operationalized at COP28, Dubai, 2023. So the order is I → II → III.",
-        topic: "Environment — Climate Finance",
+          "Correct chronological order: I. Least Developed Countries Fund (LDCF) - established at COP7, Marrakech, 2001, became operational around 2002. II. Green Climate Fund (GCF) - established at COP16, Cancun, 2010, became operational in 2015. III. Fund for Responding to Loss and Damage - agreed at COP27, Sharm el-Sheikh, 2022, operationalized at COP28, Dubai, 2023. So the order is I → II → III.",
+        topic: "Environment - Climate Finance",
         difficulty: "Medium",
         pyqYear: null,
       },
@@ -124,7 +124,7 @@ export const TEST_T32 = [
         correct: "A",
         explanation:
           "ITMOs are defined under Article 6.2 of the Paris Agreement. They allow countries to transfer emission reductions (mitigation outcomes) across borders to help meet their NDCs. It is a voluntary, bilateral cooperative mechanism that promotes cost-effective mitigation and can include reductions from various sectors. It is NOT related to the Kyoto Protocol and is not a penalty mechanism.",
-        topic: "Environment — Climate Change & Paris Agreement",
+        topic: "Environment - Climate Change & Paris Agreement",
         difficulty: "Medium",
         pyqYear: null,
       },
@@ -141,8 +141,8 @@ export const TEST_T32 = [
         ],
         correct: "C",
         explanation:
-          "All three have their secretariat/headquarters in India. I. Global Biofuel Alliance (GBA) — secretariat in New Delhi (launched at G20 India 2023). II. Coalition for Disaster Resilient Infrastructure (CDRI) — secretariat in New Delhi (launched by PM Modi at UNGA 2019). III. International Solar Alliance (ISA) — headquartered at National Institute of Solar Energy, Gurugram, Haryana. All three are based in India.",
-        topic: "Environment — International Institutions",
+          "All three have their secretariat/headquarters in India. I. Global Biofuel Alliance (GBA) - secretariat in New Delhi (launched at G20 India 2023). II. Coalition for Disaster Resilient Infrastructure (CDRI) - secretariat in New Delhi (launched by PM Modi at UNGA 2019). III. International Solar Alliance (ISA) - headquartered at National Institute of Solar Energy, Gurugram, Haryana. All three are based in India.",
+        topic: "Environment - International Institutions",
         difficulty: "Easy",
         pyqYear: null,
       },
@@ -159,8 +159,8 @@ export const TEST_T32 = [
         ],
         correct: "A",
         explanation:
-          "Statement I is correct — AWBI functions under the Ministry of Environment, Forest and Climate Change (MoEFCC). Statement II is incorrect — AWBI was established under the Prevention of Cruelty to Animals Act, 1960, NOT the Wildlife (Protection) Act, 1972. Statement III is correct — one of AWBI's advisory roles includes advising on the design and maintenance of slaughterhouses to prevent cruelty. Correct answer: A (I and III).",
-        topic: "Environment — Animal Welfare",
+          "Statement I is correct - AWBI functions under the Ministry of Environment, Forest and Climate Change (MoEFCC). Statement II is incorrect - AWBI was established under the Prevention of Cruelty to Animals Act, 1960, NOT the Wildlife (Protection) Act, 1972. Statement III is correct - one of AWBI's advisory roles includes advising on the design and maintenance of slaughterhouses to prevent cruelty. Correct answer: A (I and III).",
+        topic: "Environment - Animal Welfare",
         difficulty: "Medium",
         pyqYear: null,
       },
@@ -177,8 +177,8 @@ export const TEST_T32 = [
         ],
         correct: "B",
         explanation:
-          "Aitchison Committee (1886) — related to Civil Services (recommended Indianization of the ICS). Lee Commission (1924) — related to Civil Services in India (recommended improvements in service conditions). Hunter Commission (1882) — related to Education (not Civil Services). Sadler Commission (1917-19) — related to University/Higher Education (not Civil Services). So only I and III are related to Civil Services → Only two.",
-        topic: "Modern Indian History — Administration",
+          "Aitchison Committee (1886) - related to Civil Services (recommended Indianization of the ICS). Lee Commission (1924) - related to Civil Services in India (recommended improvements in service conditions). Hunter Commission (1882) - related to Education (not Civil Services). Sadler Commission (1917-19) - related to University/Higher Education (not Civil Services). So only I and III are related to Civil Services → Only two.",
+        topic: "Modern Indian History - Administration",
         difficulty: "Hard",
         pyqYear: null,
       },
@@ -195,8 +195,8 @@ export const TEST_T32 = [
         ],
         correct: "B",
         explanation:
-          "Statement I is correct — Venus rotates in a retrograde direction (east to west), opposite to Earth's rotation. Statement II is correct — Venus is the hottest planet (~465°C average) due to its thick CO2 atmosphere causing an extreme greenhouse effect, even though Mercury is closer to the Sun. Statement III is incorrect — Venus has a very thick atmosphere (mainly CO2); it does NOT lack an atmosphere. Statement IV is incorrect — Mercury also has no moon; Venus is not the only one.",
-        topic: "Geography — Solar System",
+          "Statement I is correct - Venus rotates in a retrograde direction (east to west), opposite to Earth's rotation. Statement II is correct - Venus is the hottest planet (~465°C average) due to its thick CO2 atmosphere causing an extreme greenhouse effect, even though Mercury is closer to the Sun. Statement III is incorrect - Venus has a very thick atmosphere (mainly CO2); it does NOT lack an atmosphere. Statement IV is incorrect - Mercury also has no moon; Venus is not the only one.",
+        topic: "Geography - Solar System",
         difficulty: "Easy",
         pyqYear: null,
       },
@@ -214,7 +214,7 @@ export const TEST_T32 = [
         correct: "D",
         explanation:
           "An ecosystem is defined as a biological community of interacting organisms and their physical environment. It includes both biotic (living) and abiotic (non-living) components. Examples include a pond, ocean, forest, or even an aquarium. A biome is a larger unit covering a broad geographic area. A community refers only to the biotic component.",
-        topic: "Environment — Ecology",
+        topic: "Environment - Ecology",
         difficulty: "Easy",
         pyqYear: null,
       },
@@ -232,7 +232,7 @@ export const TEST_T32 = [
         correct: "A",
         explanation:
           "Snakes use their forked tongue to collect chemical particles from the environment and transfer them to the Jacobson's organ (vomeronasal organ) in the roof of their mouth, which detects smells. This is how snakes effectively 'smell' their surroundings using their tongue.",
-        topic: "Environment — Biology",
+        topic: "Environment - Biology",
         difficulty: "Easy",
         pyqYear: null,
       },
@@ -249,8 +249,8 @@ export const TEST_T32 = [
         ],
         correct: "C",
         explanation:
-          "Statement I is incorrect — Agarwood (Aquilaria malaccensis) is NOT endemic to Northeast India alone. It is found across South and Southeast Asia including India, Bangladesh, Bhutan, Cambodia, and Indonesia. Statement II is correct — Agarwood (Aquilaria malaccensis) is listed as Critically Endangered on the IUCN Red List. Statement III is correct — Essential oils extracted from agarwood are known for their anti-inflammatory and anti-oxidant properties, and are widely used in traditional medicine and perfumery.",
-        topic: "Environment — Biodiversity",
+          "Statement I is incorrect - Agarwood (Aquilaria malaccensis) is NOT endemic to Northeast India alone. It is found across South and Southeast Asia including India, Bangladesh, Bhutan, Cambodia, and Indonesia. Statement II is correct - Agarwood (Aquilaria malaccensis) is listed as Critically Endangered on the IUCN Red List. Statement III is correct - Essential oils extracted from agarwood are known for their anti-inflammatory and anti-oxidant properties, and are widely used in traditional medicine and perfumery.",
+        topic: "Environment - Biodiversity",
         difficulty: "Medium",
         pyqYear: null,
       },
@@ -267,8 +267,8 @@ export const TEST_T32 = [
         ],
         correct: "D",
         explanation:
-          "Statement I is incorrect — Tinkathia system was the reason behind the Champaran Satyagraha (1917), NOT the Kheda Satyagraha. The Kheda Satyagraha of 1918 was about excessive revenue demand from peasants despite crop failure. Statement II is incorrect — Under the Tinkathia system, peasants in Champaran were forced to cultivate indigo on 3/20th (three-twentieths, i.e., 3 out of 20 'kathas') of their land and hand over the entire indigo harvest to the planters as rent — it was not two-thirds of agricultural produce.",
-        topic: "Modern Indian History — National Movement",
+          "Statement I is incorrect - Tinkathia system was the reason behind the Champaran Satyagraha (1917), NOT the Kheda Satyagraha. The Kheda Satyagraha of 1918 was about excessive revenue demand from peasants despite crop failure. Statement II is incorrect - Under the Tinkathia system, peasants in Champaran were forced to cultivate indigo on 3/20th (three-twentieths, i.e., 3 out of 20 'kathas') of their land and hand over the entire indigo harvest to the planters as rent - it was not two-thirds of agricultural produce.",
+        topic: "Modern Indian History - National Movement",
         difficulty: "Medium",
         pyqYear: null,
       },
@@ -286,14 +286,14 @@ export const TEST_T32 = [
         correct: "B",
         explanation:
           "'Sandhya' and 'Kal' were nationalist newspapers/periodicals. 'Sandhya' was a Bengali newspaper edited by Brahmabandhab Upadhyay and later Bipin Chandra Pal, known for its radical/revolutionary nationalist content. 'Kal' was a Marathi weekly newspaper edited by Bal Gangadhar Tilak's associate Shivram Mahadev Paranjpe. Both were used to propagate nationalist ideas and were considered seditious by the British.",
-        topic: "Modern Indian History — Press & Nationalism",
+        topic: "Modern Indian History - Press & Nationalism",
         difficulty: "Hard",
         pyqYear: null,
       },
       {
         id: "t32_q16",
         qNo: 16,
-        text: "With reference to major species seen in news, consider the following information:\n\nName of the Species — IUCN Red List Status — Naturally Found in\nI. Lion tailed Macaque — Critically Endangered — Papikonda National Park\nII. Nilgiri tahr — Endangered — Mukurthi National Park\nIII. Dugong — Vulnerable — Gulf of Mannar Marine National Park\nIV. Eastern Imperial Eagle — Critically Endangered — Hemis National Park",
+        text: "With reference to major species seen in news, consider the following information:\n\nName of the Species - IUCN Red List Status - Naturally Found in\nI. Lion tailed Macaque - Critically Endangered - Papikonda National Park\nII. Nilgiri tahr - Endangered - Mukurthi National Park\nIII. Dugong - Vulnerable - Gulf of Mannar Marine National Park\nIV. Eastern Imperial Eagle - Critically Endangered - Hemis National Park",
         suffix: "In how many of the above rows is the given information correctly matched?",
         options: [
           { id: "A", text: "Only one" },
@@ -303,8 +303,8 @@ export const TEST_T32 = [
         ],
         correct: "B",
         explanation:
-          "Row I is incorrect — Lion-tailed Macaque is Endangered (not Critically Endangered) on IUCN; it is found in the Western Ghats, not Papikonda NP (which is in Andhra Pradesh). Row II is correct — Nilgiri Tahr is Endangered and Mukurthi NP in Tamil Nadu is a key habitat. Row III is correct — Dugong is Vulnerable and is found in the Gulf of Mannar Marine NP. Row IV is incorrect — Eastern Imperial Eagle is Vulnerable (not Critically Endangered); Hemis NP is known for Snow Leopards, not this eagle. Only Rows II and III are correctly matched.",
-        topic: "Environment — Biodiversity & Protected Areas",
+          "Row I is incorrect - Lion-tailed Macaque is Endangered (not Critically Endangered) on IUCN; it is found in the Western Ghats, not Papikonda NP (which is in Andhra Pradesh). Row II is correct - Nilgiri Tahr is Endangered and Mukurthi NP in Tamil Nadu is a key habitat. Row III is correct - Dugong is Vulnerable and is found in the Gulf of Mannar Marine NP. Row IV is incorrect - Eastern Imperial Eagle is Vulnerable (not Critically Endangered); Hemis NP is known for Snow Leopards, not this eagle. Only Rows II and III are correctly matched.",
+        topic: "Environment - Biodiversity & Protected Areas",
         difficulty: "Hard",
         pyqYear: null,
       },
@@ -321,15 +321,15 @@ export const TEST_T32 = [
         ],
         correct: "A",
         explanation:
-          "The Nagoya Protocol on Access to Genetic Resources and the Fair and Equitable Sharing of Benefits Arising from their Utilization (ABS) was adopted in 2010 under the Convention on Biological Diversity (CBD). It primarily aims to address biopiracy — the unauthorized use of biological resources and traditional knowledge of indigenous communities without fair compensation. It ensures that benefits from genetic resources are shared equitably.",
-        topic: "Environment — Biodiversity Conventions",
+          "The Nagoya Protocol on Access to Genetic Resources and the Fair and Equitable Sharing of Benefits Arising from their Utilization (ABS) was adopted in 2010 under the Convention on Biological Diversity (CBD). It primarily aims to address biopiracy - the unauthorized use of biological resources and traditional knowledge of indigenous communities without fair compensation. It ensures that benefits from genetic resources are shared equitably.",
+        topic: "Environment - Biodiversity Conventions",
         difficulty: "Easy",
         pyqYear: null,
       },
       {
         id: "t32_q18",
         qNo: 18,
-        text: "With reference to the tiger reserves in India, consider the following pairs:\n\nTiger reserve — State\nI. Palamu Tiger Reserve — Chhattisgarh\nII. Panna Tiger Reserve — Madhya Pradesh\nIII. Kamlang Tiger Reserve — Arunachal Pradesh\nIV. Kawal Tiger Reserve — Rajasthan",
+        text: "With reference to the tiger reserves in India, consider the following pairs:\n\nTiger reserve - State\nI. Palamu Tiger Reserve - Chhattisgarh\nII. Panna Tiger Reserve - Madhya Pradesh\nIII. Kamlang Tiger Reserve - Arunachal Pradesh\nIV. Kawal Tiger Reserve - Rajasthan",
         suffix: "How many of the pairs given above are correctly matched?",
         options: [
           { id: "A", text: "Only one" },
@@ -339,15 +339,15 @@ export const TEST_T32 = [
         ],
         correct: "B",
         explanation:
-          "Pair I is incorrect — Palamu Tiger Reserve is in Jharkhand, not Chhattisgarh. Pair II is correct — Panna Tiger Reserve is in Madhya Pradesh. Pair III is correct — Kamlang Tiger Reserve is in Arunachal Pradesh. Pair IV is incorrect — Kawal Tiger Reserve is in Telangana, not Rajasthan. Only Pairs II and III are correctly matched.",
-        topic: "Environment — Tiger Reserves",
+          "Pair I is incorrect - Palamu Tiger Reserve is in Jharkhand, not Chhattisgarh. Pair II is correct - Panna Tiger Reserve is in Madhya Pradesh. Pair III is correct - Kamlang Tiger Reserve is in Arunachal Pradesh. Pair IV is incorrect - Kawal Tiger Reserve is in Telangana, not Rajasthan. Only Pairs II and III are correctly matched.",
+        topic: "Environment - Tiger Reserves",
         difficulty: "Medium",
         pyqYear: null,
       },
       {
         id: "t32_q19",
         qNo: 19,
-        text: "With reference to the constitutional and administrative developments during British rule in India, consider the following pairs:\n\nImportant Development — Associated Act\nI. Establishment of the Board of Control — The Charter Act, 1793\nII. Establishment of the office of the Indian High Commissioner in London — Pitts India Act, 1784\nIII. Establishment of a Supreme Court in Bengal — The Regulating Act, 1773",
+        text: "With reference to the constitutional and administrative developments during British rule in India, consider the following pairs:\n\nImportant Development - Associated Act\nI. Establishment of the Board of Control - The Charter Act, 1793\nII. Establishment of the office of the Indian High Commissioner in London - Pitts India Act, 1784\nIII. Establishment of a Supreme Court in Bengal - The Regulating Act, 1773",
         suffix: "How many of the pairs given above are correctly matched?",
         options: [
           { id: "A", text: "Only one" },
@@ -357,8 +357,8 @@ export const TEST_T32 = [
         ],
         correct: "A",
         explanation:
-          "Pair I is incorrect — The Board of Control was established by Pitt's India Act, 1784, not the Charter Act, 1793. Pair II is incorrect — The office of the Indian High Commissioner in London was established by the Government of India Act, 1919, not Pitt's India Act, 1784. Pair III is correct — The Regulating Act, 1773 established a Supreme Court at Calcutta (Fort William, Bengal). Only Pair III is correctly matched.",
-        topic: "Modern Indian History — Constitutional History",
+          "Pair I is incorrect - The Board of Control was established by Pitt's India Act, 1784, not the Charter Act, 1793. Pair II is incorrect - The office of the Indian High Commissioner in London was established by the Government of India Act, 1919, not Pitt's India Act, 1784. Pair III is correct - The Regulating Act, 1773 established a Supreme Court at Calcutta (Fort William, Bengal). Only Pair III is correctly matched.",
+        topic: "Modern Indian History - Constitutional History",
         difficulty: "Hard",
         pyqYear: null,
       },
@@ -375,8 +375,8 @@ export const TEST_T32 = [
         ],
         correct: "A",
         explanation:
-          "Statement I is correct — CGRFA is the only permanent intergovernmental body that specifically addresses all components of biological diversity for food and agriculture. Statement II is incorrect — CGRFA functions under the Food and Agriculture Organization (FAO), not UNEP. It was established in 1983 and is based at FAO headquarters in Rome.",
-        topic: "Environment — Biodiversity Institutions",
+          "Statement I is correct - CGRFA is the only permanent intergovernmental body that specifically addresses all components of biological diversity for food and agriculture. Statement II is incorrect - CGRFA functions under the Food and Agriculture Organization (FAO), not UNEP. It was established in 1983 and is based at FAO headquarters in Rome.",
+        topic: "Environment - Biodiversity Institutions",
         difficulty: "Medium",
         pyqYear: null,
       },
@@ -393,15 +393,15 @@ export const TEST_T32 = [
         ],
         correct: "C",
         explanation:
-          "Net Primary Productivity (NPP) in decreasing order: Mangroves/Estuaries (among the most productive — ~2000 g C/m²/yr) > Grasslands/Tropical forests (~500-800 g C/m²/yr) > Lakes/Fresh water systems (~250-500 g C/m²/yr) > Oceans (open ocean is least productive ~125 g C/m²/yr). So the correct decreasing order is: Mangroves > Grasslands > Lakes > Oceans.",
-        topic: "Environment — Ecology & Productivity",
+          "Net Primary Productivity (NPP) in decreasing order: Mangroves/Estuaries (among the most productive - ~2000 g C/m²/yr) > Grasslands/Tropical forests (~500-800 g C/m²/yr) > Lakes/Fresh water systems (~250-500 g C/m²/yr) > Oceans (open ocean is least productive ~125 g C/m²/yr). So the correct decreasing order is: Mangroves > Grasslands > Lakes > Oceans.",
+        topic: "Environment - Ecology & Productivity",
         difficulty: "Medium",
         pyqYear: null,
       },
       {
         id: "t32_q22",
         qNo: 22,
-        text: "With reference to the Salt Satyagraha during the freedom struggle of India, consider the following pairs:\n\nMajor Centres of Salt Satyagraha — Location (Present-day State)\nI. Sanikatta Salt Works — Andhra Pradesh\nII. Dharasana Salt Works — Gujarat\nIII. Vedaranyam Salt Works — Kerala",
+        text: "With reference to the Salt Satyagraha during the freedom struggle of India, consider the following pairs:\n\nMajor Centres of Salt Satyagraha - Location (Present-day State)\nI. Sanikatta Salt Works - Andhra Pradesh\nII. Dharasana Salt Works - Gujarat\nIII. Vedaranyam Salt Works - Kerala",
         suffix: "How many of the pairs given above are correctly matched?",
         options: [
           { id: "A", text: "Only one" },
@@ -411,8 +411,8 @@ export const TEST_T32 = [
         ],
         correct: "A",
         explanation:
-          "Pair I is incorrect — Sanikatta Salt Works is located in Karnataka (near Gokarna), not Andhra Pradesh. Pair II is correct — Dharasana Salt Works is in Gujarat. The famous Dharasana raid (May 1930) was led by Sarojini Naidu after Gandhi's arrest. Pair III is incorrect — Vedaranyam Salt Works is in Tamil Nadu (Nagapattinam district), not Kerala. C. Rajagopalachari led the Vedaranyam Salt March. Only Pair II is correctly matched.",
-        topic: "Modern Indian History — Salt Satyagraha",
+          "Pair I is incorrect - Sanikatta Salt Works is located in Karnataka (near Gokarna), not Andhra Pradesh. Pair II is correct - Dharasana Salt Works is in Gujarat. The famous Dharasana raid (May 1930) was led by Sarojini Naidu after Gandhi's arrest. Pair III is incorrect - Vedaranyam Salt Works is in Tamil Nadu (Nagapattinam district), not Kerala. C. Rajagopalachari led the Vedaranyam Salt March. Only Pair II is correctly matched.",
+        topic: "Modern Indian History - Salt Satyagraha",
         difficulty: "Hard",
         pyqYear: null,
       },
@@ -430,7 +430,7 @@ export const TEST_T32 = [
         correct: "B",
         explanation:
           "Afonso de Albuquerque captured Goa in 1510 by defeating Yusuf Adil Shah (Ismail Adil Shah), the Sultan of Bijapur (Adil Shahi dynasty), who controlled Goa at that time. Earlier, Albuquerque had briefly captured Goa in 1510 but was driven out, and then recaptured it permanently in November 1510.",
-        topic: "Modern Indian History — Portuguese in India",
+        topic: "Modern Indian History - Portuguese in India",
         difficulty: "Easy",
         pyqYear: null,
       },
@@ -447,8 +447,8 @@ export const TEST_T32 = [
         ],
         correct: "A",
         explanation:
-          "Positive radiative forcing means the Earth absorbs more energy than it emits, leading to warming. I. CO2 increase — positive forcing (greenhouse gas traps heat). II. Sulphate aerosols — negative forcing (they reflect sunlight, causing cooling). III. Methane increase — positive forcing (potent greenhouse gas). IV. Increased surface albedo from ice/snow — negative forcing (more sunlight is reflected back). Only I and III lead to positive radiative forcing.",
-        topic: "Environment — Climate Change",
+          "Positive radiative forcing means the Earth absorbs more energy than it emits, leading to warming. I. CO2 increase - positive forcing (greenhouse gas traps heat). II. Sulphate aerosols - negative forcing (they reflect sunlight, causing cooling). III. Methane increase - positive forcing (potent greenhouse gas). IV. Increased surface albedo from ice/snow - negative forcing (more sunlight is reflected back). Only I and III lead to positive radiative forcing.",
+        topic: "Environment - Climate Change",
         difficulty: "Medium",
         pyqYear: null,
       },
@@ -465,8 +465,8 @@ export const TEST_T32 = [
         ],
         correct: "D",
         explanation:
-          "All five are invertebrates (animals without a vertebral column/backbone). Oyster — Mollusca (invertebrate). Octopus — Mollusca (invertebrate). Sea cucumbers — Echinodermata (invertebrate). Crab — Arthropoda/Crustacea (invertebrate). Cuttle fish — Mollusca (invertebrate). None of these have a backbone, so all five are invertebrates.",
-        topic: "Environment — Biology & Zoology",
+          "All five are invertebrates (animals without a vertebral column/backbone). Oyster - Mollusca (invertebrate). Octopus - Mollusca (invertebrate). Sea cucumbers - Echinodermata (invertebrate). Crab - Arthropoda/Crustacea (invertebrate). Cuttle fish - Mollusca (invertebrate). None of these have a backbone, so all five are invertebrates.",
+        topic: "Environment - Biology & Zoology",
         difficulty: "Easy",
         pyqYear: null,
       },
@@ -483,8 +483,8 @@ export const TEST_T32 = [
         ],
         correct: "B",
         explanation:
-          "Chronological order of Anglo-Maratha treaties: IV. Treaty of Surat — 1775 (First Anglo-Maratha War). III. Treaty of Salbai — 1782 (ended First Anglo-Maratha War). I. Treaty of Bassein — 1802 (Second Anglo-Maratha War trigger). II. Treaty of Deogaon — 1803 (during Second Anglo-Maratha War, with Bhonsle). Correct sequence: IV → III → I → II.",
-        topic: "Modern Indian History — Anglo-Maratha Wars",
+          "Chronological order of Anglo-Maratha treaties: IV. Treaty of Surat - 1775 (First Anglo-Maratha War). III. Treaty of Salbai - 1782 (ended First Anglo-Maratha War). I. Treaty of Bassein - 1802 (Second Anglo-Maratha War trigger). II. Treaty of Deogaon - 1803 (during Second Anglo-Maratha War, with Bhonsle). Correct sequence: IV → III → I → II.",
+        topic: "Modern Indian History - Anglo-Maratha Wars",
         difficulty: "Hard",
         pyqYear: null,
       },
@@ -501,8 +501,8 @@ export const TEST_T32 = [
         ],
         correct: "A",
         explanation:
-          "The 'Forward Policy' was adopted by the British (particularly under Lord Lytton in the late 1870s) primarily to counter the perceived threat of Russian expansion towards India through Central Asia and Afghanistan. This was part of the 'Great Game' — the strategic rivalry between Britain and Russia. The policy led to the Second Anglo-Afghan War (1878-80).",
-        topic: "Modern Indian History — British Policies",
+          "The 'Forward Policy' was adopted by the British (particularly under Lord Lytton in the late 1870s) primarily to counter the perceived threat of Russian expansion towards India through Central Asia and Afghanistan. This was part of the 'Great Game' - the strategic rivalry between Britain and Russia. The policy led to the Second Anglo-Afghan War (1878-80).",
+        topic: "Modern Indian History - British Policies",
         difficulty: "Easy",
         pyqYear: null,
       },
@@ -519,8 +519,8 @@ export const TEST_T32 = [
         ],
         correct: "B",
         explanation:
-          "Lord Canning was Governor-General (1856-58) and first Viceroy (1858-62). Statement I is correct — the 'White Mutiny' by European troops opposing transfer to Crown service took place in 1859. Statement II is correct — the Central Public Works Department was established during Canning's tenure. Statement III is incorrect — the first railway between Bombay and Thane opened on April 16, 1853, during Lord Dalhousie's tenure. Statement IV is correct — Universities at Calcutta, Bombay and Madras were established in 1857 during Canning's tenure (as Governor-General).",
-        topic: "Modern Indian History — Governors General",
+          "Lord Canning was Governor-General (1856-58) and first Viceroy (1858-62). Statement I is correct - the 'White Mutiny' by European troops opposing transfer to Crown service took place in 1859. Statement II is correct - the Central Public Works Department was established during Canning's tenure. Statement III is incorrect - the first railway between Bombay and Thane opened on April 16, 1853, during Lord Dalhousie's tenure. Statement IV is correct - Universities at Calcutta, Bombay and Madras were established in 1857 during Canning's tenure (as Governor-General).",
+        topic: "Modern Indian History - Governors General",
         difficulty: "Hard",
         pyqYear: null,
       },
@@ -537,8 +537,8 @@ export const TEST_T32 = [
         ],
         correct: "B",
         explanation:
-          "The Government of India Act 1858 (Act for Better Government of India, 1858): Statement I is correct — it created the office of Secretary of State for India, a British Cabinet Minister. Statement II is correct — it abolished the Board of Control (and the Court of Directors of the East India Company). Statement III is incorrect — it did not abolish ALL earlier Charter Acts provisions; many earlier provisions continued. Only I and II are correct.",
-        topic: "Modern Indian History — Constitutional History",
+          "The Government of India Act 1858 (Act for Better Government of India, 1858): Statement I is correct - it created the office of Secretary of State for India, a British Cabinet Minister. Statement II is correct - it abolished the Board of Control (and the Court of Directors of the East India Company). Statement III is incorrect - it did not abolish ALL earlier Charter Acts provisions; many earlier provisions continued. Only I and II are correct.",
+        topic: "Modern Indian History - Constitutional History",
         difficulty: "Medium",
         pyqYear: null,
       },
@@ -555,8 +555,8 @@ export const TEST_T32 = [
         ],
         correct: "B",
         explanation:
-          "The Afar Triangle (Afar Depression) is located in the Horn of Africa, at the junction of Ethiopia, Eritrea, and Djibouti. It is a geologically unique region where three tectonic plates meet — the Nubian Plate, the Somali Plate, and the Arabian Plate — forming a triple junction. The region is an active rift zone and is slowly splitting apart.",
-        topic: "Geography — Plate Tectonics",
+          "The Afar Triangle (Afar Depression) is located in the Horn of Africa, at the junction of Ethiopia, Eritrea, and Djibouti. It is a geologically unique region where three tectonic plates meet - the Nubian Plate, the Somali Plate, and the Arabian Plate - forming a triple junction. The region is an active rift zone and is slowly splitting apart.",
+        topic: "Geography - Plate Tectonics",
         difficulty: "Easy",
         pyqYear: null,
       },
@@ -574,7 +574,7 @@ export const TEST_T32 = [
         correct: "C",
         explanation:
           "Lord Cornwallis, through the Cornwallis Code (1793), separated the revenue and judicial functions. His primary concern was that the concentration of executive, judicial, and revenue powers in a single District Collector was leading to abuse and was undesirable. He created separate Civil and Criminal courts (Diwani Adalats and Foujdari Adalats) under separate judges, separating the judiciary from the executive/revenue administration.",
-        topic: "Modern Indian History — Administrative Reforms",
+        topic: "Modern Indian History - Administrative Reforms",
         difficulty: "Medium",
         pyqYear: null,
       },
@@ -592,7 +592,7 @@ export const TEST_T32 = [
         correct: "B",
         explanation:
           "The Barrah Dacoity (also known as the Barrah Robbery) of 1908 was carried out by the Dacca Anushilan Samiti under the leadership of Pulin Behari Das. The revolutionary group raided the treasury of the Barrah zamindari estate in Mymensingh district to fund their revolutionary activities against British rule.",
-        topic: "Modern Indian History — Revolutionary Movement",
+        topic: "Modern Indian History - Revolutionary Movement",
         difficulty: "Hard",
         pyqYear: null,
       },
@@ -610,7 +610,7 @@ export const TEST_T32 = [
         correct: "C",
         explanation:
           "The Columbian Exchange refers to the widespread transfer of plants, animals, culture, human populations, technology, diseases, and ideas between the Americas (New World) and the Old World (Africa, Europe, Asia) following Christopher Columbus's arrival in the Americas in 1492. The term was coined by historian Alfred Crosby. Examples: potatoes, tomatoes, maize (New to Old World); horses, smallpox (Old to New World).",
-        topic: "Geography — Historical Geography",
+        topic: "Geography - Historical Geography",
         difficulty: "Easy",
         pyqYear: null,
       },
@@ -627,8 +627,8 @@ export const TEST_T32 = [
         ],
         correct: "A",
         explanation:
-          "Factor I is correct — The First World War (1914-18) caused significant economic hardship, inflation, and distress in India, creating fertile ground for political agitation. Factor II is incorrect — The August Declaration (Montagu Declaration) was announced in August 1917, AFTER the Home Rule Leagues were founded in 1916. Factor III is incorrect — The Lex Loci Act was related to religious conversion and was enacted in the 1850s, not relevant to the 1916 Home Rule League launch. Only Factor I contributed.",
-        topic: "Modern Indian History — Home Rule Movement",
+          "Factor I is correct - The First World War (1914-18) caused significant economic hardship, inflation, and distress in India, creating fertile ground for political agitation. Factor II is incorrect - The August Declaration (Montagu Declaration) was announced in August 1917, AFTER the Home Rule Leagues were founded in 1916. Factor III is incorrect - The Lex Loci Act was related to religious conversion and was enacted in the 1850s, not relevant to the 1916 Home Rule League launch. Only Factor I contributed.",
+        topic: "Modern Indian History - Home Rule Movement",
         difficulty: "Hard",
         pyqYear: null,
       },
@@ -645,8 +645,8 @@ export const TEST_T32 = [
         ],
         correct: "A",
         explanation:
-          "Statement I is correct — The Faizpur Session (December 1936) was the first and only session of the Indian National Congress to be held in a rural village setting (Faizpur, Maharashtra). Statement II is correct — Jawaharlal Nehru presided over the Faizpur Session of 1936. Statement III is incorrect — The All-India Youth Congress (AIYC) was not formed at the Faizpur Session. The AIYC was formally organized separately; it was not a product of the Faizpur session.",
-        topic: "Modern Indian History — INC Sessions",
+          "Statement I is correct - The Faizpur Session (December 1936) was the first and only session of the Indian National Congress to be held in a rural village setting (Faizpur, Maharashtra). Statement II is correct - Jawaharlal Nehru presided over the Faizpur Session of 1936. Statement III is incorrect - The All-India Youth Congress (AIYC) was not formed at the Faizpur Session. The AIYC was formally organized separately; it was not a product of the Faizpur session.",
+        topic: "Modern Indian History - INC Sessions",
         difficulty: "Medium",
         pyqYear: null,
       },
@@ -664,7 +664,7 @@ export const TEST_T32 = [
         correct: "D",
         explanation:
           "After returning from South Africa in January 1915, Gandhi established the Kochrab Ashram (also called Satyagraha Ashram) in Kochrab village near Ahmedabad in May 1915. This was his FIRST ashram in India. Later, in 1917, due to plague and space constraints, the ashram was shifted to the banks of the Sabarmati River, and it became known as the Sabarmati Ashram.",
-        topic: "Modern Indian History — Gandhi",
+        topic: "Modern Indian History - Gandhi",
         difficulty: "Medium",
         pyqYear: null,
       },
@@ -681,8 +681,8 @@ export const TEST_T32 = [
         ],
         correct: "D",
         explanation:
-          "All four statements are correct. Statement I is correct — Malaviya presided over INC sessions four times: 1909 (Lahore), 1918 (Delhi), 1930 (Allahabad special session), and 1932 (Delhi/special session). Statement II is correct — He was one of the founders of the Hindu Mahasabha (1915). Statement III is correct — He was popularly known as 'Mahamana' (Great Soul/Great Man). Statement IV is correct — Bharat Ratna was awarded posthumously to Madan Mohan Malaviya in 2014 (announced alongside Atal Bihari Vajpayee).",
-        topic: "Modern Indian History — Indian Leaders",
+          "All four statements are correct. Statement I is correct - Malaviya presided over INC sessions four times: 1909 (Lahore), 1918 (Delhi), 1930 (Allahabad special session), and 1932 (Delhi/special session). Statement II is correct - He was one of the founders of the Hindu Mahasabha (1915). Statement III is correct - He was popularly known as 'Mahamana' (Great Soul/Great Man). Statement IV is correct - Bharat Ratna was awarded posthumously to Madan Mohan Malaviya in 2014 (announced alongside Atal Bihari Vajpayee).",
+        topic: "Modern Indian History - Indian Leaders",
         difficulty: "Medium",
         pyqYear: null,
       },
@@ -700,7 +700,7 @@ export const TEST_T32 = [
         correct: "C",
         explanation:
           "T.N. Nair (Dr. T.M. Nair), P. Tyagaraya Chetti, and C. Natesa Mudaliar were founders of the South Indian Liberal Federation (also known as the Justice Party) in 1916. The Justice Party was formed to represent the interests of non-Brahmin communities in the Madras Presidency, opposing the dominance of Brahmins in education, government jobs, and public life.",
-        topic: "Modern Indian History — Social Movements",
+        topic: "Modern Indian History - Social Movements",
         difficulty: "Hard",
         pyqYear: null,
       },
@@ -717,8 +717,8 @@ export const TEST_T32 = [
         ],
         correct: "C",
         explanation:
-          "Statement I is correct — Singaravelu Chettiar, S.V. Ghate, S.A. Dange, and others were among the founding members of the Communist Party of India (founded 1920/1925). Statement II is incorrect — The CPI did NOT participate in the Quit India Movement of 1942. After Germany invaded the Soviet Union in 1941, the CPI shifted its stance and called the war a 'People's War', opposing the Quit India Movement and even cooperating with the British. Statement III is correct — The Meerut Conspiracy Case (1929-33) prosecuted 33 communist and labour leaders accused of organising a conspiracy to deprive the King-Emperor of sovereignty; it involved rail and workers' strikes.",
-        topic: "Modern Indian History — Communist Movement",
+          "Statement I is correct - Singaravelu Chettiar, S.V. Ghate, S.A. Dange, and others were among the founding members of the Communist Party of India (founded 1920/1925). Statement II is incorrect - The CPI did NOT participate in the Quit India Movement of 1942. After Germany invaded the Soviet Union in 1941, the CPI shifted its stance and called the war a 'People's War', opposing the Quit India Movement and even cooperating with the British. Statement III is correct - The Meerut Conspiracy Case (1929-33) prosecuted 33 communist and labour leaders accused of organising a conspiracy to deprive the King-Emperor of sovereignty; it involved rail and workers' strikes.",
+        topic: "Modern Indian History - Communist Movement",
         difficulty: "Medium",
         pyqYear: null,
       },
@@ -736,7 +736,7 @@ export const TEST_T32 = [
         correct: "B",
         explanation:
           "The All India Spinners' Association (AISA) was founded by Mahatma Gandhi in 1925 to promote hand-spinning (charkha) as a means of achieving self-reliance, economic independence, and national identity. It was part of his constructive programme to revive cottage industries and provide livelihood to poor rural workers.",
-        topic: "Modern Indian History — Gandhi's Constructive Programme",
+        topic: "Modern Indian History - Gandhi's Constructive Programme",
         difficulty: "Easy",
         pyqYear: null,
       },
@@ -753,8 +753,8 @@ export const TEST_T32 = [
         ],
         correct: "B",
         explanation:
-          "The Summer Solstice in the Northern Hemisphere — the longest day of the year — occurs around June 21 (which falls in the second half of June). On this day, the Sun is directly overhead the Tropic of Cancer, and the Northern Hemisphere experiences maximum daylight hours.",
-        topic: "Geography — Earth & Sun",
+          "The Summer Solstice in the Northern Hemisphere - the longest day of the year - occurs around June 21 (which falls in the second half of June). On this day, the Sun is directly overhead the Tropic of Cancer, and the Northern Hemisphere experiences maximum daylight hours.",
+        topic: "Geography - Earth & Sun",
         difficulty: "Easy",
         pyqYear: null,
       },
@@ -772,7 +772,7 @@ export const TEST_T32 = [
         correct: "C",
         explanation:
           "The Madras Native Association was established in 1852 by Gajula Lakshminarasu Chetty (also spelt Gazula Lakshminarasu Chetty) in Madras (present-day Chennai). It was one of the earliest political associations in India, formed to petition the British Parliament and advocate for the rights of Indians in the Madras Presidency.",
-        topic: "Modern Indian History — Political Associations",
+        topic: "Modern Indian History - Political Associations",
         difficulty: "Hard",
         pyqYear: null,
       },
@@ -789,8 +789,8 @@ export const TEST_T32 = [
         ],
         correct: "D",
         explanation:
-          "Statement I is incorrect — the Pole Star (Polaris) can only be seen from the Northern Hemisphere and from near the equator. Sailors in the Southern Hemisphere cannot use the Pole Star to identify north because it is below the horizon. So it does NOT enable sailors 'anywhere on earth' to find north. Statement II is correct — Polaris lies very close to the Earth's rotational axis projected into the sky (the North Celestial Pole), directly above the North Pole. This is why it appears stationary in the night sky.",
-        topic: "Geography — Earth & Universe",
+          "Statement I is incorrect - the Pole Star (Polaris) can only be seen from the Northern Hemisphere and from near the equator. Sailors in the Southern Hemisphere cannot use the Pole Star to identify north because it is below the horizon. So it does NOT enable sailors 'anywhere on earth' to find north. Statement II is correct - Polaris lies very close to the Earth's rotational axis projected into the sky (the North Celestial Pole), directly above the North Pole. This is why it appears stationary in the night sky.",
+        topic: "Geography - Earth & Universe",
         difficulty: "Medium",
         pyqYear: null,
       },
@@ -808,7 +808,7 @@ export const TEST_T32 = [
         correct: "B",
         explanation:
           "'Char Adhyay' (Four Chapters) is a novel written by Rabindranath Tagore in 1934. The novel deals with the revolutionary/terrorist movement in Bengal and questions whether violence can be justified in the pursuit of political ideals. It was controversial and explored the emotional and moral conflicts faced by revolutionaries.",
-        topic: "Modern Indian History — Literature",
+        topic: "Modern Indian History - Literature",
         difficulty: "Medium",
         pyqYear: null,
       },
@@ -826,7 +826,7 @@ export const TEST_T32 = [
         correct: "C",
         explanation:
           "The Delhi Proposals of 1927, put forward by M.A. Jinnah and the Muslim League as a basis for Hindu-Muslim unity, included: (I) Sind should be separated from Bombay Presidency and made a separate province. (II) Muslims should get one-third representation in the Central Legislature. Other proposals included joint electorates (instead of separate) with reserved seats, and NWFP and Baluchistan should be given similar constitutional status as other provinces. Both I and II are correct.",
-        topic: "Modern Indian History — Communal Politics",
+        topic: "Modern Indian History - Communal Politics",
         difficulty: "Medium",
         pyqYear: null,
       },
@@ -843,8 +843,8 @@ export const TEST_T32 = [
         ],
         correct: "B",
         explanation:
-          "Statement I is incorrect — The Forest Advisory Committee (FAC) is chaired by the Director General of Forests (DGF) and Special Secretary to the Government of India, NOT the Union Minister. Statement II is correct — FAC is a statutory body constituted under Section 3 of the Forest Conservation Act, 1980 (now Van Sanrakshan Evam Samvardhan Adhiniyam, 1980). Statement III is correct — FAC's primary role is to examine proposals for diversion of forest land for non-forestry purposes and advise the Central Government on granting/rejecting approvals.",
-        topic: "Environment — Forest Conservation",
+          "Statement I is incorrect - The Forest Advisory Committee (FAC) is chaired by the Director General of Forests (DGF) and Special Secretary to the Government of India, NOT the Union Minister. Statement II is correct - FAC is a statutory body constituted under Section 3 of the Forest Conservation Act, 1980 (now Van Sanrakshan Evam Samvardhan Adhiniyam, 1980). Statement III is correct - FAC's primary role is to examine proposals for diversion of forest land for non-forestry purposes and advise the Central Government on granting/rejecting approvals.",
+        topic: "Environment - Forest Conservation",
         difficulty: "Medium",
         pyqYear: null,
       },
@@ -861,15 +861,15 @@ export const TEST_T32 = [
         ],
         correct: "B",
         explanation:
-          "The Gandhi-Irwin Pact (March 1931) accepted: I. Release of political prisoners not convicted of violence — ACCEPTED. II. Return of all fines/taxes collected during Salt Satyagraha — NOT accepted (British refused full refund). III. Return of confiscated lands not yet sold to third parties — ACCEPTED. IV. No future taxes on making salt for both personal AND commercial purposes — NOT fully accepted; only salt for personal use by coastal villages was permitted, not for commercial trade. Only I and III were accepted — only two demands.",
-        topic: "Modern Indian History — Civil Disobedience Movement",
+          "The Gandhi-Irwin Pact (March 1931) accepted: I. Release of political prisoners not convicted of violence - ACCEPTED. II. Return of all fines/taxes collected during Salt Satyagraha - NOT accepted (British refused full refund). III. Return of confiscated lands not yet sold to third parties - ACCEPTED. IV. No future taxes on making salt for both personal AND commercial purposes - NOT fully accepted; only salt for personal use by coastal villages was permitted, not for commercial trade. Only I and III were accepted - only two demands.",
+        topic: "Modern Indian History - Civil Disobedience Movement",
         difficulty: "Hard",
         pyqYear: null,
       },
       {
         id: "t32_q48",
         qNo: 48,
-        text: "Consider the following information:\n\nAnimals — Group of vertebrates it belongs to — Feature\nI. Turtle — Reptile — Coldblooded\nII. Eel — Fish — Coldblooded\nIII. Salamander — Amphibian — Warmblooded\nIV. Peacock — Aves — Warmblooded",
+        text: "Consider the following information:\n\nAnimals - Group of vertebrates it belongs to - Feature\nI. Turtle - Reptile - Coldblooded\nII. Eel - Fish - Coldblooded\nIII. Salamander - Amphibian - Warmblooded\nIV. Peacock - Aves - Warmblooded",
         suffix: "In how many of the above rows is the information correctly matched?",
         options: [
           { id: "A", text: "Only one" },
@@ -879,8 +879,8 @@ export const TEST_T32 = [
         ],
         correct: "C",
         explanation:
-          "Row I is correct — Turtle is a Reptile and is cold-blooded (ectotherm). Row II is correct — Eel is a Fish and is cold-blooded. Row III is incorrect — Salamander is an Amphibian (correct group), but Salamanders are cold-blooded (ectotherms), NOT warm-blooded. Warm-blooded (endotherm) animals are only birds (Aves) and mammals. Row IV is correct — Peacock belongs to Aves (birds) and is warm-blooded (endotherm). Three rows (I, II, IV) are correctly matched.",
-        topic: "Environment — Zoology",
+          "Row I is correct - Turtle is a Reptile and is cold-blooded (ectotherm). Row II is correct - Eel is a Fish and is cold-blooded. Row III is incorrect - Salamander is an Amphibian (correct group), but Salamanders are cold-blooded (ectotherms), NOT warm-blooded. Warm-blooded (endotherm) animals are only birds (Aves) and mammals. Row IV is correct - Peacock belongs to Aves (birds) and is warm-blooded (endotherm). Three rows (I, II, IV) are correctly matched.",
+        topic: "Environment - Zoology",
         difficulty: "Easy",
         pyqYear: null,
       },
@@ -898,14 +898,14 @@ export const TEST_T32 = [
         correct: "D",
         explanation:
           "Limestone, chert (flint), and dolomite are all examples of chemically formed (chemical) sedimentary rocks. They are formed through chemical precipitation from solution in water (e.g., evaporation of seawater deposits calcium carbonate forming limestone). Chemical sedimentary rocks include: limestone, chert, dolomite, rock salt, rock gypsum, and potash. Mechanically formed sedimentary rocks include sandstone, shale, conglomerate, etc.",
-        topic: "Geography — Rocks & Minerals",
+        topic: "Geography - Rocks & Minerals",
         difficulty: "Easy",
         pyqYear: null,
       },
       {
         id: "t32_q50",
         qNo: 50,
-        text: "With reference to advent of Europeans in India and their first factory in India, consider the following pairs:\n\nEuropean Countries — First Factory in India\nI. British — Broach\nII. French — Surat\nIII. Dutch — Pulicat\nIV. Portuguese — Chittagong",
+        text: "With reference to advent of Europeans in India and their first factory in India, consider the following pairs:\n\nEuropean Countries - First Factory in India\nI. British - Broach\nII. French - Surat\nIII. Dutch - Pulicat\nIV. Portuguese - Chittagong",
         suffix: "How many of the pairs given above are correctly matched?",
         options: [
           { id: "A", text: "Only one" },
@@ -915,8 +915,8 @@ export const TEST_T32 = [
         ],
         correct: "B",
         explanation:
-          "Pair I is incorrect — The British East India Company established its first factory at Surat (1608/1613), not Broach (Bharuch). Pair II is incorrect — The French East India Company established its first factory at Surat (1668), not just Surat exclusively; their main settlement was Pondicherry (1674). Actually, the first French factory was at Surat — this pair could be considered correct. Pair III is correct — The Dutch (VOC) established their first factory at Masulipatnam (1605) and Pulicat (1610) — Pulicat was their major early settlement. Pair IV is incorrect — The Portuguese established their first factory at Calicut and Cochin (not Chittagong). On balance, revisiting: British first factory was Surat, Dutch first was Masulipatnam then Pulicat, French first was Surat, Portuguese first significant factory was Cochin/Calicut. Only II (French-Surat) and III (Dutch-Pulicat) have some basis — Only two pairs can be considered correct.",
-        topic: "Modern Indian History — European Advent",
+          "Pair I is incorrect - The British East India Company established its first factory at Surat (1608/1613), not Broach (Bharuch). Pair II is incorrect - The French East India Company established its first factory at Surat (1668), not just Surat exclusively; their main settlement was Pondicherry (1674). Actually, the first French factory was at Surat - this pair could be considered correct. Pair III is correct - The Dutch (VOC) established their first factory at Masulipatnam (1605) and Pulicat (1610) - Pulicat was their major early settlement. Pair IV is incorrect - The Portuguese established their first factory at Calicut and Cochin (not Chittagong). On balance, revisiting: British first factory was Surat, Dutch first was Masulipatnam then Pulicat, French first was Surat, Portuguese first significant factory was Cochin/Calicut. Only II (French-Surat) and III (Dutch-Pulicat) have some basis - Only two pairs can be considered correct.",
+        topic: "Modern Indian History - European Advent",
         difficulty: "Hard",
         pyqYear: null,
       },

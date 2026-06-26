@@ -93,7 +93,7 @@
 //   }
 
 //   if (lines.length === 0) return "";
-//   return `\n\n## Student Context (the student asked about their own progress — use this data to answer factually and specifically; do not add encouragement or commentary beyond the data itself)\n${lines.map((l) => `- ${l}`).join("\n")}`;
+//   return `\n\n## Student Context (the student asked about their own progress - use this data to answer factually and specifically; do not add encouragement or commentary beyond the data itself)\n${lines.map((l) => `- ${l}`).join("\n")}`;
 // }
 
 // /**
@@ -248,7 +248,7 @@
 //     }
 
 //     // Only pulls in personal stats when the question is actually about the
-//     // student's own progress — see buildStudentContext for the gate.
+//     // student's own progress - see buildStudentContext for the gate.
 //     const contextBlock = buildStudentContext(req.user, userData, message);
 //     const pageBlock = context_hint
 //       ? `\n\nThe student is currently in this section of the app: "${context_hint}". Only reference this if directly relevant to the question.`
@@ -416,7 +416,7 @@ const MAX_THREADS = 50;
 // ── Handwritten-answer (image) upload limits ──────────────────────────────
 const MAX_IMAGE_BYTES = 10 * 1024 * 1024; // 10MB
 const ALLOWED_IMAGE_MIME = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
-// Accepts a data URI like "data:image/png;base64,iVBORw0KG..." — this is how
+// Accepts a data URI like "data:image/png;base64,iVBORw0KG..." - this is how
 // the frontend ships the photo (FileReader.readAsDataURL), so no multer /
 // multipart parsing is needed; the existing express.json({ limit: "150mb" })
 // body parser in server.js already comfortably covers a 10MB image (~13.3MB
@@ -511,7 +511,7 @@ function buildStudentContext(user, userData, currentMessage) {
   }
 
   if (lines.length === 0) return "";
-  return `\n\n## Student Context (the student asked about their own progress — use this data to answer factually and specifically; do not add encouragement or commentary beyond the data itself)\n${lines.map((l) => `- ${l}`).join("\n")}`;
+  return `\n\n## Student Context (the student asked about their own progress - use this data to answer factually and specifically; do not add encouragement or commentary beyond the data itself)\n${lines.map((l) => `- ${l}`).join("\n")}`;
 }
 
 /**
@@ -760,7 +760,7 @@ const chat = async (req, res, next) => {
     }
 
     // Only pulls in personal stats when the question is actually about the
-    // student's own progress — see buildStudentContext for the gate.
+    // student's own progress - see buildStudentContext for the gate.
     const contextBlock = buildStudentContext(req.user, userData, message);
     const pageBlock = context_hint
       ? `\n\nThe student is currently in this section of the app: "${context_hint}". Only reference this if directly relevant to the question.`

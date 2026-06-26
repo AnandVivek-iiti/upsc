@@ -43,7 +43,7 @@ async function runMigrations() {
 
   let applied = 0;
   for (const { id, sql } of MIGRATIONS) {
-    if (done.has(id)) continue; // already ran — skip
+    if (done.has(id)) continue; // already ran - skip
     await sequelize.query(sql);
     await sequelize.query(`INSERT INTO _migrations (id) VALUES (:id)`, {
       replacements: { id },

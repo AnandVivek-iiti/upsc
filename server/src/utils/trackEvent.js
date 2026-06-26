@@ -1,6 +1,6 @@
 // utils/trackEvent.js
 // Fire-and-forget analytics event recorder.
-// Always safe to await — errors are swallowed so they never break the real request.
+// Always safe to await - errors are swallowed so they never break the real request.
 // Import this in any controller that needs to record a user action.
 
 const UserEvents = require("../models/UserEvents");

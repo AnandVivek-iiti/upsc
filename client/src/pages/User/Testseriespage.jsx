@@ -281,7 +281,7 @@ function QuestionCard({ question, selectedAnswer, onAnswer, showResult, qIndex, 
         })}
       </div>
 
-      {/* Explanation — ONLY shown after test completion */}
+      {/* Explanation - ONLY shown after test completion */}
       {showResult && selectedAnswer && (
         <div style={{
           margin: isMobile ? "0 14px 14px" : "0 20px 20px",
@@ -323,7 +323,7 @@ function QuestionCard({ question, selectedAnswer, onAnswer, showResult, qIndex, 
 // ─── AI Analysis Section ──────────────────────────────────────────────────────
 // Renders the diagnostic report from POST /api/tests/submit's ai_analysis
 // field. Three states: loading (skeleton), ready (full report), error (quiet
-// fallback note — the stats above already told the user their score, so a
+// fallback note - the stats above already told the user their score, so a
 // failed AI call is a soft miss, not a broken page).
 function AIAnalysisSection({ aiState, aiAnalysis, isMobile }) {
   const priorityColor = { high: "var(--accent-red)", medium: "var(--accent-gold)", low: "var(--text-muted)" };
@@ -362,7 +362,7 @@ function AIAnalysisSection({ aiState, aiAnalysis, isMobile }) {
         fontSize: 12, color: "var(--text-muted)", fontFamily: "'DM Mono', monospace",
       }}>
         <AlertCircle size={14} />
-        AI analysis unavailable right now — your score and topic breakdown above are still accurate.
+        AI analysis unavailable right now - your score and topic breakdown above are still accurate.
       </div>
     );
   }
@@ -420,7 +420,7 @@ function AIAnalysisSection({ aiState, aiAnalysis, isMobile }) {
             </div>
             <div style={{ padding: strong_topics.length ? "10px 16px" : "16px", display: "flex", flexDirection: "column", gap: 10 }}>
               {strong_topics.length === 0 ? (
-                <p style={{ fontSize: 12, color: "var(--text-muted)", margin: 0 }}>None yet — every topic has room to grow.</p>
+                <p style={{ fontSize: 12, color: "var(--text-muted)", margin: 0 }}>None yet - every topic has room to grow.</p>
               ) : strong_topics.map((t) => (
                 <div key={t.topic}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 2 }}>
@@ -531,7 +531,7 @@ function ResultsScreen({ test, answers, onRetry, onReview, recordAttempt, isMobi
 
   // ── AI analysis state ────────────────────────────────────────────────────
   // "idle" | "loading" | "ready" | "error". Stats above render instantly from
-  // local data regardless of this — the AI section is an enhancement layered
+  // local data regardless of this - the AI section is an enhancement layered
   // on top, never a blocker for seeing your score.
   const [aiState, setAiState] = useState("idle");
   const [aiAnalysis, setAiAnalysis] = useState(null);

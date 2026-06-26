@@ -16,7 +16,7 @@ const protect = async (req, res, next) => {
   if (!token) {
     return res
       .status(401)
-      .json({ success: false, error: "Not authorized — no token provided." });
+      .json({ success: false, error: "Not authorized - no token provided." });
   }
 
   try {
@@ -54,7 +54,7 @@ const protect = async (req, res, next) => {
         }
         keysToDelete.forEach((k) => global._dayReturnSeen.delete(k));
       }
-      // Fire-and-forget — never await inside middleware
+      // Fire-and-forget - never await inside middleware
       trackEvent(user.id, "day_return").catch(() => {});
     }
 
@@ -77,7 +77,7 @@ const adminOnly = (req, res, next) => {
   if (!req.user || req.user.role !== "admin") {
     return res.status(403).json({
       success: false,
-      error: "Access denied — admin privileges required.",
+      error: "Access denied - admin privileges required.",
     });
   }
   next();

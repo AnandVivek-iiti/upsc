@@ -28,7 +28,7 @@ const CATEGORY_COLOURS = {
   Proverb: { bg: "rgba(20,184,166,.15)", color: "#5eead4", border: "rgba(20,184,166,.3)" },
 };
 
-// ─── QuotePanel — 365-quote logic, original compact card styling ─────────────
+// ─── QuotePanel - 365-quote logic, original compact card styling ─────────────
 function QuotePanel({ customQuote, onQuoteClick }) {
   const [quote, setQuote] = useState(customQuote ?? getHourlyQuote());
   const [fade, setFade] = useState(true);
@@ -87,7 +87,7 @@ function QuotePanel({ customQuote, onQuoteClick }) {
         "{quote.text}"
       </p>
 
-      {/* Translation / meaning line — shown for Hindi quotes and English idioms */}
+      {/* Translation / meaning line - shown for Hindi quotes and English idioms */}
       {quote.meaning && (
         <p
           className="text-[10px] sm:text-[11px] text-white/55 leading-snug mt-1.5 transition-opacity duration-300"
@@ -142,7 +142,7 @@ export default function HeroBanner({
 
       {/* Content */}
       <div className="relative z-10 px-2 sm:px-4 md:px-6 pt-3 sm:pt-4 md:pt-5 pb-6 sm:pb-7 md:pb-8">
-        {/* Top row — label + date + exam countdown */}
+        {/* Top row - label + date + exam countdown */}
         <div className="flex flex-wrap items-start justify-between gap-2 mb-4 sm:mb-5 md:mb-6">
           <p className="font-mono text-[9px] sm:text-[10px] tracking-[.18em] uppercase text-accent-gold">UPSC Mentor</p>
           <div className="flex items-center gap-2 flex-wrap">

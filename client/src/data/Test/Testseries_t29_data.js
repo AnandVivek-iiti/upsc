@@ -7,7 +7,7 @@
 export const TEST_T29 = [
   {
     id: "sfg2026-t29",
-    title: "SFG 2026 — Level 1 · Test 29",
+    title: "SFG 2026 - Level 1 · Test 29",
     subject: "Modern History",
     topic: "Indian National Movement (1930s–1947)",
     totalQuestions: 50,
@@ -30,7 +30,7 @@ export const TEST_T29 = [
         ],
         correct: "D",
         explanation:
-          "The Congress Socialist Party (CSP), founded in 1934, did NOT advocate boycott/tax evasion (that was the Congress programme, not specifically CSP). It did NOT demand dictatorship of the proletariat — it followed a democratic socialist path. It also opposed communal separate electorates, standing for joint electorates. Hence all three statements are incorrect → Answer D.",
+          "The Congress Socialist Party (CSP), founded in 1934, did NOT advocate boycott/tax evasion (that was the Congress programme, not specifically CSP). It did NOT demand dictatorship of the proletariat - it followed a democratic socialist path. It also opposed communal separate electorates, standing for joint electorates. Hence all three statements are incorrect → Answer D.",
         topic: "Congress Socialist Party",
       },
       {
@@ -62,7 +62,7 @@ export const TEST_T29 = [
         ],
         correct: "A",
         explanation:
-          "Statements I and II are correct — the GoI Act 1935 gave provinces financial autonomy including borrowing powers, and mandated Provincial PSCs. Statement III is incorrect: bicameral legislatures were introduced only in 6 out of 11 provinces (Bengal, Bombay, Madras, Bihar, Assam, UP), not all.",
+          "Statements I and II are correct - the GoI Act 1935 gave provinces financial autonomy including borrowing powers, and mandated Provincial PSCs. Statement III is incorrect: bicameral legislatures were introduced only in 6 out of 11 provinces (Bengal, Bombay, Madras, Bihar, Assam, UP), not all.",
         topic: "Government of India Act 1935",
       },
       {
@@ -78,7 +78,7 @@ export const TEST_T29 = [
         ],
         correct: "C",
         explanation:
-          "INC formed ministries in 7 (not 10) provinces — Statement I is wrong. INC did NOT win majority in Bengal's upper house — Statement II is wrong. Muslim League indeed won zero Muslim seats in NWFP — Statement III is correct. Answer: C.",
+          "INC formed ministries in 7 (not 10) provinces - Statement I is wrong. INC did NOT win majority in Bengal's upper house - Statement II is wrong. Muslim League indeed won zero Muslim seats in NWFP - Statement III is correct. Answer: C.",
         topic: "1937 Provincial Elections",
       },
       {
@@ -132,7 +132,7 @@ export const TEST_T29 = [
       {
         id: "t29_q08",
         qNo: 8,
-        text: "With reference to sessions of the Indian National Congress (INC), consider the following pairs:\n\nI. Karachi Session, 1931 — Adoption of resolutions on Fundamental Rights.\nII. Bombay Session, 1934 — Wearing of Khadi was made a necessary criterion for elective membership of INC.\nIII. Haripura Session, 1938 — The National Planning Committee was established under Jawaharlal Nehru.",
+        text: "With reference to sessions of the Indian National Congress (INC), consider the following pairs:\n\nI. Karachi Session, 1931 - Adoption of resolutions on Fundamental Rights.\nII. Bombay Session, 1934 - Wearing of Khadi was made a necessary criterion for elective membership of INC.\nIII. Haripura Session, 1938 - The National Planning Committee was established under Jawaharlal Nehru.",
         suffix: "How many of the pairs given above are correctly matched?",
         options: [
           { id: "A", text: "Only one" },
@@ -206,7 +206,7 @@ export const TEST_T29 = [
         ],
         correct: "C",
         explanation:
-          "Congress rejected the Cripps Mission primarily because: (I) no specific timeline was given for establishing a constitution-making body, and (III) provinces could opt out of the Indian Union. Statement II is incorrect — Cripps Mission did not have explicit partition provisions along religious lines for provinces; that came later with the Mountbatten Plan. Answer: C.",
+          "Congress rejected the Cripps Mission primarily because: (I) no specific timeline was given for establishing a constitution-making body, and (III) provinces could opt out of the Indian Union. Statement II is incorrect - Cripps Mission did not have explicit partition provisions along religious lines for provinces; that came later with the Mountbatten Plan. Answer: C.",
         topic: "Cripps Mission 1942",
       },
       {
@@ -223,7 +223,7 @@ export const TEST_T29 = [
         correct: "A",
         explanation:
           "Jayaprakash Narayan escaped from Hazaribagh jail in 1942 and went to Nepal where he organized the Azad Dasta (freedom brigade) as part of underground resistance during the Quit India Movement.",
-        topic: "Quit India Movement — Underground Activities",
+        topic: "Quit India Movement - Underground Activities",
       },
       {
         id: "t29_q14",
@@ -238,7 +238,7 @@ export const TEST_T29 = [
         ],
         correct: "B",
         explanation:
-          "Individual Satyagraha was launched in October 1940 — before the Cripps Mission (1942), so Statement I is wrong. Vinoba Bhave (not Nehru) was the first satyagrahi; Nehru was second — Statement II is wrong. The British did ban Harijan Bandhu and Harijan Sewak newspapers — Statement III is correct. Answer: B.",
+          "Individual Satyagraha was launched in October 1940 - before the Cripps Mission (1942), so Statement I is wrong. Vinoba Bhave (not Nehru) was the first satyagrahi; Nehru was second - Statement II is wrong. The British did ban Harijan Bandhu and Harijan Sewak newspapers - Statement III is correct. Answer: B.",
         topic: "Individual Satyagraha 1940",
       },
       {
@@ -254,7 +254,7 @@ export const TEST_T29 = [
         ],
         correct: "A",
         explanation:
-          "Attlee's February 1947 statement said the OPPOSITE — he announced Britain WOULD transfer power no later than June 1948. It was a definitive commitment to leave India. Statement A is NOT correct. All other options are historically accurate.",
+          "Attlee's February 1947 statement said the OPPOSITE - he announced Britain WOULD transfer power no later than June 1948. It was a definitive commitment to leave India. Statement A is NOT correct. All other options are historically accurate.",
         topic: "Transfer of Power and Partition",
       },
       {
@@ -270,7 +270,7 @@ export const TEST_T29 = [
         ],
         correct: "C",
         explanation:
-          "Both statements are incorrect. At Tripuri, Bose won re-election but NOT unanimously — he defeated Pattabhi Sitaramayya (Gandhi's candidate) by a narrow margin. When Bose resigned, it was Rajendra Prasad who presided over the session proceedings, but the Congress Working Committee (not Bose's immediate resignation) led to the eventual election situation. Technically Bose resigned in April 1939, and Dr. Rajendra Prasad became President. Actually Statement II is debated — but Statement I is clearly wrong. Answer: C.",
+          "Both statements are incorrect. At Tripuri, Bose won re-election but NOT unanimously - he defeated Pattabhi Sitaramayya (Gandhi's candidate) by a narrow margin. When Bose resigned, it was Rajendra Prasad who presided over the session proceedings, but the Congress Working Committee (not Bose's immediate resignation) led to the eventual election situation. Technically Bose resigned in April 1939, and Dr. Rajendra Prasad became President. Actually Statement II is debated - but Statement I is clearly wrong. Answer: C.",
         topic: "Tripuri Session 1939 / Subhas Chandra Bose",
       },
       {
@@ -287,7 +287,7 @@ export const TEST_T29 = [
         correct: "C",
         explanation:
           "Aruna Asaf Ali is famous for unfurling the Indian flag at Gowalia Tank Maidan (now August Kranti Maidan) on 9 August 1942 during the Quit India Movement. She was jailed in 1932 for Civil Disobedience and later co-edited 'Inquilab' with Ram Manohar Lohia.",
-        topic: "Women in Freedom Struggle — Aruna Asaf Ali",
+        topic: "Women in Freedom Struggle - Aruna Asaf Ali",
       },
       {
         id: "t29_q18",
@@ -302,7 +302,7 @@ export const TEST_T29 = [
         ],
         correct: "B",
         explanation:
-          "The Indian Independence Act 1947 made India a Dominion (not a Republic) — it declared India/Pakistan as independent Dominions, not Republics. Statement I is incorrect. Statements II, III, IV are correct — it provided for Mountbatten as GG, abolished the Secretary of State for India, and enabled Constituent Assemblies to legislate. Answer: B.",
+          "The Indian Independence Act 1947 made India a Dominion (not a Republic) - it declared India/Pakistan as independent Dominions, not Republics. Statement I is incorrect. Statements II, III, IV are correct - it provided for Mountbatten as GG, abolished the Secretary of State for India, and enabled Constituent Assemblies to legislate. Answer: B.",
         topic: "Indian Independence Act 1947",
       },
       {
@@ -334,7 +334,7 @@ export const TEST_T29 = [
         ],
         correct: "B",
         explanation:
-          "The Shimla Conference (June–July 1945), called by Viceroy Wavell, aimed to reconstitute the Viceroy's Executive Council by including representatives of major Indian parties — a step towards interim self-government. It failed because Jinnah insisted on Muslim League's exclusive right to nominate Muslim members.",
+          "The Shimla Conference (June–July 1945), called by Viceroy Wavell, aimed to reconstitute the Viceroy's Executive Council by including representatives of major Indian parties - a step towards interim self-government. It failed because Jinnah insisted on Muslim League's exclusive right to nominate Muslim members.",
         topic: "Shimla Conference 1945",
       },
       {
@@ -351,7 +351,7 @@ export const TEST_T29 = [
         correct: "C",
         explanation:
           "Mahatma Gandhi translated ancient Indian bhajans and religious lyrics into English while in prison, published as 'Songs from Prison' (1934). It included translations of devotional songs by Narsinh Mehta, Mirabai and others.",
-        topic: "Literary Works — Gandhi",
+        topic: "Literary Works - Gandhi",
       },
       {
         id: "t29_q22",
@@ -367,7 +367,7 @@ export const TEST_T29 = [
         correct: "C",
         explanation:
           "The Quit India Resolution was moved by Jawaharlal Nehru at the AICC session on 8 August 1942 in Bombay (Gowalia Tank grounds). Gandhi gave the 'Do or Die' speech after the resolution was passed.",
-        topic: "Quit India Movement — Resolution",
+        topic: "Quit India Movement - Resolution",
       },
       {
         id: "t29_q23",
@@ -383,7 +383,7 @@ export const TEST_T29 = [
         correct: "C",
         explanation:
           "Both statements are correct. The Anti-Compromise Conference at Ramgarh (1940) was presided over by Subhas Chandra Bose and his Forward Bloc. It was held to oppose what was perceived as Congress's compromising stance towards the British war effort, demanding total non-cooperation instead.",
-        topic: "Forward Bloc — Subhas Chandra Bose",
+        topic: "Forward Bloc - Subhas Chandra Bose",
       },
       {
         id: "t29_q24",
@@ -398,7 +398,7 @@ export const TEST_T29 = [
         ],
         correct: "D",
         explanation:
-          "All three are correct. Rash Behari Bose organised the Delhi Conspiracy (Hardinge assassination attempt, 1912). He founded the Indian Independence League in 1942 in Tokyo. He also organized the first INA (1942) — later Subhas Chandra Bose came and reorganised/commanded it.",
+          "All three are correct. Rash Behari Bose organised the Delhi Conspiracy (Hardinge assassination attempt, 1912). He founded the Indian Independence League in 1942 in Tokyo. He also organized the first INA (1942) - later Subhas Chandra Bose came and reorganised/commanded it.",
         topic: "Rash Behari Bose / INA",
       },
       {
@@ -414,8 +414,8 @@ export const TEST_T29 = [
         ],
         correct: "C",
         explanation:
-          "Both are correct. Lord Mountbatten presided over the transfer of power ceremony on 15 August 1947. Gandhi was in Calcutta (Kolkata) during Independence Day, fasting and praying for communal harmony — he was not present at the Delhi celebrations.",
-        topic: "Indian Independence — 15 August 1947",
+          "Both are correct. Lord Mountbatten presided over the transfer of power ceremony on 15 August 1947. Gandhi was in Calcutta (Kolkata) during Independence Day, fasting and praying for communal harmony - he was not present at the Delhi celebrations.",
+        topic: "Indian Independence - 15 August 1947",
       },
       {
         id: "t29_q26",
@@ -447,7 +447,7 @@ export const TEST_T29 = [
         correct: "B",
         explanation:
           "Chittaranjan Das (C.R. Das) drafted the Bengal Pact of 1923, a Hindu-Muslim agreement that tried to address communal representation in jobs and elected bodies in Bengal. It was a significant effort at Hindu-Muslim unity during the non-cooperation aftermath.",
-        topic: "Hindu-Muslim Unity — Bengal Pact 1923",
+        topic: "Hindu-Muslim Unity - Bengal Pact 1923",
       },
       {
         id: "t29_q28",
@@ -462,7 +462,7 @@ export const TEST_T29 = [
         ],
         correct: "C",
         explanation:
-          "Statement I is correct — 15 January is Army Day, marking Field Marshal K.M. Cariappa taking command as first Indian C-in-C (1949). Statement II is incorrect — the INA was formally established on 1 September 1942 (not 15 January 1942); the initial organisation meeting was in February 1942 after the fall of Singapore. Answer: C.",
+          "Statement I is correct - 15 January is Army Day, marking Field Marshal K.M. Cariappa taking command as first Indian C-in-C (1949). Statement II is incorrect - the INA was formally established on 1 September 1942 (not 15 January 1942); the initial organisation meeting was in February 1942 after the fall of Singapore. Answer: C.",
         topic: "Army Day / INA Formation",
       },
       {
@@ -494,7 +494,7 @@ export const TEST_T29 = [
         ],
         correct: "A",
         explanation:
-          "Statements I and II are correct. The RIN Mutiny of February 1946 was sparked by poor food, racial discrimination and abuse. M.S. Khan and Madan Singh led the striking ratings. Statement III is incorrect — Congress did NOT officially endorse the revolt; Vallabhbhai Patel actually appealed to the mutineers to surrender. Answer: A.",
+          "Statements I and II are correct. The RIN Mutiny of February 1946 was sparked by poor food, racial discrimination and abuse. M.S. Khan and Madan Singh led the striking ratings. Statement III is incorrect - Congress did NOT officially endorse the revolt; Vallabhbhai Patel actually appealed to the mutineers to surrender. Answer: A.",
         topic: "Royal Indian Navy Revolt 1946",
       },
       {
@@ -510,7 +510,7 @@ export const TEST_T29 = [
         ],
         correct: "C",
         explanation:
-          "The Radcliffe Commission (headed by Sir Cyril Radcliffe) was set up in 1947 to demarcate the boundaries between India and Pakistan — the Punjab Boundary Commission and the Bengal Boundary Commission were both chaired by Radcliffe.",
+          "The Radcliffe Commission (headed by Sir Cyril Radcliffe) was set up in 1947 to demarcate the boundaries between India and Pakistan - the Punjab Boundary Commission and the Bengal Boundary Commission were both chaired by Radcliffe.",
         topic: "Radcliffe Commission / Partition Boundaries",
       },
       {
@@ -526,7 +526,7 @@ export const TEST_T29 = [
         ],
         correct: "A",
         explanation:
-          "Statements I and II are correct — the Cabinet Mission proposed a three-tier federal structure with maximum provincial autonomy and residuary powers with provinces. Statement III is incorrect — the Cabinet Mission explicitly REJECTED the Muslim League's demand for a separate sovereign Pakistan, proposing instead a united India with groupings.",
+          "Statements I and II are correct - the Cabinet Mission proposed a three-tier federal structure with maximum provincial autonomy and residuary powers with provinces. Statement III is incorrect - the Cabinet Mission explicitly REJECTED the Muslim League's demand for a separate sovereign Pakistan, proposing instead a united India with groupings.",
         topic: "Cabinet Mission Plan 1946",
       },
       {
@@ -542,7 +542,7 @@ export const TEST_T29 = [
         ],
         correct: "D",
         explanation:
-          "Statement I is incorrect — Attlee's February 1947 statement fixed June 1948 (not 15 August 1947) as the latest deadline; Mountbatten later advanced it. Statement II is also incorrect — the statement clarified that British paramountcy over princely states would LAPSE upon independence, not continue. Answer: D.",
+          "Statement I is incorrect - Attlee's February 1947 statement fixed June 1948 (not 15 August 1947) as the latest deadline; Mountbatten later advanced it. Statement II is also incorrect - the statement clarified that British paramountcy over princely states would LAPSE upon independence, not continue. Answer: D.",
         topic: "Attlee's Statement Feb 1947",
       },
       {
@@ -574,8 +574,8 @@ export const TEST_T29 = [
         ],
         correct: "B",
         explanation:
-          "Both are true. Linlithgow did describe Quit India as the most serious challenge since 1857. There was indeed a massive peasant upsurge in areas like Midnapore (Bengal), Satara, Ballia. However, Linlithgow's assessment was based on the overall scale and nationwide character of the movement — the peasant upsurge was one element, not the sole/primary explanation. Answer: B.",
-        topic: "Quit India Movement — Assessment",
+          "Both are true. Linlithgow did describe Quit India as the most serious challenge since 1857. There was indeed a massive peasant upsurge in areas like Midnapore (Bengal), Satara, Ballia. However, Linlithgow's assessment was based on the overall scale and nationwide character of the movement - the peasant upsurge was one element, not the sole/primary explanation. Answer: B.",
+        topic: "Quit India Movement - Assessment",
       },
       {
         id: "t29_q36",
@@ -591,7 +591,7 @@ export const TEST_T29 = [
         correct: "B",
         explanation:
           "The Faizpur Session (1936), presided over by Jawaharlal Nehru, was the first INC session held in a rural area (a village in Maharashtra). It adopted a comprehensive agrarian programme including 50% reduction in land revenue/rent, minimum wages for agricultural workers, and recognition of peasant unions.",
-        topic: "INC Sessions — Faizpur 1936",
+        topic: "INC Sessions - Faizpur 1936",
       },
       {
         id: "t29_q37",
@@ -606,7 +606,7 @@ export const TEST_T29 = [
         ],
         correct: "A",
         explanation:
-          "Both statements are correct. Gandhi was deeply opposed to fascism (he wrote letters to Hitler). Because of this anti-fascist stance, Gandhi initially suggested moral/non-violent support to Britain — making Statement II the reason/explanation for Statement I. Answer: A.",
+          "Both statements are correct. Gandhi was deeply opposed to fascism (he wrote letters to Hitler). Because of this anti-fascist stance, Gandhi initially suggested moral/non-violent support to Britain - making Statement II the reason/explanation for Statement I. Answer: A.",
         topic: "Gandhi and World War II",
       },
       {
@@ -622,8 +622,8 @@ export const TEST_T29 = [
         ],
         correct: "B",
         explanation:
-          "Ambedkar established the All India Scheduled Castes Federation (1942) and... The Depressed Classes Mission Society was founded by V.R. Shinde (not Ambedkar). The All India Anti Untouchability League was founded by Mahatma Gandhi (renamed Harijan Sevak Sangh). Ambedkar founded All India Scheduled Castes Federation (III) and earlier Independent Labour Party (1936). Answer: Only one (III) — Answer: A. Actually reconsidering: Ambedkar did found organizations II and III — the Anti Untouchability League claim needs verification. Standard answer: B (two — Scheduled Castes Federation and one other).",
-        topic: "Dr. B. R. Ambedkar — Organizations",
+          "Ambedkar established the All India Scheduled Castes Federation (1942) and... The Depressed Classes Mission Society was founded by V.R. Shinde (not Ambedkar). The All India Anti Untouchability League was founded by Mahatma Gandhi (renamed Harijan Sevak Sangh). Ambedkar founded All India Scheduled Castes Federation (III) and earlier Independent Labour Party (1936). Answer: Only one (III) - Answer: A. Actually reconsidering: Ambedkar did found organizations II and III - the Anti Untouchability League claim needs verification. Standard answer: B (two - Scheduled Castes Federation and one other).",
+        topic: "Dr. B. R. Ambedkar - Organizations",
       },
       {
         id: "t29_q39",
@@ -638,13 +638,13 @@ export const TEST_T29 = [
         ],
         correct: "B",
         explanation:
-          "Statement I is incorrect — the Forward Bloc was initially formed as a faction WITHIN the INC in May 1939, not as a separate party. It became separate only later. Statements II and III correctly describe the Forward Bloc's ideology — it believed in class struggle and aimed at a socialist revolution leading to a Union of Socialist Republics. Answer: B.",
+          "Statement I is incorrect - the Forward Bloc was initially formed as a faction WITHIN the INC in May 1939, not as a separate party. It became separate only later. Statements II and III correctly describe the Forward Bloc's ideology - it believed in class struggle and aimed at a socialist revolution leading to a Union of Socialist Republics. Answer: B.",
         topic: "All India Forward Bloc",
       },
       {
         id: "t29_q40",
         qNo: 40,
-        text: "Consider the following pairs in context of formation of parallel governments during the Quit India Movement:\n\nRegion — Leader\nI. Ballia — Chittu Pandey\nII. Tamluk — Achyut Patwardhan\nIII. Satara — Y.B. Chavan",
+        text: "Consider the following pairs in context of formation of parallel governments during the Quit India Movement:\n\nRegion - Leader\nI. Ballia - Chittu Pandey\nII. Tamluk - Achyut Patwardhan\nIII. Satara - Y.B. Chavan",
         suffix: "How many of the pairs given above are correctly matched?",
         options: [
           { id: "A", text: "Only one" },
@@ -655,7 +655,7 @@ export const TEST_T29 = [
         correct: "A",
         explanation:
           "Only pair I is correctly matched. Ballia's parallel government was indeed established by Chittu Pandey. Tamluk (Tamralipta Jatiya Sarkar) was led by Sushil Kumar Dhara, not Achyut Patwardhan. Satara's parallel government (Prati Sarkar) was led by Nana Patil, not Y.B. Chavan. Answer: A.",
-        topic: "Quit India — Parallel Governments",
+        topic: "Quit India - Parallel Governments",
       },
       {
         id: "t29_q41",
@@ -670,7 +670,7 @@ export const TEST_T29 = [
         ],
         correct: "B",
         explanation:
-          "Gandhi suggested to Mountbatten that as an alternative to partition, Jinnah should be invited to form the government — giving the Muslim League full power in a united India. Gandhi believed this would make partition unnecessary. Nehru and other Congress leaders rejected this proposal.",
+          "Gandhi suggested to Mountbatten that as an alternative to partition, Jinnah should be invited to form the government - giving the Muslim League full power in a united India. Gandhi believed this would make partition unnecessary. Nehru and other Congress leaders rejected this proposal.",
         topic: "Gandhi's Alternative to Partition",
       },
       {
@@ -686,7 +686,7 @@ export const TEST_T29 = [
         ],
         correct: "B",
         explanation:
-          "Both statements are correct. Gandhi undertook a 21-day fast from 10 February 1943 in Aga Khan Palace prison, protesting British allegations that he was responsible for the Quit India violence. Congress committees were indeed banned under the Criminal Law Amendment Act 1908. The two statements are independent facts — Statement II does not explain Statement I. Answer: B.",
+          "Both statements are correct. Gandhi undertook a 21-day fast from 10 February 1943 in Aga Khan Palace prison, protesting British allegations that he was responsible for the Quit India violence. Congress committees were indeed banned under the Criminal Law Amendment Act 1908. The two statements are independent facts - Statement II does not explain Statement I. Answer: B.",
         topic: "Gandhi's Fast 1943 / Quit India Suppression",
       },
       {
@@ -703,7 +703,7 @@ export const TEST_T29 = [
         correct: "B",
         explanation:
           "The Cabinet Mission (1946) consisted of three Cabinet Ministers: Lord Pethick-Lawrence (Secretary of State for India), A.V. Alexander (First Lord of the Admiralty), and Sir Stafford Cripps (President of the Board of Trade). Clement Attlee was PM in London and Edward Cadogan was not a member. Answer: B (I, IV and V).",
-        topic: "Cabinet Mission 1946 — Members",
+        topic: "Cabinet Mission 1946 - Members",
       },
       {
         id: "t29_q44",
@@ -718,7 +718,7 @@ export const TEST_T29 = [
         ],
         correct: "B",
         explanation:
-          "Viceroy Linlithgow served 1936–1943. Individual Satyagraha was launched in October 1940 — YES, under Linlithgow. Burma was separated from India in 1937 — YES, under Linlithgow. The Congress Socialist Party was established in 1934 — BEFORE Linlithgow's tenure (he took over in 1936). So only two (I and III) occurred under Linlithgow. Answer: B.",
+          "Viceroy Linlithgow served 1936–1943. Individual Satyagraha was launched in October 1940 - YES, under Linlithgow. Burma was separated from India in 1937 - YES, under Linlithgow. The Congress Socialist Party was established in 1934 - BEFORE Linlithgow's tenure (he took over in 1936). So only two (I and III) occurred under Linlithgow. Answer: B.",
         topic: "Viceroy Linlithgow's Tenure",
       },
       {
@@ -740,7 +740,7 @@ export const TEST_T29 = [
       {
         id: "t29_q46",
         qNo: 46,
-        text: "An Interim Government of India was sworn in on 2nd September 1946. With reference to the members of this Interim Government, consider the following pairs:\n\nI. Food and Agriculture — Jagjivan Ram\nII. Defence — Baldev Singh\nIII. Railways and Transport — Asaf Ali\nIV. Industries and Supplies — C. Rajagopalachari",
+        text: "An Interim Government of India was sworn in on 2nd September 1946. With reference to the members of this Interim Government, consider the following pairs:\n\nI. Food and Agriculture - Jagjivan Ram\nII. Defence - Baldev Singh\nIII. Railways and Transport - Asaf Ali\nIV. Industries and Supplies - C. Rajagopalachari",
         suffix: "How many of the above given pairs are correctly matched?",
         options: [
           { id: "A", text: "Only one" },
@@ -750,8 +750,8 @@ export const TEST_T29 = [
         ],
         correct: "C",
         explanation:
-          "In the Interim Government: Baldev Singh held Defence (II ✓); Asaf Ali held Railways and Transport (III ✓); C. Rajagopalachari held Industries and Supplies (IV ✓). Jagjivan Ram held Labour (NOT Food and Agriculture — that was held by Rajendra Prasad) — so I is incorrect. Three pairs are correct. Answer: C.",
-        topic: "Interim Government 1946 — Portfolios",
+          "In the Interim Government: Baldev Singh held Defence (II ✓); Asaf Ali held Railways and Transport (III ✓); C. Rajagopalachari held Industries and Supplies (IV ✓). Jagjivan Ram held Labour (NOT Food and Agriculture - that was held by Rajendra Prasad) - so I is incorrect. Three pairs are correct. Answer: C.",
+        topic: "Interim Government 1946 - Portfolios",
       },
       {
         id: "t29_q47",
@@ -766,7 +766,7 @@ export const TEST_T29 = [
         ],
         correct: "D",
         explanation:
-          "The Dickie Bird Plan (also called Plan Balkan), drafted by Mountbatten's staff, proposed that each British Indian province be declared an independent successor state and given the right to decide whether to join India's Constituent Assembly or not — effectively enabling Balkanisation of India. Nehru strongly opposed it, leading to its abandonment.",
+          "The Dickie Bird Plan (also called Plan Balkan), drafted by Mountbatten's staff, proposed that each British Indian province be declared an independent successor state and given the right to decide whether to join India's Constituent Assembly or not - effectively enabling Balkanisation of India. Nehru strongly opposed it, leading to its abandonment.",
         topic: "Dickie Bird Plan / Plan Balkan",
       },
       {
@@ -782,7 +782,7 @@ export const TEST_T29 = [
         ],
         correct: "D",
         explanation:
-          "Statement I is incorrect — the Tebhaga Movement demanded two-thirds (tebhaga = three shares) of the harvest for sharecroppers, not abolition of zamindari. Statement III is incorrect — the movement did not directly result in a Bengal Tenancy Act. Statement II is correct — it was led by the Bengal Provincial Kisan Sabha under the AIKS. Answer: D (I and III are incorrect).",
+          "Statement I is incorrect - the Tebhaga Movement demanded two-thirds (tebhaga = three shares) of the harvest for sharecroppers, not abolition of zamindari. Statement III is incorrect - the movement did not directly result in a Bengal Tenancy Act. Statement II is correct - it was led by the Bengal Provincial Kisan Sabha under the AIKS. Answer: D (I and III are incorrect).",
         topic: "Tebhaga Movement 1946-47",
       },
       {
@@ -798,7 +798,7 @@ export const TEST_T29 = [
         ],
         correct: "C",
         explanation:
-          "N.G. Ranga, Swami Sahajanand Saraswati, and Acharya Narendra Dev were all associated with the All India Kisan Sabha (founded 1936). N.M. Lokhande was a pioneer of the Indian labour movement (founded Bombay Mill Hands Association in 1890) — he was not associated with the Kisan Sabha. Answer: C (three).",
+          "N.G. Ranga, Swami Sahajanand Saraswati, and Acharya Narendra Dev were all associated with the All India Kisan Sabha (founded 1936). N.M. Lokhande was a pioneer of the Indian labour movement (founded Bombay Mill Hands Association in 1890) - he was not associated with the Kisan Sabha. Answer: C (three).",
         topic: "All India Kisan Sabha",
       },
       {

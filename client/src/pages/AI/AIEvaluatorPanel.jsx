@@ -373,7 +373,7 @@
 //                     )}
 //                     <div className="flex items-center justify-between mb-2">
 //                         <span className={`text-xs font-mono ${wordCount >= 200 ? "text-accent-green" : wordCount >= 80 ? "text-yellow-400" : "text-text-muted"}`}>
-//                             {wordCount}w — {wordCount < 80 ? "too short" : wordCount < 150 ? "10M range" : wordCount < 250 ? "15M range" : "good length"}
+//                             {wordCount}w - {wordCount < 80 ? "too short" : wordCount < 150 ? "10M range" : wordCount < 250 ? "15M range" : "good length"}
 //                         </span>
 //                     </div>
 //                     <button onClick={handleEvaluate} disabled={wordCount < 5}
@@ -536,7 +536,7 @@ function EvalResult({ data, provider }) {
                 </span>
             </div>
 
-            {/* Extracted handwriting — only present for image submissions, shown
+            {/* Extracted handwriting - only present for image submissions, shown
                 before the score so the student can verify the transcription first */}
             <ExtractedTextPanel text={data.extracted_answer} />
 
@@ -779,7 +779,7 @@ function ImageDropzone({ onFile }) {
                 Tap to take a photo or choose a file
             </p>
             <p className="text-[11px] font-mono text-text-muted text-center">
-                JPG · JPEG · PNG · WEBP — up to 10MB
+                JPG · JPEG · PNG · WEBP - up to 10MB
             </p>
             <input
                 ref={inputRef}
@@ -955,7 +955,7 @@ export default function AIEvaluatorPanel({ question, paper, answer, isLoggedIn }
                         ))}
                     </div>
 
-                    {/* Error banner — friendlier card for unreadable handwriting */}
+                    {/* Error banner - friendlier card for unreadable handwriting */}
                     {error && unreadable ? (
                         <div className="flex flex-col items-center gap-2 mb-4 px-4 py-5 rounded-xl text-center"
                             style={{ background: "var(--accent-gold-dim)", border: "1px solid rgba(245,158,11,.25)" }}>
@@ -977,7 +977,7 @@ export default function AIEvaluatorPanel({ question, paper, answer, isLoggedIn }
                         <>
                             <div className="flex items-center justify-between mb-2">
                                 <span className={`text-xs font-mono ${wordCount >= 200 ? "text-accent-green" : wordCount >= 80 ? "text-yellow-400" : "text-text-muted"}`}>
-                                    {wordCount}w — {wordCount < 80 ? "too short" : wordCount < 150 ? "10M range" : wordCount < 250 ? "15M range" : "good length"}
+                                    {wordCount}w - {wordCount < 80 ? "too short" : wordCount < 150 ? "10M range" : wordCount < 250 ? "15M range" : "good length"}
                                 </span>
                             </div>
                             <button onClick={handleEvaluate} disabled={wordCount < 5}

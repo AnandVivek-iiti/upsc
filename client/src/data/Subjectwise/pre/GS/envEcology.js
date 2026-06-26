@@ -17,7 +17,7 @@ const envEcologyPYQData = [
     ],
     correctOption: "B",
     explanation:
-      "Statement 1 is INCORRECT: The hydrogen described in Statement 1 — produced from natural gas reforming with CCS — is called 'Blue Hydrogen', not Green Hydrogen. Green Hydrogen is exclusively produced using renewable energy sources. Statement 2 is CORRECT: Green Hydrogen is produced through electrolysis of water powered entirely by renewable energy (solar, wind, etc.), resulting in zero carbon emissions. This is the defining characteristic of Green Hydrogen. Statement 3 is CORRECT: India's National Green Hydrogen Mission, approved in January 2023, sets a target of abating nearly 50 MMT (Million Metric Tonnes) of annual greenhouse gas emissions by 2030, alongside producing 5 MMT of Green Hydrogen annually. Therefore, Statements 2 and 3 are correct.",
+      "Statement 1 is INCORRECT: The hydrogen described in Statement 1 - produced from natural gas reforming with CCS - is called 'Blue Hydrogen', not Green Hydrogen. Green Hydrogen is exclusively produced using renewable energy sources. Statement 2 is CORRECT: Green Hydrogen is produced through electrolysis of water powered entirely by renewable energy (solar, wind, etc.), resulting in zero carbon emissions. This is the defining characteristic of Green Hydrogen. Statement 3 is CORRECT: India's National Green Hydrogen Mission, approved in January 2023, sets a target of abating nearly 50 MMT (Million Metric Tonnes) of annual greenhouse gas emissions by 2030, alongside producing 5 MMT of Green Hydrogen annually. Therefore, Statements 2 and 3 are correct.",
     sources: [
       {
         name: "National Green Hydrogen Mission Document, GoI 2023",
@@ -48,7 +48,7 @@ const envEcologyPYQData = [
     ],
     correctOption: "B",
     explanation:
-      "This question tests logical relationships between three primary statements (I, II, III) through three relational claims (1, 2, 3). Relationship 1 — 'Statement I is empirically supported by Statement II': Statement I says LT-LEDS is a tool for net-zero by 2070 (a long-term forward-looking claim). Statement II says GHG emissions decreased ~8% in 2020 over 2019 — this was largely due to the COVID-19 pandemic-induced economic slowdown, not due to LT-LEDS implementation. So Statement II does NOT empirically support Statement I. Relationship 1 is INCORRECT. Relationship 2 — 'Statement III contradicts the approach implicit in Statement I': Statement I's LT-LEDS is fundamentally a LONG-TERM strategy (net-zero by 2070). Statement III claims climate-resilient development 'necessarily depends on quick and SHORT-TERM achievement.' This directly contradicts the long-term, gradual approach implicit in LT-LEDS. Relationship 2 is CORRECT. Relationship 3 — 'Statement I and III together establish long-term sustainability': Since Statement III advocates short-term targets and Statement I advocates a long-term strategy, they are contradictory, not complementary. They cannot together establish a premise of long-term sustainability. Relationship 3 is INCORRECT. Therefore, only Relationship 2 is correct.",
+      "This question tests logical relationships between three primary statements (I, II, III) through three relational claims (1, 2, 3). Relationship 1 - 'Statement I is empirically supported by Statement II': Statement I says LT-LEDS is a tool for net-zero by 2070 (a long-term forward-looking claim). Statement II says GHG emissions decreased ~8% in 2020 over 2019 - this was largely due to the COVID-19 pandemic-induced economic slowdown, not due to LT-LEDS implementation. So Statement II does NOT empirically support Statement I. Relationship 1 is INCORRECT. Relationship 2 - 'Statement III contradicts the approach implicit in Statement I': Statement I's LT-LEDS is fundamentally a LONG-TERM strategy (net-zero by 2070). Statement III claims climate-resilient development 'necessarily depends on quick and SHORT-TERM achievement.' This directly contradicts the long-term, gradual approach implicit in LT-LEDS. Relationship 2 is CORRECT. Relationship 3 - 'Statement I and III together establish long-term sustainability': Since Statement III advocates short-term targets and Statement I advocates a long-term strategy, they are contradictory, not complementary. They cannot together establish a premise of long-term sustainability. Relationship 3 is INCORRECT. Therefore, only Relationship 2 is correct.",
     sources: [
       {
         name: "India's LT-LEDS submitted at COP27, 2022",
@@ -79,7 +79,7 @@ const envEcologyPYQData = [
     ],
     correctOption: "A",
     explanation:
-      "Statement 1 is CORRECT: The Western Hoolock Gibbon (Hoolock hoolock) is the only ape species found in India, and it is listed as 'Endangered' on the IUCN Red List. The Gibbon Wildlife Sanctuary in Jorhat, Assam (North-east India) is specifically named after and dedicated to this species. Statement 2 is CORRECT: Gibbons are renowned brachiators — they move through the forest canopy by swinging arm-over-arm between branches (brachiation), making them exceptionally agile in the treetops. Statement 3 is INCORRECT: This is a deliberate distractor. Western Hoolock Gibbons are NOT heavily built like gorillas. They are small to medium-sized apes with a slender, lightweight build, which is precisely what enables their remarkable arboreal agility. Comparing them to gorillas in terms of build is factually wrong. Therefore, Statements 1 and 2 are correct.",
+      "Statement 1 is CORRECT: The Western Hoolock Gibbon (Hoolock hoolock) is the only ape species found in India, and it is listed as 'Endangered' on the IUCN Red List. The Gibbon Wildlife Sanctuary in Jorhat, Assam (North-east India) is specifically named after and dedicated to this species. Statement 2 is CORRECT: Gibbons are renowned brachiators - they move through the forest canopy by swinging arm-over-arm between branches (brachiation), making them exceptionally agile in the treetops. Statement 3 is INCORRECT: This is a deliberate distractor. Western Hoolock Gibbons are NOT heavily built like gorillas. They are small to medium-sized apes with a slender, lightweight build, which is precisely what enables their remarkable arboreal agility. Comparing them to gorillas in terms of build is factually wrong. Therefore, Statements 1 and 2 are correct.",
     sources: [
       {
         name: "IUCN Red List – Hoolock hoolock",
@@ -110,7 +110,7 @@ const envEcologyPYQData = [
     ],
     correctOption: "A",
     explanation:
-      "Statement 1 is INCORRECT: Mangroves grow in saline/brackish intertidal zones and do NOT store freshwater. They are not suitable sites for paddy cultivation, which requires freshwater. This statement contains a factual error — mangroves reduce tidal energy (correct) but the inference that they store freshwater and are ideal for paddy cultivation is wrong. Statement 2 is INCORRECT: Mangroves have salt-tolerant (not salt-sensitive) root systems (pneumatophores/prop roots). Their roots do not 'filter seawater into freshwater.' The idea that mangroves convert coastal land into freshwater aquaculture zones is ecologically incorrect; in fact, mangrove clearance for shrimp aquaculture is a major threat to them. Statement 3 is CORRECT: This statement accurately captures the dual role of mangroves. They act as natural bio-shields by absorbing tidal surge energy, protecting coastal communities from cyclones and tsunamis. They also provide biomass, fuelwood, honey, and fish habitats, making them livelihood bases for rural and coastal communities. Therefore, only Statement 3 is correct.",
+      "Statement 1 is INCORRECT: Mangroves grow in saline/brackish intertidal zones and do NOT store freshwater. They are not suitable sites for paddy cultivation, which requires freshwater. This statement contains a factual error - mangroves reduce tidal energy (correct) but the inference that they store freshwater and are ideal for paddy cultivation is wrong. Statement 2 is INCORRECT: Mangroves have salt-tolerant (not salt-sensitive) root systems (pneumatophores/prop roots). Their roots do not 'filter seawater into freshwater.' The idea that mangroves convert coastal land into freshwater aquaculture zones is ecologically incorrect; in fact, mangrove clearance for shrimp aquaculture is a major threat to them. Statement 3 is CORRECT: This statement accurately captures the dual role of mangroves. They act as natural bio-shields by absorbing tidal surge energy, protecting coastal communities from cyclones and tsunamis. They also provide biomass, fuelwood, honey, and fish habitats, making them livelihood bases for rural and coastal communities. Therefore, only Statement 3 is correct.",
     sources: [
       {
         name: "Shankar IAS Environment",
@@ -318,7 +318,7 @@ const envEcologyPYQData = [
     year: 2025,
     subject: "Environment & Ecology",
     topic: "International Environmental Laws & Organizations",
-    subTopic: "Nature Restoration Law (NRL) — EU Legislation",
+    subTopic: "Nature Restoration Law (NRL) - EU Legislation",
     styleTag: "conceptual",
     difficulty: "Easy",
     questionText: `Which organization has enacted the Nature Restoration Law (NRL) to tackle climate change and biodiversity loss?`,
@@ -337,12 +337,12 @@ Key provisions of the EU Nature Restoration Law:
 — Member states are required to put in place national restoration plans.
 — It aims to restore habitats for pollinators, forests, rivers, grasslands, and urban green spaces.
 
-The law is considered a landmark piece of environmental legislation — the first of its kind in EU history — aligning with the EU Biodiversity Strategy 2030 and the EU Green Deal goals.
+The law is considered a landmark piece of environmental legislation - the first of its kind in EU history - aligning with the EU Biodiversity Strategy 2030 and the EU Green Deal goals.
 
-UNEP (Option A) is a UN agency promoting environmental awareness but has not enacted this specific law. WWF (Option C) is an NGO. CBD (Option D) is a multilateral environmental agreement — it does not "enact" domestic laws.`,
+UNEP (Option A) is a UN agency promoting environmental awareness but has not enacted this specific law. WWF (Option C) is an NGO. CBD (Option D) is a multilateral environmental agreement - it does not "enact" domestic laws.`,
     sources: [
       { name: "European Council Official Website", chapter: "Nature Restoration Law 2024" },
-      { name: "Current Affairs 2024 — Environment", chapter: "EU Green Deal & Biodiversity Legislation" }
+      { name: "Current Affairs 2024 - Environment", chapter: "EU Green Deal & Biodiversity Legislation" }
     ]
   },
   {
@@ -350,7 +350,7 @@ UNEP (Option A) is a UN agency promoting environmental awareness but has not ena
     year: 2025,
     subject: "Environment & Ecology",
     topic: "Climate Change & Its Impacts",
-    subTopic: "Wet-Bulb Temperature — Heat Stress & Human Survival",
+    subTopic: "Wet-Bulb Temperature - Heat Stress & Human Survival",
     styleTag: "statement_pairing",
     difficulty: "Medium",
     questionText: `The World Bank warned that India could become one of the first places where wet-bulb temperatures routinely exceed 35°C. Which of the following statements best reflect(s) the implication of the above-said report?
@@ -366,16 +366,16 @@ Select the correct answer using the code given below.`,
       { id: "D", text: "Neither I nor II" }
     ],
     correctOption: "B",
-    explanation: `Understanding Wet-Bulb Temperature (WBT): The wet-bulb temperature is a measure that combines heat and humidity. A wet-bulb temperature of 35°C is considered the physiological upper limit for human survival — at this point, even a healthy person resting in the shade cannot cool down through sweating because the air is already saturated with moisture. The body cannot shed heat efficiently through perspiration (evaporative cooling), leading to hyperthermia and death within hours.
+    explanation: `Understanding Wet-Bulb Temperature (WBT): The wet-bulb temperature is a measure that combines heat and humidity. A wet-bulb temperature of 35°C is considered the physiological upper limit for human survival - at this point, even a healthy person resting in the shade cannot cool down through sweating because the air is already saturated with moisture. The body cannot shed heat efficiently through perspiration (evaporative cooling), leading to hyperthermia and death within hours.
 
-Statement I is INCORRECT as an implication: Flooding, tropical cyclones, and droughts are weather phenomena related to climate change broadly, but they are NOT the specific implication of wet-bulb temperature exceeding 35°C. The World Bank report specifically addressed the heat stress crisis — the inability of humans and animals to thermoregulate — NOT flooding or cyclone frequency. Wet-bulb temperature is specifically about heat and humidity combined, not precipitation-related disasters.
+Statement I is INCORRECT as an implication: Flooding, tropical cyclones, and droughts are weather phenomena related to climate change broadly, but they are NOT the specific implication of wet-bulb temperature exceeding 35°C. The World Bank report specifically addressed the heat stress crisis - the inability of humans and animals to thermoregulate - NOT flooding or cyclone frequency. Wet-bulb temperature is specifically about heat and humidity combined, not precipitation-related disasters.
 
 Statement II is CORRECT: This is the precise and direct implication of wet-bulb temperatures exceeding 35°C. When wet-bulb temperature reaches this threshold, evaporative cooling (sweating/perspiration) becomes ineffective because the surrounding air cannot absorb more moisture. This makes it impossible for warm-blooded animals (including humans) to regulate their core body temperature, making the environment physiologically unsurvivable.
 
 Therefore, only Statement II correctly reflects the implication of the World Bank's wet-bulb temperature warning for India.`,
     sources: [
-      { name: "World Bank Report — South Asia Hotspots", chapter: "Heat Stress & Wet-Bulb Temperature" },
-      { name: "Current Affairs 2024-25 — Climate Change", chapter: "Extreme Heat Events in India" }
+      { name: "World Bank Report - South Asia Hotspots", chapter: "Heat Stress & Wet-Bulb Temperature" },
+      { name: "Current Affairs 2024-25 - Climate Change", chapter: "Extreme Heat Events in India" }
     ]
   },
   {
@@ -383,7 +383,7 @@ Therefore, only Statement II correctly reflects the implication of the World Ban
     year: 2025,
     subject: "Environment & Ecology",
     topic: "Air Pollution & Control",
-    subTopic: "Cloud Seeding — Artificial Rainfall for Air Pollution Reduction",
+    subTopic: "Cloud Seeding - Artificial Rainfall for Air Pollution Reduction",
     styleTag: "conceptual",
     difficulty: "Easy",
     questionText: `Artificial way of causing rainfall to reduce air pollution makes use of`,
@@ -400,15 +400,15 @@ Silver Iodide (AgI) is the most commonly used cloud seeding agent. It has a crys
 
 Other cloud seeding agents include:
 — Liquid propane (which expands and cools to create ice crystals)
-— Dry ice (solid CO₂) — cools air rapidly to cause condensation
-— Hygroscopic salts (like potassium chloride, calcium chloride) — used in warmer clouds
+— Dry ice (solid CO₂) - cools air rapidly to cause condensation
+— Hygroscopic salts (like potassium chloride, calcium chloride) - used in warmer clouds
 
 Potassium permanganate (Option B) is an oxidizing agent used in water treatment, not cloud seeding.
 Calcium carbonate (Option C) is a common mineral with no cloud seeding application.
-Sodium chloride solution (Option D) — while salt particles are sometimes used in warm-cloud seeding for hygroscopic nucleation, the primary/standard answer for UPSC purposes is silver iodide, which is the most established and widely recognized cloud seeding agent.`,
+Sodium chloride solution (Option D) - while salt particles are sometimes used in warm-cloud seeding for hygroscopic nucleation, the primary/standard answer for UPSC purposes is silver iodide, which is the most established and widely recognized cloud seeding agent.`,
     sources: [
       { name: "NCERT Chemistry / Environmental Science", chapter: "Air Pollution Control Technologies" },
-      { name: "Current Affairs 2024 — Delhi Smog Management", chapter: "Artificial Rain & Cloud Seeding" }
+      { name: "Current Affairs 2024 - Delhi Smog Management", chapter: "Artificial Rain & Cloud Seeding" }
     ]
   },
   {
@@ -416,7 +416,7 @@ Sodium chloride solution (Option D) — while salt particles are sometimes used 
     year: 2025,
     subject: "Environment & Ecology",
     topic: "Sustainable Development & Green Economy",
-    subTopic: "Circular Economy — Statement Analysis",
+    subTopic: "Circular Economy - Statement Analysis",
     styleTag: "statement_pairing",
     difficulty: "Easy",
     questionText: `Consider the following statements:
@@ -440,16 +440,16 @@ Which one of the following is correct in respect of the above statements?`,
     correctOption: "D",
     explanation: `The Circular Economy is an economic system that aims to eliminate waste and keep resources in use for as long as possible. It contrasts with the traditional "take-make-dispose" linear economy model. All three statements are correct:
 
-Statement I — CORRECT: The circular economy reduces GHG emissions through multiple mechanisms. By keeping products and materials in use longer (reuse, repair, remanufacturing, recycling), it reduces the energy-intensive extraction and processing of virgin raw materials. Studies by the Ellen MacArthur Foundation indicate that transitioning to a circular economy could reduce global CO₂ emissions by 9.3 billion tonnes annually by 2050 — roughly one-quarter of current global emissions. Reduced demand for energy-intensive processes directly lowers carbon emissions.
+Statement I - CORRECT: The circular economy reduces GHG emissions through multiple mechanisms. By keeping products and materials in use longer (reuse, repair, remanufacturing, recycling), it reduces the energy-intensive extraction and processing of virgin raw materials. Studies by the Ellen MacArthur Foundation indicate that transitioning to a circular economy could reduce global CO₂ emissions by 9.3 billion tonnes annually by 2050 - roughly one-quarter of current global emissions. Reduced demand for energy-intensive processes directly lowers carbon emissions.
 
-Statement II — CORRECT: A core principle of circular economy is reducing the extraction of virgin/raw materials by keeping existing materials cycling in the economy. Products are designed for longevity, repairability, and recyclability. Materials recovered from one product's end-of-life become inputs for another, reducing dependence on primary raw material extraction from mines and forests.
+Statement II - CORRECT: A core principle of circular economy is reducing the extraction of virgin/raw materials by keeping existing materials cycling in the economy. Products are designed for longevity, repairability, and recyclability. Materials recovered from one product's end-of-life become inputs for another, reducing dependence on primary raw material extraction from mines and forests.
 
-Statement III — CORRECT: The circular economy explicitly aims to design out waste from the production process (the "cradle-to-cradle" design philosophy). By viewing waste as a design flaw and a resource misallocation, circular economy principles reduce industrial waste at the production stage through efficient material use, process optimization, and industrial symbiosis (where one industry's waste becomes another's input).
+Statement III - CORRECT: The circular economy explicitly aims to design out waste from the production process (the "cradle-to-cradle" design philosophy). By viewing waste as a design flaw and a resource misallocation, circular economy principles reduce industrial waste at the production stage through efficient material use, process optimization, and industrial symbiosis (where one industry's waste becomes another's input).
 
 Therefore, all three statements are correct.`,
     sources: [
-      { name: "Ellen MacArthur Foundation — Circular Economy Reports", chapter: "Benefits of Circular Economy" },
-      { name: "NCERT/PIB — Sustainable Development Goals", chapter: "Circular Economy & SDG 12" }
+      { name: "Ellen MacArthur Foundation - Circular Economy Reports", chapter: "Benefits of Circular Economy" },
+      { name: "NCERT/PIB - Sustainable Development Goals", chapter: "Circular Economy & SDG 12" }
     ]
   },
   {
@@ -457,7 +457,7 @@ Therefore, all three statements are correct.`,
     year: 2025,
     subject: "Environment & Ecology",
     topic: "Biodiversity & Ecosystems",
-    subTopic: "Oxygen Production — Oceans vs Rainforests",
+    subTopic: "Oxygen Production - Oceans vs Rainforests",
     styleTag: "statement_pairing",
     difficulty: "Hard",
     questionText: `With reference to the planet Earth, consider the following statements:
@@ -478,11 +478,11 @@ Which of the statements given above is/are correct?`,
 
 Statement II is CORRECT: Marine phytoplankton (microscopic algae) and photosynthetic bacteria (particularly cyanobacteria like Prochlorococcus) are responsible for producing approximately 50% (some estimates say up to 80%) of Earth's oxygen through photosynthesis in the ocean's photic zone. This is a well-established scientific fact. The exact percentage cited in the question (about 50%) falls within the conservative scientific consensus range, making this statement correct.
 
-Statement III is INCORRECT: This statement confuses dissolved oxygen (DO) in water with oxygen concentration in air. Atmospheric air contains approximately 21% oxygen by volume. Well-oxygenated surface water typically contains about 8–10 mg/L of dissolved oxygen — which, by mass concentration, is far LESS than the equivalent oxygen content of an equal volume of air. The claim that oxygenated surface water contains "several folds higher oxygen" than atmospheric air is incorrect. In fact, air contains far more oxygen per unit volume than water, which is why fish cannot breathe air directly.
+Statement III is INCORRECT: This statement confuses dissolved oxygen (DO) in water with oxygen concentration in air. Atmospheric air contains approximately 21% oxygen by volume. Well-oxygenated surface water typically contains about 8–10 mg/L of dissolved oxygen - which, by mass concentration, is far LESS than the equivalent oxygen content of an equal volume of air. The claim that oxygenated surface water contains "several folds higher oxygen" than atmospheric air is incorrect. In fact, air contains far more oxygen per unit volume than water, which is why fish cannot breathe air directly.
 
 Therefore, only Statement II is correct.`,
     sources: [
-      { name: "NCERT Biology XII", chapter: "Ecosystem — Energy Flow & Nutrient Cycling" },
+      { name: "NCERT Biology XII", chapter: "Ecosystem - Energy Flow & Nutrient Cycling" },
       { name: "NOAA / NASA Ocean Science Resources", chapter: "Marine Phytoplankton & Oxygen Production" }
     ]
   },
@@ -491,7 +491,7 @@ Therefore, only Statement II is correct.`,
     year: 2025,
     subject: "Environment & Ecology",
     topic: "Climate Change & Its Impacts",
-    subTopic: "India's CO₂ Emissions — Per Capita, Rankings, Sector Sources",
+    subTopic: "India's CO₂ Emissions - Per Capita, Rankings, Sector Sources",
     styleTag: "statement_pairing",
     difficulty: "Hard",
     questionText: `Consider the following statements:
@@ -510,14 +510,14 @@ Which of the statements given above is/are correct?`,
     correctOption: "C",
     explanation: `Statement I is INCORRECT: India's per capita CO₂ emissions are approximately 1.8–2.0 tonnes CO₂ per person per year (as per IEA data for recent years). This is well above 0.5 t CO₂/capita. While India's per capita emissions are significantly below the global average (~4.7 t) and far below developed nations (US ~14.7 t, Australia ~15 t), they are substantially higher than 0.5 t/capita. The figure of "less than 0.5 t CO₂/capita" is incorrect by a factor of approximately 3-4.
 
-Statement II is INCORRECT: In the Asia-Pacific region, India ranks THIRD in total CO₂ emissions from fuel combustion (after China and Japan or after China and South Korea depending on the dataset year). China is by far the largest emitter, and Japan/South Korea typically rank above India in the Asia-Pacific regional ranking. India does rank third globally (behind China and USA), but in the Asia-Pacific regional context specifically, it is not second — China and Japan precede it.
+Statement II is INCORRECT: In the Asia-Pacific region, India ranks THIRD in total CO₂ emissions from fuel combustion (after China and Japan or after China and South Korea depending on the dataset year). China is by far the largest emitter, and Japan/South Korea typically rank above India in the Asia-Pacific regional ranking. India does rank third globally (behind China and USA), but in the Asia-Pacific regional context specifically, it is not second - China and Japan precede it.
 
 Statement III is CORRECT: Electricity and heat production (i.e., power plants, thermal power stations) is the single largest source of CO₂ emissions in India. India's electricity sector is heavily coal-dependent (approximately 70%+ of electricity from coal-based thermal power plants), making the electricity and heat sector the dominant contributor to India's CO₂ emissions. This is consistent with IEA and India's national GHG inventory data.
 
 Therefore, only Statement III is correct.`,
     sources: [
-      { name: "IEA — CO₂ Emissions from Fuel Combustion Report", chapter: "India Country Profile" },
-      { name: "MoEFCC — India's Biennial Update Report to UNFCCC", chapter: "National GHG Inventory" }
+      { name: "IEA - CO₂ Emissions from Fuel Combustion Report", chapter: "India Country Profile" },
+      { name: "MoEFCC - India's Biennial Update Report to UNFCCC", chapter: "National GHG Inventory" }
     ]
   },
   {
@@ -525,7 +525,7 @@ Therefore, only Statement III is correct.`,
     year: 2025,
     subject: "Environment & Ecology",
     topic: "Biodiversity & Wildlife Conservation",
-    subTopic: "Peacock Tarantula (Gooty Tarantula) — Poecilotheria metallica",
+    subTopic: "Peacock Tarantula (Gooty Tarantula) - Poecilotheria metallica",
     styleTag: "statement_pairing",
     difficulty: "Hard",
     questionText: `Regarding Peacock tarantula (Gooty tarantula), consider the following statements:
@@ -544,15 +544,15 @@ Which of the statements given above is/are correct?`,
     correctOption: "B",
     explanation: `The Peacock Tarantula or Gooty Tarantula (Poecilotheria metallica) is a critically endangered species of tarantula known for its stunning metallic blue coloration and intricate geometric patterns.
 
-Statement I is INCORRECT on two counts: First, it is NOT a crustacean. Crustaceans are arthropods like crabs, lobsters, and shrimp. The Gooty Tarantula is an arachnid (class Arachnida, order Araneae) — a spider. Second, it is NOT omnivorous. Like most tarantulas, it is a carnivorous predator that feeds primarily on insects, small lizards, frogs, and other invertebrates. It does not consume plant matter.
+Statement I is INCORRECT on two counts: First, it is NOT a crustacean. Crustaceans are arthropods like crabs, lobsters, and shrimp. The Gooty Tarantula is an arachnid (class Arachnida, order Araneae) - a spider. Second, it is NOT omnivorous. Like most tarantulas, it is a carnivorous predator that feeds primarily on insects, small lizards, frogs, and other invertebrates. It does not consume plant matter.
 
-Statement II is CORRECT: The Gooty Tarantula has an extremely restricted natural range in India — it is found only in the Gooty/Nandyal forest area of Andhra Pradesh (the Nallamala forest region). This highly restricted forest habitat makes it critically endangered. The species is endemic to a very small geographic area within India, making Statement II accurate.
+Statement II is CORRECT: The Gooty Tarantula has an extremely restricted natural range in India - it is found only in the Gooty/Nandyal forest area of Andhra Pradesh (the Nallamala forest region). This highly restricted forest habitat makes it critically endangered. The species is endemic to a very small geographic area within India, making Statement II accurate.
 
 Statement III is CORRECT: In its natural habitat, the Gooty Tarantula is an arboreal (tree-dwelling) species. Unlike many ground-dwelling tarantulas, Poecilotheria metallica lives in the hollows and crevices of tall deciduous trees in the forest. It builds asymmetric funnel-like webs in tree hollows. This arboreal lifestyle is distinctive and well-documented for this species.
 
 Therefore, statements II and III are correct.`,
     sources: [
-      { name: "IUCN Red List — Poecilotheria metallica", chapter: "Species Assessment & Distribution" },
+      { name: "IUCN Red List - Poecilotheria metallica", chapter: "Species Assessment & Distribution" },
       { name: "Wildlife Institute of India / ZSI Records", chapter: "Endemic Arachnids of India" }
     ]
   },
@@ -561,7 +561,7 @@ Therefore, statements II and III are correct.`,
     year: 2025,
     subject: "Environment & Ecology",
     topic: "Biodiversity & Ecosystems",
-    subTopic: "Plant Classification — Botanical Descriptions",
+    subTopic: "Plant Classification - Botanical Descriptions",
     styleTag: "statement_pairing",
     difficulty: "Hard",
     questionText: `Consider the following pairs:
@@ -583,20 +583,20 @@ How many of the above pairs are correctly matched?`,
     correctOption: "B",
     explanation: `Let us evaluate each pair against botanical classification:
 
-Pair I — Cassava (Manihot esculenta) : Woody shrub: CORRECT. Cassava is indeed classified as a woody shrub. It grows as a perennial woody shrub up to 1–3 metres tall with woody stems. The edible starchy tuberous roots (tapioca) are the economically important part. This is a correct botanical description.
+Pair I - Cassava (Manihot esculenta) : Woody shrub: CORRECT. Cassava is indeed classified as a woody shrub. It grows as a perennial woody shrub up to 1–3 metres tall with woody stems. The edible starchy tuberous roots (tapioca) are the economically important part. This is a correct botanical description.
 
-Pair II — Ginger (Zingiber officinale) : Herb with pseudostem: CORRECT. Ginger is a herbaceous plant that grows from a rhizome. What appears to be a stem above ground is actually a pseudostem — formed by the tightly packed leaf bases (similar to banana). True ginger is indeed an herb with a pseudostem. This is a correct botanical description.
+Pair II - Ginger (Zingiber officinale) : Herb with pseudostem: CORRECT. Ginger is a herbaceous plant that grows from a rhizome. What appears to be a stem above ground is actually a pseudostem - formed by the tightly packed leaf bases (similar to banana). True ginger is indeed an herb with a pseudostem. This is a correct botanical description.
 
-Pair III — Malabar spinach (Basella alba) : Herbaceous climber: CORRECT. Malabar spinach (also called vine spinach or climbing spinach) is a succulent, fast-growing herbaceous climber/twining vine. It climbs using its flexible stems and is grown for its edible leaves. This is a correct botanical description.
+Pair III - Malabar spinach (Basella alba) : Herbaceous climber: CORRECT. Malabar spinach (also called vine spinach or climbing spinach) is a succulent, fast-growing herbaceous climber/twining vine. It climbs using its flexible stems and is grown for its edible leaves. This is a correct botanical description.
 
-Pair IV — Mint (Mentha species) : Annual shrub: INCORRECT. Mint is a perennial herb, NOT an annual shrub. Mint spreads via underground stolons/rhizomes and can live for many years. It is classified as a herbaceous perennial, not an annual or a shrub.
+Pair IV - Mint (Mentha species) : Annual shrub: INCORRECT. Mint is a perennial herb, NOT an annual shrub. Mint spreads via underground stolons/rhizomes and can live for many years. It is classified as a herbaceous perennial, not an annual or a shrub.
 
-Pair V — Papaya (Carica papaya) : Woody shrub: INCORRECT. Papaya is technically classified as a large herbaceous plant or a "tree-like herb." While it appears tree-like with a single trunk, the trunk/stem is NOT truly woody (it lacks secondary wood formation). Papaya is botanically categorized as a perennial herb or a soft-stemmed large herb, NOT a woody shrub.
+Pair V - Papaya (Carica papaya) : Woody shrub: INCORRECT. Papaya is technically classified as a large herbaceous plant or a "tree-like herb." While it appears tree-like with a single trunk, the trunk/stem is NOT truly woody (it lacks secondary wood formation). Papaya is botanically categorized as a perennial herb or a soft-stemmed large herb, NOT a woody shrub.
 
-Correctly matched pairs: I (Cassava-Woody shrub), II (Ginger-Herb with pseudostem), III (Malabar spinach-Herbaceous climber) — Only THREE pairs are correctly matched.`,
+Correctly matched pairs: I (Cassava-Woody shrub), II (Ginger-Herb with pseudostem), III (Malabar spinach-Herbaceous climber) - Only THREE pairs are correctly matched.`,
     sources: [
-      { name: "NCERT Biology XI — Plant Kingdom & Morphology", chapter: "Morphology of Flowering Plants" },
-      { name: "Botanical Survey of India — Flora of India", chapter: "Plant Descriptions" }
+      { name: "NCERT Biology XI - Plant Kingdom & Morphology", chapter: "Morphology of Flowering Plants" },
+      { name: "Botanical Survey of India - Flora of India", chapter: "Plant Descriptions" }
     ]
   },
   {
@@ -604,7 +604,7 @@ Correctly matched pairs: I (Cassava-Woody shrub), II (Ginger-Herb with pseudoste
     year: 2025,
     subject: "Environment & Ecology",
     topic: "International Environmental Conventions",
-    subTopic: "COP28 — Declaration on Climate and Health",
+    subTopic: "COP28 - Declaration on Climate and Health",
     styleTag: "statement_pairing",
     difficulty: "Medium",
     questionText: `Consider the following statements:
@@ -626,18 +626,18 @@ Which one of the following is correct in respect of the above statements?`,
       { id: "D", text: "All three statements are correct" }
     ],
     correctOption: "C",
-    explanation: `COP28 was held in Dubai, UAE in November-December 2023, and included a landmark Declaration on Climate and Health — endorsed by over 140 countries.
+    explanation: `COP28 was held in Dubai, UAE in November-December 2023, and included a landmark Declaration on Climate and Health - endorsed by over 140 countries.
 
 Statement I is CORRECT: India did indeed refrain from signing the COP28 Declaration on Climate and Health. India was one of the notable absentees among major countries. India's position was that the declaration's provisions could potentially compromise healthcare access and the resilience of India's developing health infrastructure if implemented without adequate flexibility for developing nations.
 
-Statement II is INCORRECT: The COP28 Declaration on Climate and Health is a NON-BINDING declaration — it is a voluntary political commitment, not a legally binding treaty. COP declarations are typically political in nature and do not create mandatory legal obligations on signatory states. They express intent and set directions but do not legally compel countries to decarbonize their health sectors. If it were binding, many countries (especially developing nations) would not have signed it.
+Statement II is INCORRECT: The COP28 Declaration on Climate and Health is a NON-BINDING declaration - it is a voluntary political commitment, not a legally binding treaty. COP declarations are typically political in nature and do not create mandatory legal obligations on signatory states. They express intent and set directions but do not legally compel countries to decarbonize their health sectors. If it were binding, many countries (especially developing nations) would not have signed it.
 
-Statement III is CORRECT: India's concern — which is a legitimate policy argument — is that rapid decarbonization of the health sector (moving away from fossil fuel-dependent backup generators, diesel ambulances, coal-powered hospital electricity) in a developing country context could compromise health system resilience, especially in areas with unreliable electricity supply. India's health infrastructure, particularly in rural areas, relies on fossil fuels for critical functions where renewable alternatives are not yet fully reliable or affordable. Decarbonizing without adequate alternatives could reduce healthcare access for vulnerable populations.
+Statement III is CORRECT: India's concern - which is a legitimate policy argument - is that rapid decarbonization of the health sector (moving away from fossil fuel-dependent backup generators, diesel ambulances, coal-powered hospital electricity) in a developing country context could compromise health system resilience, especially in areas with unreliable electricity supply. India's health infrastructure, particularly in rural areas, relies on fossil fuels for critical functions where renewable alternatives are not yet fully reliable or affordable. Decarbonizing without adequate alternatives could reduce healthcare access for vulnerable populations.
 
 Therefore, Statements I and III are correct, while Statement II is incorrect.`,
     sources: [
       { name: "UNFCCC COP28 Official Documents", chapter: "Declaration on Climate and Health" },
-      { name: "Current Affairs 2023-24 — COP28 Outcomes", chapter: "India's Position at COP28" }
+      { name: "Current Affairs 2023-24 - COP28 Outcomes", chapter: "India's Position at COP28" }
     ]
   },
   {
@@ -645,7 +645,7 @@ Therefore, Statements I and III are correct, while Statement II is incorrect.`,
     year: 2025,
     subject: "Environment & Ecology",
     topic: "International Environmental Conventions",
-    subTopic: "Paris Agreement — Article 6 (Carbon Markets)",
+    subTopic: "Paris Agreement - Article 6 (Carbon Markets)",
     styleTag: "statement_pairing",
     difficulty: "Hard",
     questionText: `Consider the following statements:
@@ -669,20 +669,20 @@ Which one of the following is correct in respect of the above statements?`,
     correctOption: "D",
     explanation: `Article 6 of the Paris Agreement is one of the most complex, debated, and frequently discussed provisions of the agreement, dealing with cooperative approaches to achieving Nationally Determined Contributions (NDCs).
 
-Statement I is CORRECT: Article 6 has been a central, contentious topic at every COP since the Paris Agreement was adopted in 2015. Negotiations over its implementation rules (particularly the rule-book for carbon markets) dominated COP24 (Katowice), COP25 (Madrid), COP26 (Glasgow — where partial agreement was reached), COP27, and COP28. It is among the most discussed articles in global climate policy circles.
+Statement I is CORRECT: Article 6 has been a central, contentious topic at every COP since the Paris Agreement was adopted in 2015. Negotiations over its implementation rules (particularly the rule-book for carbon markets) dominated COP24 (Katowice), COP25 (Madrid), COP26 (Glasgow - where partial agreement was reached), COP27, and COP28. It is among the most discussed articles in global climate policy circles.
 
 Statement II is CORRECT: Article 6 specifically establishes the framework for carbon markets under the Paris Agreement. It has three main components:
-— Article 6.2: Bilateral/cooperative carbon trading between countries (Internationally Transferred Mitigation Outcomes — ITMOs)
+— Article 6.2: Bilateral/cooperative carbon trading between countries (Internationally Transferred Mitigation Outcomes - ITMOs)
 — Article 6.4: A new centralized UN-supervised carbon crediting mechanism (the successor to CDM)
 — Article 6.8: Non-market approaches
 Articles 6.2 and 6.4 together form the Paris Agreement's carbon market architecture.
 
-Statement III is CORRECT: Article 6.8 specifically addresses non-market approaches. It establishes a framework to promote and facilitate non-market approaches (NMAs) — such as policy cooperation, capacity building, technology transfer, and other collaborative strategies — that countries can use to achieve their NDCs without relying on market mechanisms. This is an important provision for countries that prefer non-market pathways to climate action.
+Statement III is CORRECT: Article 6.8 specifically addresses non-market approaches. It establishes a framework to promote and facilitate non-market approaches (NMAs) - such as policy cooperation, capacity building, technology transfer, and other collaborative strategies - that countries can use to achieve their NDCs without relying on market mechanisms. This is an important provision for countries that prefer non-market pathways to climate action.
 
 Therefore, all three statements are correct.`,
     sources: [
-      { name: "UNFCCC — Paris Agreement Text", chapter: "Article 6 — Cooperative Approaches" },
-      { name: "Current Affairs — COP Negotiations", chapter: "Carbon Markets & Article 6 Rule Book" }
+      { name: "UNFCCC - Paris Agreement Text", chapter: "Article 6 - Cooperative Approaches" },
+      { name: "Current Affairs - COP Negotiations", chapter: "Carbon Markets & Article 6 Rule Book" }
     ]
   },
   {
@@ -690,7 +690,7 @@ Therefore, all three statements are correct.`,
     year: 2025,
     subject: "Environment & Ecology",
     topic: "Environmental Pollution & Control",
-    subTopic: "Cement Industry — CO₂ Emissions & Manufacturing Process",
+    subTopic: "Cement Industry - CO₂ Emissions & Manufacturing Process",
     styleTag: "statement_pairing",
     difficulty: "Medium",
     questionText: `Consider the following statements:
@@ -712,18 +712,18 @@ Which one of the following is correct in respect of the above statements?`,
       { id: "D", text: "All three statements are correct" }
     ],
     correctOption: "D",
-    explanation: `Statement I is CORRECT: The cement industry is one of the largest industrial sources of CO₂ emissions globally. According to the Global Cement and Concrete Association (GCCA) and IEA, the cement industry accounts for approximately 7–8% of global CO₂ emissions — well above the 5% threshold mentioned. CO₂ is emitted both from the burning of fossil fuels to heat kilns and from the chemical calcination process (limestone → lime + CO₂).
+    explanation: `Statement I is CORRECT: The cement industry is one of the largest industrial sources of CO₂ emissions globally. According to the Global Cement and Concrete Association (GCCA) and IEA, the cement industry accounts for approximately 7–8% of global CO₂ emissions - well above the 5% threshold mentioned. CO₂ is emitted both from the burning of fossil fuels to heat kilns and from the chemical calcination process (limestone → lime + CO₂).
 
 Statement II is CORRECT: The basic raw materials for cement (Portland cement) production include limestone (CaCO₃) as the primary ingredient, mixed with silica-bearing materials such as clay, shale, and sand. Silica (SiO₂), alumina (Al₂O₃), and iron oxide are essential components. Silica-bearing clay (aluminosilicate clay) is indeed mixed with limestone in the correct proportions in cement manufacturing. This is the standard raw mix/raw meal composition.
 
-Statement III is CORRECT: During clinker production in the rotary kiln, limestone (calcium carbonate — CaCO₃) undergoes calcination at approximately 900°C, decomposing into calcium oxide/lime (CaO) and releasing CO₂:
+Statement III is CORRECT: During clinker production in the rotary kiln, limestone (calcium carbonate - CaCO₃) undergoes calcination at approximately 900°C, decomposing into calcium oxide/lime (CaO) and releasing CO₂:
 CaCO₃ → CaO (lime) + CO₂ ↑
 The lime (CaO) then reacts with silica, alumina, and iron oxide at higher temperatures (1450°C) to form clinker minerals (alite, belite, aluminate, ferrite). This calcination reaction is the source of approximately 60% of cement's CO₂ emissions (the rest from fuel combustion).
 
 Therefore, all three statements are correct.`,
     sources: [
-      { name: "IEA — Cement Sector Report", chapter: "CO₂ Emissions from Cement Production" },
-      { name: "NCERT Chemistry XII", chapter: "Materials in Everyday Life — Cement" }
+      { name: "IEA - Cement Sector Report", chapter: "CO₂ Emissions from Cement Production" },
+      { name: "NCERT Chemistry XII", chapter: "Materials in Everyday Life - Cement" }
     ]
   },
   {
@@ -731,7 +731,7 @@ Therefore, all three statements are correct.`,
     year: 2025,
     subject: "Environment & Ecology",
     topic: "Environmental Pollution & Control",
-    subTopic: "Plastic Pollution — Items Containing Plastic",
+    subTopic: "Plastic Pollution - Items Containing Plastic",
     styleTag: "conceptual",
     difficulty: "Medium",
     questionText: `Consider the following:
@@ -750,16 +750,16 @@ How many of them contain plastic?`,
     correctOption: "C",
     explanation: `This question tests awareness of non-obvious plastic sources contributing to plastic pollution:
 
-Item I — Cigarette butts: CONTAIN PLASTIC. Cigarette filters (butts) are made from cellulose acetate — a synthetic plastic material (a type of plastic polymer). They are NOT biodegradable natural material as commonly assumed. Cigarette butts are the most collected item in coastal and urban cleanups globally. They leach toxic chemicals and microplastics into water bodies. This is a major but underappreciated source of plastic pollution.
+Item I - Cigarette butts: CONTAIN PLASTIC. Cigarette filters (butts) are made from cellulose acetate - a synthetic plastic material (a type of plastic polymer). They are NOT biodegradable natural material as commonly assumed. Cigarette butts are the most collected item in coastal and urban cleanups globally. They leach toxic chemicals and microplastics into water bodies. This is a major but underappreciated source of plastic pollution.
 
-Item II — Eyeglass lenses: CONTAIN PLASTIC. Modern eyeglass lenses are predominantly made from plastic polymers — polycarbonate (PC), CR-39 (allyl diglycol carbonate), trivex, and high-index plastic are the most common materials. Very few modern lenses are made from glass. The frames themselves are also often plastic (acetate, nylon, etc.).
+Item II - Eyeglass lenses: CONTAIN PLASTIC. Modern eyeglass lenses are predominantly made from plastic polymers - polycarbonate (PC), CR-39 (allyl diglycol carbonate), trivex, and high-index plastic are the most common materials. Very few modern lenses are made from glass. The frames themselves are also often plastic (acetate, nylon, etc.).
 
-Item III — Car tyres: CONTAIN PLASTIC. Car tyres are made from synthetic rubber (which is a polymer/plastic — specifically styrene-butadiene rubber, SBR), natural rubber, steel wires, and nylon/polyester cord fabric (plastic textiles). Tyre wear particles are a major source of microplastic pollution in the environment. When tyres wear down during driving, they release tiny rubber/plastic particles that wash into waterways. Tyre wear is estimated to be one of the largest sources of microplastic pollution in aquatic environments.
+Item III - Car tyres: CONTAIN PLASTIC. Car tyres are made from synthetic rubber (which is a polymer/plastic - specifically styrene-butadiene rubber, SBR), natural rubber, steel wires, and nylon/polyester cord fabric (plastic textiles). Tyre wear particles are a major source of microplastic pollution in the environment. When tyres wear down during driving, they release tiny rubber/plastic particles that wash into waterways. Tyre wear is estimated to be one of the largest sources of microplastic pollution in aquatic environments.
 
 Therefore, ALL THREE items contain plastic.`,
     sources: [
-      { name: "UNEP — Single-Use Plastics Report", chapter: "Sources of Plastic Pollution" },
-      { name: "Current Affairs — Microplastics & Plastic Pollution", chapter: "Non-Obvious Plastic Sources" }
+      { name: "UNEP - Single-Use Plastics Report", chapter: "Sources of Plastic Pollution" },
+      { name: "Current Affairs - Microplastics & Plastic Pollution", chapter: "Non-Obvious Plastic Sources" }
     ]
   },
   {
@@ -767,7 +767,7 @@ Therefore, ALL THREE items contain plastic.`,
     year: 2025,
     subject: "Environment & Ecology",
     topic: "Climate Change Mitigation Technologies",
-    subTopic: "Direct Air Capture (DAC) — Carbon Removal Technology",
+    subTopic: "Direct Air Capture (DAC) - Carbon Removal Technology",
     styleTag: "statement_pairing",
     difficulty: "Medium",
     questionText: `With reference to Direct Air Capture, an emerging technology, which of the following statements is/are correct?
@@ -786,17 +786,17 @@ Select the correct answer using the code given below.`,
     correctOption: "D",
     explanation: `Direct Air Capture (DAC) is a technology that captures CO₂ directly from ambient atmospheric air (as opposed to point-source capture from industrial emissions). The captured CO₂ can then be stored permanently or utilized.
 
-Statement I is CORRECT: DAC is explicitly a carbon sequestration/removal technology. When captured CO₂ is permanently stored underground (geological storage), it constitutes "carbon dioxide removal" (CDR) — a key negative emissions technology in climate mitigation scenarios. The IPCC's 1.5°C pathways include DAC as a necessary tool to achieve net-zero and net-negative emissions.
+Statement I is CORRECT: DAC is explicitly a carbon sequestration/removal technology. When captured CO₂ is permanently stored underground (geological storage), it constitutes "carbon dioxide removal" (CDR) - a key negative emissions technology in climate mitigation scenarios. The IPCC's 1.5°C pathways include DAC as a necessary tool to achieve net-zero and net-negative emissions.
 
-Statement II is CORRECT: The captured CO₂ from DAC can be utilized (Carbon Capture & Utilization — CCU) in multiple industrial applications:
+Statement II is CORRECT: The captured CO₂ from DAC can be utilized (Carbon Capture & Utilization - CCU) in multiple industrial applications:
 — Plastics production: CO₂ can be used as a feedstock to produce polymers and plastics (e.g., polycarbonates, polyurethanes), reducing reliance on fossil fuel-derived feedstocks.
-— Food processing: CO₂ is widely used in food and beverage industries — for carbonation of drinks, modified atmosphere packaging to extend shelf life, and as a supercritical solvent for decaffeination of coffee. DAC-sourced CO₂ could supply these industries with low-carbon CO₂.
+— Food processing: CO₂ is widely used in food and beverage industries - for carbonation of drinks, modified atmosphere packaging to extend shelf life, and as a supercritical solvent for decaffeination of coffee. DAC-sourced CO₂ could supply these industries with low-carbon CO₂.
 
-Statement III is CORRECT: In aviation (which is extremely difficult to decarbonize due to energy density requirements), DAC-captured CO₂ can be combined with green hydrogen (from electrolysis using renewable electricity) through the Fischer-Tropsch process to produce synthetic aviation fuels (Power-to-Liquids/e-fuels or Sustainable Aviation Fuels — SAF). These synthetic low-carbon fuels can replace conventional jet fuel. Several companies (Climeworks, Carbon Engineering) are developing this pathway.
+Statement III is CORRECT: In aviation (which is extremely difficult to decarbonize due to energy density requirements), DAC-captured CO₂ can be combined with green hydrogen (from electrolysis using renewable electricity) through the Fischer-Tropsch process to produce synthetic aviation fuels (Power-to-Liquids/e-fuels or Sustainable Aviation Fuels - SAF). These synthetic low-carbon fuels can replace conventional jet fuel. Several companies (Climeworks, Carbon Engineering) are developing this pathway.
 
 Therefore, all three statements are correct.`,
     sources: [
-      { name: "IEA — Direct Air Capture Report 2022", chapter: "DAC Applications & Pathways" },
+      { name: "IEA - Direct Air Capture Report 2022", chapter: "DAC Applications & Pathways" },
       { name: "Current Affairs S&T 2024-25", chapter: "Carbon Capture Technologies" }
     ]
   },
@@ -824,12 +824,12 @@ The ADB launched this initiative to mobilize private and public financing for na
 — Connecting project developers with investors interested in nature-based solutions
 — Supporting countries in the region to meet their biodiversity commitments under the Kunming-Montreal Global Biodiversity Framework
 
-The Asia-Pacific region has significant biodiversity assets — including tropical forests, coral reefs, mangroves, and freshwater ecosystems — but also faces severe biodiversity loss due to rapid economic development. The ADB's hub aims to bridge the financing gap for nature conservation in the region.
+The Asia-Pacific region has significant biodiversity assets - including tropical forests, coral reefs, mangroves, and freshwater ecosystems - but also faces severe biodiversity loss due to rapid economic development. The ADB's hub aims to bridge the financing gap for nature conservation in the region.
 
 This is a current affairs-based question requiring knowledge of which multilateral development bank launched this specific initiative. The ADB, headquartered in Manila, Philippines, focuses primarily on Asia-Pacific development and has been increasingly integrating biodiversity and nature into its development finance frameworks.`,
     sources: [
       { name: "Asian Development Bank (ADB) Official Press Release", chapter: "Nature Solutions Finance Hub Launch" },
-      { name: "Current Affairs 2024 — Environment & Finance", chapter: "Nature-Based Solutions Financing" }
+      { name: "Current Affairs 2024 - Environment & Finance", chapter: "Nature-Based Solutions Financing" }
     ]
   },
   {
@@ -837,7 +837,7 @@ This is a current affairs-based question requiring knowledge of which multilater
     year: 2025,
     subject: "Environment & Ecology",
     topic: "Environmental Pollution & Control",
-    subTopic: "Activated Carbon — Properties & Applications",
+    subTopic: "Activated Carbon - Properties & Applications",
     styleTag: "statement_pairing",
     difficulty: "Medium",
     questionText: `Consider the following statements:
@@ -863,14 +863,14 @@ Which one of the following is correct in respect of the above statements?`,
 
 Statement I is CORRECT: Activated carbon is widely recognized as one of the most effective and versatile adsorbents for removing organic pollutants, dyes, pharmaceutical compounds, pesticides, and industrial chemicals from industrial effluent streams. It is used in wastewater treatment plants, industrial effluent treatment, groundwater remediation, and as an emergency treatment for poisoning (activated charcoal). Its effectiveness across a wide range of contaminant types makes it particularly attractive for environmental remediation.
 
-Statement II is CORRECT: Activated carbon has an extraordinarily large surface area — typically 500–2000 m²/gram — achieved through the activation process (physical activation with steam/CO₂ or chemical activation with ZnCl₂, H₃PO₄, KOH). This vast surface area is the primary reason for its exceptional adsorption capacity. Activated carbon also has a strong capacity for adsorbing heavy metals (lead, cadmium, mercury, chromium, arsenic) through both physical adsorption and surface chemistry interactions.
+Statement II is CORRECT: Activated carbon has an extraordinarily large surface area - typically 500–2000 m²/gram - achieved through the activation process (physical activation with steam/CO₂ or chemical activation with ZnCl₂, H₃PO₄, KOH). This vast surface area is the primary reason for its exceptional adsorption capacity. Activated carbon also has a strong capacity for adsorbing heavy metals (lead, cadmium, mercury, chromium, arsenic) through both physical adsorption and surface chemistry interactions.
 
-Statement III is CORRECT: Activated carbon can be synthesized from a wide variety of carbonaceous materials, including agricultural and industrial waste materials with high carbon content — such as rice husks, coconut shells, bamboo, wood waste, bagasse, sewage sludge, and municipal solid waste. This makes it an economically and environmentally attractive option, converting waste materials into a valuable remediation tool. The synthesis involves carbonization followed by activation.
+Statement III is CORRECT: Activated carbon can be synthesized from a wide variety of carbonaceous materials, including agricultural and industrial waste materials with high carbon content - such as rice husks, coconut shells, bamboo, wood waste, bagasse, sewage sludge, and municipal solid waste. This makes it an economically and environmentally attractive option, converting waste materials into a valuable remediation tool. The synthesis involves carbonization followed by activation.
 
 Therefore, all three statements are correct.`,
     sources: [
-      { name: "NCERT Chemistry — Surface Chemistry", chapter: "Adsorption & Applications of Colloids" },
-      { name: "Journal of Hazardous Materials — Activated Carbon Reviews", chapter: "Synthesis & Applications" }
+      { name: "NCERT Chemistry - Surface Chemistry", chapter: "Adsorption & Applications of Colloids" },
+      { name: "Journal of Hazardous Materials - Activated Carbon Reviews", chapter: "Synthesis & Applications" }
     ]
   }
 ];

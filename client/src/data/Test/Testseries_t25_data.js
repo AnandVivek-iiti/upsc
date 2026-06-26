@@ -6,7 +6,7 @@
 export const TEST_T25 = [
   {
     id: "sfg2026-t25",
-    title: "SFG 2026 — Level 1 · Test 25",
+    title: "SFG 2026 - Level 1 · Test 25",
     testCode: "321123",
     subject: "Modern History",
     topic: "Advent of Europeans, Expansion of British Power & Socio-Religious Reform Movements",
@@ -53,7 +53,7 @@ export const TEST_T25 = [
           "The Battle of Plassey was fought in 1757, the Battle of Bedara/Chinsurah (British vs Dutch) in 1759, the First Anglo-Mysore War in 1767-69, and the Third Anglo-Maratha War in 1817-18. This gives the chronological order IV-I-III-II.",
         topic: "Expansion and Consolidation of British Power in India",
         difficulty: "Hard",
-       
+
       },
       {
         id: "t25_q03",
@@ -86,7 +86,7 @@ export const TEST_T25 = [
         ],
         correct: "D",
         explanation:
-          "Statement I is incorrect — the Cartaz system was introduced by Francisco de Almeida, the first Portuguese governor in India, not by Albuquerque, who was the second governor. Statement II is incorrect — Cartaz was a navigation permit system requiring ships in the Arabian Sea to buy Portuguese passes, with unlicensed ships being seized; it was not a textile-import tariff arrangement.",
+          "Statement I is incorrect - the Cartaz system was introduced by Francisco de Almeida, the first Portuguese governor in India, not by Albuquerque, who was the second governor. Statement II is incorrect - Cartaz was a navigation permit system requiring ships in the Arabian Sea to buy Portuguese passes, with unlicensed ships being seized; it was not a textile-import tariff arrangement.",
         topic: "Advent of Europeans in India",
         difficulty: "Medium",
 
@@ -104,7 +104,7 @@ export const TEST_T25 = [
         ],
         correct: "B",
         explanation:
-          "Statement 1 is incorrect — the Gajapati dynasty had ended by around 1542, before the Dutch East India Company was even formed in 1602, so the Dutch could not have received land grants from Gajapati rulers. Statement 2 is correct — Albuquerque took Goa from the Sultan of Bijapur in 1510. Statement 3 is correct — the British leased a site at Madras from a native chieftain representing the Vijayanagara Empire in 1639.",
+          "Statement 1 is incorrect - the Gajapati dynasty had ended by around 1542, before the Dutch East India Company was even formed in 1602, so the Dutch could not have received land grants from Gajapati rulers. Statement 2 is correct - Albuquerque took Goa from the Sultan of Bijapur in 1510. Statement 3 is correct - the British leased a site at Madras from a native chieftain representing the Vijayanagara Empire in 1639.",
         topic: "Advent of Europeans in India",
         difficulty: "Medium",
         pyqYear: 2022
@@ -140,7 +140,7 @@ export const TEST_T25 = [
         ],
         correct: "C",
         explanation:
-          "Statement I is correct — Dutch power in India declined significantly after their defeat at the Battle of Colachel in 1741. Statement II is incorrect — this battle was fought between the Indian kingdom of Travancore (under King Marthanda Varma) and the Dutch East India Company, not the British.",
+          "Statement I is correct - Dutch power in India declined significantly after their defeat at the Battle of Colachel in 1741. Statement II is incorrect - this battle was fought between the Indian kingdom of Travancore (under King Marthanda Varma) and the Dutch East India Company, not the British.",
         topic: "Expansion and Consolidation of British Power in India",
         difficulty: "Medium",
 
@@ -176,7 +176,7 @@ export const TEST_T25 = [
         ],
         correct: "D",
         explanation:
-          "Statement I is incorrect — the royal charter of 1600 did grant the Company the authority to raise a private army, among other special powers. Statement II is correct — the Company was set up as a trading enterprise focused on commercial profit, only later evolving into a territorial and political power.",
+          "Statement I is incorrect - the royal charter of 1600 did grant the Company the authority to raise a private army, among other special powers. Statement II is correct - the Company was set up as a trading enterprise focused on commercial profit, only later evolving into a territorial and political power.",
         topic: "Advent of Europeans in India",
         difficulty: "Medium",
 
@@ -194,7 +194,7 @@ export const TEST_T25 = [
         ],
         correct: "C",
         explanation:
-          "Statement I is correct — under Lord Wellesley's Subsidiary Alliance (1798), the British promised protection from both external and internal threats. Statement II is incorrect — the cost of maintaining the British contingent was borne by the Indian ruler, not the British Government, often leading to cession of territory when payment failed. Statement III is correct — allied rulers could not make treaties or wage war without British approval.",
+          "Statement I is correct - under Lord Wellesley's Subsidiary Alliance (1798), the British promised protection from both external and internal threats. Statement II is incorrect - the cost of maintaining the British contingent was borne by the Indian ruler, not the British Government, often leading to cession of territory when payment failed. Statement III is correct - allied rulers could not make treaties or wage war without British approval.",
         topic: "Expansion and Consolidation of British Power in India",
         difficulty: "Medium",
 
@@ -202,7 +202,7 @@ export const TEST_T25 = [
       {
         id: "t25_q11",
         qNo: 11,
-        text: "With reference to the history of India, consider the following pairs:\n\n1. Aurang — In-charge of treasury of the State\n2. Banian — Indian Agent of the East India Company\n3. Mirasidar — Designated revenue payer of the State",
+        text: "With reference to the history of India, consider the following pairs:\n\n1. Aurang - In-charge of treasury of the State\n2. Banian - Indian Agent of the East India Company\n3. Mirasidar - Designated revenue payer of the State",
         suffix: "Which of the pairs given above is/are correctly matched?",
         options: [
           { id: "A", text: "1 and 2 only" },
@@ -212,7 +212,7 @@ export const TEST_T25 = [
         ],
         correct: "B",
         explanation:
-          "Pair 1 is incorrect — Aurang was a Persian term for a warehouse, not a treasury in-charge. Pair 2 is correct — Banians acted as intermediaries/agents for European merchants in Bengal, particularly for the East India Company. Pair 3 is correct — before the Ryotwari settlement, Mirasidars in the Madras Presidency were recognised as sole proprietors of land and designated revenue payers to the state.",
+          "Pair 1 is incorrect - Aurang was a Persian term for a warehouse, not a treasury in-charge. Pair 2 is correct - Banians acted as intermediaries/agents for European merchants in Bengal, particularly for the East India Company. Pair 3 is correct - before the Ryotwari settlement, Mirasidars in the Madras Presidency were recognised as sole proprietors of land and designated revenue payers to the state.",
         topic: "Expansion and Consolidation of British Power in India",
         difficulty: "Medium",
         pyqYear: 2020
@@ -230,7 +230,7 @@ export const TEST_T25 = [
         ],
         correct: "A",
         explanation:
-          "Statement I is correct — the Bengal Famine of 1770-72 killed roughly one-third of the province's population (around 10 million people). Statement II is correct and explains Statement I — two consecutive years of poor harvests reduced food availability and weakened rural livelihoods. Statement III is also correct and explains Statement I — the Company's rigid cash revenue demands continued unchanged despite collapsed harvests, forcing cultivators to sell grain and assets, intensifying the famine.",
+          "Statement I is correct - the Bengal Famine of 1770-72 killed roughly one-third of the province's population (around 10 million people). Statement II is correct and explains Statement I - two consecutive years of poor harvests reduced food availability and weakened rural livelihoods. Statement III is also correct and explains Statement I - the Company's rigid cash revenue demands continued unchanged despite collapsed harvests, forcing cultivators to sell grain and assets, intensifying the famine.",
         topic: "Expansion and Consolidation of British Power in India",
         difficulty: "Hard",
 
@@ -266,7 +266,7 @@ export const TEST_T25 = [
         ],
         correct: "B",
         explanation:
-          "Statement I is correct — new Company revenue and taxation policies restricted the customary movement of sannyasis and fakirs, contributing to the rebellion, especially after the 1770 famine. Statement II is incorrect — the rebellion (1763-1800) continued intermittently for nearly three decades due to its dispersed, mobile nature, not suppressed within a year. Statement III is incorrect — the rebellion predates Bankim Chandra's novel Anandamath (1882) by roughly a century; the novel was inspired by the rebellion, not the other way round.",
+          "Statement I is correct - new Company revenue and taxation policies restricted the customary movement of sannyasis and fakirs, contributing to the rebellion, especially after the 1770 famine. Statement II is incorrect - the rebellion (1763-1800) continued intermittently for nearly three decades due to its dispersed, mobile nature, not suppressed within a year. Statement III is incorrect - the rebellion predates Bankim Chandra's novel Anandamath (1882) by roughly a century; the novel was inspired by the rebellion, not the other way round.",
         topic: "Rising resentment against company rule",
         difficulty: "Medium",
 
@@ -302,7 +302,7 @@ export const TEST_T25 = [
         ],
         correct: "C",
         explanation:
-          "The Santhal Hul of 1855-56 was led by four brothers — Sidho, Kanho, Chand and Bhairav Murmu — along with their sisters Phulo and Jhano. Budhu Bhagat, however, was a leader of the Kol Uprising (1831-32) in Chotanagpur, not the Santhal Rebellion. Hence three of the four named leaders (I, II, IV) are correctly associated with the Santhal Rebellion.",
+          "The Santhal Hul of 1855-56 was led by four brothers - Sidho, Kanho, Chand and Bhairav Murmu - along with their sisters Phulo and Jhano. Budhu Bhagat, however, was a leader of the Kol Uprising (1831-32) in Chotanagpur, not the Santhal Rebellion. Hence three of the four named leaders (I, II, IV) are correctly associated with the Santhal Rebellion.",
         topic: "Rising resentment against company rule",
         difficulty: "Medium",
 
@@ -374,7 +374,7 @@ export const TEST_T25 = [
         ],
         correct: "D",
         explanation:
-          "Statement I is incorrect — Awadh, annexed by Dalhousie in 1856 on grounds of misgovernment, was never restored to Begum Hazrat Mahal, who instead resisted the British during 1857 and eventually took refuge in Nepal. Statement II is correct — in November 1858, Queen Victoria's proclamation, read at the Allahabad Durbar by Lord Canning, formally ended Company rule, promised no further territorial annexation, and abolished the Doctrine of Lapse.",
+          "Statement I is incorrect - Awadh, annexed by Dalhousie in 1856 on grounds of misgovernment, was never restored to Begum Hazrat Mahal, who instead resisted the British during 1857 and eventually took refuge in Nepal. Statement II is correct - in November 1858, Queen Victoria's proclamation, read at the Allahabad Durbar by Lord Canning, formally ended Company rule, promised no further territorial annexation, and abolished the Doctrine of Lapse.",
         topic: "Expansion and Consolidation of British Power in India",
         difficulty: "Medium",
 
@@ -428,7 +428,7 @@ export const TEST_T25 = [
         ],
         correct: "B",
         explanation:
-          "Statement I is incorrect — after the Company's victory at Buxar (1764), Mir Qasim (who had fought against the British) was dethroned, and Mir Jafar was made/restored as Nawab of Bengal, not Mir Qasim. Statement II is correct — the Treaty of Allahabad was signed in August 1765 between Lord Clive and Mughal Emperor Shah Alam II. Statement III is correct — the Company acquired the Diwani (revenue rights) of Bengal, Bihar and Orissa from the Mughal emperor in 1765.",
+          "Statement I is incorrect - after the Company's victory at Buxar (1764), Mir Qasim (who had fought against the British) was dethroned, and Mir Jafar was made/restored as Nawab of Bengal, not Mir Qasim. Statement II is correct - the Treaty of Allahabad was signed in August 1765 between Lord Clive and Mughal Emperor Shah Alam II. Statement III is correct - the Company acquired the Diwani (revenue rights) of Bengal, Bihar and Orissa from the Mughal emperor in 1765.",
         topic: "Expansion and Consolidation of British Power in India",
         difficulty: "Medium",
 
@@ -464,7 +464,7 @@ export const TEST_T25 = [
         ],
         correct: "A",
         explanation:
-          "By the first quarter of the seventeenth century, English factories existed at Surat (1613), Masulipatnam (1616), and Agra, Ahmedabad and Broach (1619 via Sir Thomas Roe) — but not yet at Chicacole or Trichinopoly. Hence only Broach (option 1) is correct.",
+          "By the first quarter of the seventeenth century, English factories existed at Surat (1613), Masulipatnam (1616), and Agra, Ahmedabad and Broach (1619 via Sir Thomas Roe) - but not yet at Chicacole or Trichinopoly. Hence only Broach (option 1) is correct.",
         topic: "Advent of Europeans in India",
         difficulty: "Medium",
         pyqYear: 2021
@@ -500,7 +500,7 @@ export const TEST_T25 = [
         ],
         correct: "C",
         explanation:
-          "Statement I is incorrect — the Permanent Settlement (1793, under Lord Cornwallis) actually made zamindars hereditary proprietors of their estates with rights to collect rent and retain the surplus, not mere stripped-down revenue collectors. Statement II is correct — zamindars' private armed forces were disbanded to curb their independent military power. Statement III is incorrect — zamindars' judicial cutcheries were not abolished outright; they were placed under the supervision of the Collector, which restricted but did not eliminate their judicial role. Hence statements I and III are the incorrect ones.",
+          "Statement I is incorrect - the Permanent Settlement (1793, under Lord Cornwallis) actually made zamindars hereditary proprietors of their estates with rights to collect rent and retain the surplus, not mere stripped-down revenue collectors. Statement II is correct - zamindars' private armed forces were disbanded to curb their independent military power. Statement III is incorrect - zamindars' judicial cutcheries were not abolished outright; they were placed under the supervision of the Collector, which restricted but did not eliminate their judicial role. Hence statements I and III are the incorrect ones.",
         topic: "Expansion and Consolidation of British Power in India",
         difficulty: "Hard",
 
@@ -518,7 +518,7 @@ export const TEST_T25 = [
         ],
         correct: "A",
         explanation:
-          "The Carlyle Circular (1905) restricted student participation in nationalist activities during the Swadeshi movement, and the Risley Circular (1905) dealt with restoring Odia as an official language in Sambalpur — neither is linked to 1857. Only the Azamgarh Proclamation, issued in August 1857 in the name of Firoz Shah (grandson of Bahadur Shah II), is associated with the Revolt of 1857, appealing for Hindu-Muslim unity against British rule.",
+          "The Carlyle Circular (1905) restricted student participation in nationalist activities during the Swadeshi movement, and the Risley Circular (1905) dealt with restoring Odia as an official language in Sambalpur - neither is linked to 1857. Only the Azamgarh Proclamation, issued in August 1857 in the name of Firoz Shah (grandson of Bahadur Shah II), is associated with the Revolt of 1857, appealing for Hindu-Muslim unity against British rule.",
         topic: "The Revolt of 1857",
         difficulty: "Medium",
 
@@ -554,7 +554,7 @@ export const TEST_T25 = [
         ],
         correct: "C",
         explanation:
-          "Statement I is correct — the Deccan saw a 'Cotton Boom' in cultivation between 1861-65. Statement II is correct and explains Statement I — the American Civil War cut off Southern US cotton supplies, creating the Lancashire Cotton Famine and pushing British mills to source cotton from India, especially the Deccan. Statement III is incorrect — the Suez Canal opened only in 1869, after the early-1860s cotton boom had already occurred, so it could not explain it.",
+          "Statement I is correct - the Deccan saw a 'Cotton Boom' in cultivation between 1861-65. Statement II is correct and explains Statement I - the American Civil War cut off Southern US cotton supplies, creating the Lancashire Cotton Famine and pushing British mills to source cotton from India, especially the Deccan. Statement III is incorrect - the Suez Canal opened only in 1869, after the early-1860s cotton boom had already occurred, so it could not explain it.",
         topic: "Expansion and Consolidation of British Power in India",
         difficulty: "Hard",
 
@@ -590,7 +590,7 @@ export const TEST_T25 = [
         ],
         correct: "D",
         explanation:
-          "Shah Mal organised peasants in the Baraut region (western Uttar Pradesh) against colonial officials and moneylenders, while Gonoo (Gonoo Ahir) mobilised tribal and peasant groups in the Singhbhum region of the Chotanagpur plateau — both during the Revolt of 1857, reflecting its broader peasant and tribal dimensions beyond the sepoy mutinies.",
+          "Shah Mal organised peasants in the Baraut region (western Uttar Pradesh) against colonial officials and moneylenders, while Gonoo (Gonoo Ahir) mobilised tribal and peasant groups in the Singhbhum region of the Chotanagpur plateau - both during the Revolt of 1857, reflecting its broader peasant and tribal dimensions beyond the sepoy mutinies.",
         topic: "The Revolt of 1857",
         difficulty: "Medium",
 
@@ -608,7 +608,7 @@ export const TEST_T25 = [
         ],
         correct: "A",
         explanation:
-          "The passage describes the Battle of Chinhat (30 June 1857) near Lucknow, where Maulvi Ahmadullah Shah's rebel force defeated Sir Henry Lawrence's British troops, forcing them to withdraw into the fortified Lucknow Residency and triggering the prolonged Siege of Lucknow. Saragarhi (1897) was a frontier battle, Narnaul (Haryana, 1857) involved different leaders, and Trimmu Ghat was a Punjab engagement — none matches the description.",
+          "The passage describes the Battle of Chinhat (30 June 1857) near Lucknow, where Maulvi Ahmadullah Shah's rebel force defeated Sir Henry Lawrence's British troops, forcing them to withdraw into the fortified Lucknow Residency and triggering the prolonged Siege of Lucknow. Saragarhi (1897) was a frontier battle, Narnaul (Haryana, 1857) involved different leaders, and Trimmu Ghat was a Punjab engagement - none matches the description.",
         topic: "The Revolt of 1857",
         difficulty: "Medium",
 
@@ -644,7 +644,7 @@ export const TEST_T25 = [
         ],
         correct: "B",
         explanation:
-          "Statement 1 is incorrect — the Singh Sabhas were a separate, earlier 19th-century reformist movement; the SGPC, formed only in 1920, was not their political wing. Statements 2, 3 and 4 are all correct — the SGPC was formed in 1920 as part of the Akali movement to reclaim Sikh shrines from corrupt, government-backed loyalist mahant committees, and it formed the Akali Dal to coordinate jathas (groups) in this effort.",
+          "Statement 1 is incorrect - the Singh Sabhas were a separate, earlier 19th-century reformist movement; the SGPC, formed only in 1920, was not their political wing. Statements 2, 3 and 4 are all correct - the SGPC was formed in 1920 as part of the Akali movement to reclaim Sikh shrines from corrupt, government-backed loyalist mahant committees, and it formed the Akali Dal to coordinate jathas (groups) in this effort.",
         topic: "Socio-Religious Reform Movements",
         difficulty: "Medium",
         pyqYear: 2017
@@ -662,7 +662,7 @@ export const TEST_T25 = [
         ],
         correct: "D",
         explanation:
-          "Statements I, II and III are correct — Dayananda Saraswati founded the Arya Samaj (1875) and the Paropkarini Sabha (1882) to publish Vedic texts, adopted 'Krinvanto Vishwam Aryam' as the Samaj's motto, and held that Guna, Karma and Swabhav, not birth, should determine caste. Statement IV is incorrect — his major work was Satyarth Prakash, not Deva Shastra (which was actually the teaching compilation of Shiv Narayan Agnihotri's Dev Sadan society).",
+          "Statements I, II and III are correct - Dayananda Saraswati founded the Arya Samaj (1875) and the Paropkarini Sabha (1882) to publish Vedic texts, adopted 'Krinvanto Vishwam Aryam' as the Samaj's motto, and held that Guna, Karma and Swabhav, not birth, should determine caste. Statement IV is incorrect - his major work was Satyarth Prakash, not Deva Shastra (which was actually the teaching compilation of Shiv Narayan Agnihotri's Dev Sadan society).",
         topic: "Socio-Religious Reform Movements",
         difficulty: "Hard",
 
@@ -680,7 +680,7 @@ export const TEST_T25 = [
         ],
         correct: "D",
         explanation:
-          "Statement I is incorrect — under the Dual Government established after the Treaty of Allahabad (1765), although the Nawab nominally headed the nizamat, the East India Company itself acquired the right to nominate the Deputy Nazim. Statement II is correct — the Company directly collected revenue as Diwan, while nominal responsibility for civil/criminal justice and law and order remained with the Nawab, exercised in practice through Muhammad Raza Khan under Company superintendence.",
+          "Statement I is incorrect - under the Dual Government established after the Treaty of Allahabad (1765), although the Nawab nominally headed the nizamat, the East India Company itself acquired the right to nominate the Deputy Nazim. Statement II is correct - the Company directly collected revenue as Diwan, while nominal responsibility for civil/criminal justice and law and order remained with the Nawab, exercised in practice through Muhammad Raza Khan under Company superintendence.",
         topic: "Expansion and Consolidation of British Power in India",
         difficulty: "Hard",
 
@@ -688,7 +688,7 @@ export const TEST_T25 = [
       {
         id: "t25_q38",
         qNo: 38,
-        text: "With reference to the history of modern India, consider the following pairs regarding the Anglo–Mysore Wars:\n\nI. First Anglo–Mysore War — Treaty of Mangalore\nII. Second Anglo–Mysore War — Treaty of Madras\nIII. Third Anglo–Mysore War — Treaty of Seringapatam",
+        text: "With reference to the history of modern India, consider the following pairs regarding the Anglo–Mysore Wars:\n\nI. First Anglo–Mysore War - Treaty of Mangalore\nII. Second Anglo–Mysore War - Treaty of Madras\nIII. Third Anglo–Mysore War - Treaty of Seringapatam",
         suffix: "How many of the pairs given above are correctly matched?",
         options: [
           { id: "A", text: "Only one" },
@@ -698,7 +698,7 @@ export const TEST_T25 = [
         ],
         correct: "A",
         explanation:
-          "Pair I is mismatched — the First Anglo-Mysore War (1767-69) ended with the Treaty of Madras, not Mangalore. Pair II is mismatched — the Second Anglo-Mysore War (1780-84) ended with the Treaty of Mangalore, not Madras. Pair III is correctly matched — the Third Anglo-Mysore War (1790-92) ended with the Treaty of Seringapatam, under which Tipu Sultan ceded nearly half his territory, paid a large indemnity, and handed over his sons as hostages.",
+          "Pair I is mismatched - the First Anglo-Mysore War (1767-69) ended with the Treaty of Madras, not Mangalore. Pair II is mismatched - the Second Anglo-Mysore War (1780-84) ended with the Treaty of Mangalore, not Madras. Pair III is correctly matched - the Third Anglo-Mysore War (1790-92) ended with the Treaty of Seringapatam, under which Tipu Sultan ceded nearly half his territory, paid a large indemnity, and handed over his sons as hostages.",
         topic: "Expansion and Consolidation of British Power in India",
         difficulty: "Hard",
 
@@ -716,7 +716,7 @@ export const TEST_T25 = [
         ],
         correct: "A",
         explanation:
-          "Statement I is correct — the Palayakkarars' Revolt (1755-1801) arose from the Nawab of Arcot mortgaging Tamil lands to the Company, which then intruded on the Palayakkarars' traditional fiscal and administrative powers. Statement II is correct — Puli Thevar of Nerkattumseval and Rani Velu Nachiyar of Sivagangai were leading figures. Statement III is incorrect — the revolt spanned the tenures of Warren Hastings, Cornwallis, Shore and Wellesley (1755-1801), not Lord Canning, who served from 1856-62.",
+          "Statement I is correct - the Palayakkarars' Revolt (1755-1801) arose from the Nawab of Arcot mortgaging Tamil lands to the Company, which then intruded on the Palayakkarars' traditional fiscal and administrative powers. Statement II is correct - Puli Thevar of Nerkattumseval and Rani Velu Nachiyar of Sivagangai were leading figures. Statement III is incorrect - the revolt spanned the tenures of Warren Hastings, Cornwallis, Shore and Wellesley (1755-1801), not Lord Canning, who served from 1856-62.",
         topic: "Rising resentment against company rule",
         difficulty: "Medium",
 
@@ -752,7 +752,7 @@ export const TEST_T25 = [
         ],
         correct: "C",
         explanation:
-          "Statement I is correct — the British relied on Indian Pandits and Maulavis as court advisers and translators to understand Hindu and Muslim legal texts. Statement II is incorrect — Hindu and Muslim personal laws were not codified in 1783 and 1785; actual codification occurred much later in the nineteenth century through acts like the Indian Evidence Act (1872), Special Marriage Act (1872) and several others following the Charter Act of 1833's Law Commission.",
+          "Statement I is correct - the British relied on Indian Pandits and Maulavis as court advisers and translators to understand Hindu and Muslim legal texts. Statement II is incorrect - Hindu and Muslim personal laws were not codified in 1783 and 1785; actual codification occurred much later in the nineteenth century through acts like the Indian Evidence Act (1872), Special Marriage Act (1872) and several others following the Charter Act of 1833's Law Commission.",
         topic: "Expansion and Consolidation of British Power in India",
         difficulty: "Medium",
         pyqYear: 2017
@@ -770,7 +770,7 @@ export const TEST_T25 = [
         ],
         correct: "C",
         explanation:
-          "Statement I is incorrect — the Tattvabodhini Patrika was started in 1843 as the organ of Debendranath Tagore's Tattvabodhini Sabha (founded 1839), not by Rammohan Roy, who instead founded the Atmiya Sabha and the Brahmo Sabha. Statement II is correct — Roy established a Vedanta College in Calcutta in 1825 offering both Indian and Western learning. Statement III is correct — influenced by the Quranic concept of Tauhid, Roy propagated monotheism.",
+          "Statement I is incorrect - the Tattvabodhini Patrika was started in 1843 as the organ of Debendranath Tagore's Tattvabodhini Sabha (founded 1839), not by Rammohan Roy, who instead founded the Atmiya Sabha and the Brahmo Sabha. Statement II is correct - Roy established a Vedanta College in Calcutta in 1825 offering both Indian and Western learning. Statement III is correct - influenced by the Quranic concept of Tauhid, Roy propagated monotheism.",
         topic: "Socio-Religious Reform Movements",
         difficulty: "Medium",
 
@@ -842,7 +842,7 @@ export const TEST_T25 = [
         ],
         correct: "C",
         explanation:
-          "The Young Bengal Movement, led by Henry Vivian Derozio in the 1820s-30s, promoted free thinking and the spread of western enlightenment ideas (I), and its followers demanded better treatment of Indian labour working abroad in British colonies along with other reforms (II). Demanding dominion status (III) was not among its objectives — this was a much later political demand.",
+          "The Young Bengal Movement, led by Henry Vivian Derozio in the 1820s-30s, promoted free thinking and the spread of western enlightenment ideas (I), and its followers demanded better treatment of Indian labour working abroad in British colonies along with other reforms (II). Demanding dominion status (III) was not among its objectives - this was a much later political demand.",
         topic: "Socio-Religious Reform Movements",
         difficulty: "Medium",
 
@@ -850,7 +850,7 @@ export const TEST_T25 = [
       {
         id: "t25_q47",
         qNo: 47,
-        text: "With reference to Socio-religious movement in modern India, consider the following pairs:\n\nI. Stripurushtulna — Haji Shariatullah\nII. Sultana's Dream — Rokeya Sakhawat Hossain\nIII. Stri Dharma Niti — Pandita Ramabai",
+        text: "With reference to Socio-religious movement in modern India, consider the following pairs:\n\nI. Stripurushtulna - Haji Shariatullah\nII. Sultana's Dream - Rokeya Sakhawat Hossain\nIII. Stri Dharma Niti - Pandita Ramabai",
         suffix: "How many of the pairs given above are correctly matched?",
         options: [
           { id: "A", text: "Only one" },
@@ -860,7 +860,7 @@ export const TEST_T25 = [
         ],
         correct: "B",
         explanation:
-          "Pair I is mismatched — Stripurushtulna ('A Comparison between Women and Men') was written by Tarabai Shinde, not Haji Shariatullah. Pair II is correctly matched — Rokeya Sakhawat Hossain wrote the science-fiction novel Sultana's Dream, inscribed on UNESCO's Memory of the World Regional Register. Pair III is correctly matched — Pandita Ramabai wrote Stri Dharma Niti (1882) exposing the hardships faced by Hindu widows.",
+          "Pair I is mismatched - Stripurushtulna ('A Comparison between Women and Men') was written by Tarabai Shinde, not Haji Shariatullah. Pair II is correctly matched - Rokeya Sakhawat Hossain wrote the science-fiction novel Sultana's Dream, inscribed on UNESCO's Memory of the World Regional Register. Pair III is correctly matched - Pandita Ramabai wrote Stri Dharma Niti (1882) exposing the hardships faced by Hindu widows.",
         topic: "Socio-Religious Reform Movements",
         difficulty: "Medium",
 
@@ -878,7 +878,7 @@ export const TEST_T25 = [
         ],
         correct: "A",
         explanation:
-          "Statement I is correct — Dr. B.R. Ambedkar led the Mahad Satyagraha in March 1927. Statement II is correct — it asserted untouchables' right to draw water from the Chavdar Tank as per the unimplemented 1923 Bole Resolution of the Bombay Legislative Council. Statement III is incorrect — the Mahad Satyagraha concerned the Chavdar Tank, not the Kalaram Temple; entry into the Kalaram Temple at Nasik was a separate movement led by Ambedkar in March 1930.",
+          "Statement I is correct - Dr. B.R. Ambedkar led the Mahad Satyagraha in March 1927. Statement II is correct - it asserted untouchables' right to draw water from the Chavdar Tank as per the unimplemented 1923 Bole Resolution of the Bombay Legislative Council. Statement III is incorrect - the Mahad Satyagraha concerned the Chavdar Tank, not the Kalaram Temple; entry into the Kalaram Temple at Nasik was a separate movement led by Ambedkar in March 1930.",
         topic: "Socio-Religious Reform Movements",
         difficulty: "Medium",
 
@@ -904,7 +904,7 @@ export const TEST_T25 = [
       {
         id: "t25_q50",
         qNo: 50,
-        text: "With reference to the history of modern India, Consider the following pairs:\n\nI. Jyothiba Phule — He founded the Satyashodhak Samaj, an association which propagated caste equality\nII. T. K. Madhavan — He was one of the leaders of the Vaikom Satyagraha to end the prohibition imposed on backward communities in using the roads around the Vaikom Mahadeva temple in Kottyam, Kerala.\nIII. Mirza Gulam Ahmed — He advocated progressive social ideas through his journal 'Tahdhib-ul-Akhlaq'.",
+        text: "With reference to the history of modern India, Consider the following pairs:\n\nI. Jyothiba Phule - He founded the Satyashodhak Samaj, an association which propagated caste equality\nII. T. K. Madhavan - He was one of the leaders of the Vaikom Satyagraha to end the prohibition imposed on backward communities in using the roads around the Vaikom Mahadeva temple in Kottyam, Kerala.\nIII. Mirza Gulam Ahmed - He advocated progressive social ideas through his journal 'Tahdhib-ul-Akhlaq'.",
         suffix: "How many of the pairs given above are correctly matched?",
         options: [
           { id: "A", text: "Only one" },
@@ -914,7 +914,7 @@ export const TEST_T25 = [
         ],
         correct: "B",
         explanation:
-          "Pair I is correct — Jyotiba Phule founded the Satyashodhak Samaj in 1873 to propagate caste equality. Pair II is correct — T.K. Madhavan, along with K.P. Kesava Menon and George Joseph, led the Vaikom Satyagraha (1924-25) against restrictions on backward communities using roads near the Vaikom Mahadeva temple. Pair III is mismatched — Tahdhib-ul-Akhlaq was Sir Syed Ahmad Khan's journal, while Mirza Ghulam Ahmad instead founded the Ahmadiyya sect in 1889.",
+          "Pair I is correct - Jyotiba Phule founded the Satyashodhak Samaj in 1873 to propagate caste equality. Pair II is correct - T.K. Madhavan, along with K.P. Kesava Menon and George Joseph, led the Vaikom Satyagraha (1924-25) against restrictions on backward communities using roads near the Vaikom Mahadeva temple. Pair III is mismatched - Tahdhib-ul-Akhlaq was Sir Syed Ahmad Khan's journal, while Mirza Ghulam Ahmad instead founded the Ahmadiyya sect in 1889.",
         topic: "Socio-Religious Reform Movements",
         difficulty: "Medium",
 

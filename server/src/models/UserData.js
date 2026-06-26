@@ -35,32 +35,32 @@ const UserData = sequelize.define(
       type: DataTypes.JSONB,
       defaultValue: { queue: [] },
     },
-    // ── Question attempts — server-synced for cross-device and profile stats ──
+    // ── Question attempts - server-synced for cross-device and profile stats ──
     question_attempts: {
       type: DataTypes.JSONB,
       defaultValue: [],
     },
-    // ── AI Mentor chat — legacy single-thread column, kept only so existing
+    // ── AI Mentor chat - legacy single-thread column, kept only so existing
     // conversations can be migrated into mentor_threads below; no longer
     // written to directly.
     mentor_chat: {
       type: DataTypes.JSONB,
       defaultValue: [],
     },
-    // ── AI Mentor chat threads — ChatGPT/Gemini-style multiple saved chats.
+    // ── AI Mentor chat threads - ChatGPT/Gemini-style multiple saved chats.
     // Shape: [{ id, title, messages: [{role, content, at}], createdAt, updatedAt }]
     mentor_threads: {
       type: DataTypes.JSONB,
       defaultValue: [],
     },
-    // ── AI Mentor durable memory — short distilled facts about the student
+    // ── AI Mentor durable memory - short distilled facts about the student
     // (preferences, recurring weak spots, goals) that survive even after old
     // raw messages get trimmed off a thread. Shape: string[]
     mentor_memory: {
       type: DataTypes.JSONB,
       defaultValue: [],
     },
-    // ── Note audit history — one entry per Notes AI action (improve / mistakes
+    // ── Note audit history - one entry per Notes AI action (improve / mistakes
     //    / revision / mains-format).  Used by DashboardOnboardingCards to mark
     //    the "Audit your first set of notes" milestone.
     //    Shape: [{ id, action, at }]
@@ -215,13 +215,13 @@ const DEFAULT_SYLLABUS_MODULES = [
   { exam_stage: "prelims", paper: "GS1", paper_label: "General Studies Paper I", paper_subtitle: "200 Marks · 2 Hours · Counted for merit", paper_color: "#F59E0B", module_key: "General Science", title: "General Science", topics: ["General Science"] },
 
   // ── PRELIMS ── CSAT
-  { exam_stage: "prelims", paper: "CSAT", paper_label: "General Studies Paper II (CSAT)", paper_subtitle: "200 Marks · 2 Hours · Qualifying — 33% minimum · Not counted for merit", paper_color: "#6366F1", module_key: "Comprehension", title: "Comprehension", topics: ["Reading Comprehension passages"] },
-  { exam_stage: "prelims", paper: "CSAT", paper_label: "General Studies Paper II (CSAT)", paper_subtitle: "200 Marks · 2 Hours · Qualifying — 33% minimum · Not counted for merit", paper_color: "#6366F1", module_key: "Interpersonal & Communication Skills", title: "Interpersonal & Communication Skills", topics: ["Interpersonal skills including communication skills"] },
-  { exam_stage: "prelims", paper: "CSAT", paper_label: "General Studies Paper II (CSAT)", paper_subtitle: "200 Marks · 2 Hours · Qualifying — 33% minimum · Not counted for merit", paper_color: "#6366F1", module_key: "Logical Reasoning & Analytical Ability", title: "Logical Reasoning & Analytical Ability", topics: ["Logical Reasoning", "Analytical Ability"] },
-  { exam_stage: "prelims", paper: "CSAT", paper_label: "General Studies Paper II (CSAT)", paper_subtitle: "200 Marks · 2 Hours · Qualifying — 33% minimum · Not counted for merit", paper_color: "#6366F1", module_key: "Decision Making & Problem Solving", title: "Decision Making & Problem Solving", topics: ["Decision Making", "Problem Solving"] },
-  { exam_stage: "prelims", paper: "CSAT", paper_label: "General Studies Paper II (CSAT)", paper_subtitle: "200 Marks · 2 Hours · Qualifying — 33% minimum · Not counted for merit", paper_color: "#6366F1", module_key: "General Mental Ability", title: "General Mental Ability", topics: ["General Mental Ability"] },
-  { exam_stage: "prelims", paper: "CSAT", paper_label: "General Studies Paper II (CSAT)", paper_subtitle: "200 Marks · 2 Hours · Qualifying — 33% minimum · Not counted for merit", paper_color: "#6366F1", module_key: "Basic Numeracy", title: "Basic Numeracy", topics: ["Numbers and their relations", "Orders of magnitude", "Data interpretation (Charts, Graphs, Tables)"] },
-  { exam_stage: "prelims", paper: "CSAT", paper_label: "General Studies Paper II (CSAT)", paper_subtitle: "200 Marks · 2 Hours · Qualifying — 33% minimum · Not counted for merit", paper_color: "#6366F1", module_key: "English Language Comprehension", title: "English Language Comprehension", topics: ["English Language Comprehension skills (Class X level)"] },
+  { exam_stage: "prelims", paper: "CSAT", paper_label: "General Studies Paper II (CSAT)", paper_subtitle: "200 Marks · 2 Hours · Qualifying - 33% minimum · Not counted for merit", paper_color: "#6366F1", module_key: "Comprehension", title: "Comprehension", topics: ["Reading Comprehension passages"] },
+  { exam_stage: "prelims", paper: "CSAT", paper_label: "General Studies Paper II (CSAT)", paper_subtitle: "200 Marks · 2 Hours · Qualifying - 33% minimum · Not counted for merit", paper_color: "#6366F1", module_key: "Interpersonal & Communication Skills", title: "Interpersonal & Communication Skills", topics: ["Interpersonal skills including communication skills"] },
+  { exam_stage: "prelims", paper: "CSAT", paper_label: "General Studies Paper II (CSAT)", paper_subtitle: "200 Marks · 2 Hours · Qualifying - 33% minimum · Not counted for merit", paper_color: "#6366F1", module_key: "Logical Reasoning & Analytical Ability", title: "Logical Reasoning & Analytical Ability", topics: ["Logical Reasoning", "Analytical Ability"] },
+  { exam_stage: "prelims", paper: "CSAT", paper_label: "General Studies Paper II (CSAT)", paper_subtitle: "200 Marks · 2 Hours · Qualifying - 33% minimum · Not counted for merit", paper_color: "#6366F1", module_key: "Decision Making & Problem Solving", title: "Decision Making & Problem Solving", topics: ["Decision Making", "Problem Solving"] },
+  { exam_stage: "prelims", paper: "CSAT", paper_label: "General Studies Paper II (CSAT)", paper_subtitle: "200 Marks · 2 Hours · Qualifying - 33% minimum · Not counted for merit", paper_color: "#6366F1", module_key: "General Mental Ability", title: "General Mental Ability", topics: ["General Mental Ability"] },
+  { exam_stage: "prelims", paper: "CSAT", paper_label: "General Studies Paper II (CSAT)", paper_subtitle: "200 Marks · 2 Hours · Qualifying - 33% minimum · Not counted for merit", paper_color: "#6366F1", module_key: "Basic Numeracy", title: "Basic Numeracy", topics: ["Numbers and their relations", "Orders of magnitude", "Data interpretation (Charts, Graphs, Tables)"] },
+  { exam_stage: "prelims", paper: "CSAT", paper_label: "General Studies Paper II (CSAT)", paper_subtitle: "200 Marks · 2 Hours · Qualifying - 33% minimum · Not counted for merit", paper_color: "#6366F1", module_key: "English Language Comprehension", title: "English Language Comprehension", topics: ["English Language Comprehension skills (Class X level)"] },
 
   // ── MAINS ── GS1
   { exam_stage: "mains", paper: "GS1", paper_label: "General Studies Paper I", paper_subtitle: "250 Marks · Indian Heritage, Culture, History, Geography", paper_color: "#EF4444", module_key: "Indian Culture", title: "Indian Culture", topics: ["Salient aspects of Art Forms, Literature, Architecture from ancient to modern times"] },

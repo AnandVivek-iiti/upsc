@@ -6,7 +6,7 @@
 
 export const TEST_T44 = [{
   id: "sfg2026-t44",
-  title: "SFG 2026 — Level 1 · Test 44 (Revision Test 4)",
+  title: "SFG 2026 - Level 1 · Test 44 (Revision Test 4)",
   subject: "General Studies",
   topic: "Revision Test 4",
   totalQuestions: 50,
@@ -45,13 +45,13 @@ export const TEST_T44 = [{
       ],
       correct: "C",
       explanation:
-        "Statement I is correct: Block disintegration is a type of physical weathering caused by stress from temperature changes, more effective in hot, dry regions. Statement II is correct and explains Statement I: block disintegration is more effective in dry climates where diurnal temperature fluctuation is high — successive heating and cooling causes expansion/contraction of rocks. Statement III is incorrect: absolute humidity is actually lower in dry areas compared to moist areas (the opposite of what's stated), and block disintegration is the result of high diurnal temperature range, not low absolute humidity.",
+        "Statement I is correct: Block disintegration is a type of physical weathering caused by stress from temperature changes, more effective in hot, dry regions. Statement II is correct and explains Statement I: block disintegration is more effective in dry climates where diurnal temperature fluctuation is high - successive heating and cooling causes expansion/contraction of rocks. Statement III is incorrect: absolute humidity is actually lower in dry areas compared to moist areas (the opposite of what's stated), and block disintegration is the result of high diurnal temperature range, not low absolute humidity.",
       topic: "Weathering",
     },
     {
       id: "t44_q03",
       qNo: 3,
-      text: "With reference to the gorges and canyons in India, consider the following information:\n\nGorge/Canyon — Created/formed by River — State\nI. Gandikota Canyon — Pennar — Andhra Pradesh\nII. Bhedaghat Canyon — Narmada — Madhya Pradesh\nIII. Mekedatu Gorge — Cauvery — Telangana",
+      text: "With reference to the gorges and canyons in India, consider the following information:\n\nGorge/Canyon - Created/formed by River - State\nI. Gandikota Canyon - Pennar - Andhra Pradesh\nII. Bhedaghat Canyon - Narmada - Madhya Pradesh\nIII. Mekedatu Gorge - Cauvery - Telangana",
       suffix: "In how many of the above rows is the information correctly matched?",
       options: [
         { id: "A", text: "Only one" },
@@ -93,7 +93,7 @@ export const TEST_T44 = [{
       ],
       correct: "A",
       explanation:
-        "Only Loess (III) is a depositional aeolian landform — wind-deposited silt-sized particles forming thick, porous, unstratified deposits. Mushroom rocks, deflation basins (blowouts), and yardangs are all erosional landforms created by wind action.",
+        "Only Loess (III) is a depositional aeolian landform - wind-deposited silt-sized particles forming thick, porous, unstratified deposits. Mushroom rocks, deflation basins (blowouts), and yardangs are all erosional landforms created by wind action.",
       topic: "Desert Landforms",
     },
     {
@@ -109,13 +109,13 @@ export const TEST_T44 = [{
       ],
       correct: "B",
       explanation:
-        "The Aral Sea, located between Kazakhstan and Uzbekistan, was the world's fourth-largest lake before 1960. It was fed by the Amu Darya and Syr Darya rivers originating in the Pamir and Tien Shan mountains. Large-scale diversion of these rivers for irrigation caused dramatic shrinkage, exposing the lakebed and creating major dust storms — described as a 'silent Chernobyl'.",
+        "The Aral Sea, located between Kazakhstan and Uzbekistan, was the world's fourth-largest lake before 1960. It was fed by the Amu Darya and Syr Darya rivers originating in the Pamir and Tien Shan mountains. Large-scale diversion of these rivers for irrigation caused dramatic shrinkage, exposing the lakebed and creating major dust storms - described as a 'silent Chernobyl'.",
       topic: "Biology",
     },
     {
       id: "t44_q07",
       qNo: 7,
-      text: "With reference to important straits in the world, consider the following pairs:\n\nStrait — Description\nI. Bosphorus Strait — Connects the Mediterranean Sea with the Aegean Sea\nII. Kerch Strait — Connects the Black Sea with the Sea of Azov\nIII. Davis Strait — Connects the Labrador Sea with the Baffin Bay\nIV. Dardanelles Strait — Connects the Black Sea with the Sea of Marmara",
+      text: "With reference to important straits in the world, consider the following pairs:\n\nStrait - Description\nI. Bosphorus Strait - Connects the Mediterranean Sea with the Aegean Sea\nII. Kerch Strait - Connects the Black Sea with the Sea of Azov\nIII. Davis Strait - Connects the Labrador Sea with the Baffin Bay\nIV. Dardanelles Strait - Connects the Black Sea with the Sea of Marmara",
       suffix: "How many of the pairs given above are correctly matched?",
       options: [
         { id: "A", text: "Only one" },
@@ -131,7 +131,7 @@ export const TEST_T44 = [{
     {
       id: "t44_q08",
       qNo: 8,
-      text: "With reference to the Structure of the Atmosphere, consider the following information:\n\nAtmospheric layer — Temperature with altitude — Significance\nI. Stratosphere — Increases — Jet streams are primarily found in this layer\nII. Mesosphere — Decreases — Meteors burn up in this layer\nIII. Ionosphere — Increases — Reflects radio waves back to Earth",
+      text: "With reference to the Structure of the Atmosphere, consider the following information:\n\nAtmospheric layer - Temperature with altitude - Significance\nI. Stratosphere - Increases - Jet streams are primarily found in this layer\nII. Mesosphere - Decreases - Meteors burn up in this layer\nIII. Ionosphere - Increases - Reflects radio waves back to Earth",
       suffix: "In how many of the above rows is the information correctly matched?",
       options: [
         { id: "A", text: "Only one" },
@@ -205,13 +205,13 @@ export const TEST_T44 = [{
       ],
       correct: "A",
       explanation:
-        "Ferrel's Law, given by 19th century meteorologist William Ferrel, explains the apparent deflection of moving bodies (winds, ocean currents) due to the Earth's rotation — deflection to the right in the Northern Hemisphere and to the left in the Southern Hemisphere. This is the Coriolis effect, with strength increasing with latitude and zero at the equator.",
+        "Ferrel's Law, given by 19th century meteorologist William Ferrel, explains the apparent deflection of moving bodies (winds, ocean currents) due to the Earth's rotation - deflection to the right in the Northern Hemisphere and to the left in the Southern Hemisphere. This is the Coriolis effect, with strength increasing with latitude and zero at the equator.",
       topic: "Climatology",
     },
     {
       id: "t44_q13",
       qNo: 13,
-      text: "With reference to the latitudinal pressure belts of the Earth, consider the following information:\n\nPressure Belt — Nature — Important Feature\nI. Subtropical High-Pressure Belt — Thermally induced — Descending air creates dry, calm conditions with variable and light winds\nII. Equatorial Low-Pressure Belt — Thermally induced — Zone of convergence of trade winds from subtropical high pressure belts of both the hemispheres.\nIII. Sub-polar Low-Pressure Belt — Dynamically induced — Zone of convergence of subtropical westerlies and polar easterlies\nIV. Polar High-Pressure Belt — Dynamically induced — Associated with humid and stormy weather conditions",
+      text: "With reference to the latitudinal pressure belts of the Earth, consider the following information:\n\nPressure Belt - Nature - Important Feature\nI. Subtropical High-Pressure Belt - Thermally induced - Descending air creates dry, calm conditions with variable and light winds\nII. Equatorial Low-Pressure Belt - Thermally induced - Zone of convergence of trade winds from subtropical high pressure belts of both the hemispheres.\nIII. Sub-polar Low-Pressure Belt - Dynamically induced - Zone of convergence of subtropical westerlies and polar easterlies\nIV. Polar High-Pressure Belt - Dynamically induced - Associated with humid and stormy weather conditions",
       suffix: "In how many of the above rows is the given information correctly matched?",
       options: [
         { id: "A", text: "Only one" },
@@ -237,7 +237,7 @@ export const TEST_T44 = [{
       ],
       correct: "C",
       explanation:
-        "Statement I is correct: temperate cyclones can extend 1,000-3,000 km in diameter compared to 100-1,000 km for tropical cyclones. Statement II is incorrect — it reverses the mechanisms: tropical cyclones derive energy from latent heat of condensation (warm-core systems), while temperate cyclones are powered by horizontal temperature contrasts between air masses (fronts). Statement III is correct: temperate cyclones form along frontal zones over land or sea, while tropical cyclones require warm ocean waters above 27°C and dissipate on landfall.",
+        "Statement I is correct: temperate cyclones can extend 1,000-3,000 km in diameter compared to 100-1,000 km for tropical cyclones. Statement II is incorrect - it reverses the mechanisms: tropical cyclones derive energy from latent heat of condensation (warm-core systems), while temperate cyclones are powered by horizontal temperature contrasts between air masses (fronts). Statement III is correct: temperate cyclones form along frontal zones over land or sea, while tropical cyclones require warm ocean waters above 27°C and dissipate on landfall.",
       topic: "Oceanography",
     },
     {
@@ -291,7 +291,7 @@ export const TEST_T44 = [{
     {
       id: "t44_q18",
       qNo: 18,
-      text: "Cold ocean currents contribute to the formation of coastal deserts by stabilizing the overlying air mass and reducing precipitation. In this context, consider the following pairs:\n\nDesert / Coastal Arid Region — Associated Cold Ocean Current\nI. Namib Desert — Canary Current\nII. Atacama Desert — Humboldt (Peru) Current\nIII. Western Sahara — Benguela Current\nIV. Mojave Desert — West Australian current",
+      text: "Cold ocean currents contribute to the formation of coastal deserts by stabilizing the overlying air mass and reducing precipitation. In this context, consider the following pairs:\n\nDesert / Coastal Arid Region - Associated Cold Ocean Current\nI. Namib Desert - Canary Current\nII. Atacama Desert - Humboldt (Peru) Current\nIII. Western Sahara - Benguela Current\nIV. Mojave Desert - West Australian current",
       suffix: "How many of the pairs given above are correctly matched?",
       options: [
         { id: "A", text: "Only one" },
@@ -317,7 +317,7 @@ export const TEST_T44 = [{
       ],
       correct: "D",
       explanation:
-        "Statement I is incorrect: the China-type climate receives rainfall mainly in SUMMER via the southeast monsoon, while the Mediterranean type receives rainfall mainly in WINTER due to the southward shift of westerlies. Statement II is correct: both climate types occur in the warm temperate zone between approximately 30°-40° North and South latitude — Mediterranean on western margins, China-type on eastern margins of continents.",
+        "Statement I is incorrect: the China-type climate receives rainfall mainly in SUMMER via the southeast monsoon, while the Mediterranean type receives rainfall mainly in WINTER due to the southward shift of westerlies. Statement II is correct: both climate types occur in the warm temperate zone between approximately 30°-40° North and South latitude - Mediterranean on western margins, China-type on eastern margins of continents.",
       topic: "Climatology",
     },
     {
@@ -413,7 +413,7 @@ export const TEST_T44 = [{
       ],
       correct: "B",
       explanation:
-        "Three rivers — Ghaghara, Kosi, and Gandak — are left-bank tributaries of the Ganga. Damodar and Son are right-bank tributaries, along with Yamuna. Major left-bank tributaries of the Ganga include Ghaghara, Gandak, Kosi, Gomati, and Mahananda.",
+        "Three rivers - Ghaghara, Kosi, and Gandak - are left-bank tributaries of the Ganga. Damodar and Son are right-bank tributaries, along with Yamuna. Major left-bank tributaries of the Ganga include Ghaghara, Gandak, Kosi, Gomati, and Mahananda.",
       topic: "Drainage [India]",
     },
     {
@@ -435,7 +435,7 @@ export const TEST_T44 = [{
     {
       id: "t44_q27",
       qNo: 27,
-      text: "With reference to the major lakes of India, consider the following information:\n\nLake — State/UT — Description\nI. Harike Lake — Haryana — It is a natural lake at the confluence of the Yamuna and the Markanda rivers.\nII. Deepor Beel — Arunachal Pradesh — It is an artificial saline lake.\nIII. Wular Lake — Jammu & Kashmir — The Jhelum River passes through it.\nIV. Loktak Lake — Manipur — It is a crater lake.",
+      text: "With reference to the major lakes of India, consider the following information:\n\nLake - State/UT - Description\nI. Harike Lake - Haryana - It is a natural lake at the confluence of the Yamuna and the Markanda rivers.\nII. Deepor Beel - Arunachal Pradesh - It is an artificial saline lake.\nIII. Wular Lake - Jammu & Kashmir - The Jhelum River passes through it.\nIV. Loktak Lake - Manipur - It is a crater lake.",
       suffix: "In how many of the above given rows is the information correctly matched?",
       options: [
         { id: "A", text: "Only one" },
@@ -445,7 +445,7 @@ export const TEST_T44 = [{
       ],
       correct: "A",
       explanation:
-        "Row III is the only correct match: Wular Lake in Jammu & Kashmir is one of the largest freshwater lakes in Asia, and the Jhelum River flows through it. Row I is incorrect: Harike Lake is in Punjab (not Haryana), at the confluence of the Sutlej and Beas rivers (not Yamuna and Markanda), and is a man-made wetland. Row II is incorrect: Deepor Beel is in Assam (not Arunachal Pradesh), a natural freshwater wetland (not artificial/saline). Row IV is incorrect: Loktak Lake in Manipur is the largest freshwater lake in northeastern India, primarily fed by the Manipur River, famous for floating phumdis — not a crater lake (Lonar Lake in Maharashtra is a crater lake).",
+        "Row III is the only correct match: Wular Lake in Jammu & Kashmir is one of the largest freshwater lakes in Asia, and the Jhelum River flows through it. Row I is incorrect: Harike Lake is in Punjab (not Haryana), at the confluence of the Sutlej and Beas rivers (not Yamuna and Markanda), and is a man-made wetland. Row II is incorrect: Deepor Beel is in Assam (not Arunachal Pradesh), a natural freshwater wetland (not artificial/saline). Row IV is incorrect: Loktak Lake in Manipur is the largest freshwater lake in northeastern India, primarily fed by the Manipur River, famous for floating phumdis - not a crater lake (Lonar Lake in Maharashtra is a crater lake).",
       topic: "Drainage [India]",
     },
     {
@@ -477,7 +477,7 @@ export const TEST_T44 = [{
       ],
       correct: "B",
       explanation:
-        "Statement I is correct: the S-wave shadow zone (105° to 180° from epicenter, covering over 40% of Earth's surface) is much larger than the P-wave shadow zone (105°-145°). Statement II is correct and explains Statement I: S-waves are shear waves that can only propagate through solids, so they are completely blocked by the liquid outer core, creating the large shadow zone. Statement III is correct but does NOT explain Statement I: S-waves do travel slower than P-waves, but this speed difference is not what causes the shadow zone — it's caused by S-waves' inability to pass through the liquid core.",
+        "Statement I is correct: the S-wave shadow zone (105° to 180° from epicenter, covering over 40% of Earth's surface) is much larger than the P-wave shadow zone (105°-145°). Statement II is correct and explains Statement I: S-waves are shear waves that can only propagate through solids, so they are completely blocked by the liquid outer core, creating the large shadow zone. Statement III is correct but does NOT explain Statement I: S-waves do travel slower than P-waves, but this speed difference is not what causes the shadow zone - it's caused by S-waves' inability to pass through the liquid core.",
       topic: "Earthquake",
     },
     {
@@ -493,7 +493,7 @@ export const TEST_T44 = [{
       ],
       correct: "A",
       explanation:
-        "Newton's Second Law states acceleration is directly proportional to net force and inversely proportional to mass (a = F/m). With the same throttle, the driving force F remains roughly constant, but with five passengers the total mass increases, so acceleration decreases — the loaded auto-rickshaw accelerates slower than when empty.",
+        "Newton's Second Law states acceleration is directly proportional to net force and inversely proportional to mass (a = F/m). With the same throttle, the driving force F remains roughly constant, but with five passengers the total mass increases, so acceleration decreases - the loaded auto-rickshaw accelerates slower than when empty.",
       topic: "Physics",
     },
     {
@@ -509,7 +509,7 @@ export const TEST_T44 = [{
       ],
       correct: "D",
       explanation:
-        "Both statements describe the opposite of reality. Statement 1 is incorrect: it is LOW, thick clouds that primarily reflect solar radiation and cool the surface — not high clouds. Statement 2 is incorrect: it is HIGH, thin clouds that primarily transmit incoming solar radiation while trapping outgoing infrared radiation and radiating it back, causing a warming effect — not low clouds. (Source: UPSC CSE Pre 2022)",
+        "Both statements describe the opposite of reality. Statement 1 is incorrect: it is LOW, thick clouds that primarily reflect solar radiation and cool the surface - not high clouds. Statement 2 is incorrect: it is HIGH, thin clouds that primarily transmit incoming solar radiation while trapping outgoing infrared radiation and radiating it back, causing a warming effect - not low clouds. (Source: UPSC CSE Pre 2022)",
       topic: "Atmosphere",
     },
     {
@@ -589,7 +589,7 @@ export const TEST_T44 = [{
       ],
       correct: "D",
       explanation:
-        "Statement I is incorrect: AB negative individuals can receive blood only from A-, B-, AB-, and O- (all Rh-negative donors), not from all blood types (Rh-positive blood would trigger an immune reaction). Statement II is correct: AB negative blood has both A and B antigens but lacks both anti-A and anti-B antibodies in plasma, which is why AB individuals can receive A and B antigens without immune attack — but the negative Rh factor still restricts donor compatibility.",
+        "Statement I is incorrect: AB negative individuals can receive blood only from A-, B-, AB-, and O- (all Rh-negative donors), not from all blood types (Rh-positive blood would trigger an immune reaction). Statement II is correct: AB negative blood has both A and B antigens but lacks both anti-A and anti-B antibodies in plasma, which is why AB individuals can receive A and B antigens without immune attack - but the negative Rh factor still restricts donor compatibility.",
       topic: "Biology",
     },
     {
@@ -621,7 +621,7 @@ export const TEST_T44 = [{
       ],
       correct: "C",
       explanation:
-        "The Turing Test, proposed by Alan Turing in 1950, evaluates whether a machine can convincingly imitate human behaviour, such that a human evaluator cannot reliably distinguish the machine's responses from a real person's during conversation — a benchmark for human-like intelligence.",
+        "The Turing Test, proposed by Alan Turing in 1950, evaluates whether a machine can convincingly imitate human behaviour, such that a human evaluator cannot reliably distinguish the machine's responses from a real person's during conversation - a benchmark for human-like intelligence.",
       topic: "IT and Telecommunications",
     },
     {
@@ -653,7 +653,7 @@ export const TEST_T44 = [{
       ],
       correct: "B",
       explanation:
-        "Abhyas is a DRDO-developed high-speed expendable aerial target UAV used for weapon practice. Ghatak is an Indian stealth unmanned combat aerial vehicle (UCAV). Lakshya is a reusable, gas-turbine-powered subsonic aerial target system used to train pilots — an advanced UAV. All three are indigenously developed UAVs.",
+        "Abhyas is a DRDO-developed high-speed expendable aerial target UAV used for weapon practice. Ghatak is an Indian stealth unmanned combat aerial vehicle (UCAV). Lakshya is a reusable, gas-turbine-powered subsonic aerial target system used to train pilots - an advanced UAV. All three are indigenously developed UAVs.",
       topic: "Defence",
     },
     {
@@ -685,7 +685,7 @@ export const TEST_T44 = [{
       ],
       correct: "B",
       explanation:
-        "Statement I is incorrect: BrahMos is a short-range, ramjet-powered (not scramjet), supersonic (2.8 Mach) cruise missile (not hypersonic ballistic) — BrahMos-II under development would use a scramjet for hypersonic speeds. Statement II is correct: it operates on the 'Fire and Forget' principle, requiring no further guidance after launch. Statement III is incorrect: its range is around 350-400 km (not 1000 km), with cruising altitude up to 15 km and terminal altitude as low as 10 metres (not 100 km). Statement IV is correct: it can be launched from land, sea, sub-sea, and air platforms.",
+        "Statement I is incorrect: BrahMos is a short-range, ramjet-powered (not scramjet), supersonic (2.8 Mach) cruise missile (not hypersonic ballistic) - BrahMos-II under development would use a scramjet for hypersonic speeds. Statement II is correct: it operates on the 'Fire and Forget' principle, requiring no further guidance after launch. Statement III is incorrect: its range is around 350-400 km (not 1000 km), with cruising altitude up to 15 km and terminal altitude as low as 10 metres (not 100 km). Statement IV is correct: it can be launched from land, sea, sub-sea, and air platforms.",
       topic: "Defence",
     },
     {
@@ -701,7 +701,7 @@ export const TEST_T44 = [{
       ],
       correct: "B",
       explanation:
-        "'Entropy catastrophe' is a critical point where the entropy of a superheated solid equates to that of its liquid counterpart, marking the uppermost stability boundary for solids — typically around three times their melting point. Beyond this point, the entropy catastrophe theory predicts solids cannot remain stable without spontaneously melting.",
+        "'Entropy catastrophe' is a critical point where the entropy of a superheated solid equates to that of its liquid counterpart, marking the uppermost stability boundary for solids - typically around three times their melting point. Beyond this point, the entropy catastrophe theory predicts solids cannot remain stable without spontaneously melting.",
       topic: "Physics",
     },
     {
@@ -733,13 +733,13 @@ export const TEST_T44 = [{
       ],
       correct: "C",
       explanation:
-        "Statement I is correct: altermagnets behave like antiferromagnets macroscopically, producing no external magnetic field, as their neighbouring magnetic moments are antiparallel and cancel each other out. Statement II is incorrect: it describes ferromagnetism (all moments pointing in the same direction), not altermagnetism — in altermagnets, atoms are arranged so spin and spatial orientation alternate on neighbouring sites, with each unit slightly twisted relative to the adjacent magnetic atom, giving altermagnets a unique combination of ferromagnetic and antiferromagnetic properties.",
+        "Statement I is correct: altermagnets behave like antiferromagnets macroscopically, producing no external magnetic field, as their neighbouring magnetic moments are antiparallel and cancel each other out. Statement II is incorrect: it describes ferromagnetism (all moments pointing in the same direction), not altermagnetism - in altermagnets, atoms are arranged so spin and spatial orientation alternate on neighbouring sites, with each unit slightly twisted relative to the adjacent magnetic atom, giving altermagnets a unique combination of ferromagnetic and antiferromagnetic properties.",
       topic: "Physics",
     },
     {
       id: "t44_q46",
       qNo: 46,
-      text: "In context to the Indus Valley Civilization, consider the following information:\n\nArchaeological Site — Located on the Banks of River — Well Known for\nI. Kalibangan — Ghaggar river — Furrows of ploughed fields\nII. Dholavira — Bhogava river — Advanced water management system\nIII. Mohenjodaro — Indus river — Dancing girl sculpture made of bronze\nIV. Rakhigarhi — Ravi river — Bead-making workshops",
+      text: "In context to the Indus Valley Civilization, consider the following information:\n\nArchaeological Site - Located on the Banks of River - Well Known for\nI. Kalibangan - Ghaggar river - Furrows of ploughed fields\nII. Dholavira - Bhogava river - Advanced water management system\nIII. Mohenjodaro - Indus river - Dancing girl sculpture made of bronze\nIV. Rakhigarhi - Ravi river - Bead-making workshops",
       suffix: "In how many of the above rows is the given information correctly matched?",
       options: [
         { id: "A", text: "Only one" },
@@ -749,7 +749,7 @@ export const TEST_T44 = [{
       ],
       correct: "B",
       explanation:
-        "Row I is correct: Kalibangan, on the Ghaggar river in Rajasthan, is known for furrows of ploughed fields indicating early use of a wooden plough. Row II is incorrect: Dholavira is situated on the Luni river (not Bhogava — Lothal is on the Bhogava, a tributary of Sabarmati), though it is indeed famous for its advanced water management system. Row III is correct: Mohenjodaro, on the Indus river in Sind, is famous for the bronze Dancing Girl sculpture. Row IV is incorrect: Rakhigarhi is situated on the now-dry Saraswati river in Haryana (not the Ravi), and bead-making workshops are associated with Mohenjodaro, Chanhudaro, and Lothal, not Rakhigarhi.",
+        "Row I is correct: Kalibangan, on the Ghaggar river in Rajasthan, is known for furrows of ploughed fields indicating early use of a wooden plough. Row II is incorrect: Dholavira is situated on the Luni river (not Bhogava - Lothal is on the Bhogava, a tributary of Sabarmati), though it is indeed famous for its advanced water management system. Row III is correct: Mohenjodaro, on the Indus river in Sind, is famous for the bronze Dancing Girl sculpture. Row IV is incorrect: Rakhigarhi is situated on the now-dry Saraswati river in Haryana (not the Ravi), and bead-making workshops are associated with Mohenjodaro, Chanhudaro, and Lothal, not Rakhigarhi.",
       topic: "Indus Valley Civilization",
     },
     {
@@ -781,7 +781,7 @@ export const TEST_T44 = [{
       ],
       correct: "A",
       explanation:
-        "Statement I is correct: the BWC, in force since 26 March 1975, is the first multilateral disarmament treaty banning an entire category of WMDs, prohibiting development, production, stockpiling and use of biological weapons. Statement II is incorrect: the OPCW implements the Chemical Weapons Convention, not the BWC — the BWC relies on its State Parties (via an Implementation Support Unit) for implementation. Statement III is incorrect: India signed and ratified the BWC in 1974, and is one of its 189 States Parties.",
+        "Statement I is correct: the BWC, in force since 26 March 1975, is the first multilateral disarmament treaty banning an entire category of WMDs, prohibiting development, production, stockpiling and use of biological weapons. Statement II is incorrect: the OPCW implements the Chemical Weapons Convention, not the BWC - the BWC relies on its State Parties (via an Implementation Support Unit) for implementation. Statement III is incorrect: India signed and ratified the BWC in 1974, and is one of its 189 States Parties.",
       topic: "Defence",
     },
     {
@@ -797,7 +797,7 @@ export const TEST_T44 = [{
       ],
       correct: "B",
       explanation:
-        "The Yogacara School, belonging to Mahayana Buddhism, holds that consciousness (mind) alone is ultimately real (vijnanavada — advocates of consciousness), and that external objects have no independent existence, being merely ideas of the mind. Vaibhasika and Sautrantika belong to Hinayana Buddhism and accept both mental and non-mental reality; Madhyamika (founded by Nagarjuna) avoids all extremes and denies absolute validity of any conceptual system.",
+        "The Yogacara School, belonging to Mahayana Buddhism, holds that consciousness (mind) alone is ultimately real (vijnanavada - advocates of consciousness), and that external objects have no independent existence, being merely ideas of the mind. Vaibhasika and Sautrantika belong to Hinayana Buddhism and accept both mental and non-mental reality; Madhyamika (founded by Nagarjuna) avoids all extremes and denies absolute validity of any conceptual system.",
       topic: "Buddhism and Jainism",
     },
     {

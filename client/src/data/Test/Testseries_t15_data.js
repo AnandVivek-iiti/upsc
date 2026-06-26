@@ -2,7 +2,7 @@
 export const TEST_T15 = [
   {
     id: "sfg2026-t15",
-    title: "SFG 2026 — Level 1 · Test 15",
+    title: "SFG 2026 - Level 1 · Test 15",
     testCode: "322102",
     subject: "CSAT",
     topic: "Aptitude and Data Interpretation",

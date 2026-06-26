@@ -16,7 +16,7 @@ export const PRELIMS_LAST_VERIFIED_DATE = "June 5, 2026";
 
 const BASE = "https://www.upsc.gov.in/sites/default/files/";
 
-// ── Paper I — General Studies ─────────────────────────────────────────────────
+// ── Paper I - General Studies ─────────────────────────────────────────────────
 // Exam dates: 2025 → 25 May 2025 | 2024 → 16 Jun 2024 | 2023 → 28 May 2023
 // 2022 → 5 Jun 2022 | 2021 → 10 Oct 2021 | 2020 → 4 Oct 2020
 // 2019 → 2 Jun 2019 | 2018 → 3 Jun 2018 | 2017 → 18 Jun 2017
@@ -47,7 +47,7 @@ const PAPER_I_URLS = {
   2005: null,
 };
 
-// ── Paper II — CSAT (General Studies Paper II) ────────────────────────────────
+// ── Paper II - CSAT (General Studies Paper II) ────────────────────────────────
 // Same exam days as Paper I; conducted in the afternoon session.
 
 const PAPER_II_URLS = {

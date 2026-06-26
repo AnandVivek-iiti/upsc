@@ -13,7 +13,7 @@ const UserEvents = sequelize.define(
     user_id: {
       type: DataTypes.UUID,
       allowNull: false,
-      // Note: no `references` here — FK constraint is set up via the
+      // Note: no `references` here - FK constraint is set up via the
       // User.hasMany(UserEvents) association in models/index.js (or server.js),
       // which runs after ALL tables are created. Defining references inline
       // causes Sequelize to try to validate the "User" table exists during

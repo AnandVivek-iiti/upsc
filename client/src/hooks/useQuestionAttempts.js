@@ -6,9 +6,9 @@
 // KEY DESIGN DECISIONS
 // ─────────────────────
 // • We match on `meta.subject` (the subject.label from SUBJECT_REGISTRY), NOT
-//   on q.topic — topic is too granular and varies per question.
+//   on q.topic - topic is too granular and varies per question.
 // • meta.paper is the paper LABEL from SUBJECT_REGISTRY, e.g. "GS Paper I",
-//   "CSAT Paper II", "GS Paper II" — used to disambiguate subjects that appear
+//   "CSAT Paper II", "GS Paper II" - used to disambiguate subjects that appear
 //   in both prelims and mains (Economy, Geography, Science & Technology,
 //   Art & Culture).
 // • Prelims paper key in syllabusData is "GS1" (not "GS") and "CSAT".
@@ -137,7 +137,7 @@ const SUBJECT_TO_SYLLABUS = {
   },
 };
 
-// ── Ambiguous subjects — same label in both prelims & mains ──────────────────
+// ── Ambiguous subjects - same label in both prelims & mains ──────────────────
 // Resolved by checking the paper label passed via meta.paper.
 // SUBJECT_REGISTRY prelims paper labels: "GS Paper I", "CSAT Paper II"
 // SUBJECT_REGISTRY mains paper labels:   "GS Paper I", "GS Paper II", "GS Paper III", "GS Paper IV"
@@ -177,7 +177,7 @@ const AMBIGUOUS_SUBJECT_MAP = {
 const MAINS_PAPER_LABELS = new Set(["GS Paper II", "GS Paper III", "GS Paper IV"]);
 
 function resolveMapping(subjectLabel, paperLabel) {
-  // 1. Check ambiguous map first — needs paper context to decide
+  // 1. Check ambiguous map first - needs paper context to decide
   if (AMBIGUOUS_SUBJECT_MAP[subjectLabel]) {
     const isMains = MAINS_PAPER_LABELS.has(paperLabel) ||
       // "GS Paper I" in mains registry has isMains subjects (History, Culture etc)
@@ -214,7 +214,7 @@ export function useQuestionAttempts({ onSyllabusUpdate, serverAttempts = null } 
     return () => window.removeEventListener("question-attempt-updated", sync);
   }, []);
 
-  // Debounced server sync — batches every 10s
+  // Debounced server sync - batches every 10s
   useEffect(() => {
     if (attempts.length === 0) return;
     const timer = setTimeout(async () => {

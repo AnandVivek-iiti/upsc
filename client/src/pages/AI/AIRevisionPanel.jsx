@@ -227,7 +227,7 @@ export default function AIRevisionPanel({ isLoggedIn, compact = false, onNavigat
                                 >
                                     take a Test
                                 </button>
-                                <span className="opacity-60"> — AI will add them automatically.</span>
+                                <span className="opacity-60"> - AI will add them automatically.</span>
                             </p>
                         </div>
                     </>

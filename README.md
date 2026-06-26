@@ -1,6 +1,6 @@
 # 🎯 UPSC Mentor
 
-**An AI-powered preparation companion for UPSC Civil Services aspirants — syllabus tracking, subject-wise study analytics, Mains answer evaluation, Prelims PYQ drilling, MCQ test series with AI diagnostics, an AI notes workspace, and a personal AI mentor, all in one platform.**
+**An AI-powered preparation companion for UPSC Civil Services aspirants - syllabus tracking, subject-wise study analytics, Mains answer evaluation, Prelims PYQ drilling, MCQ test series with AI diagnostics, an AI notes workspace, and a personal AI mentor, all in one platform.**
 
 🔗 **Live App:** [https://www.upscbyiitians.in](https://www.upscbyiitians.in//)
 
@@ -8,22 +8,22 @@
 
 ## ✨ Overview
 
-UPSC Mentor is a full-stack exam-prep platform built for CSE aspirants. It combines a structured syllabus tracker, a subject-aware daily study timer with cross-device sync, a multi-provider AI engine for grading Mains answers and chatting with an AI mentor, an AI-powered notes workspace with undo history and rich rendering, a Prelims PYQ practice bank organized by subject/topic, an MCQ Test Series module with automated diagnostic reports, a curated resource library, and a founder-level behavioral analytics panel — all wrapped in a single dashboard with an admin control panel.
+UPSC Mentor is a full-stack exam-prep platform built for CSE aspirants. It combines a structured syllabus tracker, a subject-aware daily study timer with cross-device sync, a multi-provider AI engine for grading Mains answers and chatting with an AI mentor, an AI-powered notes workspace with undo history and rich rendering, a Prelims PYQ practice bank organized by subject/topic, an MCQ Test Series module with automated diagnostic reports, a curated resource library, and a founder-level behavioral analytics panel - all wrapped in a single dashboard with an admin control panel.
 
 ---
 
 ## 🚀 Core Features
 
 ### 📊 Dashboard
-- **Subject Study Timer** — live stopwatch that tracks time per UPSC subject (12 subjects), persists per day/user, and syncs across open tabs/devices in real time via Socket.io.
-- **Subject Analytics Dashboard** — per-subject daily/weekly/monthly/lifetime accumulation with a syllabus bridge (1 hr = 10% progress, capped at 95%).
-- **Study Chart** — visual history of daily study hours vs. the user's daily target.
-- **Today Planner** — quick add/check-off daily task list.
-- **Current Affairs Log** — capture daily current-affairs notes/headlines.
-- **Answer Writing Tracker** — log Mains answer-writing practice outside the formal evaluator flow.
-- **Paper Progress** — at-a-glance completion percentage per GS paper, pulled from the Syllabus Tracker.
-- **Streak & Countdown** — daily login streak, longest streak, and a live countdown to the user's configured exam date.
-- **ActionHub** — four quick-access study action cards for core platform workflows.
+- **Subject Study Timer** - live stopwatch that tracks time per UPSC subject (12 subjects), persists per day/user, and syncs across open tabs/devices in real time via Socket.io.
+- **Subject Analytics Dashboard** - per-subject daily/weekly/monthly/lifetime accumulation with a syllabus bridge (1 hr = 10% progress, capped at 95%).
+- **Study Chart** - visual history of daily study hours vs. the user's daily target.
+- **Today Planner** - quick add/check-off daily task list.
+- **Current Affairs Log** - capture daily current-affairs notes/headlines.
+- **Answer Writing Tracker** - log Mains answer-writing practice outside the formal evaluator flow.
+- **Paper Progress** - at-a-glance completion percentage per GS paper, pulled from the Syllabus Tracker.
+- **Streak & Countdown** - daily login streak, longest streak, and a live countdown to the user's configured exam date.
+- **ActionHub** - four quick-access study action cards for core platform workflows.
 
 ### 📚 Syllabus Tracker
 - Full GS Prelims + Mains (GS1–GS4) syllabus broken into papers → modules.
@@ -33,16 +33,16 @@ UPSC Mentor is a full-stack exam-prep platform built for CSE aspirants. It combi
 
 ### 🤖 AI Mentor Chat
 - Persistent, multi-thread conversational mentor backed by a dedicated system prompt that enforces structured markdown (headings, tables, `:::memory:::` recall blocks, exam tips) and bans flattery/filler.
-- **Durable memory extraction** — a background process distills long-term facts about the student (recurring weak spots, study patterns) from each conversation turn.
+- **Durable memory extraction** - a background process distills long-term facts about the student (recurring weak spots, study patterns) from each conversation turn.
 - Available as both a compact floating chat bubble and a dedicated full-page **AI Mentor Workspace**.
 - Quote-of-the-day cards can be sent straight into the mentor chat for instant explanation, historical context, and essay/GS deployment advice.
 
 ### 📝 Mentor Notes (AI-Powered)
 - Full-featured notes workspace with a two-pane layout: note list sidebar + editor.
 - **8 UPSC subject tags** (Polity, History, Economy, Geography, Sociology, Ethics, Environment, Science & Tech) for filtering and organisation.
-- **AI actions on notes**: Improve Notes, Find Mistakes (with Knowledge / Clarity / Retention scores), Generate Revision Notes, Convert to Mains Format — all backed by the multi-provider AI chain.
-- **Reading mode** — rich markdown-lite renderer with headings, bullet lists, memory-card blocks (`:::memory:::`), callout boxes (`[!NOTE]`, `[!TIP]`, `[!WARN]`), inline code, and tables.
-- **Undo history** — per-note content snapshot stack (up to 40 snapshots, 2s debounce); triggered by Ctrl+Z / Cmd+Z or the History button. Pre-AI-apply snapshots are also pushed so every AI rewrite is reversible.
+- **AI actions on notes**: Improve Notes, Find Mistakes (with Knowledge / Clarity / Retention scores), Generate Revision Notes, Convert to Mains Format - all backed by the multi-provider AI chain.
+- **Reading mode** - rich markdown-lite renderer with headings, bullet lists, memory-card blocks (`:::memory:::`), callout boxes (`[!NOTE]`, `[!TIP]`, `[!WARN]`), inline code, and tables.
+- **Undo history** - per-note content snapshot stack (up to 40 snapshots, 2s debounce); triggered by Ctrl+Z / Cmd+Z or the History button. Pre-AI-apply snapshots are also pushed so every AI rewrite is reversible.
 - Autosave with debounce (1.4s), flush on tab switch/unmount, relative-time save indicator.
 - Notes stored in `localStorage`; AI features require sign-in (sign-in gate drawer shown otherwise).
 
@@ -55,9 +55,9 @@ UPSC Mentor is a full-stack exam-prep platform built for CSE aspirants. It combi
 ### 📝 Prelims Grind & Topic-wise Practice
 - Large bank of Prelims PYQs organized subject-wise (Polity, Economy, History, Modern History, Geography, Environment & Ecology, Art & Culture, Science & Tech, Social Issues, IR/IYP) and CSAT (Comprehension, Maths, Reasoning).
 - Topic-wise view groups both Prelims PYQs and Mains PYQs (2024 & 2025, GS1–GS4) by subject.
-- **PyqVault** — aggregated PYQ browser across all subjects and years.
+- **PyqVault** - aggregated PYQ browser across all subjects and years.
 - Per-question attempt tracking synced to the server.
-- **Spaced-repetition queue** — push tough topics into a revision queue with difficulty weighting.
+- **Spaced-repetition queue** - push tough topics into a revision queue with difficulty weighting.
 
 ### 🧪 Test Series (MCQ)
 - Full timed mock-test interface (question palette, timer, review mode) across 16 test series files.
@@ -67,7 +67,7 @@ UPSC Mentor is a full-stack exam-prep platform built for CSE aspirants. It combi
 
 ### 📖 Resource Library
 - NCERT book tracker (subject-filterable, with completion state).
-- Curated reference books, topper/expert notes, and YouTube class links — organized by subject/paper/module with tag filtering.
+- Curated reference books, topper/expert notes, and YouTube class links - organized by subject/paper/module with tag filtering.
 
 ### 👤 Profile & Auth
 - Email/password registration and **Google OAuth (Google Identity Services)** sign-in.
@@ -75,10 +75,10 @@ UPSC Mentor is a full-stack exam-prep platform built for CSE aspirants. It combi
 - Avatar circle with initials fallback.
 
 ### 🛡️ Admin Panel
-- Aggregate visitor analytics (daily hits, distinct visitors, route breakdown — SHA-256 hashed IPs).
+- Aggregate visitor analytics (daily hits, distinct visitors, route breakdown - SHA-256 hashed IPs).
 - User list view and feature flag management.
-- **Founder/behavioral analytics** — user journey tracking, session timeline construction (30-minute inactivity gap heuristic), per-feature analytics across 9 named features, retention segmentation (Power Users / At Risk / Dormant / New Users), feature discovery analysis, auto-generated narrative insights. In-memory caching with 5-minute TTL.
-- **AdminStudyAnalytics** — subject-session analytics across all users.
+- **Founder/behavioral analytics** - user journey tracking, session timeline construction (30-minute inactivity gap heuristic), per-feature analytics across 9 named features, retention segmentation (Power Users / At Risk / Dormant / New Users), feature discovery analysis, auto-generated narrative insights. In-memory caching with 5-minute TTL.
+- **AdminStudyAnalytics** - subject-session analytics across all users.
 - Gated behind `protect` + `adminOnly` middleware.
 
 ### 💬 Feedback Modal
@@ -91,9 +91,9 @@ UPSC Mentor is a full-stack exam-prep platform built for CSE aspirants. It combi
 
 ### Frontend
 - **React** (JSX) + **Vite**
-- **Tailwind CSS** — utility-first styling with a custom CSS-variable design system (light/dark theme via `data-theme` on `document.documentElement`, persisted to `localStorage`)
-- **lucide-react** — icon set
-- **Socket.io-client** — real-time timer/progress sync across tabs and devices
+- **Tailwind CSS** - utility-first styling with a custom CSS-variable design system (light/dark theme via `data-theme` on `document.documentElement`, persisted to `localStorage`)
+- **lucide-react** - icon set
+- **Socket.io-client** - real-time timer/progress sync across tabs and devices
 - Custom hooks: `useAuth`, `useUserData`, `useAI`, `useQuestionAttempts`, `useRevisionQueue`, `useSubjectTimer`, `timerStore`
 - PWA install prompt (`PWAInstallPrompt.jsx`)
 - Google Identity Services SDK for OAuth
@@ -101,20 +101,20 @@ UPSC Mentor is a full-stack exam-prep platform built for CSE aspirants. It combi
 ### Backend
 - **Node.js + Express**
 - **Sequelize ORM** over **PostgreSQL** (SSL-enabled, `alter: true` auto-sync on boot)
-- **Socket.io** — real-time server for cross-device timer sync
-- **JWT (jsonwebtoken)** — authentication
-- **bcryptjs** — password hashing
-- **express-rate-limit** — tiered rate limiting (global, auth, AI-evaluation, test-analysis)
-- **CORS** — explicit allow-list
+- **Socket.io** - real-time server for cross-device timer sync
+- **JWT (jsonwebtoken)** - authentication
+- **bcryptjs** - password hashing
+- **express-rate-limit** - tiered rate limiting (global, auth, AI-evaluation, test-analysis)
+- **CORS** - explicit allow-list
 
 ### AI Layer (multi-provider fallback chain)
-- **Google Gemini** (`gemini-2.5-flash`) — primary for chat, Mains evaluation, test analysis, notes AI, memory extraction
-- **Groq** (`llama-3.3-70b-versatile`) — fallback 1
-- **OpenRouter** (free model rotation: Llama 3.3 70B, Qwen3 235B, Qwen3 32B, Gemma 3 27B, Mistral Small) — fallback 2+
+- **Google Gemini** (`gemini-2.5-flash`) - primary for chat, Mains evaluation, test analysis, notes AI, memory extraction
+- **Groq** (`llama-3.3-70b-versatile`) - fallback 1
+- **OpenRouter** (free model rotation: Llama 3.3 70B, Qwen3 235B, Qwen3 32B, Gemma 3 27B, Mistral Small) - fallback 2+
 - Each AI task has its own dedicated system instruction file (`mentorInstructions.js`, `notesInstructions.js`, `systemInstructions.js`, `testInstructions.js`).
 
 ### Database
-- **PostgreSQL** — models: `User`, `UserData`, `TestAttempt`, `SubjectSession`, `DailyActiveUsers`, `Feedback`, `UserEvents`, `VisitorLog`.
+- **PostgreSQL** - models: `User`, `UserData`, `TestAttempt`, `SubjectSession`, `DailyActiveUsers`, `Feedback`, `UserEvents`, `VisitorLog`.
 
 ---
 
@@ -195,11 +195,11 @@ VITE_GOOGLE_CLIENT_ID=your-google-oauth-client-id
 ### 3. Run in development
 
 ```bash
-# Terminal 1 — backend (http://localhost:5000)
+# Terminal 1 - backend (http://localhost:5000)
 cd server
 npm run dev
 
-# Terminal 2 — frontend (http://localhost:5173)
+# Terminal 2 - frontend (http://localhost:5173)
 cd client
 npm run dev
 ```
@@ -213,7 +213,7 @@ cd client
 npm run build
 ```
 
-Deploy the Express server and the built `dist/` to your platform — live deployment is on [Render](https://upsc-by-iitian.onrender.com/).
+Deploy the Express server and the built `dist/` to your platform - live deployment is on [Render](https://upsc-by-iitian.onrender.com/).
 
 ---
 
@@ -402,4 +402,4 @@ server.js                        # Entry: env validation, DB connect, route moun
 
 ## 📄 License
 
-Proprietary — © UPSC Mentor. All rights reserved.
+Proprietary - © UPSC Mentor. All rights reserved.

@@ -391,7 +391,7 @@ const getRetention = async (req, res, next) => {
 };
 
 // ─── GET /api/admin/journey ───────────────────────────────────────────────────
-// PART 1 — User journey: signup → first feature → second feature → most used → returned
+// PART 1 - User journey: signup → first feature → second feature → most used → returned
 const getJourney = async (req, res, next) => {
   try {
     const cached = getCached("journey");
@@ -471,7 +471,7 @@ const getJourney = async (req, res, next) => {
 };
 
 // ─── GET /api/admin/sessions/:userId ─────────────────────────────────────────
-// PART 2 — Session timeline for a specific user
+// PART 2 - Session timeline for a specific user
 const getUserSessions = async (req, res, next) => {
   try {
     const { userId } = req.params;
@@ -570,7 +570,7 @@ const getUserSessions = async (req, res, next) => {
 };
 
 // ─── GET /api/admin/segments ──────────────────────────────────────────────────
-// PART 5 — Retention segments: Power Users / At Risk / Dormant
+// PART 5 - Retention segments: Power Users / At Risk / Dormant
 const getSegments = async (req, res, next) => {
   try {
     const cached = getCached("segments");
@@ -625,7 +625,7 @@ const getSegments = async (req, res, next) => {
 };
 
 // ─── GET /api/admin/discovery ─────────────────────────────────────────────────
-// PART 6 — Feature discovery analysis
+// PART 6 - Feature discovery analysis
 const getDiscovery = async (req, res, next) => {
   try {
     const cached = getCached("discovery");
@@ -723,7 +723,7 @@ const getDiscovery = async (req, res, next) => {
 };
 
 // ─── GET /api/admin/insights ──────────────────────────────────────────────────
-// PART 7 — Auto-generated founder insights
+// PART 7 - Auto-generated founder insights
 const getInsights = async (req, res, next) => {
   try {
     const cached = getCached("insights");
@@ -827,7 +827,7 @@ const getInsights = async (req, res, next) => {
         id: "most_engaging",
         type: "positive",
         title: `${f.feature_name} is your most engaging feature`,
-        body: `Users who open ${f.feature_name} use it an average of ${parseFloat(f.avg_uses).toFixed(1)} times — the highest of any feature.`,
+        body: `Users who open ${f.feature_name} use it an average of ${parseFloat(f.avg_uses).toFixed(1)} times - the highest of any feature.`,
         feature: f.feature_name,
       });
     }
@@ -873,7 +873,7 @@ const getInsights = async (req, res, next) => {
         type: avgFeatures < 2 ? "warning" : "neutral",
         title: `Feature breadth is ${breadthLabel}`,
         body: `On average, users explore ${avgFeatures} features. ${avgFeatures < 2
-          ? "Most users are stuck in one area — guide them to discover more of the app."
+          ? "Most users are stuck in one area - guide them to discover more of the app."
           : "Users are discovering multiple features, which is a healthy sign."}`,
         feature: null,
       });
@@ -895,7 +895,7 @@ const getInsights = async (req, res, next) => {
         id: "power_users",
         type: "positive",
         title: `${powerUserCount} power user${powerUserCount > 1 ? "s" : ""} identified`,
-        body: `${powerUserCount} user${powerUserCount > 1 ? "s have" : " has"} studied 3+ days in the last 3 days. These are your most engaged users — understand what's keeping them coming back.`,
+        body: `${powerUserCount} user${powerUserCount > 1 ? "s have" : " has"} studied 3+ days in the last 3 days. These are your most engaged users - understand what's keeping them coming back.`,
         feature: null,
       });
     }

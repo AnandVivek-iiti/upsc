@@ -50,7 +50,7 @@ export const SYLLABUS = {
         "Environment, Ecology & Climate Change": {
           progress: 0, status: "pending",
           topics: [
-            "General issues on Environmental Ecology, Bio-diversity and Climate Change — that do not require subject specialization",
+            "General issues on Environmental Ecology, Bio-diversity and Climate Change - that do not require subject specialization",
           ],
         },
         "General Science": {
@@ -63,7 +63,7 @@ export const SYLLABUS = {
     },
     CSAT: {
       label: "General Studies Paper II (CSAT)",
-      subtitle: "200 Marks · 2 Hours · Qualifying — 33% minimum · Not counted for merit",
+      subtitle: "200 Marks · 2 Hours · Qualifying - 33% minimum · Not counted for merit",
       color: "#6B7280",
       modules: {
         "Comprehension": {
@@ -100,8 +100,8 @@ export const SYLLABUS = {
         "Basic Numeracy & Data Interpretation": {
           progress: 0, status: "pending",
           topics: [
-            "Basic numeracy — numbers and their relations, orders of magnitude (Class X level)",
-            "Data interpretation — charts, graphs, tables, data sufficiency (Class X level)",
+            "Basic numeracy - numbers and their relations, orders of magnitude (Class X level)",
+            "Data interpretation - charts, graphs, tables, data sufficiency (Class X level)",
           ],
         },
       },
@@ -109,7 +109,7 @@ export const SYLLABUS = {
   },
   mains: {
     Essay: {
-      label: "Paper I — Essay",
+      label: "Paper I - Essay",
       subtitle: "250 Marks",
       color: "#EC4899",
       modules: {
@@ -119,13 +119,13 @@ export const SYLLABUS = {
             "Candidates may be required to write essays on multiple topics",
             "Keep closely to the subject of the essay",
             "Arrange ideas in orderly fashion",
-            "Write concisely — credit for effective and exact expression",
+            "Write concisely - credit for effective and exact expression",
           ],
         },
       },
     },
     GS1: {
-      label: "Paper II — General Studies I",
+      label: "Paper II - General Studies I",
       subtitle: "250 Marks · Indian Heritage & Culture, History & Geography of the World and Society",
       color: "#F59E0B",
       modules: {
@@ -147,7 +147,7 @@ export const SYLLABUS = {
         "Freedom Struggle": {
           progress: 0, status: "pending",
           topics: [
-            "The Freedom Struggle — its various stages",
+            "The Freedom Struggle - its various stages",
             "Important contributors/contributions from different parts of the country",
           ],
         },
@@ -164,7 +164,7 @@ export const SYLLABUS = {
             "World Wars",
             "Redrawal of national boundaries",
             "Colonization and decolonization",
-            "Political philosophies like communism, capitalism, socialism — their forms and effect on the society",
+            "Political philosophies like communism, capitalism, socialism - their forms and effect on the society",
           ],
         },
         "Indian Society & Diversity": {
@@ -198,7 +198,7 @@ export const SYLLABUS = {
       },
     },
     GS2: {
-      label: "Paper III — General Studies II",
+      label: "Paper III - General Studies II",
       subtitle: "250 Marks · Governance, Constitution, Polity, Social Justice and International Relations",
       color: "#3B82F6",
       modules: {
@@ -227,7 +227,7 @@ export const SYLLABUS = {
         "Legislature": {
           progress: 0, status: "pending",
           topics: [
-            "Parliament and State Legislatures — structure, functioning, conduct of business",
+            "Parliament and State Legislatures - structure, functioning, conduct of business",
             "Powers and privileges and issues arising out of these",
           ],
         },
@@ -251,13 +251,13 @@ export const SYLLABUS = {
           progress: 0, status: "pending",
           topics: [
             "Government policies and interventions for development in various sectors and issues arising out of their design and implementation",
-            "Development processes and the development industry — role of NGOs, SHGs, various groups and associations, donors, charities, institutional and other stakeholders",
+            "Development processes and the development industry - role of NGOs, SHGs, various groups and associations, donors, charities, institutional and other stakeholders",
             "Welfare schemes for vulnerable sections of the population by the Centre and States and the performance of these schemes",
             "Mechanisms, laws, institutions and Bodies constituted for the protection and betterment of vulnerable sections",
             "Issues relating to development and management of Social Sector/Services relating to Health, Education, Human Resources",
             "Issues relating to poverty and hunger",
             "Important aspects of governance, transparency and accountability",
-            "e-governance — applications, models, successes, limitations, and potential",
+            "e-governance - applications, models, successes, limitations, and potential",
             "Citizens charters, transparency and accountability and institutional and other measures",
             "Role of civil services in a democracy",
           ],
@@ -265,17 +265,17 @@ export const SYLLABUS = {
         "International Relations": {
           progress: 0, status: "pending",
           topics: [
-            "India and its neighborhood — relations",
+            "India and its neighborhood - relations",
             "Bilateral, regional and global groupings and agreements involving India and/or affecting India's interests",
             "Effect of policies and politics of developed and developing countries on India's interests",
             "Indian diaspora",
-            "Important International institutions, agencies and fora — their structure, mandate",
+            "Important International institutions, agencies and fora - their structure, mandate",
           ],
         },
       },
     },
     GS3: {
-      label: "Paper IV — General Studies III",
+      label: "Paper IV - General Studies III",
       subtitle: "250 Marks · Technology, Economic Development, Biodiversity, Environment, Security and Disaster Management",
       color: "#10B981",
       modules: {
@@ -290,12 +290,12 @@ export const SYLLABUS = {
         "Agriculture": {
           progress: 0, status: "pending",
           topics: [
-            "Major crops — cropping patterns in various parts of the country",
+            "Major crops - cropping patterns in various parts of the country",
             "Different types of irrigation and irrigation systems",
             "Storage, transport and marketing of agricultural produce and issues and related constraints",
             "e-technology in the aid of farmers",
             "Issues related to direct and indirect farm subsidies and minimum support prices",
-            "Public Distribution System — objectives, functioning, limitations, revamping",
+            "Public Distribution System - objectives, functioning, limitations, revamping",
             "Issues of buffer stocks and food security; Technology missions",
             "Economics of animal-rearing",
           ],
@@ -303,7 +303,7 @@ export const SYLLABUS = {
         "Food Processing & Industry": {
           progress: 0, status: "pending",
           topics: [
-            "Food processing and related industries in India — scope and significance, location",
+            "Food processing and related industries in India - scope and significance, location",
             "Upstream and downstream requirements, supply chain management",
             "Land reforms in India",
             "Effects of liberalization on the economy, changes in industrial policy and their effects on industrial growth",
@@ -319,7 +319,7 @@ export const SYLLABUS = {
         "Science & Technology": {
           progress: 0, status: "pending",
           topics: [
-            "Science and Technology — developments and their applications and effects in everyday life",
+            "Science and Technology - developments and their applications and effects in everyday life",
             "Achievements of Indians in science and technology; indigenization of technology and developing new technology",
             "Awareness in the fields of IT, Space, Computers, robotics, nano-technology, bio-technology",
             "Issues relating to intellectual property rights",
@@ -349,7 +349,7 @@ export const SYLLABUS = {
       },
     },
     GS4: {
-      label: "Paper V — General Studies IV",
+      label: "Paper V - General Studies IV",
       subtitle: "250 Marks · Ethics, Integrity and Aptitude",
       color: "#8B5CF6",
       modules: {
@@ -359,7 +359,7 @@ export const SYLLABUS = {
             "Essence, determinants and consequences of Ethics in human actions",
             "Dimensions of ethics",
             "Ethics in private and public relationships",
-            "Human Values — lessons from the lives and teachings of great leaders, reformers and administrators",
+            "Human Values - lessons from the lives and teachings of great leaders, reformers and administrators",
             "Role of family, society and educational institutions in inculcating values",
           ],
         },
@@ -426,7 +426,7 @@ export const SYLLABUS = {
       },
     },
     OptionalSubject: {
-      label: "Paper VI & VII — Optional Subject",
+      label: "Paper VI & VII - Optional Subject",
       subtitle: "250 Marks each · Choose one optional subject from the list",
       color: "#F97316",
       modules: {
@@ -445,7 +445,7 @@ export const SYLLABUS = {
       },
     },
     QualifyingLang: {
-      label: "Qualifying — Indian Language (Hindi) & English",
+      label: "Qualifying - Indian Language (Hindi) & English",
       subtitle: "300 Marks each · Qualifying only · Not counted for merit · Matriculation standard",
       color: "#64748B",
       modules: {
@@ -458,7 +458,7 @@ export const SYLLABUS = {
             "Short Essays",
           ],
         },
-        "Hindi — Indian Language (Qualifying)": {
+        "Hindi - Indian Language (Qualifying)": {
           progress: 0, status: "pending",
           topics: [
             "Comprehension of given passages",

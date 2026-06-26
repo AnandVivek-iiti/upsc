@@ -37,7 +37,7 @@ const SubjectSession = sequelize.define(
     },
 
     /**
-     * UPSC subject tag — constrained to the canonical list so reports
+     * UPSC subject tag - constrained to the canonical list so reports
      * aggregate cleanly. "Other" is the escape hatch for anything
      * outside the standard 12 subjects.
      *
@@ -67,13 +67,13 @@ const SubjectSession = sequelize.define(
       allowNull: false,
     },
 
-    // IST date string "YYYY-MM-DD" — lets you query "sessions on day X" fast
+    // IST date string "YYYY-MM-DD" - lets you query "sessions on day X" fast
     date: {
       type: DataTypes.DATEONLY,
       allowNull: false,
     },
 
-    // Epoch ms — stored as BIGINT so no precision loss
+    // Epoch ms - stored as BIGINT so no precision loss
     start_time: {
       type: DataTypes.BIGINT,
       allowNull: false,
@@ -83,7 +83,7 @@ const SubjectSession = sequelize.define(
       allowNull: true, // null while session is still running
     },
 
-    // Duration in seconds — computed on close, null while running
+    // Duration in seconds - computed on close, null while running
     duration_seconds: {
       type: DataTypes.INTEGER,
       allowNull: true,

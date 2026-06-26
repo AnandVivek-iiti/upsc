@@ -175,7 +175,7 @@ const getDifficulties = d => [...new Set((d||[]).map(q=>q.difficulty).filter(Boo
 const getMarksOptions = d => [...new Set((d||[]).map(q=>q.marks).filter(Boolean))].sort((a,b)=>b-a);
 const getDirectives   = d => [...new Set((d||[]).map(q=>q.directive).filter(Boolean))].sort();
 
-// ─── GLOBAL RESPONSIVE STYLES (File 1 — richest version) ─────────────────────
+// ─── GLOBAL RESPONSIVE STYLES (File 1 - richest version) ─────────────────────
 const GLOBAL_CSS = `
   .tw-root, .tw-root *, .tw-root *::before, .tw-root *::after {
     box-sizing: border-box;
@@ -254,7 +254,7 @@ const GLOBAL_CSS = `
     -webkit-tap-highlight-color: transparent;
   }
 
-  /* Horizontal scroll row — chips / badges */
+  /* Horizontal scroll row - chips / badges */
   .tw-hscroll {
     display: flex; gap: 5px;
     overflow-x: auto; -webkit-overflow-scrolling: touch;
@@ -289,7 +289,7 @@ const GLOBAL_CSS = `
   }
   @media (min-width: 480px) { .tw-opt { padding: 10px 14px; gap: 12px; } }
 
-  /* Question text — never overflows */
+  /* Question text - never overflows */
   .tw-qtext {
     font-size: 14px; font-weight: 500;
     color: var(--text-primary); line-height: 1.7;
@@ -404,7 +404,7 @@ function PinButton({ pinned, onClick }) {
   );
 }
 
-// ─── COLLAPSIBLE FILTER PANEL (File 1 — shows count + isFiltered highlight) ───
+// ─── COLLAPSIBLE FILTER PANEL (File 1 - shows count + isFiltered highlight) ───
 function FilterPanel({ children, accentColor, count, total }) {
   const [open, setOpen] = useState(false);
   const isFiltered = count !== total;

@@ -29,32 +29,32 @@ function getLogoAttachment() {
 // ─── Segment-specific copy ─────────────────────────────────────────────────────
 const SEGMENT_COPY = {
   new: {
-    subject: "Welcome to UPSC Mentor — here's where to start 🎯",
+    subject: "Welcome to UPSC Mentor - here's where to start 🎯",
     accent: "#3B6D11",
     accentBg: "#EAF3DE",
     eyebrow: "Welcome aboard",
     greetingLine: "Welcome to UPSC Mentor! I'm Anand, one of the builders behind the platform.",
     intro: "You've joined at a great time. Here's the simplest path to get value from day one:",
     steps: [
-      { title: "Set your exam date", body: "Go to your Profile page and lock in your Prelims target. The countdown starts ticking — which is surprisingly motivating." },
+      { title: "Set your exam date", body: "Go to your Profile page and lock in your Prelims target. The countdown starts ticking - which is surprisingly motivating." },
       { title: "Mark your syllabus", body: "Open the Syllabus Tracker and set 3–5 modules to \"In Progress\". It takes 2 minutes and gives you a clear view of what you're walking into." },
-      { title: "Start the timer", body: "Hit the study timer on your dashboard before your next session. It syncs across devices — so your phone and laptop both track the same day." },
+      { title: "Start the timer", body: "Hit the study timer on your dashboard before your next session. It syncs across devices - so your phone and laptop both track the same day." },
     ],
     closing: "That's it. No pressure to do everything at once.",
-    closing2: "If you have questions, just reply to this email — I read every one.",
+    closing2: "If you have questions, just reply to this email - I read every one.",
     signOff: "Good luck,",
   },
   power: {
-    subject: "You're one of our most dedicated users — a quick note",
+    subject: "You're one of our most dedicated users - a quick note",
     accent: "#854F0B",
     accentBg: "#FAEEDA",
     eyebrow: "A note from the founder",
     greetingLine: "I wanted to reach out personally.",
-    intro: "You're one of the most consistent users on UPSC Mentor right now — studying multiple days in a row puts you in the top tier of our early community.",
+    intro: "You're one of the most consistent users on UPSC Mentor right now - studying multiple days in a row puts you in the top tier of our early community.",
     steps: [
       { title: "AI Diagnostic Reports", body: "After your next mock test, the AI generates a 7-day recovery study plan targeting your exact weak topics. If you haven't tried it yet, it's worth one test attempt." },
-      { title: "The AI Mentor Workspace", body: "Unlike the chat bubble, the full workspace lets you run separate threads — one for GS4 case studies, one for Economy, for example. Your mentor remembers context across sessions." },
-      { title: "Handwritten answer evaluation", body: "If you're doing Mains practice, you can photograph a handwritten answer and the AI evaluates it the same way — useful for replicating actual exam conditions." },
+      { title: "The AI Mentor Workspace", body: "Unlike the chat bubble, the full workspace lets you run separate threads - one for GS4 case studies, one for Economy, for example. Your mentor remembers context across sessions." },
+      { title: "Handwritten answer evaluation", body: "If you're doing Mains practice, you can photograph a handwritten answer and the AI evaluates it the same way - useful for replicating actual exam conditions." },
     ],
     closing: "I'd genuinely love to hear what's working for you and what's not. Any feedback shapes what we build next.",
     closing2: "",
@@ -65,7 +65,7 @@ const SEGMENT_COPY = {
     accent: "#993C1D",
     accentBg: "#FAECE7",
     eyebrow: "Quick check-in",
-    greetingLine: "You signed up for UPSC Mentor a little while back — I just wanted to check in.",
+    greetingLine: "You signed up for UPSC Mentor a little while back - I just wanted to check in.",
     intro: "If the platform felt overwhelming at first, that's fair. Here's the simplest possible entry point: one subject, one timer, 30 minutes.",
     steps: [
       { title: "Open the dashboard", body: "Pick one subject from the study timer (Polity is a popular start) and run a 30-minute focused session. That single action unlocks the analytics that make everything else useful." },
@@ -76,18 +76,18 @@ const SEGMENT_COPY = {
     signOff: "Still rooting for you,",
   },
   feature: {
-    subject: "You've found the depth — here's what's coming next",
+    subject: "You've found the depth - here's what's coming next",
     accent: "#3C3489",
     accentBg: "#EEEDFE",
     eyebrow: "For our power explorers",
-    greetingLine: "You're one of a small group of users who's actually explored multiple areas of UPSC Mentor — the syllabus tracker, mock tests, AI mentor, and more.",
+    greetingLine: "You're one of a small group of users who's actually explored multiple areas of UPSC Mentor - the syllabus tracker, mock tests, AI mentor, and more.",
     intro: "That kind of usage tells us you're using the platform as it was designed: as an integrated preparation workspace, not just a single tool. A few things you might not have discovered yet:",
     steps: [
       { title: "Spaced repetition queue", body: "When you mark a question as difficult in Prelims Grind, it gets added to a revision queue with SM-2 style scheduling. Over time this becomes a highly personalised review bank." },
       { title: "Cross-module memory", body: "Your AI Mentor carries memory of your weak topics across sessions. If mock tests surface gaps, the Mentor already knows about them in your next chat." },
-      { title: "Re-analysis of past tests", body: "Any test attempt can be re-analysed on demand — useful if you've done focused study on a weak topic and want to check if your diagnostic would look different now." },
+      { title: "Re-analysis of past tests", body: "Any test attempt can be re-analysed on demand - useful if you've done focused study on a weak topic and want to check if your diagnostic would look different now." },
     ],
-    closing: "I'd really value 5 minutes of your feedback — what's working, what's confusing, what you wish existed. You're exactly the user I want to talk to. Happy to jump on a quick call if that's easier.",
+    closing: "I'd really value 5 minutes of your feedback - what's working, what's confusing, what you wish existed. You're exactly the user I want to talk to. Happy to jump on a quick call if that's easier.",
     closing2: "",
     signOff: "Thank you for exploring,",
   },
@@ -180,7 +180,7 @@ function buildEmailHTML(userName, segment = "power") {
             <td style="background:#f8f9fb;padding:12px 32px;text-align:center;border-top:1px solid #dde3ed;">
               <p style="margin:0;font-size:10px;color:#9aa3b2;">
                 You're receiving this because you're a UPSC Mentor user.
-                This is a personal note from the founder — feel free to reply directly.
+                This is a personal note from the founder - feel free to reply directly.
               </p>
             </td>
           </tr>

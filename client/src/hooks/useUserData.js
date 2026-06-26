@@ -159,7 +159,7 @@ export function useUserData({ enabled = true, token = null } = {}) {
     }
   }, [fetchData, token]);
 
-  // ─── Bulk syllabus update — single request for multiple modules ─────────────
+  // ─── Bulk syllabus update - single request for multiple modules ─────────────
   // Used by useQuestionAttempts when several topics cross the threshold at once.
   const bulkUpdateProgress = useCallback(async (updates) => {
     // Optimistic local update

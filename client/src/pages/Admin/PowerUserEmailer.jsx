@@ -35,18 +35,18 @@ const SEGMENTS = {
     accent: "#3B6D11",
     accentBg: "#EAF3DE",
     eyebrow: "Welcome aboard",
-    desc: "Users who signed up in the last 24 hours. Highest-leverage moment — get them to their first win before they churn.",
-    subject: "Welcome to UPSC Mentor — here's where to start 🎯",
+    desc: "Users who signed up in the last 24 hours. Highest-leverage moment - get them to their first win before they churn.",
+    subject: "Welcome to UPSC Mentor - here's where to start 🎯",
     signOff: "Good luck,",
     greetingLine: "Welcome to UPSC Mentor! I'm Anand, one of the builders behind the platform.",
     intro: "You've joined at a great time. Here's the simplest path to get value from day one:",
     steps: [
-      { title: "Set your exam date", body: "Go to your Profile page and lock in your Prelims target. The countdown starts ticking — which is surprisingly motivating." },
+      { title: "Set your exam date", body: "Go to your Profile page and lock in your Prelims target. The countdown starts ticking - which is surprisingly motivating." },
       { title: "Mark your syllabus", body: "Open the Syllabus Tracker and set 3–5 modules to \"In Progress\". It takes 2 minutes and gives you a clear view of what you're walking into." },
-      { title: "Start the timer", body: "Hit the study timer on your dashboard before your next session. It syncs across devices — so your phone and laptop both track the same day." },
+      { title: "Start the timer", body: "Hit the study timer on your dashboard before your next session. It syncs across devices - so your phone and laptop both track the same day." },
     ],
     closing: "That's it. No pressure to do everything at once.",
-    closing2: "If you have questions, just reply to this email — I read every one.",
+    closing2: "If you have questions, just reply to this email - I read every one.",
   },
   power: {
     label: "Power users",
@@ -54,15 +54,15 @@ const SEGMENTS = {
     accent: "#854F0B",
     accentBg: "#FAEEDA",
     eyebrow: "A note from the founder",
-    desc: "Users who studied 3+ days in the last 7 days. Your most engaged cohort — worth nurturing and getting feedback from.",
-    subject: "You're one of our most dedicated users — a quick note",
+    desc: "Users who studied 3+ days in the last 7 days. Your most engaged cohort - worth nurturing and getting feedback from.",
+    subject: "You're one of our most dedicated users - a quick note",
     signOff: "Keep going,",
     greetingLine: "I wanted to reach out personally.",
-    intro: "You're one of the most consistent users on UPSC Mentor right now — studying multiple days in a row puts you in the top tier of our early community.",
+    intro: "You're one of the most consistent users on UPSC Mentor right now - studying multiple days in a row puts you in the top tier of our early community.",
     steps: [
       { title: "AI Diagnostic Reports", body: "After your next mock test, the AI generates a 7-day recovery study plan targeting your exact weak topics. If you haven't tried it yet, it's worth one test attempt." },
-      { title: "The AI Mentor Workspace", body: "Unlike the chat bubble, the full workspace lets you run separate threads — one for GS4 case studies, one for Economy, for example. Your mentor remembers context across sessions." },
-      { title: "Handwritten answer evaluation", body: "If you're doing Mains practice, you can photograph a handwritten answer and the AI evaluates it the same way — useful for replicating actual exam conditions." },
+      { title: "The AI Mentor Workspace", body: "Unlike the chat bubble, the full workspace lets you run separate threads - one for GS4 case studies, one for Economy, for example. Your mentor remembers context across sessions." },
+      { title: "Handwritten answer evaluation", body: "If you're doing Mains practice, you can photograph a handwritten answer and the AI evaluates it the same way - useful for replicating actual exam conditions." },
     ],
     closing: "I'd genuinely love to hear what's working for you and what's not. Any feedback shapes what we build next.",
     closing2: "",
@@ -76,7 +76,7 @@ const SEGMENTS = {
     desc: "Signed up but haven't engaged meaningfully. Time to re-engage with a low-friction entry point.",
     subject: "Still preparing? UPSC Mentor has a shortcut for you",
     signOff: "Still rooting for you,",
-    greetingLine: "You signed up for UPSC Mentor a little while back — I just wanted to check in.",
+    greetingLine: "You signed up for UPSC Mentor a little while back - I just wanted to check in.",
     intro: "If the platform felt overwhelming at first, that's fair. Here's the simplest possible entry point: one subject, one timer, 30 minutes.",
     steps: [
       { title: "Open the dashboard", body: "Pick one subject from the study timer (Polity is a popular start) and run a 30-minute focused session. That single action unlocks the analytics that make everything else useful." },
@@ -92,16 +92,16 @@ const SEGMENTS = {
     accentBg: "#EEEDFE",
     eyebrow: "For our power explorers",
     desc: "Users who've used 3+ features. Rarest segment, highest LTV signal. Treat them like beta testers.",
-    subject: "You've found the depth — here's what's coming next",
+    subject: "You've found the depth - here's what's coming next",
     signOff: "Thank you for exploring,",
-    greetingLine: "You're one of a small group of users who's actually explored multiple areas of UPSC Mentor — the syllabus tracker, mock tests, AI mentor, and more.",
+    greetingLine: "You're one of a small group of users who's actually explored multiple areas of UPSC Mentor - the syllabus tracker, mock tests, AI mentor, and more.",
     intro: "That kind of usage tells us you're using the platform as it was designed: as an integrated preparation workspace, not just a single tool. A few things you might not have discovered yet:",
     steps: [
       { title: "Spaced repetition queue", body: "When you mark a question as difficult in Prelims Grind, it gets added to a revision queue with SM-2 style scheduling. Over time this becomes a highly personalised review bank." },
       { title: "Cross-module memory", body: "Your AI Mentor carries memory of your weak topics across sessions. If mock tests surface gaps, the Mentor already knows about them in your next chat." },
-      { title: "Re-analysis of past tests", body: "Any test attempt can be re-analysed on demand — useful if you've done focused study on a weak topic and want to check if your diagnostic would look different now." },
+      { title: "Re-analysis of past tests", body: "Any test attempt can be re-analysed on demand - useful if you've done focused study on a weak topic and want to check if your diagnostic would look different now." },
     ],
-    closing: "I'd really value 5 minutes of your feedback — what's working, what's confusing, what you wish existed. You're exactly the user I want to talk to. Happy to jump on a quick call if that's easier.",
+    closing: "I'd really value 5 minutes of your feedback - what's working, what's confusing, what you wish existed. You're exactly the user I want to talk to. Happy to jump on a quick call if that's easier.",
     closing2: "",
   },
 };
@@ -168,7 +168,7 @@ function buildPreviewHTML(seg, previewName = "User") {
         </tr>
         <tr>
           <td style="background:#f8f9fb;padding:10px 28px;text-align:center;border-top:1px solid #dde3ed;">
-            <p style="margin:0;font-size:9px;color:#9aa3b2;">You're receiving this because you're a UPSC Mentor user. This is a personal note from the founder — feel free to reply directly.</p>
+            <p style="margin:0;font-size:9px;color:#9aa3b2;">You're receiving this because you're a UPSC Mentor user. This is a personal note from the founder - feel free to reply directly.</p>
           </td>
         </tr>
       </table>
@@ -310,7 +310,7 @@ export default function PowerUserEmailer() {
 
   // ── Load ALL users once ───────────────────────────────────────────────────
   // Segment selection controls the email template, not who is visible.
-  // Every user can receive any segment email — pick recipients manually.
+  // Every user can receive any segment email - pick recipients manually.
   const loadAllUsers = useCallback(async () => {
     setLoadingTargets(true);
     setError("");
@@ -330,7 +330,7 @@ export default function PowerUserEmailer() {
 
   useEffect(() => { loadAllUsers(); }, [loadAllUsers]);
 
-  // ── Segment switch — keep user list, just reset search + results ──────────
+  // ── Segment switch - keep user list, just reset search + results ──────────
   function switchSeg(seg) {
     setActiveSeg(seg);
     setSearchQ("");
@@ -581,7 +581,7 @@ export default function PowerUserEmailer() {
                       <label className="block text-[10px] text-text-muted mb-1 font-mono uppercase tracking-wide">From</label>
                       <input
                         readOnly
-                        value="Anand — UPSC Mentor"
+                        value="Anand - UPSC Mentor"
                         className="w-full bg-bg-surface border border-bg-border rounded-lg px-2.5 py-1.5 text-[12px] text-text-muted font-mono focus:outline-none"
                       />
                     </div>
@@ -638,7 +638,7 @@ export default function PowerUserEmailer() {
                     {results.failed === 0 ? <CheckCircle2 size={13} className="shrink-0" /> : <AlertCircle size={13} className="shrink-0" />}
                     <span>
                       {results.sent} sent successfully
-                      {results.failed > 0 ? `, ${results.failed} failed` : " — all done!"}
+                      {results.failed > 0 ? `, ${results.failed} failed` : " - all done!"}
                     </span>
                   </div>
                 )}

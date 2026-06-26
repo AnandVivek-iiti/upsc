@@ -2,9 +2,9 @@
  * subjectConstants.js
  * ─────────────────────────────────────────────────────────────────────────────
  * Single source of truth for all UPSC subject metadata:
- *   UPSC_SUBJECTS — canonical ordered list
- *   SUBJECT_COLORS — one accent colour per subject (hex)
- *   SUBJECT_ICONS  — one emoji per subject
+ *   UPSC_SUBJECTS - canonical ordered list
+ *   SUBJECT_COLORS - one accent colour per subject (hex)
+ *   SUBJECT_ICONS  - one emoji per subject
  *
  * Kept in /data so plain data lives separately from hook logic.
  * Imported by: useSubjectTimer.js, UserTimeline.jsx, SubjectStudyTimer.jsx,

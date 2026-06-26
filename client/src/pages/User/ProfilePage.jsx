@@ -14,7 +14,7 @@ export function getInitials(name = "") {
   return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
 }
 
-// ─── AvatarCircle — exported so Sidebar / topbar can reuse it ────────────────
+// ─── AvatarCircle - exported so Sidebar / topbar can reuse it ────────────────
 export function AvatarCircle({ name = "", size = "md", onClick, className = "", as: Tag = "button" }) {
   const initials = getInitials(name);
   const sizeMap = {
@@ -76,7 +76,7 @@ function savePreferredSubjects(uid, subjects) {
   try {
     localStorage.setItem(preferredSubjectsKey(uid), JSON.stringify(subjects || []));
   } catch {
-    // localStorage unavailable — selection just won't survive a reload
+    // localStorage unavailable - selection just won't survive a reload
   }
 }
 
@@ -140,7 +140,7 @@ function SelectField({ label, icon: Icon, value, onChange, children }) {
   );
 }
 
-// ─── SubjectChipGrid — multi-select, same subject list/colors/icons as the
+// ─── SubjectChipGrid - multi-select, same subject list/colors/icons as the
 // Dashboard's study timer, so "preferred subjects" never drifts out of sync
 // with what shows up when picking today's topic. ───────────────────────────
 function SubjectChipGrid({ selected = [], onToggle, hint }) {
@@ -179,7 +179,7 @@ function SubjectChipGrid({ selected = [], onToggle, hint }) {
   );
 }
 
-// ─── StatPill — used for the 4 primary stat cards only ───────────────────────
+// ─── StatPill - used for the 4 primary stat cards only ───────────────────────
 function StatPill({ icon: Icon, label, value, color }) {
   return (
     <div className="glass-panel p-4 sm:p-5 flex flex-col items-center gap-2 text-center hover:scale-[1.02] transition-transform duration-200">
@@ -219,7 +219,7 @@ export default function ProfilePage({ token, onBack, onProfileUpdate, userData =
   const [form, setForm] = useState({
     name: "", target_year: 2026, daily_target_hours: 8, examDate: "", preferred_subjects: [],
   });
-  // Last-saved preferred subjects, shown in view mode — separate from
+  // Last-saved preferred subjects, shown in view mode - separate from
   // form.preferred_subjects, which is just the in-progress edit draft.
   const [savedSubjects, setSavedSubjects] = useState([]);
   const [passForm, setPassForm] = useState({ current: "", next: "", confirm: "" });
@@ -311,7 +311,7 @@ export default function ProfilePage({ token, onBack, onProfileUpdate, userData =
         }));
       }
 
-      // No backend field for this yet — persisted client-side, but as part of
+      // No backend field for this yet - persisted client-side, but as part of
       // the same "Save Changes" action so it never feels like a separate step.
       const uid = profile?.id || profile?._id || null;
       savePreferredSubjects(uid, form.preferred_subjects);
@@ -478,7 +478,7 @@ export default function ProfilePage({ token, onBack, onProfileUpdate, userData =
               <StatPill icon={TrendingUp} label="Today"     value={`${todayStudyHours}h`}              color="#f59e0b" />
             </div>
 
-            {/* ── Study stats card — clean, essential metrics only ── */}
+            {/* ── Study stats card - clean, essential metrics only ── */}
             <div className="glass-panel p-5 sm:p-6 rounded-2xl">
               <div className="flex items-center gap-3 mb-5">
                 <TrendingUp size={16} className="text-accent-green" />

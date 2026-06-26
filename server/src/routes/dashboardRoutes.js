@@ -18,14 +18,14 @@ router.use(protect);
 router.get("/", getUserData);
 router.patch("/profile", updateProfile);
 
-// Syllabus — single module patch + new bulk endpoint
+// Syllabus - single module patch + new bulk endpoint
 router.patch("/syllabus/:stage/:paper/:module", updateModuleProgress);
 router.post("/syllabus/bulk", bulkUpdateSyllabus);
 
 // Daily study log
 router.post("/daily-log", logStudyHours);
 
-// Question attempts — server sync for cross-device and profile stats
+// Question attempts - server sync for cross-device and profile stats
 router.post("/question-attempts", syncQuestionAttempts);
 
 // Spaced repetition

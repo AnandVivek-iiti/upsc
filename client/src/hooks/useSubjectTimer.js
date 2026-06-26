@@ -7,7 +7,7 @@
  * before the timer is allowed to start. It is persisted to localStorage
  * (date-keyed, same pattern as TodayPlanner's `upsc-tasks-${date}` key) so
  * the topic shown to the student and the subject the timer is logging
- * against can never drift apart — even across reloads, pauses, and tab
+ * against can never drift apart - even across reloads, pauses, and tab
  * switches. Picking a topic and starting the timer happen as one step.
  */
 
@@ -48,7 +48,7 @@ function authHeaders() {
 const ACTIVE_SESSION_KEY = "upsc_active_session_id";
 const ACTIVE_SUBJECT_KEY = "upsc_active_subject";
 
-// ─── Today's Topic persistence — date-keyed, mirrors TodayPlanner's pattern ───
+// ─── Today's Topic persistence - date-keyed, mirrors TodayPlanner's pattern ───
 // This is the single source of truth for "what is today's topic", independent
 // of the active-session bookkeeping above (which only tracks the *currently
 // running* server session and gets cleared on every pause).
@@ -67,7 +67,7 @@ function saveTodayTopic(subj, chap) {
   try {
     localStorage.setItem(todayTopicKey(), JSON.stringify({ subject: subj, chapter: chap || "" }));
   } catch {
-    // localStorage unavailable — the topic just won't survive a reload, the timer still works
+    // localStorage unavailable - the topic just won't survive a reload, the timer still works
   }
 }
 function clearTodayTopic() {
@@ -80,7 +80,7 @@ function clearTodayTopic() {
 
 // ─── Preferred Subjects persistence ──────────────────────────────────────────
 // Exported (not local to one file) so ProfilePage.jsx's editor and this
-// timer's subject picker read/write the exact same storage key — a student's
+// timer's subject picker read/write the exact same storage key - a student's
 // saved preferences and what the picker offers first can never drift apart.
 // Keyed by user, not by date: a study-subject preference isn't a daily thing.
 export function preferredSubjectsKey(uid) {
@@ -99,7 +99,7 @@ export function savePreferredSubjects(uid, subjects) {
   try {
     localStorage.setItem(preferredSubjectsKey(uid), JSON.stringify(subjects || []));
   } catch {
-    // localStorage unavailable — selection just won't survive a reload
+    // localStorage unavailable - selection just won't survive a reload
   }
 }
 
@@ -129,7 +129,7 @@ export function useSubjectTimer({
     const savedTopic = loadTodayTopic();
 
     if (savedId && savedSubject && timerStore.elapsed > 0) {
-      // A live, server-tracked session survived the reload — restore it exactly.
+      // A live, server-tracked session survived the reload - restore it exactly.
       setActiveId(savedId);
       setSubject(savedSubject);
       setChapter(savedTopic?.chapter || "");
@@ -139,7 +139,7 @@ export function useSubjectTimer({
         sessionStorage.removeItem(ACTIVE_SESSION_KEY);
         sessionStorage.removeItem(ACTIVE_SUBJECT_KEY);
       }
-      // No live session to restore — but the student may already have picked
+      // No live session to restore - but the student may already have picked
       // today's topic earlier (e.g. paused, then reloaded the page). Surface
       // it anyway so what's shown never falls out of sync with what's logged.
       if (savedTopic?.subject) {
@@ -196,7 +196,7 @@ export function useSubjectTimer({
 
   // selectedSubject is required; selectedChapter is optional free text.
   // This is the single place "today's topic" gets logged AND the timer gets
-  // started — they happen as one atomic step so they can never go out of sync.
+  // started - they happen as one atomic step so they can never go out of sync.
   const startStudy = useCallback(async (selectedSubject, selectedChapter = "") => {
     setError(null);
     startedAtRef.current = Date.now();
@@ -248,7 +248,7 @@ export function useSubjectTimer({
       if (json.success) {
         const totalHours = timerStore.elapsed / 3600;
         if (onLogHours) {
-          const note = chapter ? `${subject} — ${chapter} session` : `${subject} session`;
+          const note = chapter ? `${subject} - ${chapter} session` : `${subject} session`;
           await onLogHours(totalHours, note);
           onSynced?.(totalHours);
         }

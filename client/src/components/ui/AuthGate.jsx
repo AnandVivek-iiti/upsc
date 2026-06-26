@@ -1,5 +1,5 @@
 /**
- * AuthGate — themed "login to unlock" fallback card.
+ * AuthGate - themed "login to unlock" fallback card.
  * Drop it inside any protected page to gate access gracefully.
  *
  * Usage:
@@ -99,7 +99,7 @@ export default function AuthGate({ feature = "Dashboard", onNavigateAuth }) {
             {/* Free badge */}
             <p className="text-center text-[11px] font-mono text-text-muted flex items-center justify-center gap-1.5">
               <Flame size={10} className="text-accent-gold" />
-              {meta.badge} — no payment required
+              {meta.badge} - no payment required
             </p>
 
           </div>

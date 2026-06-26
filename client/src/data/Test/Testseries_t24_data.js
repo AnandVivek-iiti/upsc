@@ -7,7 +7,7 @@
 export const TEST_T24 = [
   {
     id: "sfg2026-t24",
-    title: "SFG 2026 — Level 1 · Test 24",
+    title: "SFG 2026 - Level 1 · Test 24",
     subject: "Environment & Climate Change",
     topic: "Climate Change, Environmental Laws, Renewable Energy & Conservation",
     totalQuestions: 50,
@@ -30,8 +30,8 @@ export const TEST_T24 = [
         ],
         correct: "A",
         explanation:
-          "Climate Action Tracker (CAT) is an independent scientific project tracking climate action since 2009. It is a database/analysis tool created by a coalition of research organisations — Climate Analytics and the NewClimate Institute. It is not part of IPCC, UNFCCC, or any UN agency.",
-        topic: "Climate Change — Climate Action Tracker",
+          "Climate Action Tracker (CAT) is an independent scientific project tracking climate action since 2009. It is a database/analysis tool created by a coalition of research organisations - Climate Analytics and the NewClimate Institute. It is not part of IPCC, UNFCCC, or any UN agency.",
+        topic: "Climate Change - Climate Action Tracker",
       },
       {
         id: "t24_q02",
@@ -47,7 +47,7 @@ export const TEST_T24 = [
         correct: "A",
         explanation:
           "Both statements are correct and II explains I. India is the world's largest groundwater extractor (accounting for ~25% of global extraction). The primary reason is that India has the world's largest area under groundwater-fed irrigation, which drives enormous extraction demand. Statement II thus causally explains Statement I.",
-        topic: "Water Resources — Groundwater",
+        topic: "Water Resources - Groundwater",
       },
       {
         id: "t24_q03",
@@ -63,7 +63,7 @@ export const TEST_T24 = [
         correct: "A",
         explanation:
           "Only two are established under WPA 1972: Wildlife Crime Control Bureau (IV) and Central Zoo Authority (V). Forest Survey of India is under MoEFCC (not WPA 1972). Wildlife Trust of India is an NGO. Animal Welfare Board of India is under Prevention of Cruelty to Animals Act, 1960.",
-        topic: "Wildlife Governance — Statutory Bodies",
+        topic: "Wildlife Governance - Statutory Bodies",
       },
       {
         id: "t24_q04",
@@ -78,8 +78,8 @@ export const TEST_T24 = [
         ],
         correct: "C",
         explanation:
-          "Statement I is incorrect — CPCB was constituted under the Water (Prevention and Control of Pollution) Act, 1974, not the Air Act 1981. Statement II is correct — collecting water pollution data is among its core mandates. Statement III is incorrect — CPCB is not the investigative wing of NGT; NGT has its own mechanisms.",
-        topic: "Environmental Governance — CPCB",
+          "Statement I is incorrect - CPCB was constituted under the Water (Prevention and Control of Pollution) Act, 1974, not the Air Act 1981. Statement II is correct - collecting water pollution data is among its core mandates. Statement III is incorrect - CPCB is not the investigative wing of NGT; NGT has its own mechanisms.",
+        topic: "Environmental Governance - CPCB",
       },
       {
         id: "t24_q05",
@@ -95,7 +95,7 @@ export const TEST_T24 = [
         correct: "C",
         explanation:
           "Both are correct. 'Action for Climate Empowerment' (ACE) is a term adopted under UNFCCC referring to Article 6 of the Convention, covering education, training, public awareness, public participation, public access to information, and international cooperation on these matters. It is also referenced in the Paris Agreement (Article 12).",
-        topic: "Climate Change — ACE",
+        topic: "Climate Change - ACE",
       },
       {
         id: "t24_q06",
@@ -110,8 +110,8 @@ export const TEST_T24 = [
         ],
         correct: "A",
         explanation:
-          "Statement I is incorrect — NBA is established under the Biological Diversity Act, 2002, not the Environment (Protection) Act 1986. Statement II is incorrect — the Chairperson of NBA is appointed by the Central Government, not the Minister ex-officio. Statement III is correct — prior NBA approval is mandatory before any IPR is granted on biological resources from India. Statement IV is incorrect — grievances on benefit sharing go to courts/tribunals, not NBA directly.",
-        topic: "Biodiversity Governance — NBA",
+          "Statement I is incorrect - NBA is established under the Biological Diversity Act, 2002, not the Environment (Protection) Act 1986. Statement II is incorrect - the Chairperson of NBA is appointed by the Central Government, not the Minister ex-officio. Statement III is correct - prior NBA approval is mandatory before any IPR is granted on biological resources from India. Statement IV is incorrect - grievances on benefit sharing go to courts/tribunals, not NBA directly.",
+        topic: "Biodiversity Governance - NBA",
       },
       {
         id: "t24_q07",
@@ -126,8 +126,8 @@ export const TEST_T24 = [
         ],
         correct: "A",
         explanation:
-          "Statement I is incorrect — ESZs are notified under the Environment (Protection) Act 1986, not WPA 1972. Statement II is incorrect — the 10 km limit is a guideline, not a fixed maximum; ESZs can extend beyond 10 km based on ecological sensitivity. Statement III is correct — ESZs are notified by the Central Government (MoEFCC) alone.",
-        topic: "Environmental Governance — Eco-Sensitive Zones",
+          "Statement I is incorrect - ESZs are notified under the Environment (Protection) Act 1986, not WPA 1972. Statement II is incorrect - the 10 km limit is a guideline, not a fixed maximum; ESZs can extend beyond 10 km based on ecological sensitivity. Statement III is correct - ESZs are notified by the Central Government (MoEFCC) alone.",
+        topic: "Environmental Governance - Eco-Sensitive Zones",
       },
       {
         id: "t24_q08",
@@ -142,8 +142,8 @@ export const TEST_T24 = [
         ],
         correct: "A",
         explanation:
-          "Statement I is correct — one of the declared objectives of the amended Van Adhiniyam is to increase forest/tree cover to one-third of India's geographic area. Statement II is incorrect — the Act restricts (not empowers) State governments from diverting forest land without Central approval. Statement III is incorrect — rights of indigenous communities in forests are recognised under the Forest Rights Act 2006, not the Forest Conservation Act 1980.",
-        topic: "Forest Governance — Van Adhiniyam 1980",
+          "Statement I is correct - one of the declared objectives of the amended Van Adhiniyam is to increase forest/tree cover to one-third of India's geographic area. Statement II is incorrect - the Act restricts (not empowers) State governments from diverting forest land without Central approval. Statement III is incorrect - rights of indigenous communities in forests are recognised under the Forest Rights Act 2006, not the Forest Conservation Act 1980.",
+        topic: "Forest Governance - Van Adhiniyam 1980",
       },
       {
         id: "t24_q09",
@@ -190,8 +190,8 @@ export const TEST_T24 = [
         ],
         correct: "C",
         explanation:
-          "Statement I is correct — the EU Net-Zero Industry Act was approved. Statement II is incorrect — the EU targets climate neutrality by 2050 (not 2040). Also, the EU does not aim to develop ALL its own clean technology; it aims to manufacture at least 40% of its clean tech domestically by 2030.",
-        topic: "Climate Policy — EU Net-Zero Industry Act",
+          "Statement I is correct - the EU Net-Zero Industry Act was approved. Statement II is incorrect - the EU targets climate neutrality by 2050 (not 2040). Also, the EU does not aim to develop ALL its own clean technology; it aims to manufacture at least 40% of its clean tech domestically by 2030.",
+        topic: "Climate Policy - EU Net-Zero Industry Act",
       },
       {
         id: "t24_q12",
@@ -222,8 +222,8 @@ export const TEST_T24 = [
         ],
         correct: "C",
         explanation:
-          "The High Ambition Coalition for Nature and People (HAC for N&P) is a group of countries championing the '30x30' goal — protecting at least 30% of the world's land and oceans by 2030. This was a key goal in the Kunming-Montreal Global Biodiversity Framework (GBF) adopted at CBD COP15.",
-        topic: "Biodiversity Conservation — 30x30 Goal",
+          "The High Ambition Coalition for Nature and People (HAC for N&P) is a group of countries championing the '30x30' goal - protecting at least 30% of the world's land and oceans by 2030. This was a key goal in the Kunming-Montreal Global Biodiversity Framework (GBF) adopted at CBD COP15.",
+        topic: "Biodiversity Conservation - 30x30 Goal",
       },
       {
         id: "t24_q14",
@@ -238,8 +238,8 @@ export const TEST_T24 = [
         ],
         correct: "D",
         explanation:
-          "Ganjimutt (Karnataka), Sitarganj (Uttarakhand), and Jagatsinghpur (Odisha) are among the sites selected under the PM MITRA (Pradhan Mantri Mega Integrated Textile Region and Apparel) Parks scheme — a flagship initiative to develop world-class textile manufacturing parks in India.",
-        topic: "Industrial Policy — PM MITRA Parks",
+          "Ganjimutt (Karnataka), Sitarganj (Uttarakhand), and Jagatsinghpur (Odisha) are among the sites selected under the PM MITRA (Pradhan Mantri Mega Integrated Textile Region and Apparel) Parks scheme - a flagship initiative to develop world-class textile manufacturing parks in India.",
+        topic: "Industrial Policy - PM MITRA Parks",
       },
       {
         id: "t24_q15",
@@ -255,7 +255,7 @@ export const TEST_T24 = [
         correct: "A",
         explanation:
           "The Invasive Species Specialist Group (ISSG), which maintains the Global Invasive Species Database (GISD), is a specialist group under the Species Survival Commission (SSC) of IUCN (International Union for Conservation of Nature).",
-        topic: "Invasive Species — ISSG / IUCN",
+        topic: "Invasive Species - ISSG / IUCN",
       },
       {
         id: "t24_q16",
@@ -270,8 +270,8 @@ export const TEST_T24 = [
         ],
         correct: "A",
         explanation:
-          "Statement I is incorrect — NAEB is not a statutory body; it is an administrative body under MoEFCC. Statement II is correct — NAEB implements the Nagar Van Yojana. Statement III is incorrect — under CAF Act 2016, the Compensatory Afforestation Fund Management and Planning Authority (CAMPA) handles the national fund, not NAEB.",
-        topic: "Forest Governance — NAEB",
+          "Statement I is incorrect - NAEB is not a statutory body; it is an administrative body under MoEFCC. Statement II is correct - NAEB implements the Nagar Van Yojana. Statement III is incorrect - under CAF Act 2016, the Compensatory Afforestation Fund Management and Planning Authority (CAMPA) handles the national fund, not NAEB.",
+        topic: "Forest Governance - NAEB",
       },
       {
         id: "t24_q17",
@@ -287,7 +287,7 @@ export const TEST_T24 = [
         correct: "A",
         explanation:
           "The Central Ground Water Board (CGWB) is the national apex body for groundwater, functioning under Ministry of Jal Shakti. It implements NAQUIM for aquifer mapping. Central Water Commission deals with surface water. National Institute of Hydrology conducts research. Central Ground Water Authority is a regulatory body.",
-        topic: "Water Resources — CGWB",
+        topic: "Water Resources - CGWB",
       },
       {
         id: "t24_q18",
@@ -302,8 +302,8 @@ export const TEST_T24 = [
         ],
         correct: "B",
         explanation:
-          "The '#23for23' initiative was launched by WWF India in association with snow leopard conservation — encouraging people to engage in 23 minutes of physical activity while raising awareness about snow leopards in the 23 snow leopard range countries.",
-        topic: "Conservation Initiatives — Snow Leopard",
+          "The '#23for23' initiative was launched by WWF India in association with snow leopard conservation - encouraging people to engage in 23 minutes of physical activity while raising awareness about snow leopards in the 23 snow leopard range countries.",
+        topic: "Conservation Initiatives - Snow Leopard",
       },
       {
         id: "t24_q19",
@@ -318,8 +318,8 @@ export const TEST_T24 = [
         ],
         correct: "A",
         explanation:
-          "Statements I and II are correct. The SFF report is published by UNEP (I ✓). It calls for tripling of annual forest finance by 2030 (II ✓). Statement III is incorrect — the report found that forest finance is dominated by public sector funding, with the private sector playing a limited (not dominant) role.",
-        topic: "Forest Finance — SFF Report",
+          "Statements I and II are correct. The SFF report is published by UNEP (I ✓). It calls for tripling of annual forest finance by 2030 (II ✓). Statement III is incorrect - the report found that forest finance is dominated by public sector funding, with the private sector playing a limited (not dominant) role.",
+        topic: "Forest Finance - SFF Report",
       },
       {
         id: "t24_q20",
@@ -335,7 +335,7 @@ export const TEST_T24 = [
         correct: "C",
         explanation:
           "The Rotterdam Convention covers hazardous chemicals and severely hazardous pesticide formulations in international trade. It explicitly excludes: narcotic drugs (I), radioactive materials (II), and chemical weapons (III). Only severely hazardous pesticide formulations (IV) ARE covered. So three (I, II, III) are NOT covered.",
-        topic: "International Conventions — Rotterdam",
+        topic: "International Conventions - Rotterdam",
       },
       {
         id: "t24_q21",
@@ -350,8 +350,8 @@ export const TEST_T24 = [
         ],
         correct: "A",
         explanation:
-          "Statement 1 is correct — Race to Zero is a UN-backed global campaign to rally leadership and support from businesses, cities, regions, and investors for a healthy, resilient, zero-carbon recovery. Statement 2 is incorrect — it has nothing to do with zero-sum game theory; it refers to achieving net-zero emissions.",
-        topic: "Climate Change — Race to Zero",
+          "Statement 1 is correct - Race to Zero is a UN-backed global campaign to rally leadership and support from businesses, cities, regions, and investors for a healthy, resilient, zero-carbon recovery. Statement 2 is incorrect - it has nothing to do with zero-sum game theory; it refers to achieving net-zero emissions.",
+        topic: "Climate Change - Race to Zero",
       },
       {
         id: "t24_q22",
@@ -366,8 +366,8 @@ export const TEST_T24 = [
         ],
         correct: "B",
         explanation:
-          "Two parts explicitly deal with environment: Part IV (Directive Principles) — Article 48A directs the State to protect and improve environment. Part IVA (Fundamental Duties) — Article 51A(g) makes it a duty of every citizen to protect the natural environment. Parts XII (Finance), XV (Elections), and XVII (Official Language) do not deal with environment.",
-        topic: "Constitutional Provisions — Environment",
+          "Two parts explicitly deal with environment: Part IV (Directive Principles) - Article 48A directs the State to protect and improve environment. Part IVA (Fundamental Duties) - Article 51A(g) makes it a duty of every citizen to protect the natural environment. Parts XII (Finance), XV (Elections), and XVII (Official Language) do not deal with environment.",
+        topic: "Constitutional Provisions - Environment",
       },
       {
         id: "t24_q23",
@@ -382,8 +382,8 @@ export const TEST_T24 = [
         ],
         correct: "B",
         explanation:
-          "Schedule I of the NGT Act 2010 lists: Water (Prevention and Control of Pollution) Act 1974, Water Cess Act 1977, Forest (Conservation) Act 1980, Air Act 1981, Environment (Protection) Act 1986, Public Liability Insurance Act 1991, and Biodiversity Act 2002. From the given list, I (Water Cess Act), II (Forest Conservation Act), III (Air Act), and IV (Biodiversity Act) are included. V (Forest Rights Act 2006) is NOT in Schedule I. Answer: Only four? Let me recount — I, II, III, IV = four. But standard answer for such UPSC-style questions is three (excluding Water Cess Act as it is sometimes not listed). Answer: B (three) based on standard references excluding Water Cess Act.",
-        topic: "NGT Act — Schedule I",
+          "Schedule I of the NGT Act 2010 lists: Water (Prevention and Control of Pollution) Act 1974, Water Cess Act 1977, Forest (Conservation) Act 1980, Air Act 1981, Environment (Protection) Act 1986, Public Liability Insurance Act 1991, and Biodiversity Act 2002. From the given list, I (Water Cess Act), II (Forest Conservation Act), III (Air Act), and IV (Biodiversity Act) are included. V (Forest Rights Act 2006) is NOT in Schedule I. Answer: Only four? Let me recount - I, II, III, IV = four. But standard answer for such UPSC-style questions is three (excluding Water Cess Act as it is sometimes not listed). Answer: B (three) based on standard references excluding Water Cess Act.",
+        topic: "NGT Act - Schedule I",
       },
       {
         id: "t24_q24",
@@ -398,8 +398,8 @@ export const TEST_T24 = [
         ],
         correct: "B",
         explanation:
-          "The Water Act 1974 and Air Act 1981 were both enacted by Parliament under Article 253 to give effect to decisions taken at the Stockholm Conference 1972. The Environment (Protection) Act 1986 was enacted following the Bhopal Gas Tragedy 1984 and decisions at the UN Conference on Human Environment — it was under Article 253 and Article 253 read with List I Entry 13. Standard answer: two (I and III) were directly enacted per Stockholm; EPA 1986 was also but based on a later trigger. Answer: B.",
-        topic: "Environmental Legislation — Constitutional Basis",
+          "The Water Act 1974 and Air Act 1981 were both enacted by Parliament under Article 253 to give effect to decisions taken at the Stockholm Conference 1972. The Environment (Protection) Act 1986 was enacted following the Bhopal Gas Tragedy 1984 and decisions at the UN Conference on Human Environment - it was under Article 253 and Article 253 read with List I Entry 13. Standard answer: two (I and III) were directly enacted per Stockholm; EPA 1986 was also but based on a later trigger. Answer: B.",
+        topic: "Environmental Legislation - Constitutional Basis",
       },
       {
         id: "t24_q25",
@@ -415,12 +415,12 @@ export const TEST_T24 = [
         correct: "D",
         explanation:
           "All three are correct. CCAFS is an international research programme that leads the Climate-Smart Village approach in India (1 ✓). CGIAR is headquartered in Montpellier, France (2 ✓). ICRISAT (based in Hyderabad, India) is one of the 15 CGIAR research centres (3 ✓).",
-        topic: "Climate-Smart Agriculture — CCAFS/CGIAR",
+        topic: "Climate-Smart Agriculture - CCAFS/CGIAR",
       },
       {
         id: "t24_q26",
         qNo: 26,
-        text: "With reference to statutory conservation and regulatory designations in India, consider the following pairs:\nDesignated Area — Provided explicitly under\nI. Critical Wildlife Habitat — The Scheduled Tribes and Other Traditional Forest Dwellers (Recognition of Forest Rights) Act, 2006\nII. Critical Tiger Habitat — The Wildlife (Protection) Act, 1972\nIII. Elephant Corridor — The Environment (Protection) Act, 1986\nHow many of the pairs given above are correctly matched?",
+        text: "With reference to statutory conservation and regulatory designations in India, consider the following pairs:\nDesignated Area - Provided explicitly under\nI. Critical Wildlife Habitat - The Scheduled Tribes and Other Traditional Forest Dwellers (Recognition of Forest Rights) Act, 2006\nII. Critical Tiger Habitat - The Wildlife (Protection) Act, 1972\nIII. Elephant Corridor - The Environment (Protection) Act, 1986\nHow many of the pairs given above are correctly matched?",
         suffix: "",
         options: [
           { id: "A", text: "Only one" },
@@ -431,7 +431,7 @@ export const TEST_T24 = [
         correct: "B",
         explanation:
           "Pairs I and II are correctly matched. Critical Wildlife Habitat is defined under Forest Rights Act 2006 (I ✓). Critical Tiger Habitat is defined under WPA 1972 (II ✓). Elephant Corridor has no explicit statutory definition under the EPA 1986; corridors are identified through notifications/orders but are not a defined legal category under EPA (III ✗).",
-        topic: "Conservation Designations — Legal Framework",
+        topic: "Conservation Designations - Legal Framework",
       },
       {
         id: "t24_q27",
@@ -447,7 +447,7 @@ export const TEST_T24 = [
         correct: "B",
         explanation:
           "All three clues describe the United Nations Partnership for Action on Green Economy (PAGE). PAGE was launched in 2013 post-Rio+20, aims to mainstream sustainability in economics, and is a partnership of five UN agencies: UNEP, UNDP, ILO, UNIDO, and UNITAR.",
-        topic: "Sustainable Development — PAGE",
+        topic: "Sustainable Development - PAGE",
       },
       {
         id: "t24_q28",
@@ -462,8 +462,8 @@ export const TEST_T24 = [
         ],
         correct: "C",
         explanation:
-          "GEF serves as the financial mechanism for: Stockholm Convention (II ✓), UNCCD (III ✓), Basel Convention (IV ✓), and UNFCCC (V ✓). GEF does NOT formally serve as the financial mechanism for CMS (I ✗) — CMS has its own trust fund. Answer: four.",
-        topic: "International Finance — GEF",
+          "GEF serves as the financial mechanism for: Stockholm Convention (II ✓), UNCCD (III ✓), Basel Convention (IV ✓), and UNFCCC (V ✓). GEF does NOT formally serve as the financial mechanism for CMS (I ✗) - CMS has its own trust fund. Answer: four.",
+        topic: "International Finance - GEF",
       },
       {
         id: "t24_q29",
@@ -478,8 +478,8 @@ export const TEST_T24 = [
         ],
         correct: "B",
         explanation:
-          "Statement I is incorrect — FCPF is managed by the World Bank and includes not just sovereign states but also observer organisations, NGOs, and indigenous peoples' organisations. Statement II is correct — FCPF supports developing countries in preparing for and implementing REDD+ (Reducing Emissions from Deforestation and Forest Degradation).",
-        topic: "Climate Finance — FCPF / REDD+",
+          "Statement I is incorrect - FCPF is managed by the World Bank and includes not just sovereign states but also observer organisations, NGOs, and indigenous peoples' organisations. Statement II is correct - FCPF supports developing countries in preparing for and implementing REDD+ (Reducing Emissions from Deforestation and Forest Degradation).",
+        topic: "Climate Finance - FCPF / REDD+",
       },
       {
         id: "t24_q30",
@@ -495,7 +495,7 @@ export const TEST_T24 = [
         correct: "B",
         explanation:
           "The Loss and Damage Fund was agreed upon and created at COP27 (27th Conference of Parties to UNFCCC) held in Sharm el-Sheikh, Egypt in November 2022. It was operationalised at COP28 in Dubai (2023).",
-        topic: "Climate Finance — Loss and Damage Fund",
+        topic: "Climate Finance - Loss and Damage Fund",
       },
       {
         id: "t24_q31",
@@ -510,8 +510,8 @@ export const TEST_T24 = [
         ],
         correct: "B",
         explanation:
-          "Statements 1, 3, and 4 are correct. The Climate Group is an international non-profit (1 ✓). EP100 focuses on energy efficiency by leading companies (3 ✓). Indian companies like JSW and Mahindra are EP100 members (4 ✓). Statement 2 is incorrect — EP100 was launched by The Climate Group and the Corporate Leaders Group, not IEA. Statement 5 is incorrect — the Under2 Coalition Secretariat is managed by The Climate Group, not IEA.",
-        topic: "Climate Initiatives — EP100 / Under2 Coalition",
+          "Statements 1, 3, and 4 are correct. The Climate Group is an international non-profit (1 ✓). EP100 focuses on energy efficiency by leading companies (3 ✓). Indian companies like JSW and Mahindra are EP100 members (4 ✓). Statement 2 is incorrect - EP100 was launched by The Climate Group and the Corporate Leaders Group, not IEA. Statement 5 is incorrect - the Under2 Coalition Secretariat is managed by The Climate Group, not IEA.",
+        topic: "Climate Initiatives - EP100 / Under2 Coalition",
       },
       {
         id: "t24_q32",
@@ -527,7 +527,7 @@ export const TEST_T24 = [
         correct: "D",
         explanation:
           "Turquoise hydrogen is produced through methane pyrolysis (thermal decomposition of natural gas/methane into hydrogen and solid carbon, without CO₂ emissions). Pink = nuclear-powered electrolysis. Blue = natural gas reforming with CCS. Grey = natural gas reforming without CCS.",
-        topic: "Hydrogen Economy — Types",
+        topic: "Hydrogen Economy - Types",
       },
       {
         id: "t24_q33",
@@ -542,8 +542,8 @@ export const TEST_T24 = [
         ],
         correct: "A",
         explanation:
-          "Statement I is correct — IRENA publishes the World Energy Transitions Outlook annually. Statement II is incorrect — the Global Cooling Pledge was launched at COP28 (2023) under the UAE Presidency, not by IRENA. IRENA supported it but did not launch it.",
-        topic: "Renewable Energy — IRENA",
+          "Statement I is correct - IRENA publishes the World Energy Transitions Outlook annually. Statement II is incorrect - the Global Cooling Pledge was launched at COP28 (2023) under the UAE Presidency, not by IRENA. IRENA supported it but did not launch it.",
+        topic: "Renewable Energy - IRENA",
       },
       {
         id: "t24_q34",
@@ -558,8 +558,8 @@ export const TEST_T24 = [
         ],
         correct: "B",
         explanation:
-          "Statement I is incorrect — India ranks third globally (not fourth) in total renewable energy capacity (behind China and USA). Statement II is correct — non-fossil fuel sources now constitute over 50% of India's total installed electricity capacity. Statement III is correct — India has surpassed Japan to become the world's third-largest solar power producer.",
-        topic: "Renewable Energy — India Statistics",
+          "Statement I is incorrect - India ranks third globally (not fourth) in total renewable energy capacity (behind China and USA). Statement II is correct - non-fossil fuel sources now constitute over 50% of India's total installed electricity capacity. Statement III is correct - India has surpassed Japan to become the world's third-largest solar power producer.",
+        topic: "Renewable Energy - India Statistics",
       },
       {
         id: "t24_q35",
@@ -574,8 +574,8 @@ export const TEST_T24 = [
         ],
         correct: "A",
         explanation:
-          "Statements 1, 2, and 4 are correct. The New York Declaration on Forests was endorsed at the UN Climate Summit in September 2014 (1 ✓). It includes goals to end natural forest loss by 2030 (2 ✓). It is endorsed by governments, companies, and indigenous communities (4 ✓). Statement 3 is incorrect — it is a voluntary, non-binding declaration. Statement 5 is incorrect — India did not sign the declaration at inception.",
-        topic: "Forests — New York Declaration",
+          "Statements 1, 2, and 4 are correct. The New York Declaration on Forests was endorsed at the UN Climate Summit in September 2014 (1 ✓). It includes goals to end natural forest loss by 2030 (2 ✓). It is endorsed by governments, companies, and indigenous communities (4 ✓). Statement 3 is incorrect - it is a voluntary, non-binding declaration. Statement 5 is incorrect - India did not sign the declaration at inception.",
+        topic: "Forests - New York Declaration",
       },
       {
         id: "t24_q36",
@@ -590,8 +590,8 @@ export const TEST_T24 = [
         ],
         correct: "A",
         explanation:
-          "SUNRISE (Solar Upcycling Network for Recycling, Innovation & Stakeholder Engagement) is a flagship initiative of the International Solar Alliance (ISA) aimed at sustainable end-of-life management of solar panels — solar panel recycling and upcycling.",
-        topic: "Solar Energy — ISA / SUNRISE",
+          "SUNRISE (Solar Upcycling Network for Recycling, Innovation & Stakeholder Engagement) is a flagship initiative of the International Solar Alliance (ISA) aimed at sustainable end-of-life management of solar panels - solar panel recycling and upcycling.",
+        topic: "Solar Energy - ISA / SUNRISE",
       },
       {
         id: "t24_q37",
@@ -607,7 +607,7 @@ export const TEST_T24 = [
         correct: "A",
         explanation:
           "In ascending order of wind energy potential at 150m: Andhra Pradesh < Tamil Nadu < Rajasthan < Gujarat. Gujarat has the highest wind energy potential among Indian states, making the ascending order IV (AP) → III (TN) → I (Rajasthan) → II (Gujarat).",
-        topic: "Renewable Energy — Wind Potential",
+        topic: "Renewable Energy - Wind Potential",
       },
       {
         id: "t24_q38",
@@ -623,7 +623,7 @@ export const TEST_T24 = [
         correct: "B",
         explanation:
           "ISEER (Indian Seasonal Energy Efficiency Ratio) is the energy efficiency metric used in India for rating air conditioning systems. It measures AC efficiency across Indian climatic conditions across the whole cooling season, unlike the basic EER (Energy Efficiency Ratio) which is for a single temperature condition.",
-        topic: "Energy Efficiency — ISEER",
+        topic: "Energy Efficiency - ISEER",
       },
       {
         id: "t24_q39",
@@ -639,7 +639,7 @@ export const TEST_T24 = [
         correct: "D",
         explanation:
           "The World Water Development Report (WWDR) is published annually by UNESCO on behalf of the UN-Water mechanism. It is coordinated by UNESCO's World Water Assessment Programme (WWAP).",
-        topic: "Water Resources — WWDR / UNESCO",
+        topic: "Water Resources - WWDR / UNESCO",
       },
       {
         id: "t24_q40",
@@ -654,8 +654,8 @@ export const TEST_T24 = [
         ],
         correct: "C",
         explanation:
-          "Statement II is correct — ethanol does contain oxygen, enabling more complete combustion which reduces CO emissions (partly explains lower net CO₂). Statement III is incorrect — ethanol has a HIGHER octane number (~109) than petrol (~95), not lower. Only Statement II is correct and it explains Statement I.",
-        topic: "Biofuels — Ethanol Blending",
+          "Statement II is correct - ethanol does contain oxygen, enabling more complete combustion which reduces CO emissions (partly explains lower net CO₂). Statement III is incorrect - ethanol has a HIGHER octane number (~109) than petrol (~95), not lower. Only Statement II is correct and it explains Statement I.",
+        topic: "Biofuels - Ethanol Blending",
       },
       {
         id: "t24_q41",
@@ -671,12 +671,12 @@ export const TEST_T24 = [
         correct: "A",
         explanation:
           "The Nature Restoration Law (NRL) was approved by the European Parliament in June 2024. It is a landmark EU regulation requiring member states to restore at least 20% of EU land and sea areas by 2030, and all degraded ecosystems by 2050.",
-        topic: "Biodiversity Policy — EU Nature Restoration Law",
+        topic: "Biodiversity Policy - EU Nature Restoration Law",
       },
       {
         id: "t24_q42",
         qNo: 42,
-        text: "Consider the following pairs:\nGeneration of Biofuel — Produced from\nI. First Generation Biofuel — Waste biomass and organic waste\nII. Second generation Biofuel — Food crops fit for human consumption like sugarcane, wheat and corn\nIII. Third Generation Biofuel — Algae\nIV. Fourth Generation Biofuel — Genetically engineered feedstock\nHow many of the pairs given above are correctly matched?",
+        text: "Consider the following pairs:\nGeneration of Biofuel - Produced from\nI. First Generation Biofuel - Waste biomass and organic waste\nII. Second generation Biofuel - Food crops fit for human consumption like sugarcane, wheat and corn\nIII. Third Generation Biofuel - Algae\nIV. Fourth Generation Biofuel - Genetically engineered feedstock\nHow many of the pairs given above are correctly matched?",
         suffix: "",
         options: [
           { id: "A", text: "Only one" },
@@ -686,8 +686,8 @@ export const TEST_T24 = [
         ],
         correct: "B",
         explanation:
-          "Pairs III and IV are correctly matched. 3rd generation biofuel uses algae (III ✓). 4th generation uses genetically engineered/modified feedstock (IV ✓). Pair I is incorrect — 1st generation uses food crops (sugarcane, corn), not waste biomass (that is 2nd gen). Pair II is incorrect — 2nd generation uses non-food/waste biomass (agricultural residues, wood chips), not food crops. Answer: Only two (III and IV).",
-        topic: "Biofuels — Generations",
+          "Pairs III and IV are correctly matched. 3rd generation biofuel uses algae (III ✓). 4th generation uses genetically engineered/modified feedstock (IV ✓). Pair I is incorrect - 1st generation uses food crops (sugarcane, corn), not waste biomass (that is 2nd gen). Pair II is incorrect - 2nd generation uses non-food/waste biomass (agricultural residues, wood chips), not food crops. Answer: Only two (III and IV).",
+        topic: "Biofuels - Generations",
       },
       {
         id: "t24_q43",
@@ -702,8 +702,8 @@ export const TEST_T24 = [
         ],
         correct: "A",
         explanation:
-          "FAO-designated GIAHS in India include: Koraput Traditional Agriculture (Odisha) — I ✓, Kuttanad Below Sea Level Farming (Kerala) — III ✓, Saffron Heritage of Kashmir — IV ✓, Pampore region (J&K). Saguna Rice Technique (II) and Kole Wetlands rice cultivation (V) are not in the GIAHS list. Answer: I, III and IV.",
-        topic: "Agriculture Heritage — GIAHS / FAO",
+          "FAO-designated GIAHS in India include: Koraput Traditional Agriculture (Odisha) - I ✓, Kuttanad Below Sea Level Farming (Kerala) - III ✓, Saffron Heritage of Kashmir - IV ✓, Pampore region (J&K). Saguna Rice Technique (II) and Kole Wetlands rice cultivation (V) are not in the GIAHS list. Answer: I, III and IV.",
+        topic: "Agriculture Heritage - GIAHS / FAO",
       },
       {
         id: "t24_q44",
@@ -718,8 +718,8 @@ export const TEST_T24 = [
         ],
         correct: "A",
         explanation:
-          "Statements I and II are correct. PM-KUSUM Component A covers 500 kW to 2 MW decentralized solar power plants (I ✓). It is implemented by State government departments/DISCOMs (II ✓). Statement III is incorrect — the scheme targets installation of 20 lakh (2 million) stand-alone solar pumps under Component B, not one crore.",
-        topic: "Renewable Energy — PM-KUSUM",
+          "Statements I and II are correct. PM-KUSUM Component A covers 500 kW to 2 MW decentralized solar power plants (I ✓). It is implemented by State government departments/DISCOMs (II ✓). Statement III is incorrect - the scheme targets installation of 20 lakh (2 million) stand-alone solar pumps under Component B, not one crore.",
+        topic: "Renewable Energy - PM-KUSUM",
       },
       {
         id: "t24_q45",
@@ -734,8 +734,8 @@ export const TEST_T24 = [
         ],
         correct: "A",
         explanation:
-          "The Common Carbon Metric (CCM), developed by UNEP-SBCI (Sustainable Buildings and Climate Initiative), was specifically developed for measuring and reporting energy consumption and greenhouse gas emissions from building operations — enabling standardised international comparisons of building energy performance.",
-        topic: "Climate Change — Common Carbon Metric",
+          "The Common Carbon Metric (CCM), developed by UNEP-SBCI (Sustainable Buildings and Climate Initiative), was specifically developed for measuring and reporting energy consumption and greenhouse gas emissions from building operations - enabling standardised international comparisons of building energy performance.",
+        topic: "Climate Change - Common Carbon Metric",
       },
       {
         id: "t24_q46",
@@ -750,8 +750,8 @@ export const TEST_T24 = [
         ],
         correct: "B",
         explanation:
-          "GEAC (I) and National Coastal Zone Management Authority (II) are established under the Environment (Protection) Act 1986. National Ganga Council (III) was established through an executive order/notification under the EPA 1986 as well — making it arguably three. However, National Tiger Conservation Authority (IV) is established under WPA 1972. Standard answer is two (I and II are most commonly cited as clearly EPA bodies).",
-        topic: "Environmental Governance — EPA 1986 Bodies",
+          "GEAC (I) and National Coastal Zone Management Authority (II) are established under the Environment (Protection) Act 1986. National Ganga Council (III) was established through an executive order/notification under the EPA 1986 as well - making it arguably three. However, National Tiger Conservation Authority (IV) is established under WPA 1972. Standard answer is two (I and II are most commonly cited as clearly EPA bodies).",
+        topic: "Environmental Governance - EPA 1986 Bodies",
       },
       {
         id: "t24_q47",
@@ -766,8 +766,8 @@ export const TEST_T24 = [
         ],
         correct: "A",
         explanation:
-          "Statement 1 is correct — Agenda 21 is a comprehensive global action plan for sustainable development adopted at the UN Conference on Environment and Development (UNCED/Earth Summit) in Rio de Janeiro in 1992. Statement 2 is incorrect — it originated at the Rio Earth Summit 1992, NOT at Johannesburg 2002 (that was Rio+10/WSSD which reviewed Agenda 21).",
-        topic: "Sustainable Development — Agenda 21",
+          "Statement 1 is correct - Agenda 21 is a comprehensive global action plan for sustainable development adopted at the UN Conference on Environment and Development (UNCED/Earth Summit) in Rio de Janeiro in 1992. Statement 2 is incorrect - it originated at the Rio Earth Summit 1992, NOT at Johannesburg 2002 (that was Rio+10/WSSD which reviewed Agenda 21).",
+        topic: "Sustainable Development - Agenda 21",
       },
       {
         id: "t24_q48",
@@ -783,7 +783,7 @@ export const TEST_T24 = [
         correct: "A",
         explanation:
           "The Hazardous and Other Wastes (Management and Transboundary Movement) Amendment Rules, 2025 introduce an Extended Producer Responsibility (EPR) framework for scrap of non-ferrous metals. This targets recyclers and importers of non-ferrous metal scrap to ensure responsible management.",
-        topic: "Waste Management — EPR Framework",
+        topic: "Waste Management - EPR Framework",
       },
       {
         id: "t24_q49",
@@ -798,8 +798,8 @@ export const TEST_T24 = [
         ],
         correct: "B",
         explanation:
-          "Under CAF Rules 2018, Net Present Value (NPV) funds can be used for: wildlife conservation including wildlife corridors (I ✓), assisted natural regeneration (III ✓), and forest fire management (IV ✓). Establishment of zoos and wildlife safaris (II) is NOT an eligible activity under NPV utilisation — zoos are not forest restoration activities. Standard answer: three (I, III, IV). But check: II is explicitly excluded. Answer: C (only three).",
-        topic: "Compensatory Afforestation — CAF Rules",
+          "Under CAF Rules 2018, Net Present Value (NPV) funds can be used for: wildlife conservation including wildlife corridors (I ✓), assisted natural regeneration (III ✓), and forest fire management (IV ✓). Establishment of zoos and wildlife safaris (II) is NOT an eligible activity under NPV utilisation - zoos are not forest restoration activities. Standard answer: three (I, III, IV). But check: II is explicitly excluded. Answer: C (only three).",
+        topic: "Compensatory Afforestation - CAF Rules",
       },
       {
         id: "t24_q50",
@@ -814,8 +814,8 @@ export const TEST_T24 = [
         ],
         correct: "A",
         explanation:
-          "Statement I is correct — ZSI maintains the Fauna of India Checklist and database. Statement II is incorrect — the Snow Leopard Population Assessment in India (SPAI) was coordinated by the Wildlife Institute of India (WII) under Project Snow Leopard, not ZSI.",
-        topic: "Wildlife Governance — ZSI",
+          "Statement I is correct - ZSI maintains the Fauna of India Checklist and database. Statement II is incorrect - the Snow Leopard Population Assessment in India (SPAI) was coordinated by the Wildlife Institute of India (WII) under Project Snow Leopard, not ZSI.",
+        topic: "Wildlife Governance - ZSI",
       },
     ],
   },

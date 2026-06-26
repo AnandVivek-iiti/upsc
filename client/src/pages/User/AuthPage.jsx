@@ -453,7 +453,7 @@ export default function AuthPage({ onAuthSuccess, onBack }) {
       style={{ background: "var(--bg-base)" }}
       onKeyDown={handleKeyDown}
     >
-      {/* Subtle grid overlay — matches your body background radial style */}
+      {/* Subtle grid overlay - matches your body background radial style */}
       <div className="pointer-events-none fixed inset-0 opacity-[0.03]"
         style={{
           backgroundImage: "linear-gradient(var(--accent-gold) 1px, transparent 1px), linear-gradient(90deg, var(--accent-gold) 1px, transparent 1px)",
@@ -628,7 +628,7 @@ export default function AuthPage({ onAuthSuccess, onBack }) {
               icon={Lock} autoComplete="new-password" />
 
             <button onClick={handleSignupNext} className="btn-primary w-full flex items-center justify-center gap-2 mt-2 touch-manipulation">
-              <span>Next — Study Profile</span><ArrowRight size={15} />
+              <span>Next - Study Profile</span><ArrowRight size={15} />
             </button>
 
             <p className="text-center text-sm text-text-muted font-mono">

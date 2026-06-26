@@ -1,16 +1,16 @@
 // ─── SFG 2026 Test 31 Data ────────────────────────────────────────────────────
 // Test 321128 | Subject: General Studies
-// Topics: Geography — Earth & Universe, Earth's Crust, Vulcanism, Weathering
+// Topics: Geography - Earth & Universe, Earth's Crust, Vulcanism, Weathering
 // Total Questions: 50 | Max Marks: 100 | Time: 60 min
 // Marking: +2 correct, -0.66 wrong (1/3 negative marking)
 
 export const TEST_T31 = [
   {
     id: "sfg2026-t31",
-    title: "SFG 2026 — Level 1 · Test 31",
+    title: "SFG 2026 - Level 1 · Test 31",
     testCode: "321128",
     subject: "General Studies",
-    topic: "Geography — Earth, Universe, Crust, Vulcanism & Weathering",
+    topic: "Geography - Earth, Universe, Crust, Vulcanism & Weathering",
     totalQuestions: 50,
     maxMarks: 100,
     timeMinutes: 60,
@@ -34,7 +34,7 @@ export const TEST_T31 = [
         correct: "D",
         explanation:
           "On 21st June (Summer Solstice), the Northern Hemisphere is tilted toward the Sun. The Tropic of Cancer (23.5°N) receives direct sunlight and experiences more than 12 hours of daylight. The Arctic Circle and regions beyond experience continuous daylight (up to 6 months at the North Pole). The Equator always receives exactly 12 hours of daylight. The Tropic of Capricorn (in the Southern Hemisphere) experiences LESS than 12 hours on June 21 (it is winter there). Options 2 (Tropic of Cancer) and 4 (Arctic Circle) are correct.",
-        topic: "Geography — Earth & Sun",
+        topic: "Geography - Earth & Sun",
         difficulty: "Easy",
         pyqYear: 2024,
       },
@@ -51,8 +51,8 @@ export const TEST_T31 = [
         ],
         correct: "B",
         explanation:
-          "Statement I is correct — The core is composed mostly of nickel and iron (NiFe layer). Statement II is correct — The core is the densest layer with density exceeding 11.0 g/cm³. Statement III is incorrect — Only the outer core is liquid; the inner core is solid. Statement IV is incorrect — The Lehmann Discontinuity separates the outer (liquid) core from the inner (solid) core. The Repetti Discontinuity separates the upper mantle from the lower mantle.",
-        topic: "Geography — Earth's Interior",
+          "Statement I is correct - The core is composed mostly of nickel and iron (NiFe layer). Statement II is correct - The core is the densest layer with density exceeding 11.0 g/cm³. Statement III is incorrect - Only the outer core is liquid; the inner core is solid. Statement IV is incorrect - The Lehmann Discontinuity separates the outer (liquid) core from the inner (solid) core. The Repetti Discontinuity separates the upper mantle from the lower mantle.",
+        topic: "Geography - Earth's Interior",
         difficulty: "Medium",
         pyqYear: null,
       },
@@ -69,8 +69,8 @@ export const TEST_T31 = [
         ],
         correct: "D",
         explanation:
-          "Statement I is incorrect — The linear distance per degree of latitude is actually LONGER at the poles than at the equator. At the equator (~68.7 miles/degree) vs at the poles (~69.4 miles/degree). Statement II is correct — The Earth is an oblate spheroid, bulging at the equator and flattened at the poles. Due to flattening at poles, the curvature is steeper in the north-south direction, making one degree of latitude cover a slightly longer distance.",
-        topic: "Geography — Latitudes & Earth Shape",
+          "Statement I is incorrect - The linear distance per degree of latitude is actually LONGER at the poles than at the equator. At the equator (~68.7 miles/degree) vs at the poles (~69.4 miles/degree). Statement II is correct - The Earth is an oblate spheroid, bulging at the equator and flattened at the poles. Due to flattening at poles, the curvature is steeper in the north-south direction, making one degree of latitude cover a slightly longer distance.",
+        topic: "Geography - Latitudes & Earth Shape",
         difficulty: "Medium",
         pyqYear: null,
       },
@@ -87,8 +87,8 @@ export const TEST_T31 = [
         ],
         correct: "D",
         explanation:
-          "Statement I is incorrect — The Nebular Hypothesis (Kant-Laplace) proposes that the Solar System formed from a rotating cloud of gas and dust (nebula) that contracted under gravity. It was the Collision Theory that proposed planetary formation from a collision between the Sun and another star. Statement II is incorrect — The expanding universe hypothesis is the Big Bang Theory, not the Nebular Hypothesis.",
-        topic: "Geography — Origin of Universe",
+          "Statement I is incorrect - The Nebular Hypothesis (Kant-Laplace) proposes that the Solar System formed from a rotating cloud of gas and dust (nebula) that contracted under gravity. It was the Collision Theory that proposed planetary formation from a collision between the Sun and another star. Statement II is incorrect - The expanding universe hypothesis is the Big Bang Theory, not the Nebular Hypothesis.",
+        topic: "Geography - Origin of Universe",
         difficulty: "Easy",
         pyqYear: null,
       },
@@ -105,8 +105,8 @@ export const TEST_T31 = [
         ],
         correct: "A",
         explanation:
-          "Statement I is correct — Anadyr (Russia) and Nome (Alaska, USA) are separated by the Bering Strait and lie on opposite sides of the International Date Line (IDL). So despite being geographically close, the calendar date is different — the same clock time would be on different days. Statement II is incorrect — Anadyr is WEST of the IDL (Russia), so it is AHEAD of Nome which is EAST of the IDL. If it is Monday in Anadyr, it is actually SUNDAY in Nome (Nome lags by one day, not advances).",
-        topic: "Geography — International Date Line",
+          "Statement I is correct - Anadyr (Russia) and Nome (Alaska, USA) are separated by the Bering Strait and lie on opposite sides of the International Date Line (IDL). So despite being geographically close, the calendar date is different - the same clock time would be on different days. Statement II is incorrect - Anadyr is WEST of the IDL (Russia), so it is AHEAD of Nome which is EAST of the IDL. If it is Monday in Anadyr, it is actually SUNDAY in Nome (Nome lags by one day, not advances).",
+        topic: "Geography - International Date Line",
         difficulty: "Medium",
         pyqYear: 2025,
       },
@@ -124,7 +124,7 @@ export const TEST_T31 = [
         correct: "B",
         explanation:
           "The Hoyle-Narlikar theory is a modified form of the Steady State Theory. It proposes that the universe does not have a definitive beginning or end. To address the problem of decreasing density as the universe expands, it proposes continuous creation of matter (C-field) in empty space so that the average density remains constant. This contrasts with the Big Bang Theory (option A) which proposes a singular explosive origin.",
-        topic: "Geography — Origin of Universe",
+        topic: "Geography - Origin of Universe",
         difficulty: "Medium",
         pyqYear: null,
       },
@@ -141,8 +141,8 @@ export const TEST_T31 = [
         ],
         correct: "A",
         explanation:
-          "Statement I is correct — The Big Bang Theory states that initially all matter existed as a 'tiny ball' (singular atom) with unimaginably small volume, infinite temperature and infinite density. Statement II is correct — Within the first three minutes from the Big Bang event, the first atoms began to form as the universe cooled rapidly. Statement III is incorrect — The expansion of the universe refers only to the increase in space (distance) between galaxies, NOT the expansion of galaxies themselves. Galaxies remain largely intact in size.",
-        topic: "Geography — Big Bang Theory",
+          "Statement I is correct - The Big Bang Theory states that initially all matter existed as a 'tiny ball' (singular atom) with unimaginably small volume, infinite temperature and infinite density. Statement II is correct - Within the first three minutes from the Big Bang event, the first atoms began to form as the universe cooled rapidly. Statement III is incorrect - The expansion of the universe refers only to the increase in space (distance) between galaxies, NOT the expansion of galaxies themselves. Galaxies remain largely intact in size.",
+        topic: "Geography - Big Bang Theory",
         difficulty: "Medium",
         pyqYear: null,
       },
@@ -160,7 +160,7 @@ export const TEST_T31 = [
         correct: "D",
         explanation:
           "Percentage share in Earth's crust by mass: Iron (Fe) = ~5.63%, Aluminium (Al) = ~8.23%, Silicon (Si) = ~28.2%, Oxygen (O) = ~46.1%. Ascending order: Iron (5.63%) < Aluminium (8.23%) < Silicon (28.2%) < Oxygen (46.1%) = I < IV < II < III → Option D.",
-        topic: "Geography — Earth's Crust Composition",
+        topic: "Geography - Earth's Crust Composition",
         difficulty: "Easy",
         pyqYear: null,
       },
@@ -177,8 +177,8 @@ export const TEST_T31 = [
         ],
         correct: "D",
         explanation:
-          "Statement I is incorrect — A light year is a unit of DISTANCE, not time. It is the distance that light travels in one year in vacuum (approximately 9.461 × 10¹² km or about 5.879 × 10¹² miles). Statement II is correct — The speed of light in vacuum is a universal constant (approximately 3 × 10⁸ m/s or 300,000 km/s).",
-        topic: "Geography — Earth & Universe",
+          "Statement I is incorrect - A light year is a unit of DISTANCE, not time. It is the distance that light travels in one year in vacuum (approximately 9.461 × 10¹² km or about 5.879 × 10¹² miles). Statement II is correct - The speed of light in vacuum is a universal constant (approximately 3 × 10⁸ m/s or 300,000 km/s).",
+        topic: "Geography - Earth & Universe",
         difficulty: "Easy",
         pyqYear: null,
       },
@@ -195,8 +195,8 @@ export const TEST_T31 = [
         ],
         correct: "B",
         explanation:
-          "Statement I is correct — The same face of the Moon always faces Earth. Statement II is correct but does NOT explain Statement I — Both Earth and Moon rotate counterclockwise, but this doesn't explain why the same face always faces Earth. Statement III is correct and EXPLAINS Statement I — The Moon is tidally locked with Earth; its rotation period (27.3 days) equals its orbital period (27.3 days), causing the same hemisphere to always face Earth. Both II and III are correct, but only III explains Statement I.",
-        topic: "Geography — Moon",
+          "Statement I is correct - The same face of the Moon always faces Earth. Statement II is correct but does NOT explain Statement I - Both Earth and Moon rotate counterclockwise, but this doesn't explain why the same face always faces Earth. Statement III is correct and EXPLAINS Statement I - The Moon is tidally locked with Earth; its rotation period (27.3 days) equals its orbital period (27.3 days), causing the same hemisphere to always face Earth. Both II and III are correct, but only III explains Statement I.",
+        topic: "Geography - Moon",
         difficulty: "Medium",
         pyqYear: null,
       },
@@ -213,8 +213,8 @@ export const TEST_T31 = [
         ],
         correct: "A",
         explanation:
-          "Statement 1 is correct — Albedo is the fraction of incident sunlight reflected. High albedo = brighter appearance (e.g., snow, ice). Low albedo = darker appearance (e.g., charcoal, asphalt). Statement 2 is incorrect — Mercury has a very LOW albedo (0.142) because it has a dark, porous rocky surface. Earth's albedo is higher (0.367) due to clouds, oceans, ice caps and vegetation. Mercury appears darker than Earth.",
-        topic: "Geography — Earth & Universe",
+          "Statement 1 is correct - Albedo is the fraction of incident sunlight reflected. High albedo = brighter appearance (e.g., snow, ice). Low albedo = darker appearance (e.g., charcoal, asphalt). Statement 2 is incorrect - Mercury has a very LOW albedo (0.142) because it has a dark, porous rocky surface. Earth's albedo is higher (0.367) due to clouds, oceans, ice caps and vegetation. Mercury appears darker than Earth.",
+        topic: "Geography - Earth & Universe",
         difficulty: "Easy",
         pyqYear: 2008,
       },
@@ -231,8 +231,8 @@ export const TEST_T31 = [
         ],
         correct: "B",
         explanation:
-          "Differential rotation occurs when different latitudes of a celestial body rotate at different angular speeds. This is possible only if the body is NOT a rigid solid. The Sun exhibits differential rotation — its equatorial region rotates faster (~26.5 days) than its polar regions (~31 days). This is because the Sun is composed of plasma (ionized gas), not a solid rigid body.",
-        topic: "Geography — Sun & Solar System",
+          "Differential rotation occurs when different latitudes of a celestial body rotate at different angular speeds. This is possible only if the body is NOT a rigid solid. The Sun exhibits differential rotation - its equatorial region rotates faster (~26.5 days) than its polar regions (~31 days). This is because the Sun is composed of plasma (ionized gas), not a solid rigid body.",
+        topic: "Geography - Sun & Solar System",
         difficulty: "Medium",
         pyqYear: null,
       },
@@ -249,8 +249,8 @@ export const TEST_T31 = [
         ],
         correct: "A",
         explanation:
-          "The early Earth had a primordial atmosphere of hydrogen (H) and helium (He) — the lightest gases. This primordial atmosphere was stripped away by solar winds (high-energy charged particles emanating from the Sun). This happened to all terrestrial planets. Earth then developed a secondary atmosphere through volcanic degassing.",
-        topic: "Geography — Atmosphere",
+          "The early Earth had a primordial atmosphere of hydrogen (H) and helium (He) - the lightest gases. This primordial atmosphere was stripped away by solar winds (high-energy charged particles emanating from the Sun). This happened to all terrestrial planets. Earth then developed a secondary atmosphere through volcanic degassing.",
+        topic: "Geography - Atmosphere",
         difficulty: "Easy",
         pyqYear: null,
       },
@@ -267,8 +267,8 @@ export const TEST_T31 = [
         ],
         correct: "C",
         explanation:
-          "Option I (Magma from volcanic eruptions) is a DIRECT source — it is actual material from Earth's interior. Options II (Meteors), III (Earth's magnetic field), and IV (Seismic waves) are INDIRECT sources — they provide information about the interior through inference rather than direct sampling. Meteors give clues about composition; magnetic field tells us about the liquid outer core; seismic waves reveal internal layering. Three indirect sources: II, III, IV.",
-        topic: "Geography — Earth's Interior",
+          "Option I (Magma from volcanic eruptions) is a DIRECT source - it is actual material from Earth's interior. Options II (Meteors), III (Earth's magnetic field), and IV (Seismic waves) are INDIRECT sources - they provide information about the interior through inference rather than direct sampling. Meteors give clues about composition; magnetic field tells us about the liquid outer core; seismic waves reveal internal layering. Three indirect sources: II, III, IV.",
+        topic: "Geography - Earth's Interior",
         difficulty: "Medium",
         pyqYear: null,
       },
@@ -286,7 +286,7 @@ export const TEST_T31 = [
         correct: "B",
         explanation:
           "The Earth's atmosphere does not have a sharp, definitive upper boundary. It gradually thins with altitude as air density decreases, eventually merging imperceptibly with the vacuum of outer space. While the Kármán line (100 km) is conventionally defined as the boundary of space, the atmosphere actually extends (in increasingly thin form) well beyond this altitude.",
-        topic: "Geography — Atmosphere",
+        topic: "Geography - Atmosphere",
         difficulty: "Easy",
         pyqYear: null,
       },
@@ -303,8 +303,8 @@ export const TEST_T31 = [
         ],
         correct: "C",
         explanation:
-          "Statement I is correct — Gravitational force (g) is greater at poles. Statement II is correct and explains Statement I — Earth bulges at equator, so the surface is farther from the centre at equator. Since gravity varies inversely with distance squared, g is less at the equator. Statement II explains Statement I. Statement III is incorrect — Centrifugal force is MAXIMUM at the equator (highest rotational velocity) and zero at the poles, NOT the other way around. So only Statement II is correct and explains Statement I.",
-        topic: "Geography — Earth's Shape & Gravity",
+          "Statement I is correct - Gravitational force (g) is greater at poles. Statement II is correct and explains Statement I - Earth bulges at equator, so the surface is farther from the centre at equator. Since gravity varies inversely with distance squared, g is less at the equator. Statement II explains Statement I. Statement III is incorrect - Centrifugal force is MAXIMUM at the equator (highest rotational velocity) and zero at the poles, NOT the other way around. So only Statement II is correct and explains Statement I.",
+        topic: "Geography - Earth's Shape & Gravity",
         difficulty: "Hard",
         pyqYear: null,
       },
@@ -322,7 +322,7 @@ export const TEST_T31 = [
         correct: "B",
         explanation:
           "Focal Depth is the vertical distance between the hypocentre (focus/point of origin of earthquake energy) and the epicentre (the point directly above the focus on the Earth's surface). Earthquakes are classified as shallow-focus (<60 km), intermediate-focus (60-300 km), and deep-focus (300-700 km) based on focal depth.",
-        topic: "Geography — Earthquakes",
+        topic: "Geography - Earthquakes",
         difficulty: "Medium",
         pyqYear: null,
       },
@@ -339,8 +339,8 @@ export const TEST_T31 = [
         ],
         correct: "A",
         explanation:
-          "Statement I is correct — S-waves (Secondary/shear waves) are transverse waves that require a rigid medium. They cannot travel through liquids or gases. This is why S-waves disappear at the mantle-outer core boundary (proving the outer core is liquid). Statement II is incorrect — In S-waves, particle vibration is PERPENDICULAR to the direction of wave propagation (transverse). In P-waves (longitudinal), particle vibration is parallel. Statement III is incorrect — P-waves are faster than S-waves and arrive FIRST. S-waves arrive second.",
-        topic: "Geography — Seismic Waves",
+          "Statement I is correct - S-waves (Secondary/shear waves) are transverse waves that require a rigid medium. They cannot travel through liquids or gases. This is why S-waves disappear at the mantle-outer core boundary (proving the outer core is liquid). Statement II is incorrect - In S-waves, particle vibration is PERPENDICULAR to the direction of wave propagation (transverse). In P-waves (longitudinal), particle vibration is parallel. Statement III is incorrect - P-waves are faster than S-waves and arrive FIRST. S-waves arrive second.",
+        topic: "Geography - Seismic Waves",
         difficulty: "Medium",
         pyqYear: null,
       },
@@ -357,8 +357,8 @@ export const TEST_T31 = [
         ],
         correct: "D",
         explanation:
-          "Granite is a felsic (light-coloured) igneous rock composed primarily of: Quartz (Silica — SiO₂) and Feldspar (which contains Aluminium — Al₂O₃). Typically, granite contains 70-77% silica and 11-13% alumina. It is a polymineralic rock with very little iron, magnesium, or lime.",
-        topic: "Geography — Rocks & Minerals",
+          "Granite is a felsic (light-coloured) igneous rock composed primarily of: Quartz (Silica - SiO₂) and Feldspar (which contains Aluminium - Al₂O₃). Typically, granite contains 70-77% silica and 11-13% alumina. It is a polymineralic rock with very little iron, magnesium, or lime.",
+        topic: "Geography - Rocks & Minerals",
         difficulty: "Easy",
         pyqYear: null,
       },
@@ -375,8 +375,8 @@ export const TEST_T31 = [
         ],
         correct: "D",
         explanation:
-          "Evidence cited by Wegener for Continental Drift: I. Jigsaw fit of continental margins (especially South America and Africa) — YES, Wegener cited this. II. Expansion of Atlantic ocean basin — This is evidence for Sea Floor Spreading Theory (Harry Hess, 1960s), not Wegener's theory (1912). III. Magnetic reversal in oceanic sediments — This is paleomagnetism evidence for seafloor spreading (discovered in 1940s-50s), after Wegener's time. IV. Gold deposits in Ghana (west Africa) and Brazil from same source rocks — YES, Wegener cited this as geological evidence. Only I and IV were part of Wegener's evidence.",
-        topic: "Geography — Continental Drift Theory",
+          "Evidence cited by Wegener for Continental Drift: I. Jigsaw fit of continental margins (especially South America and Africa) - YES, Wegener cited this. II. Expansion of Atlantic ocean basin - This is evidence for Sea Floor Spreading Theory (Harry Hess, 1960s), not Wegener's theory (1912). III. Magnetic reversal in oceanic sediments - This is paleomagnetism evidence for seafloor spreading (discovered in 1940s-50s), after Wegener's time. IV. Gold deposits in Ghana (west Africa) and Brazil from same source rocks - YES, Wegener cited this as geological evidence. Only I and IV were part of Wegener's evidence.",
+        topic: "Geography - Continental Drift Theory",
         difficulty: "Hard",
         pyqYear: null,
       },
@@ -394,7 +394,7 @@ export const TEST_T31 = [
         correct: "C",
         explanation:
           "To determine the absolute (exact) location of any point on Earth's surface, both latitude AND longitude are required. Latitude gives the north-south position (distance from equator) and longitude gives the east-west position (distance from Prime Meridian). Together they form a coordinate pair that uniquely identifies any location on the globe.",
-        topic: "Geography — Latitude & Longitude",
+        topic: "Geography - Latitude & Longitude",
         difficulty: "Easy",
         pyqYear: null,
       },
@@ -411,8 +411,8 @@ export const TEST_T31 = [
         ],
         correct: "B",
         explanation:
-          "Statement I is correct — India does NOT follow Daylight Saving Time (DST). DST is practiced by about 70 countries. Countries near the Equator don't experience significant seasonal variation in day length, so DST is not useful. Statement II is correct — India follows a single standard time zone: Indian Standard Time (IST) at UTC+5:30 (82.5°E longitude). Both are correct but Statement II (single time zone) does NOT explain why India doesn't follow DST; the reason is India's proximity to the equator, not the use of a single time zone.",
-        topic: "Geography — Time Zones",
+          "Statement I is correct - India does NOT follow Daylight Saving Time (DST). DST is practiced by about 70 countries. Countries near the Equator don't experience significant seasonal variation in day length, so DST is not useful. Statement II is correct - India follows a single standard time zone: Indian Standard Time (IST) at UTC+5:30 (82.5°E longitude). Both are correct but Statement II (single time zone) does NOT explain why India doesn't follow DST; the reason is India's proximity to the equator, not the use of a single time zone.",
+        topic: "Geography - Time Zones",
         difficulty: "Easy",
         pyqYear: null,
       },
@@ -430,7 +430,7 @@ export const TEST_T31 = [
         correct: "A",
         explanation:
           "Dykes are intrusive igneous rock formations created when lava (magma) intrudes into cracks/fissures and solidifies perpendicular to the ground, forming wall-like vertical structures. They are the most common intrusive forms found in western Maharashtra and are feeders for the Deccan Traps eruptions. Sills are horizontal, lacoliths are dome-shaped, and batholiths are large dome-shaped plutonic bodies.",
-        topic: "Geography — Vulcanism",
+        topic: "Geography - Vulcanism",
         difficulty: "Easy",
         pyqYear: null,
       },
@@ -448,7 +448,7 @@ export const TEST_T31 = [
         correct: "B",
         explanation:
           "The International Space Station (ISS) orbits at an altitude of approximately 370-460 km above Earth's surface. The thermosphere extends from about 80 km to 700 km altitude. Therefore, the ISS orbits within the thermosphere. The air density in the thermosphere is extremely low. The exosphere begins above the thermosphere at about 700 km.",
-        topic: "Geography — Atmosphere Layers",
+        topic: "Geography - Atmosphere Layers",
         difficulty: "Easy",
         pyqYear: null,
       },
@@ -465,8 +465,8 @@ export const TEST_T31 = [
         ],
         correct: "B",
         explanation:
-          "Statement 1 is correct — Without Earth's rotation, the apparent daily movement of the Sun (sunrise/sunset) would not occur. Statement 2 is correct — Day and night cycles are caused by Earth's rotation. Without rotation, one side would always face the Sun (permanent day) and the other would be in permanent night. Statement 3 is incorrect — Seasons are caused by Earth's axial tilt and its revolution around the Sun, NOT rotation. Even without rotation, the axial tilt would still create seasonal variation.",
-        topic: "Geography — Earth Movements",
+          "Statement 1 is correct - Without Earth's rotation, the apparent daily movement of the Sun (sunrise/sunset) would not occur. Statement 2 is correct - Day and night cycles are caused by Earth's rotation. Without rotation, one side would always face the Sun (permanent day) and the other would be in permanent night. Statement 3 is incorrect - Seasons are caused by Earth's axial tilt and its revolution around the Sun, NOT rotation. Even without rotation, the axial tilt would still create seasonal variation.",
+        topic: "Geography - Earth Movements",
         difficulty: "Easy",
         pyqYear: null,
       },
@@ -483,15 +483,15 @@ export const TEST_T31 = [
         ],
         correct: "C",
         explanation:
-          "Statement I is correct — Iceland has frequent volcanic eruptions (12 since 2021 on Reykjanes peninsula). Statement II is correct and explains Statement I — Iceland sits on the Mid-Atlantic Ridge (a Mid-Oceanic Ridge) where the North American and Eurasian plates are diverging. This is primarily responsible for Iceland's volcanism. It also sits over a hotspot. Statement III is incorrect — Iceland is in the North Atlantic Ocean, NOT along the Pacific Ring of Fire. The Ring of Fire encircles the Pacific Ocean.",
-        topic: "Geography — Plate Tectonics & Volcanoes",
+          "Statement I is correct - Iceland has frequent volcanic eruptions (12 since 2021 on Reykjanes peninsula). Statement II is correct and explains Statement I - Iceland sits on the Mid-Atlantic Ridge (a Mid-Oceanic Ridge) where the North American and Eurasian plates are diverging. This is primarily responsible for Iceland's volcanism. It also sits over a hotspot. Statement III is incorrect - Iceland is in the North Atlantic Ocean, NOT along the Pacific Ring of Fire. The Ring of Fire encircles the Pacific Ocean.",
+        topic: "Geography - Plate Tectonics & Volcanoes",
         difficulty: "Medium",
         pyqYear: null,
       },
       {
         id: "t31_q27",
         qNo: 27,
-        text: "Consider the following pairs:\n\nDiscontinuities — Separates\nI. Mohorivicic — Crust and Mantle\nII. Gutenberg — Upper mantle and lower mantle\nIII. Conrad — Core and Mantle",
+        text: "Consider the following pairs:\n\nDiscontinuities - Separates\nI. Mohorivicic - Crust and Mantle\nII. Gutenberg - Upper mantle and lower mantle\nIII. Conrad - Core and Mantle",
         suffix: "How many of the pairs given above are correctly matched?",
         options: [
           { id: "A", text: "Only one" },
@@ -501,8 +501,8 @@ export const TEST_T31 = [
         ],
         correct: "A",
         explanation:
-          "Pair I is correct — Mohorovicic (Moho) discontinuity separates the Crust and the Mantle. Pair II is incorrect — Gutenberg discontinuity separates the Mantle and the Outer Core (Core-Mantle Boundary, CMB), NOT upper and lower mantle. The Repetti Discontinuity separates upper and lower mantle. Pair III is incorrect — Conrad discontinuity separates the upper crust and lower crust (NOT core and mantle). Only Pair I is correctly matched.",
-        topic: "Geography — Earth's Interior Discontinuities",
+          "Pair I is correct - Mohorovicic (Moho) discontinuity separates the Crust and the Mantle. Pair II is incorrect - Gutenberg discontinuity separates the Mantle and the Outer Core (Core-Mantle Boundary, CMB), NOT upper and lower mantle. The Repetti Discontinuity separates upper and lower mantle. Pair III is incorrect - Conrad discontinuity separates the upper crust and lower crust (NOT core and mantle). Only Pair I is correctly matched.",
+        topic: "Geography - Earth's Interior Discontinuities",
         difficulty: "Medium",
         pyqYear: null,
       },
@@ -520,14 +520,14 @@ export const TEST_T31 = [
         correct: "C",
         explanation:
           "Foliation (arrangement of minerals in layers/lines) and banding (alternating light and dark layers of different minerals) are characteristic features of metamorphic rocks. These features develop when pre-existing rocks undergo recrystallization under high temperature and pressure. Examples: schist (foliated), gneiss (banded).",
-        topic: "Geography — Rocks",
+        topic: "Geography - Rocks",
         difficulty: "Easy",
         pyqYear: null,
       },
       {
         id: "t31_q29",
         qNo: 29,
-        text: "Consider the following pairs:\n\nVolcano in news — Country in which it is located\nI. Hayli Gubbi — Iceland\nII. Mount Lewotobi Laki-Laki — Philippines\nIII. Kilauea — United States of America\nIV. Volcan de Fuego — Guatemala",
+        text: "Consider the following pairs:\n\nVolcano in news - Country in which it is located\nI. Hayli Gubbi - Iceland\nII. Mount Lewotobi Laki-Laki - Philippines\nIII. Kilauea - United States of America\nIV. Volcan de Fuego - Guatemala",
         suffix: "How many of the pairs given above are correctly matched?",
         options: [
           { id: "A", text: "Only one" },
@@ -537,8 +537,8 @@ export const TEST_T31 = [
         ],
         correct: "B",
         explanation:
-          "Pair I is incorrect — Hayli Gubbi is a shield volcano in northern Ethiopia (not Iceland). Pair II is incorrect — Mount Lewotobi Laki-Laki is in Indonesia (island of Flores), not Philippines. Pair III is correct — Kilauea is an active volcano in Hawaii, USA. Pair IV is correct — Volcan de Fuego (Volcano of Fire) is in Guatemala. Only Pairs III and IV are correctly matched.",
-        topic: "Geography — Volcanoes in News",
+          "Pair I is incorrect - Hayli Gubbi is a shield volcano in northern Ethiopia (not Iceland). Pair II is incorrect - Mount Lewotobi Laki-Laki is in Indonesia (island of Flores), not Philippines. Pair III is correct - Kilauea is an active volcano in Hawaii, USA. Pair IV is correct - Volcan de Fuego (Volcano of Fire) is in Guatemala. Only Pairs III and IV are correctly matched.",
+        topic: "Geography - Volcanoes in News",
         difficulty: "Medium",
         pyqYear: null,
       },
@@ -556,7 +556,7 @@ export const TEST_T31 = [
         correct: "A",
         explanation:
           "Arthur Holmes (1930s) proposed that convectional currents in the Earth's mantle are generated primarily due to radioactive elements in the mantle producing heat, creating thermal differences. Where temperatures are high, mantle material rises; where cooler, it sinks. This creates circulation patterns that Holmes argued could move the overlying continental plates.",
-        topic: "Geography — Plate Tectonics",
+        topic: "Geography - Plate Tectonics",
         difficulty: "Easy",
         pyqYear: null,
       },
@@ -573,8 +573,8 @@ export const TEST_T31 = [
         ],
         correct: "D",
         explanation:
-          "Statement 1 is correct — VEI (Volcanic Explosivity Index) measures the explosiveness of volcanic eruptions based on cloud height and volume of ejected material. Statement 2 is correct — Iceland formed on the Mid-Atlantic Ridge through volcanic activity; Philippines formed as part of the Pacific Ring of Fire through volcanic/tectonic activity. Statement 3 is correct — Volcanic (basaltic) soils are extremely fertile because lava releases minerals and nutrients. For example, the black cotton soil (Regur) of the Deccan Plateau is formed from volcanic basalt.",
-        topic: "Geography — Volcanoes",
+          "Statement 1 is correct - VEI (Volcanic Explosivity Index) measures the explosiveness of volcanic eruptions based on cloud height and volume of ejected material. Statement 2 is correct - Iceland formed on the Mid-Atlantic Ridge through volcanic activity; Philippines formed as part of the Pacific Ring of Fire through volcanic/tectonic activity. Statement 3 is correct - Volcanic (basaltic) soils are extremely fertile because lava releases minerals and nutrients. For example, the black cotton soil (Regur) of the Deccan Plateau is formed from volcanic basalt.",
+        topic: "Geography - Volcanoes",
         difficulty: "Easy",
         pyqYear: null,
       },
@@ -591,8 +591,8 @@ export const TEST_T31 = [
         ],
         correct: "A",
         explanation:
-          "Statement I is correct — Oceanic crust rocks are much younger (oldest is ~270 million years in the Ionian Sea) compared to continental rocks (oldest are >4 billion years old). Statement II is correct and explains Statement I — New oceanic crust is constantly formed at mid-ocean ridges (divergent boundaries) and simultaneously destroyed at subduction zones (convergent boundaries). This continuous recycling is why oceanic crust is always young.",
-        topic: "Geography — Earth's Crust",
+          "Statement I is correct - Oceanic crust rocks are much younger (oldest is ~270 million years in the Ionian Sea) compared to continental rocks (oldest are >4 billion years old). Statement II is correct and explains Statement I - New oceanic crust is constantly formed at mid-ocean ridges (divergent boundaries) and simultaneously destroyed at subduction zones (convergent boundaries). This continuous recycling is why oceanic crust is always young.",
+        topic: "Geography - Earth's Crust",
         difficulty: "Medium",
         pyqYear: null,
       },
@@ -609,8 +609,8 @@ export const TEST_T31 = [
         ],
         correct: "C",
         explanation:
-          "Continental margins are the transition zones between continents and deep ocean basins. They include: I. Continental shelf — shallow extension of the continent ✓. II. Continental slope — steep descent from shelf edge ✓. III. Continental rise — base of the slope, sediment accumulation ✓. IV. Abyssal plain — NOT part of continental margin; it is part of the deep-sea basin located beyond the continental margin. Only three (I, II, III) are components of continental margins.",
-        topic: "Geography — Ocean Floor",
+          "Continental margins are the transition zones between continents and deep ocean basins. They include: I. Continental shelf - shallow extension of the continent ✓. II. Continental slope - steep descent from shelf edge ✓. III. Continental rise - base of the slope, sediment accumulation ✓. IV. Abyssal plain - NOT part of continental margin; it is part of the deep-sea basin located beyond the continental margin. Only three (I, II, III) are components of continental margins.",
+        topic: "Geography - Ocean Floor",
         difficulty: "Medium",
         pyqYear: null,
       },
@@ -628,7 +628,7 @@ export const TEST_T31 = [
         correct: "A",
         explanation:
           "The Nazca Plate is a minor oceanic tectonic plate located in the eastern Pacific Ocean, situated between the South American Plate (to the east) and the Pacific Plate (to the west). The Nazca Plate is subducting beneath the South American Plate, which is responsible for the formation of the Andes Mountains and frequent seismic and volcanic activity along western South America.",
-        topic: "Geography — Tectonic Plates",
+        topic: "Geography - Tectonic Plates",
         difficulty: "Easy",
         pyqYear: null,
       },
@@ -645,8 +645,8 @@ export const TEST_T31 = [
         ],
         correct: "D",
         explanation:
-          "All four are correct. 1. Stratosphere: temperature increases with altitude due to ozone layer absorbing UV radiation. 2. Mesosphere: temperature decreases with altitude (no ozone; no heating mechanism). 3. Mesopause (upper boundary of mesosphere) is the coldest region of Earth's atmosphere (down to -90°C). 4. Tropopause is the boundary between troposphere and stratosphere where temperature remains relatively constant with altitude — an isothermal zone.",
-        topic: "Geography — Atmospheric Layers",
+          "All four are correct. 1. Stratosphere: temperature increases with altitude due to ozone layer absorbing UV radiation. 2. Mesosphere: temperature decreases with altitude (no ozone; no heating mechanism). 3. Mesopause (upper boundary of mesosphere) is the coldest region of Earth's atmosphere (down to -90°C). 4. Tropopause is the boundary between troposphere and stratosphere where temperature remains relatively constant with altitude - an isothermal zone.",
+        topic: "Geography - Atmospheric Layers",
         difficulty: "Easy",
         pyqYear: null,
       },
@@ -663,8 +663,8 @@ export const TEST_T31 = [
         ],
         correct: "C",
         explanation:
-          "Statement I is correct — Transform faults are generally oriented perpendicular to mid-oceanic ridges. They connect offset segments of ridges and allow differential spreading movements. Example: San Andreas Fault (California), Alpine Fault (New Zealand). Statement II is incorrect — Transform boundaries are zones where plates slide past each other horizontally. New crust is NOT created here (that happens at divergent boundaries/mid-ocean ridges). At transform boundaries, crust is neither created nor destroyed.",
-        topic: "Geography — Plate Tectonics",
+          "Statement I is correct - Transform faults are generally oriented perpendicular to mid-oceanic ridges. They connect offset segments of ridges and allow differential spreading movements. Example: San Andreas Fault (California), Alpine Fault (New Zealand). Statement II is incorrect - Transform boundaries are zones where plates slide past each other horizontally. New crust is NOT created here (that happens at divergent boundaries/mid-ocean ridges). At transform boundaries, crust is neither created nor destroyed.",
+        topic: "Geography - Plate Tectonics",
         difficulty: "Medium",
         pyqYear: null,
       },
@@ -682,14 +682,14 @@ export const TEST_T31 = [
         correct: "D",
         explanation:
           "The Asthenosphere is a zone in the upper mantle (just below the lithosphere, approximately 100-350 km depth) where seismic wave velocities decrease. This is the Low Velocity Zone (LVZ). The velocity decrease is caused by partial melting of rocks and the ductile, semi-viscous nature of the asthenosphere at high temperature and pressure. The lithospheric plates 'float' on the asthenosphere.",
-        topic: "Geography — Earth's Interior",
+        topic: "Geography - Earth's Interior",
         difficulty: "Easy",
         pyqYear: null,
       },
       {
         id: "t31_q38",
         qNo: 38,
-        text: "With reference to major oceanic trenches and their tectonic location, consider the following pairs:\n\nOceanic Trench — Location\nI. Mariana Trench — Indian Ocean\nII. Java Trench — Pacific Ocean\nIII. Aleutian Trench — Atlantic Ocean",
+        text: "With reference to major oceanic trenches and their tectonic location, consider the following pairs:\n\nOceanic Trench - Location\nI. Mariana Trench - Indian Ocean\nII. Java Trench - Pacific Ocean\nIII. Aleutian Trench - Atlantic Ocean",
         suffix: "How many of the pairs given above are correctly matched?",
         options: [
           { id: "A", text: "Only one" },
@@ -699,8 +699,8 @@ export const TEST_T31 = [
         ],
         correct: "D",
         explanation:
-          "Pair I is incorrect — Mariana Trench (deepest trench, 11,034 m at Challenger Deep) is in the PACIFIC Ocean (near Guam), not Indian Ocean. Pair II is incorrect — Java Trench (Sunda Trench) is in the INDIAN Ocean near Sumatra, not Pacific Ocean. Pair III is incorrect — Aleutian Trench is in the North PACIFIC Ocean along Alaska and the Aleutian Islands, not Atlantic Ocean. All three are incorrectly matched — None are correct.",
-        topic: "Geography — Oceanic Trenches",
+          "Pair I is incorrect - Mariana Trench (deepest trench, 11,034 m at Challenger Deep) is in the PACIFIC Ocean (near Guam), not Indian Ocean. Pair II is incorrect - Java Trench (Sunda Trench) is in the INDIAN Ocean near Sumatra, not Pacific Ocean. Pair III is incorrect - Aleutian Trench is in the North PACIFIC Ocean along Alaska and the Aleutian Islands, not Atlantic Ocean. All three are incorrectly matched - None are correct.",
+        topic: "Geography - Oceanic Trenches",
         difficulty: "Hard",
         pyqYear: null,
       },
@@ -717,15 +717,15 @@ export const TEST_T31 = [
         ],
         correct: "C",
         explanation:
-          "Chronological order of geological events: II. Breaking up of Pangaea — ~200 million years ago; India began its northward journey. I. Formation of Deccan Traps — ~68-64 million years ago; major volcanic eruptions during Indian plate's northward movement (before collision). III. Convergence of Indian plate with Eurasian plate — ~40-50 million years ago; led to the formation of Himalayas. Correct order: II → I → III.",
-        topic: "Geography — Geomorphology",
+          "Chronological order of geological events: II. Breaking up of Pangaea - ~200 million years ago; India began its northward journey. I. Formation of Deccan Traps - ~68-64 million years ago; major volcanic eruptions during Indian plate's northward movement (before collision). III. Convergence of Indian plate with Eurasian plate - ~40-50 million years ago; led to the formation of Himalayas. Correct order: II → I → III.",
+        topic: "Geography - Geomorphology",
         difficulty: "Medium",
         pyqYear: null,
       },
       {
         id: "t31_q40",
         qNo: 40,
-        text: "With reference to the major mountains across the world, consider the following information:\n\nName of the Mountains — Type of mountain — Location\nI. Vosges — Block Mountains — Russia\nII. Alps — Fold mountain — United States of America\nIII. Merapi — Volcanic mountain — Indonesia\nIV. Monadnock — Fold Mountain — Central Europe",
+        text: "With reference to the major mountains across the world, consider the following information:\n\nName of the Mountains - Type of mountain - Location\nI. Vosges - Block Mountains - Russia\nII. Alps - Fold mountain - United States of America\nIII. Merapi - Volcanic mountain - Indonesia\nIV. Monadnock - Fold Mountain - Central Europe",
         suffix: "In how many of the above rows is the given information correctly matched?",
         options: [
           { id: "A", text: "Only one" },
@@ -735,8 +735,8 @@ export const TEST_T31 = [
         ],
         correct: "A",
         explanation:
-          "Row I is incorrect — Vosges Mountains are Block Mountains in France (near Germany border), NOT Russia. Row II is incorrect — The Alps are Fold Mountains in Central Europe (Austria, France, Switzerland, Italy), NOT USA. Row III is correct — Mount Merapi is an active Volcanic Mountain in Indonesia (Bali). Row IV is incorrect — Monadnock is a Residual Mountain (NOT fold mountain) located in New Hampshire, USA (NOT Central Europe). Only Row III is correctly matched.",
-        topic: "Geography — Mountains",
+          "Row I is incorrect - Vosges Mountains are Block Mountains in France (near Germany border), NOT Russia. Row II is incorrect - The Alps are Fold Mountains in Central Europe (Austria, France, Switzerland, Italy), NOT USA. Row III is correct - Mount Merapi is an active Volcanic Mountain in Indonesia (Bali). Row IV is incorrect - Monadnock is a Residual Mountain (NOT fold mountain) located in New Hampshire, USA (NOT Central Europe). Only Row III is correctly matched.",
+        topic: "Geography - Mountains",
         difficulty: "Medium",
         pyqYear: null,
       },
@@ -753,8 +753,8 @@ export const TEST_T31 = [
         ],
         correct: "D",
         explanation:
-          "Assertion (A) is false — Mars takes LONGER to orbit the Sun (687 Earth days ≈ 1.88 Earth years) because it is farther from the Sun (~1.5 AU away). According to Kepler's Third Law, the farther the planet, the longer the orbital period. Reason (R) is true — Mars does have a smaller diameter than Earth (about half Earth's diameter). However, the Reason is irrelevant to orbital period (which depends on distance from Sun, not size). A is false, R is true.",
-        topic: "Geography — Solar System",
+          "Assertion (A) is false - Mars takes LONGER to orbit the Sun (687 Earth days ≈ 1.88 Earth years) because it is farther from the Sun (~1.5 AU away). According to Kepler's Third Law, the farther the planet, the longer the orbital period. Reason (R) is true - Mars does have a smaller diameter than Earth (about half Earth's diameter). However, the Reason is irrelevant to orbital period (which depends on distance from Sun, not size). A is false, R is true.",
+        topic: "Geography - Solar System",
         difficulty: "Easy",
         pyqYear: 2006,
       },
@@ -772,7 +772,7 @@ export const TEST_T31 = [
         correct: "C",
         explanation:
           "Gradation refers to the process of wearing down (degradation) of relief or elevations on the Earth's surface through erosion, and filling up (aggradation) of depressions through deposition. Together, these processes work to reduce topographic variations and level the landscape. It is driven by exogenic forces. Option A describes delta formation. Option B describes mechanical/physical weathering. Option D describes mass movement.",
-        topic: "Geography — Geomorphology",
+        topic: "Geography - Geomorphology",
         difficulty: "Easy",
         pyqYear: null,
       },
@@ -789,8 +789,8 @@ export const TEST_T31 = [
         ],
         correct: "C",
         explanation:
-          "Exogenic (external) geomorphic processes are driven by energy from the Sun and include: Weathering (II), Mass Movements, Erosion/Transportation (IV), and Deposition (V). Endogenic (internal) processes include: Volcanism (III) and Diastrophism (which includes Earthquakes — I). So Earthquakes and Volcanism are endogenic. Only II (Weathering), IV (Erosion), and V (Deposition) are exogenic.",
-        topic: "Geography — Geomorphic Processes",
+          "Exogenic (external) geomorphic processes are driven by energy from the Sun and include: Weathering (II), Mass Movements, Erosion/Transportation (IV), and Deposition (V). Endogenic (internal) processes include: Volcanism (III) and Diastrophism (which includes Earthquakes - I). So Earthquakes and Volcanism are endogenic. Only II (Weathering), IV (Erosion), and V (Deposition) are exogenic.",
+        topic: "Geography - Geomorphic Processes",
         difficulty: "Easy",
         pyqYear: null,
       },
@@ -807,8 +807,8 @@ export const TEST_T31 = [
         ],
         correct: "A",
         explanation:
-          "Statement I is correct — The weathering mantle (layer of weathered material) is deepest in tropical rainforest regions (can exceed 3000 mm depth). It increases from cold/arid regions toward warm/humid regions. Statement II is correct — Tropical rainforests experience high temperature and high precipitation year-round. Statement II explains Statement I — High temperature and moisture accelerate both physical and chemical weathering (hydrolysis, oxidation, carbonation), leading to the thickest weathering mantle in tropical rainforests.",
-        topic: "Geography — Weathering",
+          "Statement I is correct - The weathering mantle (layer of weathered material) is deepest in tropical rainforest regions (can exceed 3000 mm depth). It increases from cold/arid regions toward warm/humid regions. Statement II is correct - Tropical rainforests experience high temperature and high precipitation year-round. Statement II explains Statement I - High temperature and moisture accelerate both physical and chemical weathering (hydrolysis, oxidation, carbonation), leading to the thickest weathering mantle in tropical rainforests.",
+        topic: "Geography - Weathering",
         difficulty: "Medium",
         pyqYear: null,
       },
@@ -825,8 +825,8 @@ export const TEST_T31 = [
         ],
         correct: "B",
         explanation:
-          "Statement 1 is correct — Asteroids are rocky/metallic planetoids; comets are 'cosmic snowballs' of frozen gases, ice, dust, and rock. Statement 2 is incorrect — Asteroids are found in the Asteroid Belt between Mars and Jupiter orbits. Comets are NOT between Venus and Mercury; they originate from the Oort Cloud and Kuiper Belt and orbit throughout the solar system. Statement 3 is correct — When comets approach the Sun, they develop a glowing coma and tail (from sublimating ice/gases); asteroids do not develop a tail.",
-        topic: "Geography — Solar System",
+          "Statement 1 is correct - Asteroids are rocky/metallic planetoids; comets are 'cosmic snowballs' of frozen gases, ice, dust, and rock. Statement 2 is incorrect - Asteroids are found in the Asteroid Belt between Mars and Jupiter orbits. Comets are NOT between Venus and Mercury; they originate from the Oort Cloud and Kuiper Belt and orbit throughout the solar system. Statement 3 is correct - When comets approach the Sun, they develop a glowing coma and tail (from sublimating ice/gases); asteroids do not develop a tail.",
+        topic: "Geography - Solar System",
         difficulty: "Easy",
         pyqYear: 2011,
       },
@@ -844,7 +844,7 @@ export const TEST_T31 = [
         correct: "B",
         explanation:
           "Hydration is the chemical weathering process in which minerals absorb water into their crystal structure, causing expansion and an increase in volume. Example: CaSO₄ (calcium sulphate/anhydrite) + 2H₂O → CaSO₄·2H₂O (gypsum). This volumetric expansion creates physical stress in rocks, facilitating their breakdown. Solution dissolves minerals; hydrolysis breaks bonds forming new minerals; oxidation involves reaction with oxygen.",
-        topic: "Geography — Weathering",
+        topic: "Geography - Weathering",
         difficulty: "Medium",
         pyqYear: null,
       },
@@ -861,8 +861,8 @@ export const TEST_T31 = [
         ],
         correct: "A",
         explanation:
-          "Statement I is correct — Weathering is an in-situ (on-site) process with very little material movement; erosion involves removal and transportation by geomorphic agents. Statement II is correct — Weathering is primarily driven by physical forces (temperature changes, frost) and chemical reactions; erosion depends on kinetic energy of external agents like rivers, wind, glaciers. Statement III is incorrect — Weathering is NOT a mandatory prerequisite for erosion. Erosion can act directly on fresh, unweathered rock (e.g., glacial plucking, wave action). Weathering aids but is not essential for erosion.",
-        topic: "Geography — Weathering & Erosion",
+          "Statement I is correct - Weathering is an in-situ (on-site) process with very little material movement; erosion involves removal and transportation by geomorphic agents. Statement II is correct - Weathering is primarily driven by physical forces (temperature changes, frost) and chemical reactions; erosion depends on kinetic energy of external agents like rivers, wind, glaciers. Statement III is incorrect - Weathering is NOT a mandatory prerequisite for erosion. Erosion can act directly on fresh, unweathered rock (e.g., glacial plucking, wave action). Weathering aids but is not essential for erosion.",
+        topic: "Geography - Weathering & Erosion",
         difficulty: "Medium",
         pyqYear: null,
       },
@@ -879,8 +879,8 @@ export const TEST_T31 = [
         ],
         correct: "A",
         explanation:
-          "Gabbro (I) — Igneous rock (intrusive, mafic). Schist (II) — Metamorphic rock ✓. Gneiss (III) — Metamorphic rock ✓. Limestone (IV) — Sedimentary rock (organically or chemically formed). Chert (V) — Sedimentary rock (chemically formed). Only Schist and Gneiss are metamorphic rocks — only two.",
-        topic: "Geography — Rocks Classification",
+          "Gabbro (I) - Igneous rock (intrusive, mafic). Schist (II) - Metamorphic rock ✓. Gneiss (III) - Metamorphic rock ✓. Limestone (IV) - Sedimentary rock (organically or chemically formed). Chert (V) - Sedimentary rock (chemically formed). Only Schist and Gneiss are metamorphic rocks - only two.",
+        topic: "Geography - Rocks Classification",
         difficulty: "Easy",
         pyqYear: null,
       },
@@ -897,8 +897,8 @@ export const TEST_T31 = [
         ],
         correct: "A",
         explanation:
-          "Statement I is correct — Hardpans (dense, impermeable soil layers) are commonly found in arid/semi-arid regions with high temperatures. Statement II is correct and explains Statement I — In arid regions, evaporation exceeds precipitation, creating upward capillary movement of groundwater. When this water evaporates at the surface due to high temperatures, dissolved salts (calcium carbonate, silica, iron) are deposited, cementing soil particles into a hard, impermeable hardpan layer.",
-        topic: "Geography — Weathering & Soils",
+          "Statement I is correct - Hardpans (dense, impermeable soil layers) are commonly found in arid/semi-arid regions with high temperatures. Statement II is correct and explains Statement I - In arid regions, evaporation exceeds precipitation, creating upward capillary movement of groundwater. When this water evaporates at the surface due to high temperatures, dissolved salts (calcium carbonate, silica, iron) are deposited, cementing soil particles into a hard, impermeable hardpan layer.",
+        topic: "Geography - Weathering & Soils",
         difficulty: "Medium",
         pyqYear: null,
       },
@@ -915,8 +915,8 @@ export const TEST_T31 = [
         ],
         correct: "A",
         explanation:
-          "Diastrophism refers to endogenic processes involving deformation of Earth's crust (includes orogenic, epeirogenic, earthquakes, and plate tectonics). Formation of rift valleys (I) is caused by plate tectonics/divergent movement — a diastrophic process ✓. Erosion of a river valley (II) is an exogenic process (running water) — NOT diastrophism. Landslides (III) are mass wasting (exogenic/gravity-driven) — NOT diastrophism (even though earthquakes can trigger them). Only one (I) is an example of diastrophism.",
-        topic: "Geography — Geomorphic Processes",
+          "Diastrophism refers to endogenic processes involving deformation of Earth's crust (includes orogenic, epeirogenic, earthquakes, and plate tectonics). Formation of rift valleys (I) is caused by plate tectonics/divergent movement - a diastrophic process ✓. Erosion of a river valley (II) is an exogenic process (running water) - NOT diastrophism. Landslides (III) are mass wasting (exogenic/gravity-driven) - NOT diastrophism (even though earthquakes can trigger them). Only one (I) is an example of diastrophism.",
+        topic: "Geography - Geomorphic Processes",
         difficulty: "Medium",
         pyqYear: null,
       },

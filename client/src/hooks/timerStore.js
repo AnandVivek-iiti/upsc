@@ -25,7 +25,7 @@ function broadcast() {
 }
 
 
-// updates — no separate real-time plumbing needed here.
+// updates - no separate real-time plumbing needed here.
 function syncNow() {
   if (!_syncFn || !_userId) return;
   if (store.elapsed === _lastSyncedSecs) return;
@@ -39,7 +39,7 @@ function syncNow() {
  * tracked, and if so, closes out the old day and resets the counter to 0.
  * Returns true if a rollover happened.
  *
- * Called: every running tick, on tab refocus, and before start() — so it
+ * Called: every running tick, on tab refocus, and before start() - so it
  * catches the midnight crossing whether the timer is actively running or
  * was just left paused overnight.
  */

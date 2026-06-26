@@ -1,16 +1,16 @@
 // ─── SFG 2026 Test Series Data ────────────────────────────────────────────────
 // Structured from: SFG 2026 | LEVEL 1 | Test 26 | Test 321124
 // Subject: Modern History
-// Topic: Indian National Movement — Early Phase (1885–1919)
+// Topic: Indian National Movement - Early Phase (1885–1919)
 // Total Questions: 50 | Max Marks: 100 | Time: 60 min
 // Marking: +2 correct, -0.66 wrong (1/3 negative marking)
 
 export const TEST_T26 = [
   {
     id: "sfg2026-t26",
-    title: "SFG 2026 — Level 1 · Test 26",
+    title: "SFG 2026 - Level 1 · Test 26",
     subject: "Modern History",
-    topic: "Indian National Movement — Early Phase (INC Formation to Home Rule)",
+    topic: "Indian National Movement - Early Phase (INC Formation to Home Rule)",
     totalQuestions: 50,
     maxMarks: 100,
     timeMinutes: 60,
@@ -31,7 +31,7 @@ export const TEST_T26 = [
         ],
         correct: "C",
         explanation:
-          "Both statements are correct. The Swadeshi Movement (1905) revived indigenous crafts — swadeshi textile mills, soap, match factories were established and indigenous weavers/artisans were celebrated (1 ✓). The National Council of Education (NCE - Bengal) was founded in 1906 as part of the Swadeshi Movement to organise national education on literary, scientific and technical lines under national control (2 ✓).",
+          "Both statements are correct. The Swadeshi Movement (1905) revived indigenous crafts - swadeshi textile mills, soap, match factories were established and indigenous weavers/artisans were celebrated (1 ✓). The National Council of Education (NCE - Bengal) was founded in 1906 as part of the Swadeshi Movement to organise national education on literary, scientific and technical lines under national control (2 ✓).",
         topic: "Swadeshi Movement",
       },
       {
@@ -48,12 +48,12 @@ export const TEST_T26 = [
         correct: "D",
         explanation:
           "All five demands were raised by the Moderate leaders of INC in the early phase. More Indian representation in legislative councils (I ✓). Simultaneous Civil Services exams in India and Britain (II ✓). Separation of judiciary from executive (III ✓). Greater public funds for irrigation to prevent famines (IV ✓). Reduction of land revenue and military expenditure (V ✓). All five were part of the Moderate programme.",
-        topic: "INC — Moderate Phase Demands",
+        topic: "INC - Moderate Phase Demands",
       },
       {
         id: "t26_q03",
         qNo: 3,
-        text: "In the context of national movement in India in the later half of the 19th century, consider the following pairs:\nOrganisation — Founded by\nI. Landholder's Society — Raja Ram Mohan Roy\nII. Indian National Association — Surendranath Banerjee\nIII. Bombay Association — Jagannath Shanker Seth\nHow many of the pairs given above are correctly matched?",
+        text: "In the context of national movement in India in the later half of the 19th century, consider the following pairs:\nOrganisation - Founded by\nI. Landholder's Society - Raja Ram Mohan Roy\nII. Indian National Association - Surendranath Banerjee\nIII. Bombay Association - Jagannath Shanker Seth\nHow many of the pairs given above are correctly matched?",
         suffix: "",
         options: [
           { id: "A", text: "Only one" },
@@ -63,7 +63,7 @@ export const TEST_T26 = [
         ],
         correct: "B",
         explanation:
-          "Pairs II and III are correctly matched. Indian National Association (1876) was founded by Surendranath Banerjee and Anand Mohan Bose (II ✓). Bombay Association (1852) was founded by Jagannath Shanker Seth (III ✓). Pair I is incorrect — the Landholders' Society (Zamindari Association, 1838) was founded by Dwarkanath Tagore, not Raja Ram Mohan Roy.",
+          "Pairs II and III are correctly matched. Indian National Association (1876) was founded by Surendranath Banerjee and Anand Mohan Bose (II ✓). Bombay Association (1852) was founded by Jagannath Shanker Seth (III ✓). Pair I is incorrect - the Landholders' Society (Zamindari Association, 1838) was founded by Dwarkanath Tagore, not Raja Ram Mohan Roy.",
         topic: "Pre-Congress Organisations",
       },
       {
@@ -80,7 +80,7 @@ export const TEST_T26 = [
         correct: "A",
         explanation:
           "The first resolution in the first session of the Indian National Congress (Bombay, December 1885, Gokuldas Tejpal Sanskrit College) was proposed by G. Subramania Iyer. He was an important journalist and nationalist from Tamil Nadu.",
-        topic: "INC — First Session 1885",
+        topic: "INC - First Session 1885",
       },
       {
         id: "t26_q05",
@@ -96,7 +96,7 @@ export const TEST_T26 = [
         correct: "A",
         explanation:
           "The Safety Valve Theory (associated with A.O. Hume's own statements and later by Lala Lajpat Rai) argues that the Indian National Congress was formed to provide a safe, peaceful outlet for the growing discontent among educated Indians, thereby preventing revolutionary uprisings against British rule.",
-        topic: "INC — Safety Valve Theory",
+        topic: "INC - Safety Valve Theory",
       },
       {
         id: "t26_q06",
@@ -111,8 +111,8 @@ export const TEST_T26 = [
         ],
         correct: "D",
         explanation:
-          "The Lightning Conductor Theory was propounded by Gopal Krishna Gokhale. It argued that Indian leaders strategically used A.O. Hume (a retired British civil servant) as a 'lightning conductor' — a protective shield — to safely establish the INC under British guise, making it acceptable to colonial authorities while secretly being driven by Indian nationalist aspirations.",
-        topic: "INC — Lightning Conductor Theory",
+          "The Lightning Conductor Theory was propounded by Gopal Krishna Gokhale. It argued that Indian leaders strategically used A.O. Hume (a retired British civil servant) as a 'lightning conductor' - a protective shield - to safely establish the INC under British guise, making it acceptable to colonial authorities while secretly being driven by Indian nationalist aspirations.",
+        topic: "INC - Lightning Conductor Theory",
       },
       {
         id: "t26_q07",
@@ -128,12 +128,12 @@ export const TEST_T26 = [
         correct: "C",
         explanation:
           "All four statements are correct. First INC session was at Gokuldas Tejpal Sanskrit College, Bombay (I ✓). Lord Dufferin was Viceroy (1884–1888) at the time (II ✓). W.C. Bonnerjee presided (III ✓). One of the 9 resolutions condemned the annexation of Upper Burma by the British (IV ✓).",
-        topic: "INC — First Session 1885",
+        topic: "INC - First Session 1885",
       },
       {
         id: "t26_q08",
         qNo: 8,
-        text: "With reference to the Indian National Congress, consider the following information:\nINC Session (Year) — President — Important decision/event\nI. 1896 — Badruddin Tyabji — Vande Mataram was sung at this session by Rabindranath Tagore.\nII. 1906 — Dadabhai Naoroji — It was announced that Swaraj was the goal of India's political efforts.\nIII. 1907 — Rash Behari Ghosh — The Congress witnessed a split between the Moderates and the Extremists.\nIn how many of the above rows is the information correctly matched?",
+        text: "With reference to the Indian National Congress, consider the following information:\nINC Session (Year) - President - Important decision/event\nI. 1896 - Badruddin Tyabji - Vande Mataram was sung at this session by Rabindranath Tagore.\nII. 1906 - Dadabhai Naoroji - It was announced that Swaraj was the goal of India's political efforts.\nIII. 1907 - Rash Behari Ghosh - The Congress witnessed a split between the Moderates and the Extremists.\nIn how many of the above rows is the information correctly matched?",
         suffix: "",
         options: [
           { id: "A", text: "Only one" },
@@ -143,8 +143,8 @@ export const TEST_T26 = [
         ],
         correct: "B",
         explanation:
-          "Rows II and III are correct. The 1906 Calcutta session, presided by Dadabhai Naoroji, first declared Swaraj as Congress's goal (II ✓). The 1907 Surat session, presided by Rash Behari Ghosh, witnessed the famous Moderates-Extremists split (III ✓). Row I is incorrect — the 1896 session president was Rahimtullah M. Sayani (not Badruddin Tyabji). Tagore did sing Vande Mataram at the 1896 session but under Sayani's presidentship.",
-        topic: "INC Sessions — Key Events",
+          "Rows II and III are correct. The 1906 Calcutta session, presided by Dadabhai Naoroji, first declared Swaraj as Congress's goal (II ✓). The 1907 Surat session, presided by Rash Behari Ghosh, witnessed the famous Moderates-Extremists split (III ✓). Row I is incorrect - the 1896 session president was Rahimtullah M. Sayani (not Badruddin Tyabji). Tagore did sing Vande Mataram at the 1896 session but under Sayani's presidentship.",
+        topic: "INC Sessions - Key Events",
       },
       {
         id: "t26_q09",
@@ -160,7 +160,7 @@ export const TEST_T26 = [
         correct: "B",
         explanation:
           "Three were primarily associated with Poona Sarvajanik Sabha (1870): MG Ranade (II ✓), SH Chiplonkar (III ✓), and GV Joshi (IV ✓). Vasudev Balwant Phadke (I) was a revolutionary, not associated with PSS. Pandurang Mahadev Bhapat (V) was born in 1880, so could not have been associated with its founding in 1870.",
-        topic: "Pre-Congress Organisations — Poona Sarvajanik Sabha",
+        topic: "Pre-Congress Organisations - Poona Sarvajanik Sabha",
       },
       {
         id: "t26_q10",
@@ -175,7 +175,7 @@ export const TEST_T26 = [
         ],
         correct: "C",
         explanation:
-          "Statement II is incorrect — the Act did NOT introduce direct elections; it introduced an indirect/nomination system where members were nominated based on recommendations from provincial bodies. The term 'election' was not used. Statement III is correct — members could only discuss the budget but had no voting rights over it. Only Statement III is correct and it explains the Moderates' dissatisfaction (Statement I).",
+          "Statement II is incorrect - the Act did NOT introduce direct elections; it introduced an indirect/nomination system where members were nominated based on recommendations from provincial bodies. The term 'election' was not used. Statement III is correct - members could only discuss the budget but had no voting rights over it. Only Statement III is correct and it explains the Moderates' dissatisfaction (Statement I).",
         topic: "Indian Councils Act 1892",
       },
       {
@@ -192,7 +192,7 @@ export const TEST_T26 = [
         correct: "A",
         explanation:
           "When Mahatma Gandhi and his followers gained control of the All-India Home Rule League, they changed its name to 'Swaraj Sabha' (Hindi for Home Rule League) and amended its constitution to make it a vehicle for the Non-Cooperation Movement.",
-        topic: "Home Rule League — Transformation",
+        topic: "Home Rule League - Transformation",
       },
       {
         id: "t26_q12",
@@ -207,8 +207,8 @@ export const TEST_T26 = [
         ],
         correct: "A",
         explanation:
-          "'The Wants and Means of India' was first presented as a paper by Dadabhai Naoroji at London's Society of Arts in 1870. In it, he systematically analysed India's economic condition, quantified Indian poverty, calculated per capita income, and pioneered statistical comparisons — laying the groundwork for his famous Drain of Wealth theory.",
-        topic: "Economic Critique of Colonialism — Dadabhai Naoroji",
+          "'The Wants and Means of India' was first presented as a paper by Dadabhai Naoroji at London's Society of Arts in 1870. In it, he systematically analysed India's economic condition, quantified Indian poverty, calculated per capita income, and pioneered statistical comparisons - laying the groundwork for his famous Drain of Wealth theory.",
+        topic: "Economic Critique of Colonialism - Dadabhai Naoroji",
       },
       {
         id: "t26_q13",
@@ -223,13 +223,13 @@ export const TEST_T26 = [
         ],
         correct: "D",
         explanation:
-          "Statements II, III and IV are correct. The Samiti was named after Bankim Chandra Chattopadhyay's concept of 'Anushilan-tatva' (II ✓). Bande Mataram (English weekly, edited by Aurobindo) popularised its ideas (III ✓). Khudiram Bose and associates who threw the Muzaffarpur bomb were members (IV ✓). Statement I is incorrect — the Calcutta Anushilan Samiti was founded by Satish Chandra Basu and Barrister Pramathanath Mitra in 1902 (NOT Sachindra Nath Sanyal, who founded the Patna branch in 1913).",
-        topic: "Revolutionary Organisations — Anushilan Samiti",
+          "Statements II, III and IV are correct. The Samiti was named after Bankim Chandra Chattopadhyay's concept of 'Anushilan-tatva' (II ✓). Bande Mataram (English weekly, edited by Aurobindo) popularised its ideas (III ✓). Khudiram Bose and associates who threw the Muzaffarpur bomb were members (IV ✓). Statement I is incorrect - the Calcutta Anushilan Samiti was founded by Satish Chandra Basu and Barrister Pramathanath Mitra in 1902 (NOT Sachindra Nath Sanyal, who founded the Patna branch in 1913).",
+        topic: "Revolutionary Organisations - Anushilan Samiti",
       },
       {
         id: "t26_q14",
         qNo: 14,
-        text: "With reference to Revolutionary activities during the early 20th century in India, consider the following pairs:\nCases — Related To — Associated Personality\nI. Delhi-Lahore Conspiracy Case, 1912 — Assassination Attempt on Governor General Lord Hardinge — Aurobindo Ghosh\nII. Alipore Conspiracy Case, 1908 — Assassination of Sir William Hutt Curzon Willie — Vasudev Balwant Padhke\nIII. Nashik Conspiracy Case, 1910 — Assassination of District Collector of Nashik A.M.T Jackson — Anant Lakshman Kanhere\nIn how many of the rows given above is the information correctly matched?",
+        text: "With reference to Revolutionary activities during the early 20th century in India, consider the following pairs:\nCases - Related To - Associated Personality\nI. Delhi-Lahore Conspiracy Case, 1912 - Assassination Attempt on Governor General Lord Hardinge - Aurobindo Ghosh\nII. Alipore Conspiracy Case, 1908 - Assassination of Sir William Hutt Curzon Willie - Vasudev Balwant Padhke\nIII. Nashik Conspiracy Case, 1910 - Assassination of District Collector of Nashik A.M.T Jackson - Anant Lakshman Kanhere\nIn how many of the rows given above is the information correctly matched?",
         suffix: "",
         options: [
           { id: "A", text: "Only one" },
@@ -239,8 +239,8 @@ export const TEST_T26 = [
         ],
         correct: "A",
         explanation:
-          "Only Row III is correctly matched. Anant Lakshman Kanhere (Abhinav Bharat member) assassinated A.M.T. Jackson (Nashik Collector) in 1909 — Nashik Conspiracy Case (III ✓). Row I is incorrect — Delhi-Lahore Conspiracy involved Rash Behari Bose and Sachindranath Sanyal, not Aurobindo Ghosh (who was in the Alipore Case). Row II is incorrect — Curzon Wyllie was killed by Madan Lal Dhingra in London (1909), not through the Alipore Case; Alipore Case involved the Anushilan Samiti, not Vasudev Balwant Phadke (who was an earlier revolutionary).",
-        topic: "Revolutionary Activities — Early 20th Century",
+          "Only Row III is correctly matched. Anant Lakshman Kanhere (Abhinav Bharat member) assassinated A.M.T. Jackson (Nashik Collector) in 1909 - Nashik Conspiracy Case (III ✓). Row I is incorrect - Delhi-Lahore Conspiracy involved Rash Behari Bose and Sachindranath Sanyal, not Aurobindo Ghosh (who was in the Alipore Case). Row II is incorrect - Curzon Wyllie was killed by Madan Lal Dhingra in London (1909), not through the Alipore Case; Alipore Case involved the Anushilan Samiti, not Vasudev Balwant Phadke (who was an earlier revolutionary).",
+        topic: "Revolutionary Activities - Early 20th Century",
       },
       {
         id: "t26_q15",
@@ -255,8 +255,8 @@ export const TEST_T26 = [
         ],
         correct: "B",
         explanation:
-          "Keshav Chandra Sen founded the Tabernacle of New Dispensation (Naba Bidhan, 1868) — a new religious institution combining Hinduism, Christianity, Islam and Buddhism (2 ✓). He also founded the Indian Reform Association (1870) for social reforms including education and women's rights (3 ✓). The Calcutta Unitarian Committee (1823) was founded by Raja Ram Mohan Roy, Dwarkanath Tagore, and William Adam — not Keshav Chandra Sen.",
-        topic: "Social Reform Movements — Keshav Chandra Sen",
+          "Keshav Chandra Sen founded the Tabernacle of New Dispensation (Naba Bidhan, 1868) - a new religious institution combining Hinduism, Christianity, Islam and Buddhism (2 ✓). He also founded the Indian Reform Association (1870) for social reforms including education and women's rights (3 ✓). The Calcutta Unitarian Committee (1823) was founded by Raja Ram Mohan Roy, Dwarkanath Tagore, and William Adam - not Keshav Chandra Sen.",
+        topic: "Social Reform Movements - Keshav Chandra Sen",
       },
       {
         id: "t26_q16",
@@ -271,13 +271,13 @@ export const TEST_T26 = [
         ],
         correct: "B",
         explanation:
-          "Statement I is incorrect — the Anjuman-i-Mohisban-i-Watan was founded by Ajit Singh (not Khan Abdul Gaffar Khan) in Lahore, Punjab, to spread revolutionary ideas. Statement II is correct — the journal BharatMata was associated with this society.",
-        topic: "Revolutionary Organisations — Punjab",
+          "Statement I is incorrect - the Anjuman-i-Mohisban-i-Watan was founded by Ajit Singh (not Khan Abdul Gaffar Khan) in Lahore, Punjab, to spread revolutionary ideas. Statement II is correct - the journal BharatMata was associated with this society.",
+        topic: "Revolutionary Organisations - Punjab",
       },
       {
         id: "t26_q17",
         qNo: 17,
-        text: "In the context of modern Indian History, consider the following pairs:\nOrganisation/Society — Founder\nI. India Home Rule Society — Shyamji Krishna Varma\nII. Berlin Committee or Indian Independence Committee — Virendranath Chattopadhyaya\nIII. Commonwealth of India League — Madam Bhikaji Cama\nHow many pairs given above are correctly matched?",
+        text: "In the context of modern Indian History, consider the following pairs:\nOrganisation/Society - Founder\nI. India Home Rule Society - Shyamji Krishna Varma\nII. Berlin Committee or Indian Independence Committee - Virendranath Chattopadhyaya\nIII. Commonwealth of India League - Madam Bhikaji Cama\nHow many pairs given above are correctly matched?",
         suffix: "",
         options: [
           { id: "A", text: "Only one" },
@@ -287,8 +287,8 @@ export const TEST_T26 = [
         ],
         correct: "B",
         explanation:
-          "Pairs I and II are correctly matched. India Home Rule Society (India House, London, 1905) was started by Shyamji Krishna Varma (I ✓). The Indian Independence Committee/Berlin Committee (1914) was formed by Virendranath Chattopadhyaya (II ✓). Pair III is incorrect — the Commonwealth of India League was not founded by Bhikaji Cama; it was Annie Besant's Home Rule for India League later renamed under V.K. Krishna Menon's leadership.",
-        topic: "Revolutionary Organisations — Abroad",
+          "Pairs I and II are correctly matched. India Home Rule Society (India House, London, 1905) was started by Shyamji Krishna Varma (I ✓). The Indian Independence Committee/Berlin Committee (1914) was formed by Virendranath Chattopadhyaya (II ✓). Pair III is incorrect - the Commonwealth of India League was not founded by Bhikaji Cama; it was Annie Besant's Home Rule for India League later renamed under V.K. Krishna Menon's leadership.",
+        topic: "Revolutionary Organisations - Abroad",
       },
       {
         id: "t26_q18",
@@ -303,13 +303,13 @@ export const TEST_T26 = [
         ],
         correct: "B",
         explanation:
-          "Statement I is incorrect — the Ghadar Party was formed in 1913, while the Komagata Maru incident occurred in 1914; chronologically the party could not have been formed as a reaction to this incident. Statement II is correct — the Shore Committee was a group of local South Asian activists who raised funds and hired lawyer J. Edward Bird to defend passengers' rights in the Komagata Maru incident.",
+          "Statement I is incorrect - the Ghadar Party was formed in 1913, while the Komagata Maru incident occurred in 1914; chronologically the party could not have been formed as a reaction to this incident. Statement II is correct - the Shore Committee was a group of local South Asian activists who raised funds and hired lawyer J. Edward Bird to defend passengers' rights in the Komagata Maru incident.",
         topic: "Komagata Maru Incident 1914",
       },
       {
         id: "t26_q19",
         qNo: 19,
-        text: "With reference to legislative developments during the second half of the nineteenth century under British rule in India, consider the following pairs:\nAct/Bill — Important Provision\nI. The Indian Arms Act, 1878 — It would be a criminal offence if any Indian, Britisher or Anglo-Indian carries arms without license\nII. Ilbert Bill, 1883 — Proposed to allow senior Indian magistrates to preside over criminal cases involving British or European subjects in India.\nIII. Vernacular Press Act, 1878 — The Indian publisher of a newspaper in any language to enter into a bond not to publish anything which is likely to excite the feelings of disaffection to the government.\nHow many of the pairs given above are correctly matched?",
+        text: "With reference to legislative developments during the second half of the nineteenth century under British rule in India, consider the following pairs:\nAct/Bill - Important Provision\nI. The Indian Arms Act, 1878 - It would be a criminal offence if any Indian, Britisher or Anglo-Indian carries arms without license\nII. Ilbert Bill, 1883 - Proposed to allow senior Indian magistrates to preside over criminal cases involving British or European subjects in India.\nIII. Vernacular Press Act, 1878 - The Indian publisher of a newspaper in any language to enter into a bond not to publish anything which is likely to excite the feelings of disaffection to the government.\nHow many of the pairs given above are correctly matched?",
         suffix: "",
         options: [
           { id: "A", text: "Only one" },
@@ -319,8 +319,8 @@ export const TEST_T26 = [
         ],
         correct: "A",
         explanation:
-          "Only Pair II is correctly matched. The Ilbert Bill 1883 did propose allowing senior Indian magistrates to try Europeans in criminal cases (II ✓). Pair I is incorrect — the Arms Act 1878 was discriminatory: it required Indians to obtain licences but exempted Europeans/Anglo-Indians/Britishers from such requirements. Pair III is incorrect — the Vernacular Press Act 1878 applied only to Indian-language press (not 'any language'); English-language newspapers were explicitly excluded.",
-        topic: "Colonial Legislation — Arms Act, Ilbert Bill, VPA",
+          "Only Pair II is correctly matched. The Ilbert Bill 1883 did propose allowing senior Indian magistrates to try Europeans in criminal cases (II ✓). Pair I is incorrect - the Arms Act 1878 was discriminatory: it required Indians to obtain licences but exempted Europeans/Anglo-Indians/Britishers from such requirements. Pair III is incorrect - the Vernacular Press Act 1878 applied only to Indian-language press (not 'any language'); English-language newspapers were explicitly excluded.",
+        topic: "Colonial Legislation - Arms Act, Ilbert Bill, VPA",
       },
       {
         id: "t26_q20",
@@ -335,7 +335,7 @@ export const TEST_T26 = [
         ],
         correct: "C",
         explanation:
-          "Statements I, II and III are correct. The 1911 Durbar marked George V's coronation (I ✓). Partition of Bengal was annulled at the Durbar (II ✓). Shifting of capital from Calcutta to Delhi was announced (III ✓). Statement IV is incorrect — Jana Gana Mana was first sung at the Calcutta session of INC in 1911 (at Bharat Sabha, Bowbazar Street), NOT at the Delhi Durbar.",
+          "Statements I, II and III are correct. The 1911 Durbar marked George V's coronation (I ✓). Partition of Bengal was annulled at the Durbar (II ✓). Shifting of capital from Calcutta to Delhi was announced (III ✓). Statement IV is incorrect - Jana Gana Mana was first sung at the Calcutta session of INC in 1911 (at Bharat Sabha, Bowbazar Street), NOT at the Delhi Durbar.",
         topic: "Delhi Durbar 1911",
       },
       {
@@ -351,7 +351,7 @@ export const TEST_T26 = [
         ],
         correct: "D",
         explanation:
-          "Only Rash Behari Bose (3) was actively associated with the Ghadar Party — he carried on revolutionary activities outside India and was a prominent Ghadar leader. Barindra Kumar Ghosh (1) was associated with the Anushilan Samiti and published Jugantar. Jogesh Chandra Chatterjee (2) was associated with the Anushilan Samiti and later HSRA, not the Ghadar Party.",
+          "Only Rash Behari Bose (3) was actively associated with the Ghadar Party - he carried on revolutionary activities outside India and was a prominent Ghadar leader. Barindra Kumar Ghosh (1) was associated with the Anushilan Samiti and published Jugantar. Jogesh Chandra Chatterjee (2) was associated with the Anushilan Samiti and later HSRA, not the Ghadar Party.",
         topic: "Ghadar Party",
       },
       {
@@ -367,7 +367,7 @@ export const TEST_T26 = [
         ],
         correct: "D",
         explanation:
-          "Both statements are incorrect. The British Committee of Indian National Congress (1889) was founded with Sir William Wedderburn as the first Chairman (not Dadabhai Naoroji — Statement I is wrong). The Committee started a journal titled 'India' (not 'Native Opinion') in 1890 — Statement II is wrong.",
+          "Both statements are incorrect. The British Committee of Indian National Congress (1889) was founded with Sir William Wedderburn as the first Chairman (not Dadabhai Naoroji - Statement I is wrong). The Committee started a journal titled 'India' (not 'Native Opinion') in 1890 - Statement II is wrong.",
         topic: "British Committee of INC",
       },
       {
@@ -384,7 +384,7 @@ export const TEST_T26 = [
         correct: "D",
         explanation:
           "Subramania Bharati (Tamil poet and nationalist) published the patriotic song collection 'Sudesa Geethangal/Swadesa Geethangal' in 1908, containing 54 songs celebrating India's independence and the spirit of the Swadeshi Movement. It included the famous nationalist song celebrating Bharat Mata.",
-        topic: "Swadeshi Movement — Literature",
+        topic: "Swadeshi Movement - Literature",
       },
       {
         id: "t26_q24",
@@ -400,7 +400,7 @@ export const TEST_T26 = [
         correct: "C",
         explanation:
           "Tilak established his Home Rule League in April 1916. He operated in: Maharashtra (excluding Bombay city), Karnataka, Berar, and the Central Provinces. Bombay city (II) and Madras (IV) were Besant's territory. So Tilak's regions from the given list are: Karnataka (I), Central Provinces (III), and Berar (V).",
-        topic: "Home Rule League — Tilak vs Besant Areas",
+        topic: "Home Rule League - Tilak vs Besant Areas",
       },
       {
         id: "t26_q25",
@@ -415,8 +415,8 @@ export const TEST_T26 = [
         ],
         correct: "B",
         explanation:
-          "Both statements are individually correct. Naoroji's Drain Theory argued the 'potential surplus' drained could have generated Indian development (I ✓). Imperialists did claim India benefited from integration into the capitalist world market as 'modernisation' (II ✓). However, Statement II does not explain Statement I — they represent opposing viewpoints (Naoroji's critique vs the imperialist justification), not a causal relationship.",
-        topic: "Drain of Wealth Theory — Naoroji",
+          "Both statements are individually correct. Naoroji's Drain Theory argued the 'potential surplus' drained could have generated Indian development (I ✓). Imperialists did claim India benefited from integration into the capitalist world market as 'modernisation' (II ✓). However, Statement II does not explain Statement I - they represent opposing viewpoints (Naoroji's critique vs the imperialist justification), not a causal relationship.",
+        topic: "Drain of Wealth Theory - Naoroji",
       },
       {
         id: "t26_q26",
@@ -432,7 +432,7 @@ export const TEST_T26 = [
         correct: "B",
         explanation:
           "The Annie Larsen was a steamship purchased with German money as part of the Indo-German conspiracy (1915) by the Ghadar Party. It was meant to transfer arms to India for an armed revolt against British rule during the First World War. The plan failed when the ship was intercepted.",
-        topic: "Ghadar Party — Annie Larsen Incident",
+        topic: "Ghadar Party - Annie Larsen Incident",
       },
       {
         id: "t26_q27",
@@ -447,8 +447,8 @@ export const TEST_T26 = [
         ],
         correct: "C",
         explanation:
-          "Statement II is incorrect — Tilak was deported to Mandalay in 1908 (not 1918) for seditious writings in Kesari. In 1918 he went to England to fight a libel case. Statement III is correct — the Moderates (pacified by Montagu's reforms and Besant's release) and Extremists disagreed on tactics, weakening the League. Statement III (the correct one) explains Statement I (the decline).",
-        topic: "Home Rule League — Decline",
+          "Statement II is incorrect - Tilak was deported to Mandalay in 1908 (not 1918) for seditious writings in Kesari. In 1918 he went to England to fight a libel case. Statement III is correct - the Moderates (pacified by Montagu's reforms and Besant's release) and Extremists disagreed on tactics, weakening the League. Statement III (the correct one) explains Statement I (the decline).",
+        topic: "Home Rule League - Decline",
       },
       {
         id: "t26_q28",
@@ -464,12 +464,12 @@ export const TEST_T26 = [
         correct: "C",
         explanation:
           "The Brati Samiti, Suhrid Samiti, and Sadhena Samiti were national volunteer bodies (samitis) that sprang up during the Swadeshi Movement (1905). They preached swadeshi, boycott of foreign goods, organised social work, imparted physical/moral training, and promoted national education and self-reliance.",
-        topic: "Swadeshi Movement — Samitis",
+        topic: "Swadeshi Movement - Samitis",
       },
       {
         id: "t26_q29",
         qNo: 29,
-        text: "Kadambini Ganguly, one of the first female graduates in India, in the Indian National Congress Session of 1890 gave a lecture in English — becoming the first woman to do so at the INC. Who among the following presided over this session of the Indian National Congress?",
+        text: "Kadambini Ganguly, one of the first female graduates in India, in the Indian National Congress Session of 1890 gave a lecture in English - becoming the first woman to do so at the INC. Who among the following presided over this session of the Indian National Congress?",
         suffix: "",
         options: [
           { id: "A", text: "William Wedderburn" },
@@ -479,8 +479,8 @@ export const TEST_T26 = [
         ],
         correct: "C",
         explanation:
-          "Pherozeshah Mehta presided over the Indian National Congress session held at Calcutta in 1890 — the same session where Kadambini Ganguly gave her landmark lecture in English, becoming the first woman to address the INC in English.",
-        topic: "INC Sessions — 1890 Calcutta",
+          "Pherozeshah Mehta presided over the Indian National Congress session held at Calcutta in 1890 - the same session where Kadambini Ganguly gave her landmark lecture in English, becoming the first woman to address the INC in English.",
+        topic: "INC Sessions - 1890 Calcutta",
       },
       {
         id: "t26_q30",
@@ -495,7 +495,7 @@ export const TEST_T26 = [
         ],
         correct: "B",
         explanation:
-          "October 16, 1905 was the day the Partition of Bengal formally came into effect — not the announcement (which was in July 1905). The people of Bengal observed this day as a day of mourning, marked by fasting, hartal, Raksha Bandhan ceremonies (tying threads as a symbol of unity), and processions.",
+          "October 16, 1905 was the day the Partition of Bengal formally came into effect - not the announcement (which was in July 1905). The people of Bengal observed this day as a day of mourning, marked by fasting, hartal, Raksha Bandhan ceremonies (tying threads as a symbol of unity), and processions.",
         topic: "Partition of Bengal 1905",
       },
       {
@@ -512,7 +512,7 @@ export const TEST_T26 = [
         correct: "D",
         explanation:
           "All four are correct features of the Swadeshi Movement. Samitis for mass organisation (1 ✓). Labour strikes in various industries (2 ✓). Atmashakti (self-reliance/self-help) as a constructive programme (3 ✓). National schools for nationalist education (4 ✓).",
-        topic: "Swadeshi Movement — Features",
+        topic: "Swadeshi Movement - Features",
       },
       {
         id: "t26_q32",
@@ -527,8 +527,8 @@ export const TEST_T26 = [
         ],
         correct: "D",
         explanation:
-          "Both statements are incorrect. Statement I has the positions reversed — it was the Extremists who believed in mass mobilisation and widening the democratic base, while Moderates believed the movement should be limited to middle-class intelligentsia. Statement II is also reversed — it was the Moderates who were influenced by western liberal ideas; the Extremists were inspired by Indian history, culture, and the glorious Hindu/Indian past.",
-        topic: "Moderates vs Extremists — Differences",
+          "Both statements are incorrect. Statement I has the positions reversed - it was the Extremists who believed in mass mobilisation and widening the democratic base, while Moderates believed the movement should be limited to middle-class intelligentsia. Statement II is also reversed - it was the Moderates who were influenced by western liberal ideas; the Extremists were inspired by Indian history, culture, and the glorious Hindu/Indian past.",
+        topic: "Moderates vs Extremists - Differences",
       },
       {
         id: "t26_q33",
@@ -543,7 +543,7 @@ export const TEST_T26 = [
         ],
         correct: "D",
         explanation:
-          "Statement I is incorrect — socialist/communist ideology played no role in the 1907 split (that came much later). Statement II is incorrect — in fact it was the Extremists (not Moderates) who opposed Rashbehari Ghosh's election as president; the Moderates wanted him. Statement III is correct — the primary reason was Moderates' opposition to extending the Swadeshi/Boycott movement outside Bengal into a nationwide mass movement as the Extremists wanted.",
+          "Statement I is incorrect - socialist/communist ideology played no role in the 1907 split (that came much later). Statement II is incorrect - in fact it was the Extremists (not Moderates) who opposed Rashbehari Ghosh's election as president; the Moderates wanted him. Statement III is correct - the primary reason was Moderates' opposition to extending the Swadeshi/Boycott movement outside Bengal into a nationwide mass movement as the Extremists wanted.",
         topic: "Surat Split 1907",
       },
       {
@@ -559,8 +559,8 @@ export const TEST_T26 = [
         ],
         correct: "D",
         explanation:
-          "All three are components of Home Charges — the annual remittances from India to Britain for expenses of the Government of India incurred in England. Home Charges included: dividends to EIC shareholders (I ✓), interest on public debt raised abroad (II ✓), salaries and pensions of Company officials in Britain (III ✓), civil/military charges, and store purchases in England.",
-        topic: "Economic Drain — Home Charges",
+          "All three are components of Home Charges - the annual remittances from India to Britain for expenses of the Government of India incurred in England. Home Charges included: dividends to EIC shareholders (I ✓), interest on public debt raised abroad (II ✓), salaries and pensions of Company officials in Britain (III ✓), civil/military charges, and store purchases in England.",
+        topic: "Economic Drain - Home Charges",
       },
       {
         id: "t26_q35",
@@ -591,7 +591,7 @@ export const TEST_T26 = [
         ],
         correct: "C",
         explanation:
-          "The Lucknow Pact (December 1916) demanded: fixed tenure of five years for legislative councils (II ✓), at least 50% Indians in Executive Councils (III ✓), and elected majorities in both central and provincial assemblies (IV ✓). Statement I is incorrect — the pact demanded self-government (not specifically Dominion Status); the formal demand for Dominion Status came with the Nehru Report (1928).",
+          "The Lucknow Pact (December 1916) demanded: fixed tenure of five years for legislative councils (II ✓), at least 50% Indians in Executive Councils (III ✓), and elected majorities in both central and provincial assemblies (IV ✓). Statement I is incorrect - the pact demanded self-government (not specifically Dominion Status); the formal demand for Dominion Status came with the Nehru Report (1928).",
         topic: "Lucknow Pact 1916",
       },
       {
@@ -607,8 +607,8 @@ export const TEST_T26 = [
         ],
         correct: "B",
         explanation:
-          "Both Statements II and III are correct — the August Declaration 1917 kept pace of constitutional advance solely in British hands (II ✓), and made no provision for universal adult franchise (III ✓). However, only Statement II explains Statement I (the dissatisfaction) — because Indian leaders objected to British unilateralism on timing. The absence of universal franchise (III) was not the primary reason for dissatisfaction at that stage (even the Lucknow Pact had not demanded universal franchise).",
-        topic: "August Declaration 1917 — Montagu's Statement",
+          "Both Statements II and III are correct - the August Declaration 1917 kept pace of constitutional advance solely in British hands (II ✓), and made no provision for universal adult franchise (III ✓). However, only Statement II explains Statement I (the dissatisfaction) - because Indian leaders objected to British unilateralism on timing. The absence of universal franchise (III) was not the primary reason for dissatisfaction at that stage (even the Lucknow Pact had not demanded universal franchise).",
+        topic: "August Declaration 1917 - Montagu's Statement",
       },
       {
         id: "t26_q38",
@@ -623,8 +623,8 @@ export const TEST_T26 = [
         ],
         correct: "C",
         explanation:
-          "Four leaders were associated with the Home Rule League Movement. Madan Mohan Malviya joined after Besant's arrest to show solidarity (I ✓). Jinnah led the Bombay division of Besant's League (II ✓). George Arundale was the organising secretary of Annie Besant's League (III ✓). Bipin Chandra Pal joined the movement after returning from England (IV ✓). Gopal Krishna Gokhale DIED in February 1915 — before the Home Rule League was established in 1916 (V ✗).",
-        topic: "Home Rule League — Participants",
+          "Four leaders were associated with the Home Rule League Movement. Madan Mohan Malviya joined after Besant's arrest to show solidarity (I ✓). Jinnah led the Bombay division of Besant's League (II ✓). George Arundale was the organising secretary of Annie Besant's League (III ✓). Bipin Chandra Pal joined the movement after returning from England (IV ✓). Gopal Krishna Gokhale DIED in February 1915 - before the Home Rule League was established in 1916 (V ✗).",
+        topic: "Home Rule League - Participants",
       },
       {
         id: "t26_q39",
@@ -639,8 +639,8 @@ export const TEST_T26 = [
         ],
         correct: "C",
         explanation:
-          "Both statements are correct. Section 4 of the Defence of India Act 1915 included a sunset clause — it was to expire six months after the end of WWI (I ✓). When WWI ended and the Act was about to expire, the British sought to retain its extraordinary powers through the Rowlatt Act 1919, which was directly modelled on the Defence of India Act 1915 (II ✓).",
-        topic: "Defence of India Act 1915 — Rowlatt Act Connection",
+          "Both statements are correct. Section 4 of the Defence of India Act 1915 included a sunset clause - it was to expire six months after the end of WWI (I ✓). When WWI ended and the Act was about to expire, the British sought to retain its extraordinary powers through the Rowlatt Act 1919, which was directly modelled on the Defence of India Act 1915 (II ✓).",
+        topic: "Defence of India Act 1915 - Rowlatt Act Connection",
       },
       {
         id: "t26_q40",
@@ -671,7 +671,7 @@ export const TEST_T26 = [
         ],
         correct: "D",
         explanation:
-          "All three were prominent economic critics of colonialism. Dadabhai Naoroji — 'Poverty and Un-British Rule in India' (Drain Theory, 1901). G. Subramania Iyer — 'Economic Aspects of British Rule'. Romesh Chandra Dutt — 'Economic History of India' (2 volumes, 1901–02). All three systematically critiqued British economic exploitation of India.",
+          "All three were prominent economic critics of colonialism. Dadabhai Naoroji - 'Poverty and Un-British Rule in India' (Drain Theory, 1901). G. Subramania Iyer - 'Economic Aspects of British Rule'. Romesh Chandra Dutt - 'Economic History of India' (2 volumes, 1901–02). All three systematically critiqued British economic exploitation of India.",
         topic: "Economic Critique of Colonialism",
       },
       {
@@ -687,7 +687,7 @@ export const TEST_T26 = [
         ],
         correct: "A",
         explanation:
-          "Statements I and II are correct. The SIS objective was to train selfless workers for national service (I ✓). It was founded by Gokhale along with K. Devadhar, A.V. Patwardhan, and N.A. Dravid in 1905 (II ✓). Statement III is incorrect — Gandhi could NOT become a member as some members strongly opposed his entry. Statement IV is incorrect — the SIS published an English-language journal called 'Hitavada' (from Nagpur, 1911), not a Marathi journal.",
+          "Statements I and II are correct. The SIS objective was to train selfless workers for national service (I ✓). It was founded by Gokhale along with K. Devadhar, A.V. Patwardhan, and N.A. Dravid in 1905 (II ✓). Statement III is incorrect - Gandhi could NOT become a member as some members strongly opposed his entry. Statement IV is incorrect - the SIS published an English-language journal called 'Hitavada' (from Nagpur, 1911), not a Marathi journal.",
         topic: "Servants of India Society",
       },
       {
@@ -703,7 +703,7 @@ export const TEST_T26 = [
         ],
         correct: "C",
         explanation:
-          "Statement I is correct — Tilak after his release (1914) and the Extremists extended support to the British war effort, hoping to be rewarded with self-government after the war. Statement II is incorrect — the British government had NOT made any firm/binding promise of self-government. Tilak supported the war based on his mistaken expectation, not a British promise. The first British statement came with Montagu's Declaration in August 1917 (and even that was vague).",
+          "Statement I is correct - Tilak after his release (1914) and the Extremists extended support to the British war effort, hoping to be rewarded with self-government after the war. Statement II is incorrect - the British government had NOT made any firm/binding promise of self-government. Tilak supported the war based on his mistaken expectation, not a British promise. The first British statement came with Montagu's Declaration in August 1917 (and even that was vague).",
         topic: "India and World War I",
       },
       {
@@ -720,7 +720,7 @@ export const TEST_T26 = [
         correct: "D",
         explanation:
           "Raja Mahendra Pratap Singh went to Kabul during WWI and established a Provisional Government of Free India there in December 1915, with help from the Afghan crown prince Amanullah. He served as President, with M. Barkatullah as Prime Minister and Obaidullah Sindhi as Home Minister.",
-        topic: "Provisional Government at Kabul — WWI",
+        topic: "Provisional Government at Kabul - WWI",
       },
       {
         id: "t26_q45",
@@ -736,7 +736,7 @@ export const TEST_T26 = [
         correct: "D",
         explanation:
           "In 1875, the Poona Sarvajanik Sabha submitted a petition to the House of Commons signed by 21,713 persons demanding India's direct representation in the British Parliament. This was one of the earliest formal political demands made by an Indian organisation to the British Parliament.",
-        topic: "Poona Sarvajanik Sabha — Petition 1875",
+        topic: "Poona Sarvajanik Sabha - Petition 1875",
       },
       {
         id: "t26_q46",
@@ -752,7 +752,7 @@ export const TEST_T26 = [
         correct: "C",
         explanation:
           "Chronological order: III (first Muslim president) → I (first foreigner president) → II (first woman president). Badruddin Tyabji was first Muslim INC president in 1887. George Yule was first foreigner (British) INC president in 1888. Annie Besant was first woman INC president in 1917. So order is III (1887) → I (1888) → II (1917).",
-        topic: "INC Sessions — Firsts",
+        topic: "INC Sessions - Firsts",
       },
       {
         id: "t26_q47",
@@ -767,7 +767,7 @@ export const TEST_T26 = [
         ],
         correct: "D",
         explanation:
-          "The Welby Commission (formally the Royal Commission on Indian Expenditure, 1895), chaired by Lord Welby, was appointed to examine the distribution of expenditure between Britain and India — specifically the Home Charges — and whether India was being charged fairly for administration. Dadabhai Naoroji testified before this Commission.",
+          "The Welby Commission (formally the Royal Commission on Indian Expenditure, 1895), chaired by Lord Welby, was appointed to examine the distribution of expenditure between Britain and India - specifically the Home Charges - and whether India was being charged fairly for administration. Dadabhai Naoroji testified before this Commission.",
         topic: "Welby Commission 1895",
       },
       {
@@ -784,7 +784,7 @@ export const TEST_T26 = [
         correct: "C",
         explanation:
           "Indu Prakash was an Anglo-Marathi weekly from the Bombay Presidency. Gopal Hari Deshmukh (Lokhitwadi) was a founding figure. Aurobindo Ghose published his critical series 'New Lamps for Old' in Indu Prakash between 1893–1894, critiquing the Moderate approach of the INC and calling for more assertive nationalism.",
-        topic: "Nationalist Press — Indu Prakash",
+        topic: "Nationalist Press - Indu Prakash",
       },
       {
         id: "t26_q49",
@@ -799,8 +799,8 @@ export const TEST_T26 = [
         ],
         correct: "D",
         explanation:
-          "Satish Chandra Mukherjee founded the Dawn Society in Calcutta in 1902 as a non-political cultural organisation to promote self-reliance in Indian education — providing 'ideal education' with religious and moral lessons as a protest against the Report of the Indian Universities Commission.",
-        topic: "Nationalist Education — Dawn Society",
+          "Satish Chandra Mukherjee founded the Dawn Society in Calcutta in 1902 as a non-political cultural organisation to promote self-reliance in Indian education - providing 'ideal education' with religious and moral lessons as a protest against the Report of the Indian Universities Commission.",
+        topic: "Nationalist Education - Dawn Society",
       },
       {
         id: "t26_q50",
@@ -816,7 +816,7 @@ export const TEST_T26 = [
         correct: "A",
         explanation:
           "Chronological order: I → II → III. Indian Universities Commission under Sir Thomas Raleigh was appointed on 27 January 1902 (I). National Council of Education was formed on 15 August 1906 (II). All India Muslim League was founded on 30 December 1906 (III). So the order is I (1902) → II (1906 August) → III (1906 December).",
-        topic: "Chronology — 1900s Events",
+        topic: "Chronology - 1900s Events",
       },
     ],
   },

@@ -1,5 +1,5 @@
 // models/DailyActiveUsers.js
-// Materialized daily summary — populated by a cron job (or on-demand).
+// Materialized daily summary - populated by a cron job (or on-demand).
 // Never written to by app request handlers directly.
 
 const { DataTypes } = require("sequelize");

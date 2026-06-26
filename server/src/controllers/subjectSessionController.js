@@ -40,7 +40,7 @@ const SubjectSession = sequelize.define(
     },
     // IST date "YYYY-MM-DD" for fast per-day group-bys
     date: { type: DataTypes.DATEONLY, allowNull: false },
-    // Epoch ms as BIGINT — no precision loss
+    // Epoch ms as BIGINT - no precision loss
     start_time: { type: DataTypes.BIGINT, allowNull: false },
     end_time: { type: DataTypes.BIGINT, allowNull: true }, // null = running
     duration_seconds: { type: DataTypes.INTEGER, allowNull: true },
@@ -90,13 +90,13 @@ function periodRange(period) {
 
 const SUBJECT_SYLLABUS_MAP = {
   History: [
-    // Prelims GS1 — History section
+    // Prelims GS1 - History section
     {
       stage: "prelims",
       paper: "GS1",
       module: "History of India & Indian National Movement",
     },
-    // Mains GS1 — Multiple history modules; we nudge the most directly relevant
+    // Mains GS1 - Multiple history modules; we nudge the most directly relevant
     { stage: "mains", paper: "GS1", module: "Modern Indian History" },
     { stage: "mains", paper: "GS1", module: "Freedom Struggle" },
   ],
@@ -517,7 +517,7 @@ async function nudgeSyllabusProgress(userId, subject, durationSeconds) {
 // ─── POST /api/subject-sessions/sync-syllabus (Feature 5 manual) ─────────────
 /**
  * Re-computes syllabus progress from lifetime study hours.
- * Safe to call multiple times — uses max(current, computed) so it never
+ * Safe to call multiple times - uses max(current, computed) so it never
  * downgrades progress the user may have set manually.
  * Formula: 1 hour = 10% progress, capped at 95%.
  */

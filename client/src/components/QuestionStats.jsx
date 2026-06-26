@@ -1,4 +1,4 @@
-// ─── QuestionStats.jsx — flat/no-shadow, mobile-safe pie, rectangle bars,
+// ─── QuestionStats.jsx - flat/no-shadow, mobile-safe pie, rectangle bars,
 // ─── chip filters (Result + Difficulty) built into BOTH the Subject and Topic tables ──
 
 import { useMemo, useState, useEffect, useRef } from "react";
@@ -319,7 +319,7 @@ function aggregateBy(attempts, field) {
     .sort((a, b) => b.count - a.count);
 }
 
-// ─── Enhanced Data Table — Result + Difficulty chip filters live in BOTH tables ──
+// ─── Enhanced Data Table - Result + Difficulty chip filters live in BOTH tables ──
 function EnhancedDataTable({ attempts, field, viewType }) {
   const [sortField, setSortField] = useState("count");
   const [sortDirection, setSortDirection] = useState("desc");
@@ -596,8 +596,8 @@ function QuestionsModal({ label, viewType, questions, onClose }) {
   );
 }
 
-// ─── YearTrendChart — bar chart with axis + gridlines, bigger labels, no shadow ──
-const YEAR_C = { total: "#14b8a6", correct: "#8b5cf6" }; // teal + violet — distinct from Outcome Split's green/red/gray
+// ─── YearTrendChart - bar chart with axis + gridlines, bigger labels, no shadow ──
+const YEAR_C = { total: "#14b8a6", correct: "#8b5cf6" }; // teal + violet - distinct from Outcome Split's green/red/gray
 
 function YearTrendChart({ byYear }) {
   const grown = useGrow(280);
@@ -689,7 +689,7 @@ function StatTile({ icon: Icon, value, label, color, sub, delay = 0 }) {
   );
 }
 
-// ─── SectionCard — flat, no shadow, overflow visible ───────────────────────
+// ─── SectionCard - flat, no shadow, overflow visible ───────────────────────
 function SectionCard({ title, accent, right, note, children, style = {} }) {
   return (
     <div style={{
@@ -835,7 +835,7 @@ export default function QuestionStats() {
       <div style={{ display: "flex", alignItems: "flex-start", gap: 10, flexWrap: "wrap", background: "var(--bg-muted)", border: "1px solid var(--bg-border)", borderRadius: 12, padding: "13px 18px", marginBottom: 20 }}>
         <Info size={16} style={{ color: P.blue.solid, marginTop: 2, flexShrink: 0 }} />
         <div style={{ fontSize: 13, color: "var(--text-secondary)", lineHeight: 1.6, flex: 1, minWidth: 220 }}>
-          Every percentage below is <strong style={{ color: "var(--text-primary)" }}>accuracy</strong> — correct ÷ (correct + wrong). Skipped questions are counted separately and never affect a percentage.
+          Every percentage below is <strong style={{ color: "var(--text-primary)" }}>accuracy</strong> - correct ÷ (correct + wrong). Skipped questions are counted separately and never affect a percentage.
         </div>
         <div style={{ display: "flex", gap: 16, flexWrap: "wrap", flexShrink: 0 }}>
           <LegendDot color={P.correct.solid} label="Correct" />
@@ -854,7 +854,7 @@ export default function QuestionStats() {
         <StatTile icon={ListChecks} value={testCount} label="Tests" color={P.gold.solid} delay={300} />
       </div>
 
-      {/* ── Row A: Outcome split + Accuracy by difficulty + Year-wise — 3 across, stacks on mobile ── */}
+      {/* ── Row A: Outcome split + Accuracy by difficulty + Year-wise - 3 across, stacks on mobile ── */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(270px, 1fr))", gap: 18, marginBottom: 18, alignItems: "stretch" }}>
 
         <SectionCard title="Outcome Split" accent={P.correct.solid} right={`${total} total`}>
@@ -893,7 +893,7 @@ export default function QuestionStats() {
         )}
       </div>
 
-      {/* ── Row B: Subject view (Pie + Table) or Topic view (Table only) — both tables have Result/Difficulty chip filters ── */}
+      {/* ── Row B: Subject view (Pie + Table) or Topic view (Table only) - both tables have Result/Difficulty chip filters ── */}
       {currentData.length > 0 && (
         <div style={{ marginBottom: 18 }}>
           <SectionCard

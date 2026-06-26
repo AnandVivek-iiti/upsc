@@ -132,7 +132,7 @@ function ScreenshotFrame({ src, alt, caption, className = "" }) {
             </div>
             <p className="text-sm font-semibold text-text-primary text-center">{alt}</p>
             <p className="text-xs text-text-muted font-mono text-center max-w-[220px]">
-              Screenshot preview — deploy to see the real UI
+              Screenshot preview - deploy to see the real UI
             </p>
             <span
               className="label-tag text-[10px] font-mono"
@@ -160,7 +160,7 @@ const WORKSPACE_SECTIONS = [
     eyebrow: "Command Center",
     title: "Your daily preparation overview. Every morning.",
     description:
-      "Open UPSC Mentor and know exactly where you stand in under 3 seconds. Exam countdown, streak, syllabus coverage, daily target, and 7-day average — all in one glance.",
+      "Open UPSC Mentor and know exactly where you stand in under 3 seconds. Exam countdown, streak, syllabus coverage, daily target, and 7-day average - all in one glance.",
     bullets: [
       { label: "Exam Countdown", text: "Days to Prelims and Mains, always visible." },
       { label: "Study Streak", text: "Daily habit tracking to keep you consistent." },
@@ -168,7 +168,7 @@ const WORKSPACE_SECTIONS = [
       { label: "Daily Target", text: "Progress toward today's hour goal." },
     ],
     screenshot: SS.commandCenter,
-    ssAlt: "Command Center — daily preparation overview",
+    ssAlt: "Command Center - daily preparation overview",
   },
   {
     id: "study-analytics",
@@ -177,7 +177,7 @@ const WORKSPACE_SECTIONS = [
     eyebrow: "Study Analytics",
     title: "Know exactly where your time is actually going.",
     description:
-      "The study timer tags every session to a subject. Over time, you see a clear picture of your coverage — which subjects are getting attention and which are quietly getting skipped.",
+      "The study timer tags every session to a subject. Over time, you see a clear picture of your coverage - which subjects are getting attention and which are quietly getting skipped.",
     bullets: [
       { label: "Subject Breakdown", text: "Hours per subject, ranked by time spent." },
       { label: "Weekly Chart", text: "Bar chart of daily hours vs target, 7-day view." },
@@ -185,7 +185,7 @@ const WORKSPACE_SECTIONS = [
       { label: "Paper Coverage", text: "Prelims and Mains coverage side by side." },
     ],
     screenshot: SS.studyAnalytics,
-    ssAlt: "Study Analytics — subject hours and weekly chart",
+    ssAlt: "Study Analytics - subject hours and weekly chart",
   },
   {
     id: "practice-analytics",
@@ -194,7 +194,7 @@ const WORKSPACE_SECTIONS = [
     eyebrow: "Practice Analytics",
     title: "Stop guessing your weak areas. The data shows them.",
     description:
-      "Every PYQ and mock test attempt feeds a live analytics panel. Accuracy by subject, difficulty breakdown, and year-wise performance — so you're revising what actually needs work.",
+      "Every PYQ and mock test attempt feeds a live analytics panel. Accuracy by subject, difficulty breakdown, and year-wise performance - so you're revising what actually needs work.",
     bullets: [
       { label: "Accuracy", text: "Correct ÷ attempted, per subject and overall." },
       { label: "Difficulty Breakdown", text: "How you perform across Easy / Medium / Hard." },
@@ -202,7 +202,7 @@ const WORKSPACE_SECTIONS = [
       { label: "Weak Subject Flags", text: "Subjects below threshold flagged automatically." },
     ],
     screenshot: SS.practiceAnalytics,
-    ssAlt: "Practice Analytics — accuracy, difficulty, year-wise performance",
+    ssAlt: "Practice Analytics - accuracy, difficulty, year-wise performance",
   },
   {
     id: "revision-queue",
@@ -216,10 +216,10 @@ const WORKSPACE_SECTIONS = [
       { label: "Spaced Revision", text: "AI-scheduled review at optimal intervals." },
       { label: "Weak Topic Tracking", text: "Mock and PYQ mistakes go straight into the queue." },
       { label: "Due Today", text: "Clear list of topics that need review right now." },
-      { label: "Auto-scheduling", text: "Nothing to configure — it just works." },
+      { label: "Auto-scheduling", text: "Nothing to configure - it just works." },
     ],
     screenshot: SS.revisionQueue,
-    ssAlt: "Revision Queue — spaced review schedule",
+    ssAlt: "Revision Queue - spaced review schedule",
   },
   {
     id: "advanced-tools",
@@ -228,15 +228,15 @@ const WORKSPACE_SECTIONS = [
     eyebrow: "Advanced Preparation",
     title: "AI-powered tools for when you're ready to go deeper.",
     description:
-      "Once you're writing answers and testing regularly, these three tools move your preparation to a different level. Not primary tools — but powerful ones.",
+      "Once you're writing answers and testing regularly, these three tools move your preparation to a different level. Not primary tools - but powerful ones.",
     bullets: [
       { label: "Answer Evaluation", text: "Submit any Mains answer. Get score, strengths, weaknesses, and a topper-style rewrite within seconds." },
       { label: "Notes Auditor", text: "Paste your notes. Get gaps, memory traps, 30-second revision cards, and improved notes instantly." },
-      { label: "AI Mentor", text: "Ask anything about UPSC — concepts, current affairs, strategy. Context-aware across your preparation history." },
+      { label: "AI Mentor", text: "Ask anything about UPSC - concepts, current affairs, strategy. Context-aware across your preparation history." },
     ],
     screenshot: SS.answerEval,
-    ssAlt: "AI Answer Evaluation — score, feedback, topper comparison",
-    note: "Advanced tools — most valuable once you are already studying, practising, and writing consistently.",
+    ssAlt: "AI Answer Evaluation - score, feedback, topper comparison",
+    note: "Advanced tools - most valuable once you are already studying, practising, and writing consistently.",
   },
 ];
 
@@ -263,7 +263,7 @@ const TRUST_ITEMS = [
 
 /* ─── Screenshot showcase (dashboard overview grid) ─────────────────────── */
 const SHOWCASE_SCREENS = [
-  { src: SS.commandCenter,     alt: "Dashboard Overview",   caption: "Command Center — your daily mission" },
+  { src: SS.commandCenter,     alt: "Dashboard Overview",   caption: "Command Center - your daily mission" },
   { src: SS.studyAnalytics,    alt: "Study Analytics",      caption: "Subject hours + weekly chart" },
   { src: SS.practiceAnalytics, alt: "Practice Analytics",   caption: "Accuracy, difficulty, year-wise" },
   { src: SS.revisionQueue,     alt: "Revision Queue",       caption: "Spaced revision, auto-scheduled" },
@@ -337,7 +337,7 @@ export default function LandingHero({ theme = "light", onToggleTheme, onSignUp, 
 
               <p className="text-base sm:text-[1.05rem] text-text-secondary leading-relaxed max-w-[34rem] mb-8">
                 Track your syllabus, study with a timer, practice PYQs, take mock tests,
-                write answers, audit notes, and revise intelligently — all in one place
+                write answers, audit notes, and revise intelligently - all in one place
                 that knows your progress.
               </p>
 
@@ -363,11 +363,11 @@ export default function LandingHero({ theme = "light", onToggleTheme, onSignUp, 
               </p>
             </div>
 
-            {/* Hero screenshot — real Command Center */}
+            {/* Hero screenshot - real Command Center */}
             <Reveal delay={120}>
               <ScreenshotFrame
                 src={SS.commandCenter}
-                alt="Command Center — your daily preparation overview"
+                alt="Command Center - your daily preparation overview"
                 caption="Your dashboard on any given morning"
               />
             </Reveal>

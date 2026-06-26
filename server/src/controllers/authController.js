@@ -8,7 +8,7 @@ const signToken = (id) =>
     expiresIn: process.env.JWT_EXPIRES_IN || "7d",
   });
 
-// ─── Helper — shapes the user object returned in every auth response ──────────
+// ─── Helper - shapes the user object returned in every auth response ──────────
 const formatUser = (user) => ({
   id: user.id,
   name: user.name,
@@ -136,7 +136,7 @@ const login = async (req, res, next) => {
 
 // ─── POST /api/auth/google ────────────────────────────────────────────────────
 // Accepts a Google id_token from the client (Google Identity Services).
-// Verifies it with Google's tokeninfo endpoint — no extra npm package needed.
+// Verifies it with Google's tokeninfo endpoint - no extra npm package needed.
 const googleAuth = async (req, res, next) => {
   try {
     const { id_token } = req.body;
@@ -179,7 +179,7 @@ const googleAuth = async (req, res, next) => {
         if (!user.avatar && avatar) user.avatar = avatar;
         await user.save();
       } else {
-        // Brand new user via Google — create with sensible defaults
+        // Brand new user via Google - create with sensible defaults
         user = await User.create({
           name: name || email.split("@")[0],
           email: email.toLowerCase(),

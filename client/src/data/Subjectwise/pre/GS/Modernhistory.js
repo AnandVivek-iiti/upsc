@@ -4,7 +4,7 @@ const modernHistoryPYQData = [
     year: 2026,
     subject: "Modern History",
     topic: "Indian National Movement",
-    subTopic: "Formation of Forward Bloc — Subhas Chandra Bose (1939)",
+    subTopic: "Formation of Forward Bloc - Subhas Chandra Bose (1939)",
     styleTag: "statement_pairing",
     difficulty: "Hard",
     questionText: `Which of the following factors contributed to the formation of the Forward Bloc by Subhas Chandra Bose in 1939?
@@ -22,11 +22,11 @@ Select the answer using the code given below:`,
       { id: "D", text: "1, 2, 3 and 4" },
     ],
     correctOption: "B",
-    explanation: `Context: After Bose won the INC Presidential election in 1939 (defeating Pattabhi Sitaramayya — Gandhi's candidate), he faced massive internal resistance that led him to form the Forward Bloc in June 1939.
+    explanation: `Context: After Bose won the INC Presidential election in 1939 (defeating Pattabhi Sitaramayya - Gandhi's candidate), he faced massive internal resistance that led him to form the Forward Bloc in June 1939.
 
 Statement 1 is CORRECT: Gandhi openly opposed Bose's re-election and never reconciled with his leadership style. Bose's inability to secure Gandhi's confidence was a central political reality that made functioning within Congress impossible.
 
-Statement 2 is CORRECT: Despite being a left-wing leader, Bose could not unify the Congress Left. The various socialist and left factions within Congress — divided among themselves — failed to rally as a cohesive bloc behind him.
+Statement 2 is CORRECT: Despite being a left-wing leader, Bose could not unify the Congress Left. The various socialist and left factions within Congress - divided among themselves - failed to rally as a cohesive bloc behind him.
 
 Statement 3 is INCORRECT: The Communists (CPI) at this time were actually broadly supportive of anti-fascist united fronts and were not a key blocking force against Bose specifically. Their opposition was not a cited primary factor in the historiography of Forward Bloc's formation. This statement is not an accurate characterisation of the CPI's role.
 
@@ -35,11 +35,11 @@ Statement 4 is CORRECT: M.N. Roy's supporters (Royists) and socialist leaders su
 Therefore, factors 1, 2, and 4 are correct contributors to the formation of the Forward Bloc.`,
     sources: [
       {
-        name: "Bipan Chandra — India's Struggle for Independence",
-        chapter: "The Left and the Congress — 1930s",
+        name: "Bipan Chandra - India's Struggle for Independence",
+        chapter: "The Left and the Congress - 1930s",
       },
       {
-        name: "Spectrum Modern History — Rajiv Ahir",
+        name: "Spectrum Modern History - Rajiv Ahir",
         chapter: "Subhas Chandra Bose and the Forward Bloc",
       },
     ],
@@ -48,7 +48,7 @@ Therefore, factors 1, 2, and 4 are correct contributors to the formation of the 
     _id: "pyq_modern_history_2026_02",
     year: 2026,
     subject: "Modern History",
-    topic: "Revolt of 1857 — Causes and Context",
+    topic: "Revolt of 1857 - Causes and Context",
     subTopic: "British Policy in Awadh after Annexation (1856)",
     styleTag: "statement_pairing",
     difficulty: "Medium",
@@ -70,23 +70,23 @@ Which of the statements given above is/are correct?`,
 
 Statement 1 is INCORRECT: After annexation, the taluqdars were NOT allowed to retain their arms and forts. The British aggressively disarmed the taluqdars and demolished their fortifications as part of consolidating control. Allowing them to keep arms would have been administratively contradictory.
 
-Statement 2 is CORRECT: The British conducted a hasty Summary Revenue Settlement in 1856 under the assumption that taluqdars were merely "outsiders" or "interlopers" — recent parasitic additions — rather than legitimate landholders. This erroneous assumption led them to bypass the taluqdars and attempt to settle directly with the actual cultivators (peasants/zamindars below).
+Statement 2 is CORRECT: The British conducted a hasty Summary Revenue Settlement in 1856 under the assumption that taluqdars were merely "outsiders" or "interlopers" - recent parasitic additions - rather than legitimate landholders. This erroneous assumption led them to bypass the taluqdars and attempt to settle directly with the actual cultivators (peasants/zamindars below).
 
 Statement 3 is CORRECT: The British explicitly believed in the Ricardian principle of direct revenue extraction from the peasantry/cultivators, cutting out the taluqdari intermediaries who were seen as an unnecessary exploitative layer. This policy directly threatened the taluqdars' economic existence and was a major cause of their joining the 1857 revolt.
 
 Therefore, statements 2 and 3 are correct.`,
     sources: [
       {
-        name: "Bipan Chandra — India's Struggle for Independence",
+        name: "Bipan Chandra - India's Struggle for Independence",
         chapter: "The Revolt of 1857",
       },
       {
-        name: "Spectrum Modern History — Rajiv Ahir",
+        name: "Spectrum Modern History - Rajiv Ahir",
         chapter: "Annexation of Awadh and 1857 Revolt",
       },
       {
-        name: "S.N. Sen — Eighteen Fifty-Seven",
-        chapter: "Causes of the Revolt — Awadh",
+        name: "S.N. Sen - Eighteen Fifty-Seven",
+        chapter: "Causes of the Revolt - Awadh",
       },
     ],
   },
@@ -94,8 +94,8 @@ Therefore, statements 2 and 3 are correct.`,
     _id: "pyq_modern_history_2026_03",
     year: 2026,
     subject: "Modern History",
-    topic: "Constitutional Reforms — Colonial Period",
-    subTopic: "Montagu-Chelmsford Reforms 1919 — Communal Representation",
+    topic: "Constitutional Reforms - Colonial Period",
+    subTopic: "Montagu-Chelmsford Reforms 1919 - Communal Representation",
     styleTag: "statement_pairing",
     difficulty: "Hard",
     questionText: `Consider the following assertion:
@@ -127,15 +127,15 @@ Statement 3 does NOT support the assertion and is INCORRECT as a supporting argu
 Therefore, only statements 1 and 2 support the assertion.`,
     sources: [
       {
-        name: "Bipan Chandra — India's Struggle for Independence",
+        name: "Bipan Chandra - India's Struggle for Independence",
         chapter: "Growth of Communalism",
       },
       {
-        name: "Spectrum Modern History — Rajiv Ahir",
-        chapter: "Constitutional Developments — Montagu-Chelmsford Reforms",
+        name: "Spectrum Modern History - Rajiv Ahir",
+        chapter: "Constitutional Developments - Montagu-Chelmsford Reforms",
       },
       {
-        name: "A.R. Desai — Social Background of Indian Nationalism",
+        name: "A.R. Desai - Social Background of Indian Nationalism",
         chapter: "Colonial Reforms and Communal Politics",
       },
     ],
@@ -145,7 +145,7 @@ Therefore, only statements 1 and 2 support the assertion.`,
     year: 2026,
     subject: "Modern History",
     topic: "Economic History of Colonial India",
-    subTopic: "Hilton-Young Commission (1926) — Rupee-Sterling Exchange Rate",
+    subTopic: "Hilton-Young Commission (1926) - Rupee-Sterling Exchange Rate",
     styleTag: "conceptual",
     difficulty: "Hard",
     questionText: `The artificially fixed rupee-sterling exchange rate prescribed by the Hilton-Young Commission (1926) was adopted by the British Government for which one of the following reasons?`,
@@ -168,29 +168,29 @@ Therefore, only statements 1 and 2 support the assertion.`,
       },
     ],
     correctOption: "C",
-    explanation: `Background: The Hilton-Young Commission (also known as the Royal Commission on Indian Currency and Finance, 1926) was constituted to examine India's currency and exchange rate policy. It recommended fixing the rupee-sterling exchange rate at 1 shilling 6 pence (1s 6d) — an artificially high valuation of sterling relative to the rupee.
+    explanation: `Background: The Hilton-Young Commission (also known as the Royal Commission on Indian Currency and Finance, 1926) was constituted to examine India's currency and exchange rate policy. It recommended fixing the rupee-sterling exchange rate at 1 shilling 6 pence (1s 6d) - an artificially high valuation of sterling relative to the rupee.
 
 This rate was adopted primarily to benefit British financial interests, particularly in the following way:
 
-The Home Charges were the annual remittances that India had to pay to Britain — covering costs such as interest on India's sterling debt, salaries and pensions of British officers, railway guarantees, military costs borne in England, and the profit remittances of British capital invested in India. These payments were made in sterling.
+The Home Charges were the annual remittances that India had to pay to Britain - covering costs such as interest on India's sterling debt, salaries and pensions of British officers, railway guarantees, military costs borne in England, and the profit remittances of British capital invested in India. These payments were made in sterling.
 
-By fixing the rupee at a rate that overvalued sterling (i.e., set the rupee weaker relative to its purchasing power parity), fewer sterling pounds were needed to make the same transfer — or equivalently, India had to pay MORE rupees to settle the same sterling obligation. This maximised the real value Britain extracted from India through the Home Charges mechanism.
+By fixing the rupee at a rate that overvalued sterling (i.e., set the rupee weaker relative to its purchasing power parity), fewer sterling pounds were needed to make the same transfer - or equivalently, India had to pay MORE rupees to settle the same sterling obligation. This maximised the real value Britain extracted from India through the Home Charges mechanism.
 
-Indian nationalist economists — especially Dadabhai Naoroji (Drain of Wealth theory) and R.C. Dutt — had long argued that the exchange rate was a tool of economic exploitation. The Hilton-Young rate perpetuated this by making the "drain" more efficient from Britain's perspective.
+Indian nationalist economists - especially Dadabhai Naoroji (Drain of Wealth theory) and R.C. Dutt - had long argued that the exchange rate was a tool of economic exploitation. The Hilton-Young rate perpetuated this by making the "drain" more efficient from Britain's perspective.
 
 Option A is partially true contextually (post-WWI instability) but was not the reason the rate was adopted at that specific level.
 Options B and D are secondary effects or partial truths but not the primary stated rationale.`,
     sources: [
       {
-        name: "Bipan Chandra — The Rise and Growth of Economic Nationalism in India",
+        name: "Bipan Chandra - The Rise and Growth of Economic Nationalism in India",
         chapter: "Drain of Wealth and Currency Policy",
       },
       {
-        name: "Spectrum Modern History — Rajiv Ahir",
-        chapter: "Economic Impact of British Rule — Currency and Finance",
+        name: "Spectrum Modern History - Rajiv Ahir",
+        chapter: "Economic Impact of British Rule - Currency and Finance",
       },
       {
-        name: "R.C. Dutt — Economic History of India",
+        name: "R.C. Dutt - Economic History of India",
         chapter: "Currency and Exchange Rate Policy",
       },
     ],
@@ -199,8 +199,8 @@ Options B and D are secondary effects or partial truths but not the primary stat
     _id: "pyq_modern_history_2026_05",
     year: 2026,
     subject: "Modern History",
-    topic: "Peasant Movements — Colonial India",
-    subTopic: "Eka Movement and Bardoli Satyagraha — Comparison",
+    topic: "Peasant Movements - Colonial India",
+    subTopic: "Eka Movement and Bardoli Satyagraha - Comparison",
     styleTag: "conceptual",
     difficulty: "Medium",
     questionText: `Which one of the following statements about the Eka Movement and Bardoli Satyagraha is correct?`,
@@ -235,26 +235,26 @@ The Eka Movement:
 The Bardoli Satyagraha:
 — Location: Bardoli taluka, Surat district, Gujarat.
 — Period: 1928.
-— Leadership: Sardar Vallabhbhai Patel (who earned the title 'Sardar' — meaning leader — from this movement), under the broader Congress framework.
+— Leadership: Sardar Vallabhbhai Patel (who earned the title 'Sardar' - meaning leader - from this movement), under the broader Congress framework.
 — Cause: Protest against a 30% increase in land revenue assessment by the British government, which peasants found unjust given poor agricultural conditions.
-— Outcome: A MAJOR SUCCESS — the British government appointed a committee (Broomfield Committee) which found the revenue enhancement unjust, and the enhanced rate was withdrawn. This was a landmark victory for organised peasant resistance.
+— Outcome: A MAJOR SUCCESS - the British government appointed a committee (Broomfield Committee) which found the revenue enhancement unjust, and the enhanced rate was withdrawn. This was a landmark victory for organised peasant resistance.
 
 Option A is INCORRECT: The Eka Movement was NOT led by the INC and was not a formal Congress campaign.
-Option C is INCORRECT: It reverses the outcomes — Eka failed; Bardoli succeeded.
+Option C is INCORRECT: It reverses the outcomes - Eka failed; Bardoli succeeded.
 Option D is INCORRECT: Eka was in UP, not Gujarat.
-Option B is CORRECT: Both were peasant movements in different regions — Eka in UP, Bardoli in Gujarat — protesting unjust revenue demands.`,
+Option B is CORRECT: Both were peasant movements in different regions - Eka in UP, Bardoli in Gujarat - protesting unjust revenue demands.`,
     sources: [
       {
-        name: "Bipan Chandra — India's Struggle for Independence",
+        name: "Bipan Chandra - India's Struggle for Independence",
         chapter: "Peasant Movements and Non-Cooperation",
       },
       {
-        name: "Spectrum Modern History — Rajiv Ahir",
+        name: "Spectrum Modern History - Rajiv Ahir",
         chapter: "Peasant and Tribal Movements",
       },
       {
-        name: "Sumit Sarkar — Modern India 1885–1947",
-        chapter: "Non-Cooperation and Civil Disobedience — Peasant Dimension",
+        name: "Sumit Sarkar - Modern India 1885–1947",
+        chapter: "Non-Cooperation and Civil Disobedience - Peasant Dimension",
       },
     ],
   },

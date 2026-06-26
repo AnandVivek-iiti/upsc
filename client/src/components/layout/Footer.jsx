@@ -64,7 +64,7 @@ export default function Footer() {
     <footer className="relative border-t border-bg-border bg-bg-surface/90 backdrop-blur pb-bottom-nav lg:pb-0">
       <div className="mx-auto w-full max-w-7xl px-6 py-8">
 
-        {/* bg image — pointer-events-none so it never blocks clicks */}
+        {/* bg image - pointer-events-none so it never blocks clicks */}
         <div className="absolute inset-0 -z-10 opacity-10 pointer-events-none">
           <img
             src="/assets/mt1.png"
@@ -80,7 +80,7 @@ export default function Footer() {
               UPSC Mentor
             </p>
             <p className="mt-1.5 max-w-md text-md leading-relaxed text-text-secondary">
-              Independent CSE prep workspace — official paper handoffs, clean
+              Independent CSE prep workspace - official paper handoffs, clean
               progress tracking, and answer-writing support.
             </p>
           </div>

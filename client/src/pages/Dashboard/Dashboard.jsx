@@ -496,7 +496,7 @@
 //             {monthDays.map((d) => {
 //               const palette = d.isToday ? CHART_COLORS.today : d.met ? CHART_COLORS.goalMet : d.studied ? CHART_COLORS.inProgress : null;
 //               return (
-//                 <div key={d.dateStr} title={d.isFuture ? "" : `${d.dateStr} — ${d.hours}h studied`}
+//                 <div key={d.dateStr} title={d.isFuture ? "" : `${d.dateStr} - ${d.hours}h studied`}
 //                   className={`aspect-square rounded-lg sm:rounded-xl flex flex-col items-center justify-center gap-0.5 border transition-all duration-500 ease-out ${
 //                     d.isFuture ? "border-transparent bg-transparent" : palette ? "border-transparent" : "border-gray-600/30 bg-gray-700/20"
 //                   }`}
@@ -904,7 +904,7 @@
 //       <div className="glass-panel p-4 sm:p-5 flex items-center justify-between gap-4">
 //         <div>
 //           <p className="text-sm font-display font-semibold text-text-primary">How's your experience?</p>
-//           <p className="text-xs font-mono text-text-muted mt-0.5">Help us improve UPSC Mentor — takes 30 seconds.</p>
+//           <p className="text-xs font-mono text-text-muted mt-0.5">Help us improve UPSC Mentor - takes 30 seconds.</p>
 //         </div>
 //         <button
 //           onClick={() => window.openFeedbackModal?.()}
@@ -1018,7 +1018,7 @@ function CollapsibleSection({ title, icon: Icon, children, defaultOpen = true, t
 }
 
 // ─── TodaysMission ─────────────────────────────────────────────────────────────
-// Derives today's mission items from live data — no new API calls.
+// Derives today's mission items from live data - no new API calls.
 function TodaysMission({ userData, todayHours = 0, overallProgress = 0, onNavigate }) {
   const [grown, setGrown] = useState(false);
   useEffect(() => {
@@ -1030,7 +1030,7 @@ function TodaysMission({ userData, todayHours = 0, overallProgress = 0, onNaviga
   const studyDone      = todayHours >= targetHours;
 
   // `userData.spaced_repetition` is shaped `{ queue: [...] }` (see useUserData.js),
-  // not a bare array — unwrap it defensively so this never breaks if the shape
+  // not a bare array - unwrap it defensively so this never breaks if the shape
   // of either field changes again.
   const rawRevisionSource = userData?.revision_queue ?? userData?.spaced_repetition ?? [];
   const revisionQueue = Array.isArray(rawRevisionSource)
@@ -1052,7 +1052,7 @@ function TodaysMission({ userData, todayHours = 0, overallProgress = 0, onNaviga
       color: "gold",
       label: "Study",
       text: studyDone
-        ? `${fmtHM(Math.round(todayHours * 3600))} studied — target hit`
+        ? `${fmtHM(Math.round(todayHours * 3600))} studied - target hit`
         : `Study ${targetHours}h today`,
       sub: studyDone ? null : `${fmtHM(Math.round(todayHours * 3600))} / ${targetHours}h done`,
       done: studyDone,
@@ -1121,7 +1121,7 @@ function TodaysMission({ userData, todayHours = 0, overallProgress = 0, onNaviga
             Today's mission complete.
           </p>
           <p className="text-xs text-text-secondary mt-0.5">
-            All daily targets hit — rest, or go deeper on your weak topics.
+            All daily targets hit - rest, or go deeper on your weak topics.
           </p>
         </div>
       </div>
@@ -1637,7 +1637,7 @@ function StudyChart({ logs = [], targetHours = 8 }) {
             {monthDays.map((d) => {
               const palette = d.isToday ? CHART_COLORS.today : d.met ? CHART_COLORS.goalMet : d.studied ? CHART_COLORS.inProgress : null;
               return (
-                <div key={d.dateStr} title={d.isFuture ? "" : `${d.dateStr} — ${d.hours}h studied`}
+                <div key={d.dateStr} title={d.isFuture ? "" : `${d.dateStr} - ${d.hours}h studied`}
                   className={`aspect-square rounded-lg sm:rounded-xl flex flex-col items-center justify-center gap-0.5 border transition-all duration-500 ease-out ${
                     d.isFuture ? "border-transparent bg-transparent" : palette ? "border-transparent" : "border-gray-600/30 bg-gray-700/20"
                   }`}
@@ -2062,7 +2062,7 @@ export default function Dashboard({
       <div className="glass-panel p-4 sm:p-5 flex items-center justify-between gap-4">
         <div>
           <p className="text-sm font-display font-semibold text-text-primary">How's your experience?</p>
-          <p className="text-xs font-mono text-text-muted mt-0.5">Help us improve UPSC Mentor — takes 30 seconds.</p>
+          <p className="text-xs font-mono text-text-muted mt-0.5">Help us improve UPSC Mentor - takes 30 seconds.</p>
         </div>
         <button
           onClick={() => window.openFeedbackModal?.()}

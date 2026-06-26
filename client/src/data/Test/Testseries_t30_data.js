@@ -6,7 +6,7 @@
 export const TEST_T30 = [
   {
     id: "sfg2026-t30",
-    title: "SFG 2026 — Level 1 · Test 30",
+    title: "SFG 2026 - Level 1 · Test 30",
     testCode: "321127",
     subject: "Modern Indian History",
     topic: "British Rule, Constitutional History & Freedom Struggle",
@@ -32,7 +32,7 @@ export const TEST_T30 = [
         ],
         correct: "A",
         explanation:
-          "Statement 1 is correct — The Government of India Act, 1935 provided for an All-India Federation comprising British Indian provinces and Princely States (though this part never came into force). Statement 2 is incorrect — Defence and Foreign Affairs were kept under the control of the Governor-General (Viceroy), not the federal legislature. These were 'reserved' subjects under the direct control of the British Crown through the Viceroy. Answer: A.",
+          "Statement 1 is correct - The Government of India Act, 1935 provided for an All-India Federation comprising British Indian provinces and Princely States (though this part never came into force). Statement 2 is incorrect - Defence and Foreign Affairs were kept under the control of the Governor-General (Viceroy), not the federal legislature. These were 'reserved' subjects under the direct control of the British Crown through the Viceroy. Answer: A.",
         topic: "Constitutional History",
         difficulty: "Medium",
         pyqYear: null,
@@ -50,7 +50,7 @@ export const TEST_T30 = [
         ],
         correct: "B",
         explanation:
-          "Statement I is incorrect — The Statutory Civil Service was introduced much later under Lord Lytton in 1879, not by Wellesley. Statement II is correct — Richard Wellesley (Governor General 1798–1805) established Fort William College in Calcutta in 1800 for training newly appointed civil servants of the East India Company. Answer: B.",
+          "Statement I is incorrect - The Statutory Civil Service was introduced much later under Lord Lytton in 1879, not by Wellesley. Statement II is correct - Richard Wellesley (Governor General 1798–1805) established Fort William College in Calcutta in 1800 for training newly appointed civil servants of the East India Company. Answer: B.",
         topic: "Civil Services History",
         difficulty: "Medium",
         pyqYear: null,
@@ -86,7 +86,7 @@ export const TEST_T30 = [
         ],
         correct: "B",
         explanation:
-          "Statement I is incorrect — The Indian Universities Act, 1904, was enacted to reduce (not increase) the academic autonomy of universities and bring them under greater government control. Statement II is correct — The Official Secrets Amendment Act, 1904 was used to suppress press freedom and restrict dissemination of government information. Statement III is correct — The Calcutta Corporation Act, 1899 reduced elected members and increased nominated ones, centralising control. Answer: B.",
+          "Statement I is incorrect - The Indian Universities Act, 1904, was enacted to reduce (not increase) the academic autonomy of universities and bring them under greater government control. Statement II is correct - The Official Secrets Amendment Act, 1904 was used to suppress press freedom and restrict dissemination of government information. Statement III is correct - The Calcutta Corporation Act, 1899 reduced elected members and increased nominated ones, centralising control. Answer: B.",
         topic: "Curzon's Administration",
         difficulty: "Medium",
         pyqYear: null,
@@ -104,7 +104,7 @@ export const TEST_T30 = [
         ],
         correct: "D",
         explanation:
-          "William Jones (founder of the Asiatic Society), Henry Colebrooke, and Nathaniel Halhed were all Orientalists — linguists and scholars who studied Sanskrit, Persian, and other Indian languages and tried to interpret and document Indian culture, literature, and laws for the East India Company. They belonged to the Orientalist school of thought. Answer: D.",
+          "William Jones (founder of the Asiatic Society), Henry Colebrooke, and Nathaniel Halhed were all Orientalists - linguists and scholars who studied Sanskrit, Persian, and other Indian languages and tried to interpret and document Indian culture, literature, and laws for the East India Company. They belonged to the Orientalist school of thought. Answer: D.",
         topic: "Orientalism & Colonial Scholarship",
         difficulty: "Medium",
         pyqYear: null,
@@ -122,7 +122,7 @@ export const TEST_T30 = [
         ],
         correct: "B",
         explanation:
-          "Statement I is incorrect — The Police Commission under Sir Andrew Frazer was set up in 1902–03, during the time of Lord Curzon, not William Bentinck. Statement II is correct — William Bentinck (1828–35) abolished the post of darogas and their subordinates in Company territories as part of administrative reforms. Answer: B.",
+          "Statement I is incorrect - The Police Commission under Sir Andrew Frazer was set up in 1902–03, during the time of Lord Curzon, not William Bentinck. Statement II is correct - William Bentinck (1828–35) abolished the post of darogas and their subordinates in Company territories as part of administrative reforms. Answer: B.",
         topic: "Police System & Reforms",
         difficulty: "Hard",
         pyqYear: null,
@@ -158,7 +158,7 @@ export const TEST_T30 = [
         ],
         correct: "A",
         explanation:
-          "Statement I is incorrect — Ryotwari Settlement was primarily introduced in Madras and Bombay Presidencies (by Thomas Munro and Elphinstone), NOT in Bihar and Bengal (where Permanent Settlement/Zamindari was applied). Statement II is correct — Under Ryotwari, individual cultivators (ryots) were recognised as owners of land and directly paid revenue to the government. Statement III is correct — Revenue demands under Ryotwari were periodically revised (every 20–30 years), unlike the Permanent Settlement which was fixed permanently. Answer: A.",
+          "Statement I is incorrect - Ryotwari Settlement was primarily introduced in Madras and Bombay Presidencies (by Thomas Munro and Elphinstone), NOT in Bihar and Bengal (where Permanent Settlement/Zamindari was applied). Statement II is correct - Under Ryotwari, individual cultivators (ryots) were recognised as owners of land and directly paid revenue to the government. Statement III is correct - Revenue demands under Ryotwari were periodically revised (every 20–30 years), unlike the Permanent Settlement which was fixed permanently. Answer: A.",
         topic: "Land Revenue Systems",
         difficulty: "Medium",
         pyqYear: null,
@@ -194,7 +194,7 @@ export const TEST_T30 = [
         ],
         correct: "D",
         explanation:
-          "The Indian Factory Act of 1891 extended protections compared to the 1881 Act: I is correct — minimum age for child labour was 9 years. II is correct — the Act provided for weekly holidays (a significant reform). III is correct — working hours for women were restricted to 11 hours per day (reduced from earlier). All three statements are correct. Answer: D.",
+          "The Indian Factory Act of 1891 extended protections compared to the 1881 Act: I is correct - minimum age for child labour was 9 years. II is correct - the Act provided for weekly holidays (a significant reform). III is correct - working hours for women were restricted to 11 hours per day (reduced from earlier). All three statements are correct. Answer: D.",
         topic: "Labour Legislation",
         difficulty: "Medium",
         pyqYear: null,
@@ -212,7 +212,7 @@ export const TEST_T30 = [
         ],
         correct: "D",
         explanation:
-          "The Hind Mazdoor Sabha (HMS) was founded in 1948 by socialist trade union leaders — Ashok Mehta, T.S. Ramanujam, and G.G. Mehta. It was affiliated with the Socialist Party and was established as an alternative to the AITUC (which was under Communist influence). Answer: D.",
+          "The Hind Mazdoor Sabha (HMS) was founded in 1948 by socialist trade union leaders - Ashok Mehta, T.S. Ramanujam, and G.G. Mehta. It was affiliated with the Socialist Party and was established as an alternative to the AITUC (which was under Communist influence). Answer: D.",
         topic: "Labour & Trade Union History",
         difficulty: "Hard",
         pyqYear: null,
@@ -230,7 +230,7 @@ export const TEST_T30 = [
         ],
         correct: "C",
         explanation:
-          "Dr. B.R. Ambedkar founded all three publications: Mook Nayak (1920) — a Marathi fortnightly to voice the concerns of the depressed classes; Bahishkrit Bharat (1927) — a Marathi fortnightly; Janata (1930) — a Marathi weekly. All three were established by Dr. Ambedkar as platforms for Dalit rights and social justice. Answer: C.",
+          "Dr. B.R. Ambedkar founded all three publications: Mook Nayak (1920) - a Marathi fortnightly to voice the concerns of the depressed classes; Bahishkrit Bharat (1927) - a Marathi fortnightly; Janata (1930) - a Marathi weekly. All three were established by Dr. Ambedkar as platforms for Dalit rights and social justice. Answer: C.",
         topic: "Dalit Movement & Social Reform",
         difficulty: "Medium",
         pyqYear: null,
@@ -302,7 +302,7 @@ export const TEST_T30 = [
         ],
         correct: "D",
         explanation:
-          "Wood's Education Despatch of 1854 (called the 'Magna Carta of Indian Education'): Statement I is incorrect — it recommended English as medium for higher education but also supported vernacular languages for lower levels; it did NOT insist English-only for secondary education. Statement II is correct — it recommended government assume responsibility for mass education including education of women. Statement III is correct — it recommended the grant-in-aid system to encourage private initiative. Answer: D.",
+          "Wood's Education Despatch of 1854 (called the 'Magna Carta of Indian Education'): Statement I is incorrect - it recommended English as medium for higher education but also supported vernacular languages for lower levels; it did NOT insist English-only for secondary education. Statement II is correct - it recommended government assume responsibility for mass education including education of women. Statement III is correct - it recommended the grant-in-aid system to encourage private initiative. Answer: D.",
         topic: "Education in Colonial India",
         difficulty: "Medium",
         pyqYear: null,
@@ -338,7 +338,7 @@ export const TEST_T30 = [
         ],
         correct: "C",
         explanation:
-          "Statement I is correct — the Wardha Scheme (1937) was based on Mahatma Gandhi's ideas of basic/craft-based education (Nai Talim). Statement II is incorrect — it was developed by the Zakir Husain Committee, not based on the Nehru Report (1928 which was political). Statement III is correct — 'learning through productive work/activity' was its core principle. Statement IV is correct — it aimed at free and compulsory education for children aged 7–14. Answer: C.",
+          "Statement I is correct - the Wardha Scheme (1937) was based on Mahatma Gandhi's ideas of basic/craft-based education (Nai Talim). Statement II is incorrect - it was developed by the Zakir Husain Committee, not based on the Nehru Report (1928 which was political). Statement III is correct - 'learning through productive work/activity' was its core principle. Statement IV is correct - it aimed at free and compulsory education for children aged 7–14. Answer: C.",
         topic: "Education in National Movement",
         difficulty: "Medium",
         pyqYear: null,
@@ -374,7 +374,7 @@ export const TEST_T30 = [
         ],
         correct: "A",
         explanation:
-          "Statement 1 is incorrect — The Indigo Revolt was by peasant farmers (ryots) against European indigo planters who forced them to grow indigo at exploitative rates; it was not about drought compensation for planters. Statement 2 is correct — Digambar Biswas and Bishnu Biswas were prominent leaders of the Indigo Revolt. Statement 3 is incorrect — while indigo cultivation declined significantly in Bengal, it was not entirely discontinued across Bengal, Bihar, and Orissa immediately. Answer: A.",
+          "Statement 1 is incorrect - The Indigo Revolt was by peasant farmers (ryots) against European indigo planters who forced them to grow indigo at exploitative rates; it was not about drought compensation for planters. Statement 2 is correct - Digambar Biswas and Bishnu Biswas were prominent leaders of the Indigo Revolt. Statement 3 is incorrect - while indigo cultivation declined significantly in Bengal, it was not entirely discontinued across Bengal, Bihar, and Orissa immediately. Answer: A.",
         topic: "Peasant & Tribal Movements",
         difficulty: "Medium",
         pyqYear: null,
@@ -428,7 +428,7 @@ export const TEST_T30 = [
         ],
         correct: "A",
         explanation:
-          "Statement I is correct — The Charter Act of 1833 added a fourth (Law) member to the Governor-General's Executive Council (Macaulay was the first Law Member). Statement II is correct — It contained an equality clause declaring no discrimination in Company service based on religion, place of birth, descent, or colour. Statement III is incorrect — The Charter Act of 1833 actually TOOK AWAY the legislative powers of Bombay and Madras Presidencies and centralised legislation in the Governor-General in Council. Answer: A.",
+          "Statement I is correct - The Charter Act of 1833 added a fourth (Law) member to the Governor-General's Executive Council (Macaulay was the first Law Member). Statement II is correct - It contained an equality clause declaring no discrimination in Company service based on religion, place of birth, descent, or colour. Statement III is incorrect - The Charter Act of 1833 actually TOOK AWAY the legislative powers of Bombay and Madras Presidencies and centralised legislation in the Governor-General in Council. Answer: A.",
         topic: "Constitutional History",
         difficulty: "Medium",
         pyqYear: null,
@@ -436,7 +436,7 @@ export const TEST_T30 = [
       {
         id: "t30_q24",
         qNo: 24,
-        text: "With reference to Indian National movement, consider the following pairs:\n\nFamous Newspaper/Journal — Founder\nI. Bande Mataram — Bankim Chandra Chatterjee\nII. Swadesamitran — Vir Raghavacharya\nIII. Hindu Patriot — Girish Chandra Gosh\nIV. Sudharak — Gopala Ganesh Agarkar",
+        text: "With reference to Indian National movement, consider the following pairs:\n\nFamous Newspaper/Journal - Founder\nI. Bande Mataram - Bankim Chandra Chatterjee\nII. Swadesamitran - Vir Raghavacharya\nIII. Hindu Patriot - Girish Chandra Gosh\nIV. Sudharak - Gopala Ganesh Agarkar",
         suffix: "How many of the pairs given above are correctly matched?",
         options: [
           { id: "A", text: "Only one" },
@@ -446,7 +446,7 @@ export const TEST_T30 = [
         ],
         correct: "B",
         explanation:
-          "Pair I is incorrect — Bande Mataram (English newspaper) was founded by Bipin Chandra Pal and edited by Aurobindo Ghose in 1905–06; Bankim Chandra wrote the song 'Vande Mataram' but did not found this newspaper. Pair II is incorrect — Swadesamitran was a Tamil journal founded by G. Subramaniya Iyer (1882). Pair III is incorrect — Hindu Patriot was founded by Girish Chandra Gosh is partially disputed; it was established by Harish Chandra Mukherjee. Pair IV is correct — Sudharak was founded and edited by Gopala Ganesh Agarkar (Marathi reformer). Only two (or less) are correctly matched. Answer: B.",
+          "Pair I is incorrect - Bande Mataram (English newspaper) was founded by Bipin Chandra Pal and edited by Aurobindo Ghose in 1905–06; Bankim Chandra wrote the song 'Vande Mataram' but did not found this newspaper. Pair II is incorrect - Swadesamitran was a Tamil journal founded by G. Subramaniya Iyer (1882). Pair III is incorrect - Hindu Patriot was founded by Girish Chandra Gosh is partially disputed; it was established by Harish Chandra Mukherjee. Pair IV is correct - Sudharak was founded and edited by Gopala Ganesh Agarkar (Marathi reformer). Only two (or less) are correctly matched. Answer: B.",
         topic: "Press & Newspapers in Freedom Struggle",
         difficulty: "Hard",
         pyqYear: null,
@@ -464,7 +464,7 @@ export const TEST_T30 = [
         ],
         correct: "B",
         explanation:
-          "The Indian Slavery Act (Act V of 1843) did not abolish slavery outright but made it legally unenforceable — it denied masters the use of courts to assert claims on slaves or recover runaway slaves. It meant courts would not support masters' ownership claims, effectively making it impossible to legally enforce slavery. Answer: B.",
+          "The Indian Slavery Act (Act V of 1843) did not abolish slavery outright but made it legally unenforceable - it denied masters the use of courts to assert claims on slaves or recover runaway slaves. It meant courts would not support masters' ownership claims, effectively making it impossible to legally enforce slavery. Answer: B.",
         topic: "Social Reform Legislation",
         difficulty: "Medium",
         pyqYear: 2018,
@@ -490,7 +490,7 @@ export const TEST_T30 = [
       {
         id: "t30_q27",
         qNo: 27,
-        text: "With reference to Peasant movements during 19-20th century in India, consider the following information:\n\nName — Associated leader — Primary Cause\nI. Eka Movement — Kanhu Murmu — Introduction of private ownership of land and the illegal seizure of land by merchants and moneylenders.\nII. Moplah Revolt — E.V. Ramasamy — Class conflict between peasants and the landlords\nIII. Bardoli Satyagraha — Vallabhbhai Patel — Unjust increase in the land tax by British",
+        text: "With reference to Peasant movements during 19-20th century in India, consider the following information:\n\nName - Associated leader - Primary Cause\nI. Eka Movement - Kanhu Murmu - Introduction of private ownership of land and the illegal seizure of land by merchants and moneylenders.\nII. Moplah Revolt - E.V. Ramasamy - Class conflict between peasants and the landlords\nIII. Bardoli Satyagraha - Vallabhbhai Patel - Unjust increase in the land tax by British",
         suffix: "In how many of the above rows is the given information correctly matched?",
         options: [
           { id: "A", text: "Only one" },
@@ -500,7 +500,7 @@ export const TEST_T30 = [
         ],
         correct: "A",
         explanation:
-          "Row I is incorrect — The Eka Movement (1921–22) was led by Madari Pasi in Hardoi and Barabanki districts of UP; Kanhu Murmu was associated with the Santhal Uprising (1855). Row II is incorrect — The Moplah Revolt (Mappila Revolt, 1921) was led by Variamkunnath Kunhamed Haji; E.V. Ramasamy (Periyar) was a social reformer in Tamil Nadu, not associated with the Moplah Revolt. Row III is correct — The Bardoli Satyagraha (1928) was led by Vallabhbhai Patel against an unjust 30% increase in land revenue by the British. Only Row III is correctly matched. Answer: A.",
+          "Row I is incorrect - The Eka Movement (1921–22) was led by Madari Pasi in Hardoi and Barabanki districts of UP; Kanhu Murmu was associated with the Santhal Uprising (1855). Row II is incorrect - The Moplah Revolt (Mappila Revolt, 1921) was led by Variamkunnath Kunhamed Haji; E.V. Ramasamy (Periyar) was a social reformer in Tamil Nadu, not associated with the Moplah Revolt. Row III is correct - The Bardoli Satyagraha (1928) was led by Vallabhbhai Patel against an unjust 30% increase in land revenue by the British. Only Row III is correctly matched. Answer: A.",
         topic: "Peasant & Tribal Movements",
         difficulty: "Hard",
         pyqYear: null,
@@ -536,7 +536,7 @@ export const TEST_T30 = [
         ],
         correct: "A",
         explanation:
-          "Statement I is correct — The Chamber of Princes (Narendra Mandal) was established in 1921 under the provisions of the Government of India Act, 1919. Statement II is incorrect — The Chamber of Princes was merely an advisory body for deliberation on matters of common concern to Princely States; it had no decision-making authority over internal matters of individual states. It was purely consultative. Answer: A.",
+          "Statement I is correct - The Chamber of Princes (Narendra Mandal) was established in 1921 under the provisions of the Government of India Act, 1919. Statement II is incorrect - The Chamber of Princes was merely an advisory body for deliberation on matters of common concern to Princely States; it had no decision-making authority over internal matters of individual states. It was purely consultative. Answer: A.",
         topic: "Princely States & Indian Independence",
         difficulty: "Medium",
         pyqYear: null,
@@ -608,7 +608,7 @@ export const TEST_T30 = [
         ],
         correct: "D",
         explanation:
-          "Statement I is incorrect — During the Mercantilist phase (1757–1813), Indian textile industry did NOT prosper; in fact, Indian weavers faced exploitation as the East India Company forced them to sell at low prices and imposed trade controls. Statement II is correct — During this period, India did export substantial goods (especially textiles like muslin) to Britain and Europe, which generated profit for the Company (drain of wealth). Answer: D.",
+          "Statement I is incorrect - During the Mercantilist phase (1757–1813), Indian textile industry did NOT prosper; in fact, Indian weavers faced exploitation as the East India Company forced them to sell at low prices and imposed trade controls. Statement II is correct - During this period, India did export substantial goods (especially textiles like muslin) to Britain and Europe, which generated profit for the Company (drain of wealth). Answer: D.",
         topic: "Economic Impact of British Rule",
         difficulty: "Medium",
         pyqYear: null,
@@ -662,7 +662,7 @@ export const TEST_T30 = [
         ],
         correct: "A",
         explanation:
-          "Statement I is correct — Syed Ahmed Khan founded the Muhammadan Anglo-Oriental College at Aligarh in 1875, which later became the Aligarh Muslim University. Statement II is incorrect — Syed Ahmed Khan was actually opposed to the Indian National Congress. The United Indian Patriotic Association was founded by him in 1888 to counter the INC and to promote loyalty to British rule, not as a social organization within the INC. Answer: A.",
+          "Statement I is correct - Syed Ahmed Khan founded the Muhammadan Anglo-Oriental College at Aligarh in 1875, which later became the Aligarh Muslim University. Statement II is incorrect - Syed Ahmed Khan was actually opposed to the Indian National Congress. The United Indian Patriotic Association was founded by him in 1888 to counter the INC and to promote loyalty to British rule, not as a social organization within the INC. Answer: A.",
         topic: "Social Reform Movements",
         difficulty: "Medium",
         pyqYear: null,
@@ -698,7 +698,7 @@ export const TEST_T30 = [
         ],
         correct: "A",
         explanation:
-          "Statement I is correct — Rani Gaidinliu led a movement among the Zeliangrong Naga people that included refusing to pay taxes to the British. Statement II is correct — She was a key figure in the Heraka religious movement, led by her cousin Haipou Jadonang, which sought to revive Naga cultural and religious identity. Statement III is incorrect — She was given the title of 'Rani' (Queen) by Jawaharlal Nehru (not Subhash Chandra Bose). Answer: A.",
+          "Statement I is correct - Rani Gaidinliu led a movement among the Zeliangrong Naga people that included refusing to pay taxes to the British. Statement II is correct - She was a key figure in the Heraka religious movement, led by her cousin Haipou Jadonang, which sought to revive Naga cultural and religious identity. Statement III is incorrect - She was given the title of 'Rani' (Queen) by Jawaharlal Nehru (not Subhash Chandra Bose). Answer: A.",
         topic: "Freedom Struggle Leaders",
         difficulty: "Medium",
         pyqYear: null,
@@ -724,7 +724,7 @@ export const TEST_T30 = [
       {
         id: "t30_q40",
         qNo: 40,
-        text: "Consider the following pairs regarding the various tribal revolts that occurred in India and their associated leaders:\n\nRevolt — Associated Leader\nI. Kol Mutiny, 1831-32 — Budhu Bhagat\nII. Rampa Rebellion, 1922 — Karam Shah\nIII. Khasi Uprising, 1829-33 — U Tirot Singh\nIV. Koya Revolt, 1879-80 — Nirang Phidu",
+        text: "Consider the following pairs regarding the various tribal revolts that occurred in India and their associated leaders:\n\nRevolt - Associated Leader\nI. Kol Mutiny, 1831-32 - Budhu Bhagat\nII. Rampa Rebellion, 1922 - Karam Shah\nIII. Khasi Uprising, 1829-33 - U Tirot Singh\nIV. Koya Revolt, 1879-80 - Nirang Phidu",
         suffix: "How many of the pairs given above are correctly matched?",
         options: [
           { id: "A", text: "Only one" },
@@ -734,7 +734,7 @@ export const TEST_T30 = [
         ],
         correct: "B",
         explanation:
-          "Pair I is correct — Budhu Bhagat was a prominent leader of the Kol Mutiny (1831–32). Pair II is incorrect — The Rampa Rebellion of 1922–24 was led by Alluri Sitarama Raju (not Karam Shah). Pair III is correct — U Tirot Singh was the chief leader of the Khasi Uprising (1829–33) against British annexation. Pair IV is incorrect — Nirang Phidu is associated with the Khasi Uprising (though Tirot Singh was the main leader); Koya revolts had different leaders. Two pairs (I and III) are correctly matched. Answer: B.",
+          "Pair I is correct - Budhu Bhagat was a prominent leader of the Kol Mutiny (1831–32). Pair II is incorrect - The Rampa Rebellion of 1922–24 was led by Alluri Sitarama Raju (not Karam Shah). Pair III is correct - U Tirot Singh was the chief leader of the Khasi Uprising (1829–33) against British annexation. Pair IV is incorrect - Nirang Phidu is associated with the Khasi Uprising (though Tirot Singh was the main leader); Koya revolts had different leaders. Two pairs (I and III) are correctly matched. Answer: B.",
         topic: "Peasant & Tribal Movements",
         difficulty: "Hard",
         pyqYear: null,
@@ -778,7 +778,7 @@ export const TEST_T30 = [
       {
         id: "t30_q43",
         qNo: 43,
-        text: "During the freedom struggle of India, consider the following pairs:\n\nPamphlet/Periodical/Play — Founder/Editor/Author\nI. Bhawani Mandir — Aurobindo Ghose\nII. Kisan Bulletin — Indulal Yagnik\nIII. Nil Darpan — Bankim Chandra Chatterjee",
+        text: "During the freedom struggle of India, consider the following pairs:\n\nPamphlet/Periodical/Play - Founder/Editor/Author\nI. Bhawani Mandir - Aurobindo Ghose\nII. Kisan Bulletin - Indulal Yagnik\nIII. Nil Darpan - Bankim Chandra Chatterjee",
         suffix: "How many of the pairs given above are correctly matched?",
         options: [
           { id: "A", text: "Only one" },
@@ -788,7 +788,7 @@ export const TEST_T30 = [
         ],
         correct: "B",
         explanation:
-          "Pair I is correct — 'Bhawani Mandir' was a pamphlet written by Aurobindo Ghose (1905) that called for revolutionary nationalism. Pair II is correct — 'Kisan Bulletin' was associated with Indulal Yagnik, a socialist activist from Gujarat involved in the peasant movement. Pair III is incorrect — 'Nil Darpan' (1858–59) was a play written by Dinabandhu Mitra (not Bankim Chandra Chatterjee). It depicted the exploitation of indigo farmers. Two pairs (I and II) are correctly matched. Answer: B.",
+          "Pair I is correct - 'Bhawani Mandir' was a pamphlet written by Aurobindo Ghose (1905) that called for revolutionary nationalism. Pair II is correct - 'Kisan Bulletin' was associated with Indulal Yagnik, a socialist activist from Gujarat involved in the peasant movement. Pair III is incorrect - 'Nil Darpan' (1858–59) was a play written by Dinabandhu Mitra (not Bankim Chandra Chatterjee). It depicted the exploitation of indigo farmers. Two pairs (I and II) are correctly matched. Answer: B.",
         topic: "Press & Literature in Freedom Struggle",
         difficulty: "Hard",
         pyqYear: null,
@@ -796,7 +796,7 @@ export const TEST_T30 = [
       {
         id: "t30_q44",
         qNo: 44,
-        text: "Consider the following pairs:\n\nTribal Revolt — Primary Cause\nI. Ahom Revolt, 1828 — Continued Annexation of Assam into the British territories\nII. Khond Uprising, 1837-56 — Ban on traditional practices by British i.e. ban on the practice of Mariah (human sacrifices)\nIII. Ramosi Uprising, 1822 — Imposition of variety of cesses (abwabs) under Permanent Settlement System",
+        text: "Consider the following pairs:\n\nTribal Revolt - Primary Cause\nI. Ahom Revolt, 1828 - Continued Annexation of Assam into the British territories\nII. Khond Uprising, 1837-56 - Ban on traditional practices by British i.e. ban on the practice of Mariah (human sacrifices)\nIII. Ramosi Uprising, 1822 - Imposition of variety of cesses (abwabs) under Permanent Settlement System",
         suffix: "Which of the pairs given above is/are correctly matched?",
         options: [
           { id: "A", text: "I and III" },
@@ -806,7 +806,7 @@ export const TEST_T30 = [
         ],
         correct: "C",
         explanation:
-          "Pair I is correct — The Ahom Revolt of 1828 was triggered by the British annexation of Assam and the attempt to displace the traditional Ahom rulers. Pair II is correct — The Khond (Kandh) Uprising (1837–56) was partly in response to the British ban on Meriah (human sacrifice) practices. Pair III is incorrect — The Ramosi Uprising (1822–29, led by Chittur Singh) in the Western Ghats was caused by the loss of livelihood of the Ramosi community who were displaced from their positions as hill watchmen, not by Permanent Settlement cesses. Answer: C.",
+          "Pair I is correct - The Ahom Revolt of 1828 was triggered by the British annexation of Assam and the attempt to displace the traditional Ahom rulers. Pair II is correct - The Khond (Kandh) Uprising (1837–56) was partly in response to the British ban on Meriah (human sacrifice) practices. Pair III is incorrect - The Ramosi Uprising (1822–29, led by Chittur Singh) in the Western Ghats was caused by the loss of livelihood of the Ramosi community who were displaced from their positions as hill watchmen, not by Permanent Settlement cesses. Answer: C.",
         topic: "Peasant & Tribal Movements",
         difficulty: "Hard",
         pyqYear: null,
@@ -842,7 +842,7 @@ export const TEST_T30 = [
         ],
         correct: "D",
         explanation:
-          "'Bhagchasi' or 'Adhiar' referred to sharecroppers or tenant farmers in Bengal who cultivated land belonging to zamindars and shared a portion (usually half) of the produce as rent. The term 'Adhiar' comes from 'adha' meaning half — these tenants gave half their produce to the zamindar. Answer: D.",
+          "'Bhagchasi' or 'Adhiar' referred to sharecroppers or tenant farmers in Bengal who cultivated land belonging to zamindars and shared a portion (usually half) of the produce as rent. The term 'Adhiar' comes from 'adha' meaning half - these tenants gave half their produce to the zamindar. Answer: D.",
         topic: "Land Revenue Systems",
         difficulty: "Medium",
         pyqYear: null,
@@ -860,7 +860,7 @@ export const TEST_T30 = [
         ],
         correct: "A",
         explanation:
-          "Statement I is correct — The Moderate leaders of the INC opposed the Indian Factory Acts (1881 and 1891) because they feared economic harm to India. Statement II is correct and explains Statement I — Their reasoning was that factory regulation (limiting working hours, etc.) would increase costs for Indian industries, reduce their competitiveness, and thereby reduce employment opportunities for Indian workers. They prioritised economic development over labour welfare in this context. Answer: A.",
+          "Statement I is correct - The Moderate leaders of the INC opposed the Indian Factory Acts (1881 and 1891) because they feared economic harm to India. Statement II is correct and explains Statement I - Their reasoning was that factory regulation (limiting working hours, etc.) would increase costs for Indian industries, reduce their competitiveness, and thereby reduce employment opportunities for Indian workers. They prioritised economic development over labour welfare in this context. Answer: A.",
         topic: "INC Moderates & Their Policies",
         difficulty: "Medium",
         pyqYear: null,
@@ -896,7 +896,7 @@ export const TEST_T30 = [
         ],
         correct: "A",
         explanation:
-          "The Ahmedabad Textile Labour Association (Majoor Mahajan Sangh), established in 1920, was founded by Anasuya Sarabhai (also known as Motaben — 'elder sister'). She worked closely with Mahatma Gandhi in organising the 1918 Ahmedabad mill strike. The union became one of India's oldest and most prominent textile workers' unions. Answer: A.",
+          "The Ahmedabad Textile Labour Association (Majoor Mahajan Sangh), established in 1920, was founded by Anasuya Sarabhai (also known as Motaben - 'elder sister'). She worked closely with Mahatma Gandhi in organising the 1918 Ahmedabad mill strike. The union became one of India's oldest and most prominent textile workers' unions. Answer: A.",
         topic: "Labour & Trade Union History",
         difficulty: "Medium",
         pyqYear: null,
@@ -914,7 +914,7 @@ export const TEST_T30 = [
         ],
         correct: "A",
         explanation:
-          "Statement I is correct — Annie Besant became the first woman President of the INC at the Calcutta Session of 1917. Statement II is correct — She founded the Central Hindu College at Benares in 1898, which later became Banaras Hindu University. Statement III is correct — She started 'New India' (daily newspaper) and 'Commonweal' (weekly) to advocate for Indian Home Rule. Statement IV is incorrect — The Theosophical Society was founded in 1875 by Helena Blavatsky and Colonel Henry Steel Olcott in New York; Annie Besant joined later and became its President in 1907. Statement V is incorrect — Annie Besant died in 1933, before Indian Independence; the Bharat Ratna was instituted only in 1954. Answer: A.",
+          "Statement I is correct - Annie Besant became the first woman President of the INC at the Calcutta Session of 1917. Statement II is correct - She founded the Central Hindu College at Benares in 1898, which later became Banaras Hindu University. Statement III is correct - She started 'New India' (daily newspaper) and 'Commonweal' (weekly) to advocate for Indian Home Rule. Statement IV is incorrect - The Theosophical Society was founded in 1875 by Helena Blavatsky and Colonel Henry Steel Olcott in New York; Annie Besant joined later and became its President in 1907. Statement V is incorrect - Annie Besant died in 1933, before Indian Independence; the Bharat Ratna was instituted only in 1954. Answer: A.",
         topic: "Freedom Struggle Leaders",
         difficulty: "Medium",
         pyqYear: null,

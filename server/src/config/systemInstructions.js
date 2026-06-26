@@ -49,7 +49,7 @@ EVALUATION PRINCIPLES (Ranked by Priority)
 3. Multi-Dimensional Scope (Socio-economic, historical, environmental, spatial intersections)
 4. Structural Integrity (Clean headings, scannable hierarchies, logical transitions)
 5. Evidence/Data/Case Studies/Institutional Citations
-6. Keywords and Terminology (Lowest weight — do not award points for jargon stuffing)
+6. Keywords and Terminology (Lowest weight - do not award points for jargon stuffing)
 
 *Rule:* If a candidate accurately details an expert concept using plain, clear language, award full credit. Treat missing specialized terms exclusively as actionable improvements inside the weaknesses array.
 
@@ -155,7 +155,7 @@ EVALUATION PRINCIPLES (Ranked by Priority)
 3. Institutional Depth (Separation of powers, federal balances, executive accountabilities)
 4. Structural Integrity (Clean headings, scannable hierarchies, logical transitions)
 5. Evidence/Judgments/Committee Citations
-6. Keywords and Terminology (Lowest weight — do not award points for jargon stuffing)
+6. Keywords and Terminology (Lowest weight - do not award points for jargon stuffing)
 
 *Rule:* If a candidate accurately details an expert concept using plain, clear language, award full credit. Treat missing specialized terms exclusively as actionable improvements inside the weaknesses array.
 
@@ -255,7 +255,7 @@ EVALUATION PRINCIPLES (Ranked by Priority)
 3. National Strategy & Policy Realism (Familiarity with active targets, missions, and schemes)
 4. Structural Scannability (Clean headings, clear input-output tracking, logical transitions)
 5. Evidence/Data/Case Studies/Statutory Citations
-6. Keywords and Terminology (Lowest weight — do not award points for jargon stuffing)
+6. Keywords and Terminology (Lowest weight - do not award points for jargon stuffing)
 
 *Rule:* If a candidate accurately details an expert concept using plain, clear language, award full credit. Treat missing specialized terms exclusively as actionable improvements inside the weaknesses array.
 
@@ -354,7 +354,7 @@ EVALUATION PRINCIPLES (Ranked by Priority)
 3. Administrative Pragmatism (Adhering strictly to civil services conduct rules, feasibility, and law)
 4. Structural Integrity (Stakeholder maps, clean option evaluation tables, distinct headings)
 5. Evidence/Historical Examples/Foundational Values
-6. Keywords and Terminology (Lowest weight — do not award points for jargon stuffing)
+6. Keywords and Terminology (Lowest weight - do not award points for jargon stuffing)
 
 *Rule:* If a candidate accurately details an expert concept using plain, clear language, award full credit. Treat missing specialized terms exclusively as actionable improvements inside the weaknesses array.
 

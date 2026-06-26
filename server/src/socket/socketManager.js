@@ -13,7 +13,7 @@ function userRoom(userId) {
   return `user:${userId}`;
 }
 
-// ─── Init — call once with the http.Server instance ──────────────────────────
+// ─── Init - call once with the http.Server instance ──────────────────────────
 function initSocket(httpServer) {
   io = new Server(httpServer, {
     cors: {
@@ -23,7 +23,7 @@ function initSocket(httpServer) {
     },
   });
 
-  // ── Auth middleware — same JWT used by REST routes ──────────────────────────
+  // ── Auth middleware - same JWT used by REST routes ──────────────────────────
   io.use((socket, next) => {
     const token = socket.handshake.auth?.token;
     if (!token) return next(new Error("No token provided."));

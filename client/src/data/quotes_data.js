@@ -69,7 +69,7 @@ export const QUOTES = [
     category: "EssayGold",
   },
   {
-    text: "A people that elect corrupt politicians, imposters, thieves and traitors are not victims — but accomplices.",
+    text: "A people that elect corrupt politicians, imposters, thieves and traitors are not victims - but accomplices.",
     src: "George Orwell",
     category: "EssayGold",
   },
@@ -253,7 +253,7 @@ export const QUOTES = [
     category: "EssayGold",
   },
   {
-    text: "You have power over your mind — not outside events. Realize this, and you will find strength.",
+    text: "You have power over your mind - not outside events. Realize this, and you will find strength.",
     src: "Marcus Aurelius",
     category: "EssayGold",
   },
@@ -412,7 +412,7 @@ export const QUOTES = [
     category: "EssayGold",
   },
   {
-    text: "The greatest danger in times of turbulence is not the turbulence — it is to act with yesterday's logic.",
+    text: "The greatest danger in times of turbulence is not the turbulence - it is to act with yesterday's logic.",
     src: "Peter Drucker",
     category: "EssayGold",
   },
@@ -734,7 +734,7 @@ export const QUOTES = [
     category: "Indian",
   },
   {
-    text: "The battle for me is a matter full of joy — it is a battle for freedom, for the reclamation of the human personality.",
+    text: "The battle for me is a matter full of joy - it is a battle for freedom, for the reclamation of the human personality.",
     src: "Dr. B.R. Ambedkar",
     category: "Indian",
   },
@@ -759,7 +759,7 @@ export const QUOTES = [
     category: "Indian",
   },
   {
-    text: "Take up one idea, make that one idea your life — think of it, dream of it, live on that idea.",
+    text: "Take up one idea, make that one idea your life - think of it, dream of it, live on that idea.",
     src: "Swami Vivekananda",
     category: "Indian",
   },
@@ -779,7 +779,7 @@ export const QUOTES = [
     category: "Indian",
   },
   {
-    text: "Where the mind is without fear and the head is held high — into that heaven of freedom let my country awake.",
+    text: "Where the mind is without fear and the head is held high - into that heaven of freedom let my country awake.",
     src: "Rabindranath Tagore",
     category: "Indian",
   },
@@ -854,7 +854,7 @@ export const QUOTES = [
     category: "HindiLiterature",
     lang: "hi",
     meaning:
-      "Patience brings everything in its own time — the gardener may water with a hundred pots, but the fruit ripens only when its season comes.",
+      "Patience brings everything in its own time - the gardener may water with a hundred pots, but the fruit ripens only when its season comes.",
   },
   {
     text: "बुरा जो देखन मैं चला, बुरा न मिलिया कोय। जो मन खोजा आपना, मुझसे बुरा न कोय॥",
@@ -870,14 +870,14 @@ export const QUOTES = [
     category: "HindiLiterature",
     lang: "hi",
     meaning:
-      "Where do you search for me, seeker? I am right beside you — not in temple, not in mosque, not in Kaaba or Kailash.",
+      "Where do you search for me, seeker? I am right beside you - not in temple, not in mosque, not in Kaaba or Kailash.",
   },
   {
     text: "पायो जी मैंने राम रतन धन पायो।",
     src: "मीराबाई",
     category: "HindiLiterature",
     lang: "hi",
-    meaning: "I have found the priceless treasure — the name of Ram.",
+    meaning: "I have found the priceless treasure - the name of Ram.",
   },
   {
     text: "खुदी को कर बुलंद इतना, कि हर तक़दीर से पहले। ख़ुदा बंदे से ख़ुद पूछे, बता तेरी रज़ा क्या है॥",
@@ -901,7 +901,7 @@ export const QUOTES = [
     category: "HindiLiterature",
     lang: "hi",
     meaning:
-      "Do today what you planned for tomorrow, do now what you planned for today — in an instant everything can end, so when will you do it if not now?",
+      "Do today what you planned for tomorrow, do now what you planned for today - in an instant everything can end, so when will you do it if not now?",
   },
   {
     text: "करत-करत अभ्यास के जड़मति होत सुजान। रसरी आवत जात ते सिल पर परत निशान॥",
@@ -909,7 +909,7 @@ export const QUOTES = [
     category: "HindiLiterature",
     lang: "hi",
     meaning:
-      "Through constant practice, even a dull mind becomes sharp — just as a rope, going back and forth, leaves its mark on stone.",
+      "Through constant practice, even a dull mind becomes sharp - just as a rope, going back and forth, leaves its mark on stone.",
   },
   {
     text: "तुम मुझे ख़ून दो, मैं तुम्हें आज़ादी दूँगा।",
@@ -931,7 +931,7 @@ export const QUOTES = [
     category: "HindiLiterature",
     lang: "hi",
     meaning:
-      "We will face the enemy's bullets — we have always been free, and free we shall remain.",
+      "We will face the enemy's bullets - we have always been free, and free we shall remain.",
   },
   {
     text: "स्वराज्य हमारा जन्मसिद्ध अधिकार है और इसे लेकर ही रहूँगा।",
@@ -958,7 +958,7 @@ export const QUOTES = [
     category: "Proverb",
     lang: "hi",
     meaning:
-      "Drop by drop, the pitcher fills — small, consistent efforts add up to big results.",
+      "Drop by drop, the pitcher fills - small, consistent efforts add up to big results.",
   },
   {
     text: "जैसी करनी वैसी भरनी।",
@@ -973,7 +973,7 @@ export const QUOTES = [
     category: "Proverb",
     lang: "hi",
     meaning:
-      "A promising sapling shows its quality in its leaves early on — true talent reveals itself early.",
+      "A promising sapling shows its quality in its leaves early on - true talent reveals itself early.",
   },
   {
     text: "मन के हारे हार है, मन के जीते जीत।",
@@ -981,7 +981,7 @@ export const QUOTES = [
     category: "Proverb",
     lang: "hi",
     meaning:
-      "Defeat begins in the mind, and so does victory — your mindset decides the outcome.",
+      "Defeat begins in the mind, and so does victory - your mindset decides the outcome.",
   },
   {
     text: "जान है तो जहान है।",
@@ -989,7 +989,7 @@ export const QUOTES = [
     category: "Proverb",
     lang: "hi",
     meaning:
-      "If there is life, there is a whole world of possibility — health comes first.",
+      "If there is life, there is a whole world of possibility - health comes first.",
   },
   {
     text: "अंत भला तो सब भला।",
@@ -1003,7 +1003,7 @@ export const QUOTES = [
     src: "हिंदी कहावत",
     category: "Proverb",
     lang: "hi",
-    meaning: "Truth fears no fire — an honest person has nothing to be afraid of.",
+    meaning: "Truth fears no fire - an honest person has nothing to be afraid of.",
   },
   {
     text: "नेकी कर, दरिया में डाल।",
@@ -1011,7 +1011,7 @@ export const QUOTES = [
     category: "Proverb",
     lang: "hi",
     meaning:
-      "Do good, and cast it into the river — do good without expecting anything in return.",
+      "Do good, and cast it into the river - do good without expecting anything in return.",
   },
   {
     text: "दाने-दाने पर लिखा है खाने वाले का नाम।",
@@ -1019,7 +1019,7 @@ export const QUOTES = [
     category: "Proverb",
     lang: "hi",
     meaning:
-      "Every grain of food carries the name of the one destined to eat it — what is meant for you will reach you.",
+      "Every grain of food carries the name of the one destined to eat it - what is meant for you will reach you.",
   },
   {
     text: "हाथ कंगन को आरसी क्या।",
@@ -1027,7 +1027,7 @@ export const QUOTES = [
     category: "Proverb",
     lang: "hi",
     meaning:
-      "A bangle on the wrist needs no mirror to be seen — a self-evident truth needs no proof.",
+      "A bangle on the wrist needs no mirror to be seen - a self-evident truth needs no proof.",
   },
   {
     text: "अधजल गगरी छलकत जाए।",
@@ -1035,7 +1035,7 @@ export const QUOTES = [
     category: "Proverb",
     lang: "hi",
     meaning:
-      "A half-filled pitcher spills the most — those who know the least tend to boast the loudest.",
+      "A half-filled pitcher spills the most - those who know the least tend to boast the loudest.",
   },
   {
     text: "ऊँट के मुँह में जीरा।",
@@ -1043,7 +1043,7 @@ export const QUOTES = [
     category: "Proverb",
     lang: "hi",
     meaning:
-      "A pinch of cumin in a camel's mouth — far too small an effort for the scale of the need.",
+      "A pinch of cumin in a camel's mouth - far too small an effort for the scale of the need.",
   },
   {
     text: "बंदर क्या जाने अदरक का स्वाद।",
@@ -1051,7 +1051,7 @@ export const QUOTES = [
     category: "Proverb",
     lang: "hi",
     meaning:
-      "What does a monkey know of the taste of ginger — one who lacks understanding cannot judge something refined.",
+      "What does a monkey know of the taste of ginger - one who lacks understanding cannot judge something refined.",
   },
 
   // ─────────────────────────────────────────────
@@ -1129,7 +1129,7 @@ export const QUOTES = [
     src: "English Proverb",
     category: "Proverb",
     meaning:
-      "Appearances can be deceptive — not everything attractive is valuable.",
+      "Appearances can be deceptive - not everything attractive is valuable.",
   },
   {
     text: "Necessity is the mother of invention.",
@@ -1219,7 +1219,7 @@ export const QUOTES = [
     category: "EnglishLiterature",
   },
   {
-    text: "Two roads diverged in a wood, and I — I took the one less traveled by.",
+    text: "Two roads diverged in a wood, and I - I took the one less traveled by.",
     src: "Robert Frost",
     category: "EnglishLiterature",
   },
@@ -1458,7 +1458,7 @@ export const QUOTES = [
   },
   {
     category: "FillIn",
-    prompt: "Two roads diverged in a wood, and I — I took the one less traveled ____",
+    prompt: "Two roads diverged in a wood, and I - I took the one less traveled ____",
     answer: "by",
     src: "Robert Frost",
   },
@@ -1607,7 +1607,7 @@ export const QUOTES = [
     category: "Sociology",
   },
   {
-    text: "Politics is the art of the possible, the attainable — the art of the next best.",
+    text: "Politics is the art of the possible, the attainable - the art of the next best.",
     src: "Otto von Bismarck",
     category: "Sociology",
   },
@@ -1627,7 +1627,7 @@ export const QUOTES = [
     category: "Sociology",
   },
   {
-    text: "Do what you feel in your heart to be right — for you'll be criticized anyway.",
+    text: "Do what you feel in your heart to be right - for you'll be criticized anyway.",
     src: "Eleanor Roosevelt",
     category: "Sociology",
   },
@@ -1700,7 +1700,7 @@ export const QUOTES = [
   // GOVERNANCE & POLITICS (non-EssayGold)
   // ─────────────────────────────────────────────
   {
-    text: "Ask not what your country can do for you — ask what you can do for your country.",
+    text: "Ask not what your country can do for you - ask what you can do for your country.",
     src: "John F. Kennedy",
     category: "Governance",
   },
@@ -1784,7 +1784,7 @@ export const QUOTES = [
     category: "Wisdom",
   },
   {
-    text: "Success is not final, failure is not fatal — it is the courage to continue that counts.",
+    text: "Success is not final, failure is not fatal - it is the courage to continue that counts.",
     src: "Winston Churchill",
     category: "Wisdom",
   },
@@ -1829,7 +1829,7 @@ export const QUOTES = [
     category: "Wisdom",
   },
   {
-    text: "Whether you think you can, or you think you can't — you're right.",
+    text: "Whether you think you can, or you think you can't - you're right.",
     src: "Henry Ford",
     category: "Wisdom",
   },
@@ -1874,7 +1874,7 @@ export const QUOTES = [
     category: "Wisdom",
   },
   {
-    text: "The secret of joy in work is contained in one word — excellence.",
+    text: "The secret of joy in work is contained in one word - excellence.",
     src: "Pearl S. Buck",
     category: "Wisdom",
   },

@@ -720,7 +720,7 @@ function RetentionTab({ retention, cohort, churnList, loading }) {
             </div>
           </div>
         ) : (
-          <p className="text-sm text-text-muted py-6 text-center">No cohort data yet — needs more sign-ups across multiple weeks.</p>
+          <p className="text-sm text-text-muted py-6 text-center">No cohort data yet - needs more sign-ups across multiple weeks.</p>
         )}
       </div>
 

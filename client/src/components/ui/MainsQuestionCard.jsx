@@ -1,7 +1,7 @@
 /**
  * MainsQuestionCard.jsx
  * ─────────────────────────────────────────────────────────────────────────────
- * UPSC Mains — Long-Answer Question Card
+ * UPSC Mains - Long-Answer Question Card
  *
  * Improvements:
  *   - Larger, responsive fonts (clamp + rem fallback)

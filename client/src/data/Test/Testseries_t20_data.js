@@ -6,7 +6,7 @@
 export const TEST_T20 = [
   {
     id: "sfg2026-t20",
-    title: "SFG 2026 — Level 1 · Test 20",
+    title: "SFG 2026 - Level 1 · Test 20",
     testCode: "321118",
     subject: "Environment & Ecology",
     topic: "Environmental Pollution, Climate Change & Disaster Management",
@@ -32,7 +32,7 @@ export const TEST_T20 = [
         ],
         correct: "B",
         explanation:
-          "Coal gasification converts coal into syngas (CO, H2, CO2, CH4). Ethanol (I) — can be produced via coal gasification route (syngas → ethanol through catalytic/microbial fermentation) ✓. Nitroglycerine (II) — synthesized by nitration of glycerol; coal gasification plays no role ✗. Urea (III) — produced via Haber-Bosch process (ammonia from syngas + CO2) ✓. Only I and III can be produced using coal gasification. Answer: B.",
+          "Coal gasification converts coal into syngas (CO, H2, CO2, CH4). Ethanol (I) - can be produced via coal gasification route (syngas → ethanol through catalytic/microbial fermentation) ✓. Nitroglycerine (II) - synthesized by nitration of glycerol; coal gasification plays no role ✗. Urea (III) - produced via Haber-Bosch process (ammonia from syngas + CO2) ✓. Only I and III can be produced using coal gasification. Answer: B.",
         topic: "Various Environmental Issues",
         difficulty: "Medium",
         pyqYear: 2025,
@@ -50,7 +50,7 @@ export const TEST_T20 = [
         ],
         correct: "D",
         explanation:
-          "All five are non-biodegradable: Synthetic rubber — man-made polymer, does not decompose microbiologically ✓. Endosulfan — persistent synthetic chemical ✓. Mercury — heavy metal, cannot be biologically decomposed ✓. Glass — made from silica, resists biological decomposition for hundreds of years ✓. Radioactive waste — hazard reduces only through radioactive decay, not biodegradation ✓. Answer: D.",
+          "All five are non-biodegradable: Synthetic rubber - man-made polymer, does not decompose microbiologically ✓. Endosulfan - persistent synthetic chemical ✓. Mercury - heavy metal, cannot be biologically decomposed ✓. Glass - made from silica, resists biological decomposition for hundreds of years ✓. Radioactive waste - hazard reduces only through radioactive decay, not biodegradation ✓. Answer: D.",
         topic: "Environmental Pollution",
         difficulty: "Easy",
         pyqYear: null,
@@ -68,7 +68,7 @@ export const TEST_T20 = [
         ],
         correct: "C",
         explanation:
-          "Statement I is correct — CO2 is responsible for around 70% of total anthropogenic warming, well above 50% ✓. Statement II is incorrect — CO2 is a LONG-LIVED greenhouse gas; it persists in the atmosphere for hundreds to thousands of years. It is not a short-lived pollutant ✗. Answer: C.",
+          "Statement I is correct - CO2 is responsible for around 70% of total anthropogenic warming, well above 50% ✓. Statement II is incorrect - CO2 is a LONG-LIVED greenhouse gas; it persists in the atmosphere for hundreds to thousands of years. It is not a short-lived pollutant ✗. Answer: C.",
         topic: "Climate Change & Greenhouse Gases",
         difficulty: "Easy",
         pyqYear: null,
@@ -86,8 +86,8 @@ export const TEST_T20 = [
         ],
         correct: "A",
         explanation:
-          "Statement I is incorrect — Acid rain has pH below 5.6 (acidic), not above 7 ✗. Statement II is incorrect — CO does not form an acid; acid rain is caused by SO2 and NOx ✗. Statement III is incorrect — Acid rain leaches nutrients from soil and damages plants ✗. Statement IV is correct — Acid rain (containing H2SO4 and HNO3) corrodes stone structures (limestone, marble) and metals ✓. Answer: A.",
-        topic: "Environmental Pollution — Acid Rain",
+          "Statement I is incorrect - Acid rain has pH below 5.6 (acidic), not above 7 ✗. Statement II is incorrect - CO does not form an acid; acid rain is caused by SO2 and NOx ✗. Statement III is incorrect - Acid rain leaches nutrients from soil and damages plants ✗. Statement IV is correct - Acid rain (containing H2SO4 and HNO3) corrodes stone structures (limestone, marble) and metals ✓. Answer: A.",
+        topic: "Environmental Pollution - Acid Rain",
         difficulty: "Easy",
         pyqYear: null,
       },
@@ -122,8 +122,8 @@ export const TEST_T20 = [
         ],
         correct: "D",
         explanation:
-          "All three are correct. Lead is used in paints and is a major source of pollution ✓. Lead interferes with haemoglobin formation (red blood cell development) ✓. There is no known safe blood lead level — even 3.5 µg/dL is associated with cognitive harm in children ✓. Answer: D.",
-        topic: "Environmental Pollution — Heavy Metals",
+          "All three are correct. Lead is used in paints and is a major source of pollution ✓. Lead interferes with haemoglobin formation (red blood cell development) ✓. There is no known safe blood lead level - even 3.5 µg/dL is associated with cognitive harm in children ✓. Answer: D.",
+        topic: "Environmental Pollution - Heavy Metals",
         difficulty: "Easy",
         pyqYear: null,
       },
@@ -140,7 +140,7 @@ export const TEST_T20 = [
         ],
         correct: "A",
         explanation:
-          "Statement I is correct — Asbestos is a group of naturally occurring fibrous silicate minerals ✓. Statement II is correct — Long-term exposure causes asbestosis, lung cancer, and mesothelioma ✓. Statement III is incorrect — In 2025, the NGT DECLINED to impose a nationwide ban on asbestos cement roofing in schools; instead it ordered strict safety measures and a phase-out review ✗. Answer: A.",
+          "Statement I is correct - Asbestos is a group of naturally occurring fibrous silicate minerals ✓. Statement II is correct - Long-term exposure causes asbestosis, lung cancer, and mesothelioma ✓. Statement III is incorrect - In 2025, the NGT DECLINED to impose a nationwide ban on asbestos cement roofing in schools; instead it ordered strict safety measures and a phase-out review ✗. Answer: A.",
         topic: "Environmental Pollution",
         difficulty: "Medium",
         pyqYear: null,
@@ -158,8 +158,8 @@ export const TEST_T20 = [
         ],
         correct: "C",
         explanation:
-          "Photochemical smog components: Ozone (I) ✓ — formed by photolysis; Nitric oxide (II) ✓ — precursor/product; VOCs (III) ✓ — react with NOx in sunlight; PAN (V) ✓ — formed from VOCs + NO2 + sunlight. Polyaromatic Hydrocarbons (IV) — NOT a component of photochemical smog (they are associated with industrial smog). Answer: C (I, II, III, V = four).",
-        topic: "Environmental Pollution — Photochemical Smog",
+          "Photochemical smog components: Ozone (I) ✓ - formed by photolysis; Nitric oxide (II) ✓ - precursor/product; VOCs (III) ✓ - react with NOx in sunlight; PAN (V) ✓ - formed from VOCs + NO2 + sunlight. Polyaromatic Hydrocarbons (IV) - NOT a component of photochemical smog (they are associated with industrial smog). Answer: C (I, II, III, V = four).",
+        topic: "Environmental Pollution - Photochemical Smog",
         difficulty: "Medium",
         pyqYear: null,
       },
@@ -176,7 +176,7 @@ export const TEST_T20 = [
         ],
         correct: "A",
         explanation:
-          "I — UV radiation from ozone depletion causes mutations in plant cells ✓. II — Ozone depletion increases evaporation through stomata, decreasing soil moisture ✓. III — Increased UV radiation increases water loss via stomata ✓. IV — Ozone depletion ACCELERATES chlorosis (loss of chlorophyll), not slows it ✗. Answer: A.",
+          "I - UV radiation from ozone depletion causes mutations in plant cells ✓. II - Ozone depletion increases evaporation through stomata, decreasing soil moisture ✓. III - Increased UV radiation increases water loss via stomata ✓. IV - Ozone depletion ACCELERATES chlorosis (loss of chlorophyll), not slows it ✗. Answer: A.",
         topic: "Ozone Layer Depletion",
         difficulty: "Medium",
         pyqYear: null,
@@ -194,8 +194,8 @@ export const TEST_T20 = [
         ],
         correct: "A",
         explanation:
-          "Both statements are correct. CO binds to haemoglobin ~300 times more strongly than O2, forming carboxyhaemoglobin (COHb), which drastically reduces blood's oxygen-carrying capacity (Statement II). This oxygen deficiency in the blood leads to cerebral hypoxia — oxygen deprivation in the brain (Statement I). Statement II explains Statement I. Answer: A.",
-        topic: "Environmental Pollution — Carbon Monoxide",
+          "Both statements are correct. CO binds to haemoglobin ~300 times more strongly than O2, forming carboxyhaemoglobin (COHb), which drastically reduces blood's oxygen-carrying capacity (Statement II). This oxygen deficiency in the blood leads to cerebral hypoxia - oxygen deprivation in the brain (Statement I). Statement II explains Statement I. Answer: A.",
+        topic: "Environmental Pollution - Carbon Monoxide",
         difficulty: "Easy",
         pyqYear: null,
       },
@@ -220,7 +220,7 @@ export const TEST_T20 = [
       {
         id: "t20_q12",
         qNo: 12,
-        text: "With reference to environmental pollution, consider the following pairs:\n\nDisease — Result of contamination/poisoning caused by\nI. Itai-itai — Chromium\nII. Black foot — Arsenic\nIII. Fluorosis — Fluoride",
+        text: "With reference to environmental pollution, consider the following pairs:\n\nDisease - Result of contamination/poisoning caused by\nI. Itai-itai - Chromium\nII. Black foot - Arsenic\nIII. Fluorosis - Fluoride",
         suffix: "How many of the pairs given above are correctly matched?",
         options: [
           { id: "A", text: "Only one" },
@@ -230,8 +230,8 @@ export const TEST_T20 = [
         ],
         correct: "B",
         explanation:
-          "Pair I is incorrect — Itai-itai disease is caused by CADMIUM (not Chromium) contamination in Japan ✗. Pair II is correct — Black foot disease (Blackfoot disease) is caused by Arsenic poisoning in drinking water ✓. Pair III is correct — Fluorosis (skeletal and dental) is caused by excess Fluoride intake ✓. Answer: B (II and III).",
-        topic: "Environmental Pollution — Water",
+          "Pair I is incorrect - Itai-itai disease is caused by CADMIUM (not Chromium) contamination in Japan ✗. Pair II is correct - Black foot disease (Blackfoot disease) is caused by Arsenic poisoning in drinking water ✓. Pair III is correct - Fluorosis (skeletal and dental) is caused by excess Fluoride intake ✓. Answer: B (II and III).",
+        topic: "Environmental Pollution - Water",
         difficulty: "Easy",
         pyqYear: null,
       },
@@ -248,8 +248,8 @@ export const TEST_T20 = [
         ],
         correct: "B",
         explanation:
-          "Statement I is correct — Detergents cause eutrophication/algal bloom ✓. Statement II is correct — Most detergents contain 35–75% phosphate salts; phosphates act as nutrients stimulating algal growth ✓. Statement III is correct — Detergents are alkaline (basic) in nature ✓. However, only Statement II (phosphate salts causing eutrophication) directly explains Statement I. Statement III (alkaline nature) is not the cause of algal bloom. Answer: B.",
-        topic: "Environmental Pollution — Water",
+          "Statement I is correct - Detergents cause eutrophication/algal bloom ✓. Statement II is correct - Most detergents contain 35–75% phosphate salts; phosphates act as nutrients stimulating algal growth ✓. Statement III is correct - Detergents are alkaline (basic) in nature ✓. However, only Statement II (phosphate salts causing eutrophication) directly explains Statement I. Statement III (alkaline nature) is not the cause of algal bloom. Answer: B.",
+        topic: "Environmental Pollution - Water",
         difficulty: "Medium",
         pyqYear: null,
       },
@@ -266,8 +266,8 @@ export const TEST_T20 = [
         ],
         correct: "A",
         explanation:
-          "Statement I is correct — DDT was used effectively against malaria and typhus ✓. Statement II is incorrect — DDT is lipophilic (fat-soluble), NOT water-soluble; this is why it bioaccumulates in fatty tissues ✗. Statement III is correct — DDT is listed under Annex B (Restriction) of the Stockholm Convention on POPs ✓. Statement IV is incorrect — India (through HIL) is the world's only registered producer of DDT (since 2008) for vector control purposes ✗. Answer: A.",
-        topic: "Environmental Pollution — POPs",
+          "Statement I is correct - DDT was used effectively against malaria and typhus ✓. Statement II is incorrect - DDT is lipophilic (fat-soluble), NOT water-soluble; this is why it bioaccumulates in fatty tissues ✗. Statement III is correct - DDT is listed under Annex B (Restriction) of the Stockholm Convention on POPs ✓. Statement IV is incorrect - India (through HIL) is the world's only registered producer of DDT (since 2008) for vector control purposes ✗. Answer: A.",
+        topic: "Environmental Pollution - POPs",
         difficulty: "Medium",
         pyqYear: null,
       },
@@ -284,7 +284,7 @@ export const TEST_T20 = [
         ],
         correct: "B",
         explanation:
-          "Magnetite particles from: Brakes (1) ✓ — ABS and braking systems use magnets. Engines (2) ✓ — high-powered magnets generate magnetic flux. Power plants (4) ✓ — coal combustion releases magnetite fine particles with fly ash. Microwave stoves (3) ✗ — use non-ionising radiation (magnetic stirrer, but not a source of magnetite particles). Telephone lines (5) ✗ — produce low-energy electromagnetic fields, not magnetite particles. Answer: B.",
+          "Magnetite particles from: Brakes (1) ✓ - ABS and braking systems use magnets. Engines (2) ✓ - high-powered magnets generate magnetic flux. Power plants (4) ✓ - coal combustion releases magnetite fine particles with fly ash. Microwave stoves (3) ✗ - use non-ionising radiation (magnetic stirrer, but not a source of magnetite particles). Telephone lines (5) ✗ - produce low-energy electromagnetic fields, not magnetite particles. Answer: B.",
         topic: "Environmental Pollution",
         difficulty: "Medium",
         pyqYear: 2021,
@@ -302,8 +302,8 @@ export const TEST_T20 = [
         ],
         correct: "D",
         explanation:
-          "Carbamates are esters of carbamic acid used as pesticides, fungicides, herbicides, and nematocides. They are used as insecticidal sprays/baits. They have a short residual life but are severe nerve toxins (associated with the Bhopal disaster — carbaryl/Sevin). Answer: D.",
-        topic: "Environmental Pollution — Pesticides",
+          "Carbamates are esters of carbamic acid used as pesticides, fungicides, herbicides, and nematocides. They are used as insecticidal sprays/baits. They have a short residual life but are severe nerve toxins (associated with the Bhopal disaster - carbaryl/Sevin). Answer: D.",
+        topic: "Environmental Pollution - Pesticides",
         difficulty: "Easy",
         pyqYear: null,
       },
@@ -320,7 +320,7 @@ export const TEST_T20 = [
         ],
         correct: "D",
         explanation:
-          "All five uses of steel slag are valid: Clinker production (I) ✓ — reduces CO2 emissions in cement. Road construction (II) ✓ — used as aggregate in bituminous mixes. Fertilisers (III) ✓ — rich in Si, Ca, Mg, P, Fe (silicon fertiliser for rice). Light weight concrete (IV) ✓ — foamed/expanded slag. Treating acidic mine drainage (V) ✓ — high oxide content neutralises acids. Answer: D.",
+          "All five uses of steel slag are valid: Clinker production (I) ✓ - reduces CO2 emissions in cement. Road construction (II) ✓ - used as aggregate in bituminous mixes. Fertilisers (III) ✓ - rich in Si, Ca, Mg, P, Fe (silicon fertiliser for rice). Light weight concrete (IV) ✓ - foamed/expanded slag. Treating acidic mine drainage (V) ✓ - high oxide content neutralises acids. Answer: D.",
         topic: "Various Environmental Issues",
         difficulty: "Medium",
         pyqYear: null,
@@ -338,7 +338,7 @@ export const TEST_T20 = [
         ],
         correct: "C",
         explanation:
-          "Statement I is incorrect — Methane has a shorter atmospheric lifespan (~12 years) than CO2 (~100 years), though a higher GWP ✗. Statement II is correct — Agriculture (livestock + rice cultivation) accounts for ~40% of anthropogenic methane emissions ✓. Statement III is correct — Methane reacts with NOx and VOCs in sunlight to form tropospheric ozone ✓. Statement IV is correct — As per the Global Methane Status Report 2025, India is the world's third-largest methane emitter after China and the US ✓. Answer: C.",
+          "Statement I is incorrect - Methane has a shorter atmospheric lifespan (~12 years) than CO2 (~100 years), though a higher GWP ✗. Statement II is correct - Agriculture (livestock + rice cultivation) accounts for ~40% of anthropogenic methane emissions ✓. Statement III is correct - Methane reacts with NOx and VOCs in sunlight to form tropospheric ozone ✓. Statement IV is correct - As per the Global Methane Status Report 2025, India is the world's third-largest methane emitter after China and the US ✓. Answer: C.",
         topic: "Climate Change & Greenhouse Gases",
         difficulty: "Medium",
         pyqYear: null,
@@ -356,15 +356,15 @@ export const TEST_T20 = [
         ],
         correct: "A",
         explanation:
-          "Statement I is correct — BIS released the updated seismic zonation map under the revised Earthquake Design Code 2025 ✓. Statement II is correct — The entire Himalayan arc is now uniformly placed in the newly created Zone VI (highest hazard) ✓. Statement III is correct — About 61% of India's land now falls under moderate to high earthquake hazard zones ✓. Statement IV is incorrect — The country is now divided into 5 seismic zones (Zone II to Zone VI), not 4 ✗. Answer: A.",
-        topic: "Disaster Management — Earthquakes",
+          "Statement I is correct - BIS released the updated seismic zonation map under the revised Earthquake Design Code 2025 ✓. Statement II is correct - The entire Himalayan arc is now uniformly placed in the newly created Zone VI (highest hazard) ✓. Statement III is correct - About 61% of India's land now falls under moderate to high earthquake hazard zones ✓. Statement IV is incorrect - The country is now divided into 5 seismic zones (Zone II to Zone VI), not 4 ✗. Answer: A.",
+        topic: "Disaster Management - Earthquakes",
         difficulty: "Medium",
         pyqYear: null,
       },
       {
         id: "t20_q20",
         qNo: 20,
-        text: "With reference to indoor air pollutants and their major sources, consider the following pairs:\n\nIndoor air pollutant — Major source\nI. Radon — Building materials such as concrete, stone and soil\nII. Cadmium — Pesticide residues present in paints\nIII. Toluene — Nail Paints",
+        text: "With reference to indoor air pollutants and their major sources, consider the following pairs:\n\nIndoor air pollutant - Major source\nI. Radon - Building materials such as concrete, stone and soil\nII. Cadmium - Pesticide residues present in paints\nIII. Toluene - Nail Paints",
         suffix: "How many of the pairs given above are correctly matched?",
         options: [
           { id: "A", text: "Only one" },
@@ -374,8 +374,8 @@ export const TEST_T20 = [
         ],
         correct: "C",
         explanation:
-          "All three pairs are correctly matched: Radon — a naturally occurring radioactive gas from uranium decay in rocks, concrete, stone, and soil ✓. Cadmium — can be present indoors through pesticides mixed with paints, sprays, and tobacco smoke ✓. Toluene — a VOC commonly found in nail polish, nail polish removers, and other nail products ✓. Answer: C.",
-        topic: "Environmental Pollution — Indoor Air",
+          "All three pairs are correctly matched: Radon - a naturally occurring radioactive gas from uranium decay in rocks, concrete, stone, and soil ✓. Cadmium - can be present indoors through pesticides mixed with paints, sprays, and tobacco smoke ✓. Toluene - a VOC commonly found in nail polish, nail polish removers, and other nail products ✓. Answer: C.",
+        topic: "Environmental Pollution - Indoor Air",
         difficulty: "Medium",
         pyqYear: null,
       },
@@ -392,7 +392,7 @@ export const TEST_T20 = [
         ],
         correct: "A",
         explanation:
-          "Both are correct. Chewing gum contains 'gum base' which is largely made of polyvinyl acetate (a plastic) — non-biodegradable, persisting in the environment. This plastic nature of gum base explains why chewing gum residue is a dangerous environmental pollutant. Answer: A.",
+          "Both are correct. Chewing gum contains 'gum base' which is largely made of polyvinyl acetate (a plastic) - non-biodegradable, persisting in the environment. This plastic nature of gum base explains why chewing gum residue is a dangerous environmental pollutant. Answer: A.",
         topic: "Environmental Pollution",
         difficulty: "Easy",
         pyqYear: 2024,
@@ -410,7 +410,7 @@ export const TEST_T20 = [
         ],
         correct: "B",
         explanation:
-          "Direct GHGs absorb and re-emit infrared radiation: Nitrous oxide (I) — direct GHG ✓. CFCs (II) — direct GHGs with high GWP ✓. Carbon monoxide (III) — indirect GHG (increases tropospheric ozone and CH4 lifetime) ✗. Sulphur dioxide (IV) — indirect GHG (through aerosol formation); actually a cooling agent ✗. Answer: B (I and II).",
+          "Direct GHGs absorb and re-emit infrared radiation: Nitrous oxide (I) - direct GHG ✓. CFCs (II) - direct GHGs with high GWP ✓. Carbon monoxide (III) - indirect GHG (increases tropospheric ozone and CH4 lifetime) ✗. Sulphur dioxide (IV) - indirect GHG (through aerosol formation); actually a cooling agent ✗. Answer: B (I and II).",
         topic: "Climate Change & Greenhouse Gases",
         difficulty: "Medium",
         pyqYear: null,
@@ -428,8 +428,8 @@ export const TEST_T20 = [
         ],
         correct: "B",
         explanation:
-          "Statement I is correct — As temperature increases, solubility of oxygen in water decreases, reducing dissolved oxygen in stagnant water ✓. Statement II is correct — Water molecules are polar (dipolar) due to partial charges on H and O atoms ✓. However, water's dipolar nature has no relation to how temperature affects dissolved oxygen. The two statements are independent. Answer: B.",
-        topic: "Environmental Pollution — Water",
+          "Statement I is correct - As temperature increases, solubility of oxygen in water decreases, reducing dissolved oxygen in stagnant water ✓. Statement II is correct - Water molecules are polar (dipolar) due to partial charges on H and O atoms ✓. However, water's dipolar nature has no relation to how temperature affects dissolved oxygen. The two statements are independent. Answer: B.",
+        topic: "Environmental Pollution - Water",
         difficulty: "Easy",
         pyqYear: null,
       },
@@ -446,7 +446,7 @@ export const TEST_T20 = [
         ],
         correct: "B",
         explanation:
-          "Benzene (I) — classified as a Group 1 carcinogen (IARC); causes leukemia ✓. PM2.5 (II) — classified as a Group 1 carcinogen (IARC, 2013); causes lung cancer ✓. Carbon dioxide (III) — a greenhouse gas; not carcinogenic ✗. Answer: B.",
+          "Benzene (I) - classified as a Group 1 carcinogen (IARC); causes leukemia ✓. PM2.5 (II) - classified as a Group 1 carcinogen (IARC, 2013); causes lung cancer ✓. Carbon dioxide (III) - a greenhouse gas; not carcinogenic ✗. Answer: B.",
         topic: "Environmental Pollution",
         difficulty: "Medium",
         pyqYear: null,
@@ -464,7 +464,7 @@ export const TEST_T20 = [
         ],
         correct: "B",
         explanation:
-          "Statement 1 is incorrect — In copper smelting, CO is produced but then reacts with ore and is released as CO2, not lethal quantities of CO ✗. Statement 2 is correct — Copper slag can leach heavy metals (lead, arsenic, selenium) into the environment ✓. Statement 3 is correct — Copper smelters are the largest source of sulphur oxides (SOx/SO2) ✓. Answer: B.",
+          "Statement 1 is incorrect - In copper smelting, CO is produced but then reacts with ore and is released as CO2, not lethal quantities of CO ✗. Statement 2 is correct - Copper slag can leach heavy metals (lead, arsenic, selenium) into the environment ✓. Statement 3 is correct - Copper smelters are the largest source of sulphur oxides (SOx/SO2) ✓. Answer: B.",
         topic: "Environmental Pollution",
         difficulty: "Medium",
         pyqYear: 2021,
@@ -482,8 +482,8 @@ export const TEST_T20 = [
         ],
         correct: "B",
         explanation:
-          "X-ray equipment (I) — generates ionising radiation, contributing to radioactive waste and exposure ✓. Phosphate fertilizer production (II) — phosphate rock contains naturally occurring uranium/radium; processing releases radionuclides ✓. Microwave ovens (III) — use non-ionising electromagnetic radiation; do NOT contribute to radiation pollution ✗. Answer: B (I and II).",
-        topic: "Environmental Pollution — Radiation",
+          "X-ray equipment (I) - generates ionising radiation, contributing to radioactive waste and exposure ✓. Phosphate fertilizer production (II) - phosphate rock contains naturally occurring uranium/radium; processing releases radionuclides ✓. Microwave ovens (III) - use non-ionising electromagnetic radiation; do NOT contribute to radiation pollution ✗. Answer: B (I and II).",
+        topic: "Environmental Pollution - Radiation",
         difficulty: "Medium",
         pyqYear: null,
       },
@@ -501,7 +501,7 @@ export const TEST_T20 = [
         correct: "C",
         explanation:
           "FGD units are installed in coal-fired thermal power plants to remove SO2 from flue gases. Flue gas from coal combustion contains SO2 (acidic); FGD units use alkaline compounds to neutralise it. Answer: C.",
-        topic: "Environmental Pollution — Air",
+        topic: "Environmental Pollution - Air",
         difficulty: "Easy",
         pyqYear: null,
       },
@@ -518,7 +518,7 @@ export const TEST_T20 = [
         ],
         correct: "C",
         explanation:
-          "Statement I is correct — Electrostatic Precipitators (ESPs) are widely used in cement, steel, and power industries to remove particulate matter ✓. Statement II is incorrect — ESPs work by imparting an electrical charge to dust particles using high-voltage electrodes; charged particles are then collected on oppositely charged plates. Fabric/bag filters (not ESPs) remove dust by passing gas through porous fabric bags ✗. Answer: C.",
+          "Statement I is correct - Electrostatic Precipitators (ESPs) are widely used in cement, steel, and power industries to remove particulate matter ✓. Statement II is incorrect - ESPs work by imparting an electrical charge to dust particles using high-voltage electrodes; charged particles are then collected on oppositely charged plates. Fabric/bag filters (not ESPs) remove dust by passing gas through porous fabric bags ✗. Answer: C.",
         topic: "Various Environmental Issues",
         difficulty: "Medium",
         pyqYear: null,
@@ -536,7 +536,7 @@ export const TEST_T20 = [
         ],
         correct: "A",
         explanation:
-          "Statement I is correct — In 2024–25, India generated 340.11 MT fly ash and utilized 332.63 MT (~97%) ✓. Statement II is correct — India is committed to circular economy principles including the 3R framework ✓. Statement II explains Statement I — India's circular economy commitment and policies mandating fly ash use in cement, road construction, bricks etc. explain the high utilisation rate. Answer: A.",
+          "Statement I is correct - In 2024–25, India generated 340.11 MT fly ash and utilized 332.63 MT (~97%) ✓. Statement II is correct - India is committed to circular economy principles including the 3R framework ✓. Statement II explains Statement I - India's circular economy commitment and policies mandating fly ash use in cement, road construction, bricks etc. explain the high utilisation rate. Answer: A.",
         topic: "Various Environmental Issues",
         difficulty: "Easy",
         pyqYear: null,
@@ -554,7 +554,7 @@ export const TEST_T20 = [
         ],
         correct: "C",
         explanation:
-          "Both statements are correct. BPA is used in the thermal coating of thermal papers (receipt papers) ✓. BPA is an endocrine disruptor — it mimics estrogen and disrupts hormone regulation in the body, potentially affecting heart function and development ✓. Answer: C.",
+          "Both statements are correct. BPA is used in the thermal coating of thermal papers (receipt papers) ✓. BPA is an endocrine disruptor - it mimics estrogen and disrupts hormone regulation in the body, potentially affecting heart function and development ✓. Answer: C.",
         topic: "Environmental Pollution",
         difficulty: "Easy",
         pyqYear: null,
@@ -590,7 +590,7 @@ export const TEST_T20 = [
         ],
         correct: "B",
         explanation:
-          "Statement I is correct — India's first EIA notification was on January 27, 1994 under the Environment (Protection) Act 1986 ✓. Statement II is correct — India became a party to the CBD on February 18, 1994 ✓. However, the two statements have no causal relationship — CBD membership does not explain the EIA notification. Answer: B.",
+          "Statement I is correct - India's first EIA notification was on January 27, 1994 under the Environment (Protection) Act 1986 ✓. Statement II is correct - India became a party to the CBD on February 18, 1994 ✓. However, the two statements have no causal relationship - CBD membership does not explain the EIA notification. Answer: B.",
         topic: "Environmental Impact Assessment",
         difficulty: "Easy",
         pyqYear: null,
@@ -608,7 +608,7 @@ export const TEST_T20 = [
         ],
         correct: "B",
         explanation:
-          "The correct sequence of EIA stages: Screening (II) — first, to determine if EIA is needed. Scoping (I) — second, to identify key issues and impacts to study. Public Hearing/Consultation (III) — third, after the draft EIA report is prepared. Answer: B (II-I-III).",
+          "The correct sequence of EIA stages: Screening (II) - first, to determine if EIA is needed. Scoping (I) - second, to identify key issues and impacts to study. Public Hearing/Consultation (III) - third, after the draft EIA report is prepared. Answer: B (II-I-III).",
         topic: "Environmental Impact Assessment",
         difficulty: "Easy",
         pyqYear: null,
@@ -644,8 +644,8 @@ export const TEST_T20 = [
         ],
         correct: "A",
         explanation:
-          "Significant sources of benzene exposure: Automobile exhaust (1) ✓ — largest source. Tobacco smoke (2) ✓ — significant source of benzene via inhalation. Wood burning (3) ✓ — benzene is a main organic compound from wood combustion. Varnished wooden furniture (4) ✗ — not a significant source. Polyurethane products (5) ✗ — may contain traces but not a significant exposure source. Answer: A.",
-        topic: "Environmental Pollution — Benzene",
+          "Significant sources of benzene exposure: Automobile exhaust (1) ✓ - largest source. Tobacco smoke (2) ✓ - significant source of benzene via inhalation. Wood burning (3) ✓ - benzene is a main organic compound from wood combustion. Varnished wooden furniture (4) ✗ - not a significant source. Polyurethane products (5) ✗ - may contain traces but not a significant exposure source. Answer: A.",
+        topic: "Environmental Pollution - Benzene",
         difficulty: "Medium",
         pyqYear: 2020,
       },
@@ -662,8 +662,8 @@ export const TEST_T20 = [
         ],
         correct: "B",
         explanation:
-          "NAAQS (2019) monitors 12 pollutants: SO2, NO2, PM10, PM2.5, Ozone, Lead, CO, Ammonia, Benzene, Benzo(a)pyrene, Arsenic, and Nickel. Included: CO (I) ✓, Ozone (II) ✓, Ammonia (IV) ✓, Arsenic (VI) ✓. Not included: CO2 (III) ✗ — a GHG, not a local ambient pollutant. Nitrous Oxide (V) ✗ — NO2 (nitrogen dioxide) is regulated, not N2O (nitrous oxide). Answer: B.",
-        topic: "Environmental Pollution — Air Quality Standards",
+          "NAAQS (2019) monitors 12 pollutants: SO2, NO2, PM10, PM2.5, Ozone, Lead, CO, Ammonia, Benzene, Benzo(a)pyrene, Arsenic, and Nickel. Included: CO (I) ✓, Ozone (II) ✓, Ammonia (IV) ✓, Arsenic (VI) ✓. Not included: CO2 (III) ✗ - a GHG, not a local ambient pollutant. Nitrous Oxide (V) ✗ - NO2 (nitrogen dioxide) is regulated, not N2O (nitrous oxide). Answer: B.",
+        topic: "Environmental Pollution - Air Quality Standards",
         difficulty: "Hard",
         pyqYear: null,
       },
@@ -680,8 +680,8 @@ export const TEST_T20 = [
         ],
         correct: "A",
         explanation:
-          "I is correct — Delhi's basin-like geography (Himalayas to north, Aravallis to south-west) limits wind dispersal of pollutants ✓. II is correct — Post-monsoon air in Delhi has lower humidity, decreased temperatures, and reduced wind speeds, trapping pollutants ✓. III is correct — Temperature inversion (warm air over cold surface air) acts as a lid, concentrating pollutants near the ground ✓. IV is incorrect — The southward shift of ITCZ determines monsoon patterns, not Delhi's winter pollution ✗. Answer: A.",
-        topic: "Environmental Pollution — Air",
+          "I is correct - Delhi's basin-like geography (Himalayas to north, Aravallis to south-west) limits wind dispersal of pollutants ✓. II is correct - Post-monsoon air in Delhi has lower humidity, decreased temperatures, and reduced wind speeds, trapping pollutants ✓. III is correct - Temperature inversion (warm air over cold surface air) acts as a lid, concentrating pollutants near the ground ✓. IV is incorrect - The southward shift of ITCZ determines monsoon patterns, not Delhi's winter pollution ✗. Answer: A.",
+        topic: "Environmental Pollution - Air",
         difficulty: "Medium",
         pyqYear: null,
       },
@@ -698,8 +698,8 @@ export const TEST_T20 = [
         ],
         correct: "B",
         explanation:
-          "I is correct — Oil coating destroys the water-repellent properties of birds' feathers ✓. II is incorrect — Oil spills form a surface layer that restricts sunlight and photosynthesis, REDUCING dissolved oxygen, not increasing it ✗. III is correct — Oil contaminates aquatic ecosystems and alters respiration rates in fish ✓. IV is correct — Oil contamination reduces insulating properties of fur in mammals, causing hypothermia ✓. Answer: B.",
-        topic: "Environmental Pollution — Oil Spills",
+          "I is correct - Oil coating destroys the water-repellent properties of birds' feathers ✓. II is incorrect - Oil spills form a surface layer that restricts sunlight and photosynthesis, REDUCING dissolved oxygen, not increasing it ✗. III is correct - Oil contaminates aquatic ecosystems and alters respiration rates in fish ✓. IV is correct - Oil contamination reduces insulating properties of fur in mammals, causing hypothermia ✓. Answer: B.",
+        topic: "Environmental Pollution - Oil Spills",
         difficulty: "Medium",
         pyqYear: null,
       },
@@ -716,8 +716,8 @@ export const TEST_T20 = [
         ],
         correct: "B",
         explanation:
-          "Ionizing radiation has enough energy to remove electrons from atoms: X-rays (I) ✓ — ionising. Microwaves (II) ✗ — non-ionising. Gamma rays (III) ✓ — ionising. Radio waves (IV) ✗ — non-ionising. Answer: B (X-rays and Gamma rays — only two).",
-        topic: "Environmental Pollution — Radiation",
+          "Ionizing radiation has enough energy to remove electrons from atoms: X-rays (I) ✓ - ionising. Microwaves (II) ✗ - non-ionising. Gamma rays (III) ✓ - ionising. Radio waves (IV) ✗ - non-ionising. Answer: B (X-rays and Gamma rays - only two).",
+        topic: "Environmental Pollution - Radiation",
         difficulty: "Easy",
         pyqYear: null,
       },
@@ -735,7 +735,7 @@ export const TEST_T20 = [
         correct: "A",
         explanation:
           "Biosparging is an in-situ bioremediation technique where air (or oxygen) is injected under pressure below the water table to increase dissolved oxygen and stimulate the metabolic activity of indigenous aerobic microorganisms that degrade hydrocarbons. Bioventing is similar but targets the unsaturated zone above water table. Answer: A.",
-        topic: "Various Environmental Issues — Bioremediation",
+        topic: "Various Environmental Issues - Bioremediation",
         difficulty: "Easy",
         pyqYear: null,
       },
@@ -771,14 +771,14 @@ export const TEST_T20 = [
         correct: "C",
         explanation:
           "All three statements are correct: The NCAP target is 40% reduction in PM10 by 2025–26 from 2019–20 levels (I) ✓. PRANA (Portal for Regulation of Air-Pollution in Non-Attainment cities) monitors NCAP implementation (II) ✓. Swachh Vayu Survekshan is an annual survey under NCAP framework conducted by MoEFCC (III) ✓. Answer: C.",
-        topic: "Environmental Pollution — Air Quality Programme",
+        topic: "Environmental Pollution - Air Quality Programme",
         difficulty: "Medium",
         pyqYear: null,
       },
       {
         id: "t20_q43",
         qNo: 43,
-        text: "With reference to the institutional framework of Disaster Management in India under the Disaster Management Act, 2005, consider the following pairs:\n\nBody — Chairperson\nI. National Disaster Management Authority — Prime Minister\nII. National Crisis Management Committee — Cabinet Secretary\nIII. National Executive Committee — Union Home Minister",
+        text: "With reference to the institutional framework of Disaster Management in India under the Disaster Management Act, 2005, consider the following pairs:\n\nBody - Chairperson\nI. National Disaster Management Authority - Prime Minister\nII. National Crisis Management Committee - Cabinet Secretary\nIII. National Executive Committee - Union Home Minister",
         suffix: "How many of the pairs given above are correctly matched?",
         options: [
           { id: "A", text: "Only one" },
@@ -788,7 +788,7 @@ export const TEST_T20 = [
         ],
         correct: "B",
         explanation:
-          "Pair I is correct — NDMA is chaired by the Prime Minister ✓. Pair II is correct — NCMC is chaired by the Cabinet Secretary (senior-most civil servant) ✓. Pair III is incorrect — NEC (National Executive Committee) is chaired by the Union Home Secretary (Secretary in the Ministry of Home Affairs with administrative control of disaster management), NOT the Union Home Minister ✗. Answer: B.",
+          "Pair I is correct - NDMA is chaired by the Prime Minister ✓. Pair II is correct - NCMC is chaired by the Cabinet Secretary (senior-most civil servant) ✓. Pair III is incorrect - NEC (National Executive Committee) is chaired by the Union Home Secretary (Secretary in the Ministry of Home Affairs with administrative control of disaster management), NOT the Union Home Minister ✗. Answer: B.",
         topic: "Disaster Management",
         difficulty: "Medium",
         pyqYear: null,
@@ -796,7 +796,7 @@ export const TEST_T20 = [
       {
         id: "t20_q44",
         qNo: 44,
-        text: "In the context of India, droughts over an area for a time period are classified into different types, in this context consider the following pairs:\n\nType of Drought — Meaning\nI. Meteorological Drought — A period during which the stream flows are inadequate to supply established use of water under a given water management system.\nII. Agricultural Drought — It occurs when available soil moisture is inadequate for healthy crop growth and cause extreme stress and wilting.\nIII. Hydrological Drought — A situation when the seasonal rainfall received over the area is less than 75% of its long term average value.",
+        text: "In the context of India, droughts over an area for a time period are classified into different types, in this context consider the following pairs:\n\nType of Drought - Meaning\nI. Meteorological Drought - A period during which the stream flows are inadequate to supply established use of water under a given water management system.\nII. Agricultural Drought - It occurs when available soil moisture is inadequate for healthy crop growth and cause extreme stress and wilting.\nIII. Hydrological Drought - A situation when the seasonal rainfall received over the area is less than 75% of its long term average value.",
         suffix: "How many of the pairs given above are correctly matched?",
         options: [
           { id: "A", text: "Only one" },
@@ -806,8 +806,8 @@ export const TEST_T20 = [
         ],
         correct: "A",
         explanation:
-          "Pair I is incorrect — The described meaning (inadequate stream flows) corresponds to HYDROLOGICAL Drought, not Meteorological ✗. Pair II is correct — Agricultural Drought refers to inadequate soil moisture for crops ✓. Pair III is incorrect — The described meaning (rainfall < 75% of long-term average) corresponds to METEOROLOGICAL Drought, not Hydrological. Hydrological Drought refers to low water levels in reservoirs/rivers ✗. Answer: A (Only Pair II is correct).",
-        topic: "Disaster Management — Drought",
+          "Pair I is incorrect - The described meaning (inadequate stream flows) corresponds to HYDROLOGICAL Drought, not Meteorological ✗. Pair II is correct - Agricultural Drought refers to inadequate soil moisture for crops ✓. Pair III is incorrect - The described meaning (rainfall < 75% of long-term average) corresponds to METEOROLOGICAL Drought, not Hydrological. Hydrological Drought refers to low water levels in reservoirs/rivers ✗. Answer: A (Only Pair II is correct).",
+        topic: "Disaster Management - Drought",
         difficulty: "Medium",
         pyqYear: null,
       },
@@ -824,8 +824,8 @@ export const TEST_T20 = [
         ],
         correct: "B",
         explanation:
-          "Statement 1 is correct — Gold mining uses mercury to separate gold from sediment (amalgamation process) ✓. Statement 2 is correct — Coal-fired thermal power plants are the major anthropogenic source of mercury (via fly ash) ✓. Statement 3 is incorrect — There ARE established safe levels of mercury exposure (e.g., mercury vapour concentrations >0.01 mg/m3 are considered unsafe, implying below this is acceptable) ✗. Answer: B.",
-        topic: "Environmental Pollution — Mercury",
+          "Statement 1 is correct - Gold mining uses mercury to separate gold from sediment (amalgamation process) ✓. Statement 2 is correct - Coal-fired thermal power plants are the major anthropogenic source of mercury (via fly ash) ✓. Statement 3 is incorrect - There ARE established safe levels of mercury exposure (e.g., mercury vapour concentrations >0.01 mg/m3 are considered unsafe, implying below this is acceptable) ✗. Answer: B.",
+        topic: "Environmental Pollution - Mercury",
         difficulty: "Medium",
         pyqYear: 2023,
       },
@@ -842,8 +842,8 @@ export const TEST_T20 = [
         ],
         correct: "B",
         explanation:
-          "Secondary pollutants are formed in the atmosphere through chemical reactions: Tropospheric Ozone (I) — secondary pollutant; formed when NOx and VOCs react in sunlight ✓. Smog (II) — secondary pollutant; formed through atmospheric reactions of primary pollutants (NOx + hydrocarbons + sunlight) ✓. Sulphur dioxide (III) — PRIMARY pollutant; directly emitted from coal plants, refineries, volcanoes ✗. Answer: B (I and II).",
-        topic: "Environmental Pollution — Secondary Pollutants",
+          "Secondary pollutants are formed in the atmosphere through chemical reactions: Tropospheric Ozone (I) - secondary pollutant; formed when NOx and VOCs react in sunlight ✓. Smog (II) - secondary pollutant; formed through atmospheric reactions of primary pollutants (NOx + hydrocarbons + sunlight) ✓. Sulphur dioxide (III) - PRIMARY pollutant; directly emitted from coal plants, refineries, volcanoes ✗. Answer: B (I and II).",
+        topic: "Environmental Pollution - Secondary Pollutants",
         difficulty: "Easy",
         pyqYear: null,
       },
@@ -860,7 +860,7 @@ export const TEST_T20 = [
         ],
         correct: "A",
         explanation:
-          "Statement I is correct — India's cumulative share of global GHG emissions from 1850–2019 is approximately 4% (less than 5%), despite hosting ~17% of world population ✓. Statement II is incorrect — India's emission intensity of GDP has DECLINED (not increased) by about 36% between 2005 and 2020, as per India's Fourth Biennial Update Report to UNFCCC ✗. Answer: A.",
+          "Statement I is correct - India's cumulative share of global GHG emissions from 1850–2019 is approximately 4% (less than 5%), despite hosting ~17% of world population ✓. Statement II is incorrect - India's emission intensity of GDP has DECLINED (not increased) by about 36% between 2005 and 2020, as per India's Fourth Biennial Update Report to UNFCCC ✗. Answer: A.",
         topic: "Climate Change & GHG Emissions",
         difficulty: "Medium",
         pyqYear: null,
@@ -878,8 +878,8 @@ export const TEST_T20 = [
         ],
         correct: "C",
         explanation:
-          "The passage describes Dioxins — unintentionally produced POPs formed as by-products of waste incineration and chlorine bleaching of paper pulp. Listed under Annex C of the Stockholm Convention. They are highly persistent, bioaccumulate, and cause cancer, reproductive disorders, and immune impairment. Aldrin and DDT are intentionally produced; PCBs are intentionally manufactured industrial chemicals. Answer: C.",
-        topic: "Environmental Pollution — POPs",
+          "The passage describes Dioxins - unintentionally produced POPs formed as by-products of waste incineration and chlorine bleaching of paper pulp. Listed under Annex C of the Stockholm Convention. They are highly persistent, bioaccumulate, and cause cancer, reproductive disorders, and immune impairment. Aldrin and DDT are intentionally produced; PCBs are intentionally manufactured industrial chemicals. Answer: C.",
+        topic: "Environmental Pollution - POPs",
         difficulty: "Easy",
         pyqYear: null,
       },
@@ -897,7 +897,7 @@ export const TEST_T20 = [
         correct: "D",
         explanation:
           "The Most Probable Number (MPN) is a statistical microbiological technique used to detect and quantify coliform bacteria (including E. coli) in water samples. A high MPN value indicates poor sanitary quality and faecal contamination. The CPCB safe limit is 2,500 MPN/100 ml for faecal coliforms. Answer: D.",
-        topic: "Various Environmental Issues — Water Quality",
+        topic: "Various Environmental Issues - Water Quality",
         difficulty: "Easy",
         pyqYear: null,
       },
@@ -915,7 +915,7 @@ export const TEST_T20 = [
         correct: "A",
         explanation:
           "The concept of Extended Producer Responsibility (EPR) for e-waste collection was first introduced in India through the E-Waste (Management & Handling) Rules, 2011. Under EPR, manufacturers of electronic products are responsible for end-of-life management of their products, including setting up collection centers. Later rules (2016, 2022) strengthened EPR but the concept was first introduced in 2011. Answer: A.",
-        topic: "Various Environmental Issues — E-Waste",
+        topic: "Various Environmental Issues - E-Waste",
         difficulty: "Easy",
         pyqYear: null,
       },

@@ -92,7 +92,7 @@ app.use("/api/feedback", feedbackRoutes);
 app.use(notFound);
 app.use(errorHandler);
 
-// ─── Startup — DB must be fully synced before we accept traffic ───────────────
+// ─── Startup - DB must be fully synced before we accept traffic ───────────────
 async function start() {
   try {
     // connectDB() awaits sequelize.authenticate() + sequelize.sync({ alter: true })

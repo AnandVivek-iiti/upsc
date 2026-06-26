@@ -6,7 +6,7 @@
 export const TEST_T35 = [
   {
     id: "sfg2026-t35",
-    title: "SFG 2026 — Level 1 · Test 35",
+    title: "SFG 2026 - Level 1 · Test 35",
     testCode: "321132",
     subject: "Indian Geography",
     topic: "Physiography, Rivers, Climate, Natural Vegetation & Islands",
@@ -22,7 +22,7 @@ export const TEST_T35 = [
       {
         id: "t35_q01",
         qNo: 1,
-        text: "Consider the following information:\n\nWaterfall — Region — River\n1. Dhuandhar — Malwa — Narmada\n2. Hundru — Chota Nagpur — Subarnarekha\n3. Gersoppa — Western Ghats — Netravati",
+        text: "Consider the following information:\n\nWaterfall - Region - River\n1. Dhuandhar - Malwa - Narmada\n2. Hundru - Chota Nagpur - Subarnarekha\n3. Gersoppa - Western Ghats - Netravati",
         suffix: "In how many of the above rows is the given information correctly matched?",
         options: [
           { id: "A", text: "Only one" },
@@ -32,7 +32,7 @@ export const TEST_T35 = [
         ],
         correct: "B",
         explanation:
-          "Row 1 is incorrect — Dhuandhar Falls is located in the Jabalpur district of Madhya Pradesh (Narmada valley region), NOT in the Malwa Plateau; Narmada river is correct. Row 2 is correct — Hundru Falls is located on the Subarnarekha River in the Chota Nagpur Plateau (near Ranchi, Jharkhand). Row 3 is incorrect — Gersoppa (Jog Falls) is on the Sharavathi River, NOT the Netravati River (both are in Western Ghats of Karnataka). Two rows (Row 2 only partially) — actually Row 2 is correct. Answer: B (Only two — Rows 1 and 2 partially; or specifically Row 2 is fully correct, Row 1 has wrong region).",
+          "Row 1 is incorrect - Dhuandhar Falls is located in the Jabalpur district of Madhya Pradesh (Narmada valley region), NOT in the Malwa Plateau; Narmada river is correct. Row 2 is correct - Hundru Falls is located on the Subarnarekha River in the Chota Nagpur Plateau (near Ranchi, Jharkhand). Row 3 is incorrect - Gersoppa (Jog Falls) is on the Sharavathi River, NOT the Netravati River (both are in Western Ghats of Karnataka). Two rows (Row 2 only partially) - actually Row 2 is correct. Answer: B (Only two - Rows 1 and 2 partially; or specifically Row 2 is fully correct, Row 1 has wrong region).",
         topic: "Rivers & Waterfalls",
         difficulty: "Hard",
         pyqYear: null,
@@ -50,7 +50,7 @@ export const TEST_T35 = [
         ],
         correct: "C",
         explanation:
-          "Statement I is incorrect — Karewa deposits are found in the Kashmir valley (Jhelum basin), NOT in the Shiwalik range. Statement II is correct — Karewas are lacustrine deposits formed by accumulation of alluvial, glacial and fluvioglacial sediments in ancient lake basins in the Kashmir Himalayas. Statement III is incorrect — Karewas are known for cultivation of saffron and temperate fruits (apples, almonds), NOT cotton and sugarcane. Answer: C.",
+          "Statement I is incorrect - Karewa deposits are found in the Kashmir valley (Jhelum basin), NOT in the Shiwalik range. Statement II is correct - Karewas are lacustrine deposits formed by accumulation of alluvial, glacial and fluvioglacial sediments in ancient lake basins in the Kashmir Himalayas. Statement III is incorrect - Karewas are known for cultivation of saffron and temperate fruits (apples, almonds), NOT cotton and sugarcane. Answer: C.",
         topic: "Physiography of India",
         difficulty: "Medium",
         pyqYear: null,
@@ -68,7 +68,7 @@ export const TEST_T35 = [
         ],
         correct: "B",
         explanation:
-          "Statement I is incorrect — Siachen Glacier is the longest glacier in the Indian Himalayas (about 76 km); Gangotri is one of the largest but not the longest. Statement II is correct — The Bhagirathi River originates from the Gangotri Glacier at Gomukh in Uttarakhand. Statement III is incorrect — Gangotri Glacier is part of the Gangotri National Park (a separate protected area in Uttarakhand), not the Great Himalayan National Park (which is in Himachal Pradesh and a UNESCO World Heritage Site). Answer: B.",
+          "Statement I is incorrect - Siachen Glacier is the longest glacier in the Indian Himalayas (about 76 km); Gangotri is one of the largest but not the longest. Statement II is correct - The Bhagirathi River originates from the Gangotri Glacier at Gomukh in Uttarakhand. Statement III is incorrect - Gangotri Glacier is part of the Gangotri National Park (a separate protected area in Uttarakhand), not the Great Himalayan National Park (which is in Himachal Pradesh and a UNESCO World Heritage Site). Answer: B.",
         topic: "Glaciers & Rivers",
         difficulty: "Medium",
         pyqYear: null,
@@ -104,7 +104,7 @@ export const TEST_T35 = [
         ],
         correct: "B",
         explanation:
-          "Statement 1 is correct — The Jhelum River flows through Wular Lake (the largest freshwater lake in India, in Kashmir). Statement 2 is incorrect — Kolleru Lake (Andhra Pradesh) is fed by the Budameru and Tammileru rivers (seasonal streams); the Krishna river does not directly feed it. Statement 3 is correct — Kanwar Lake (also called Kabar Taal) in Bihar was formed due to meandering and course changes of the Gandak River, making it a floodplain oxbow lake. Two statements (1 and 3) are correct. Answer: B.",
+          "Statement 1 is correct - The Jhelum River flows through Wular Lake (the largest freshwater lake in India, in Kashmir). Statement 2 is incorrect - Kolleru Lake (Andhra Pradesh) is fed by the Budameru and Tammileru rivers (seasonal streams); the Krishna river does not directly feed it. Statement 3 is correct - Kanwar Lake (also called Kabar Taal) in Bihar was formed due to meandering and course changes of the Gandak River, making it a floodplain oxbow lake. Two statements (1 and 3) are correct. Answer: B.",
         topic: "Lakes of India",
         difficulty: "Medium",
         pyqYear: null,
@@ -122,7 +122,7 @@ export const TEST_T35 = [
         ],
         correct: "C",
         explanation:
-          "Statement I is correct — Coimbatore experiences higher summer temperatures than Ooty. Statement II is correct — Ooty (Udhagamandalam) is at ~2240 m altitude on the Nilgiri Hills, while Coimbatore is at ~411 m. Statement III is incorrect — Ooty is NOT a coastal city; it is an inland hill station. Statement II correctly explains Statement I (higher altitude = lower temperature due to lapse rate), but Statement III is wrong. Answer: C.",
+          "Statement I is correct - Coimbatore experiences higher summer temperatures than Ooty. Statement II is correct - Ooty (Udhagamandalam) is at ~2240 m altitude on the Nilgiri Hills, while Coimbatore is at ~411 m. Statement III is incorrect - Ooty is NOT a coastal city; it is an inland hill station. Statement II correctly explains Statement I (higher altitude = lower temperature due to lapse rate), but Statement III is wrong. Answer: C.",
         topic: "Climate of India",
         difficulty: "Medium",
         pyqYear: null,
@@ -140,7 +140,7 @@ export const TEST_T35 = [
         ],
         correct: "A",
         explanation:
-          "Statement I is correct — India's Standard Meridian is 82°30' E, which passes through Mirzapur (UP). Statement II is correct and explains Statement I — The reason 82°30' E was chosen is that it lies approximately in the middle of India (between 68°7'E and 97°25'E) and is a multiple of 7°30' (11 × 7°30' = 82°30'), which corresponds to exactly 5.5 hours ahead of UTC (since each 15° = 1 hour, so 7°30' = 30 min). Answer: A.",
+          "Statement I is correct - India's Standard Meridian is 82°30' E, which passes through Mirzapur (UP). Statement II is correct and explains Statement I - The reason 82°30' E was chosen is that it lies approximately in the middle of India (between 68°7'E and 97°25'E) and is a multiple of 7°30' (11 × 7°30' = 82°30'), which corresponds to exactly 5.5 hours ahead of UTC (since each 15° = 1 hour, so 7°30' = 30 min). Answer: A.",
         topic: "Location & Extent of India",
         difficulty: "Easy",
         pyqYear: null,
@@ -158,7 +158,7 @@ export const TEST_T35 = [
         ],
         correct: "C",
         explanation:
-          "All three are extensions/parts of the Peninsular Plateau: Meghalaya Plateau — separated from the main plateau by the Ganga-Brahmaputra plains, it is considered an extension of the peninsular block that drifted apart. Chotanagpur Plateau — forms the northeastern part of the Peninsular Plateau. Satmala Range — a hill range in Maharashtra, part of the Deccan Plateau system of the Peninsular Plateau. Answer: C.",
+          "All three are extensions/parts of the Peninsular Plateau: Meghalaya Plateau - separated from the main plateau by the Ganga-Brahmaputra plains, it is considered an extension of the peninsular block that drifted apart. Chotanagpur Plateau - forms the northeastern part of the Peninsular Plateau. Satmala Range - a hill range in Maharashtra, part of the Deccan Plateau system of the Peninsular Plateau. Answer: C.",
         topic: "Physiography of India",
         difficulty: "Medium",
         pyqYear: null,
@@ -194,7 +194,7 @@ export const TEST_T35 = [
         ],
         correct: "C",
         explanation:
-          "Kamet (7756 m) — part of the Greater Himalayas (Garhwal Himalayas, Uttarakhand). Nag Tibba — part of the Lesser Himalayas/Shiwalik (a lower range in Uttarakhand, about 3022 m), NOT the Greater Himalayas. Nanda Devi (7816 m) — part of the Greater Himalayas (Kumaon Himalayas, Uttarakhand). K2/Godwin Austen (8611 m) — part of the Karakoram range; while sometimes considered part of the broader Himalayan system, K2 is in the Karakoram. However, for UPSC purposes, Kamet, Nanda Devi, and K2 are counted as Greater Himalayan peaks. Three peaks (I, III, IV) are part of the Greater Himalayas/Karakoram system. Answer: C.",
+          "Kamet (7756 m) - part of the Greater Himalayas (Garhwal Himalayas, Uttarakhand). Nag Tibba - part of the Lesser Himalayas/Shiwalik (a lower range in Uttarakhand, about 3022 m), NOT the Greater Himalayas. Nanda Devi (7816 m) - part of the Greater Himalayas (Kumaon Himalayas, Uttarakhand). K2/Godwin Austen (8611 m) - part of the Karakoram range; while sometimes considered part of the broader Himalayan system, K2 is in the Karakoram. However, for UPSC purposes, Kamet, Nanda Devi, and K2 are counted as Greater Himalayan peaks. Three peaks (I, III, IV) are part of the Greater Himalayas/Karakoram system. Answer: C.",
         topic: "Himalayan Ranges & Peaks",
         difficulty: "Medium",
         pyqYear: null,
@@ -212,7 +212,7 @@ export const TEST_T35 = [
         ],
         correct: "A",
         explanation:
-          "Cashew — native to Brazil (South America); introduced to India by the Portuguese in the 16th century. Papaya — native to Mexico and Central America; introduced to India. Red Sanders (Pterocarpus santalinus) — native to the Eastern Ghats of India, specifically Andhra Pradesh. It is endemic to a small region of India. Only Red Sanders is native to India. Answer: A.",
+          "Cashew - native to Brazil (South America); introduced to India by the Portuguese in the 16th century. Papaya - native to Mexico and Central America; introduced to India. Red Sanders (Pterocarpus santalinus) - native to the Eastern Ghats of India, specifically Andhra Pradesh. It is endemic to a small region of India. Only Red Sanders is native to India. Answer: A.",
         topic: "Natural Vegetation & Flora",
         difficulty: "Medium",
         pyqYear: null,
@@ -230,7 +230,7 @@ export const TEST_T35 = [
         ],
         correct: "A",
         explanation:
-          "Statement I is correct — Aravallis extend through Rajasthan, Haryana, Delhi, and Gujarat. Statement II is correct — The Aravallis form a water divide between rivers flowing northeast (towards Ganga/Yamuna) and those flowing southwest/west (towards Indus/Arabian Sea). Statement III is correct — Luni River originates from Pushkar hills near Ajmer; Banas River originates from the Kumbhalgarh area of Aravallis. Statement IV is incorrect — Guru Shikhar (1722 m) is the highest peak of the Aravalli range (in Mt. Abu, Rajasthan); Sammed Shikhar is a peak in Jharkhand (Parasnath Hill), which is the highest peak in Jharkhand but belongs to the Chotanagpur Plateau, not Aravallis. Answer: A.",
+          "Statement I is correct - Aravallis extend through Rajasthan, Haryana, Delhi, and Gujarat. Statement II is correct - The Aravallis form a water divide between rivers flowing northeast (towards Ganga/Yamuna) and those flowing southwest/west (towards Indus/Arabian Sea). Statement III is correct - Luni River originates from Pushkar hills near Ajmer; Banas River originates from the Kumbhalgarh area of Aravallis. Statement IV is incorrect - Guru Shikhar (1722 m) is the highest peak of the Aravalli range (in Mt. Abu, Rajasthan); Sammed Shikhar is a peak in Jharkhand (Parasnath Hill), which is the highest peak in Jharkhand but belongs to the Chotanagpur Plateau, not Aravallis. Answer: A.",
         topic: "Mountain Ranges of India",
         difficulty: "Medium",
         pyqYear: null,
@@ -266,7 +266,7 @@ export const TEST_T35 = [
         ],
         correct: "D",
         explanation:
-          "All six rivers drain into the Arabian Sea: Tapi — flows westward, drains into Gulf of Khambhat (Arabian Sea). Mahi — flows westward through Gujarat, drains into Gulf of Khambhat (Arabian Sea). Periyar — flows westward through Kerala, drains into Arabian Sea/Lakshadweep Sea. Sharavathi — flows westward through Karnataka, joins Jog Falls area, drains into Arabian Sea. Mandovi — flows westward through Goa, drains into Arabian Sea. Zuari — flows through Goa, drains into Arabian Sea. Answer: D.",
+          "All six rivers drain into the Arabian Sea: Tapi - flows westward, drains into Gulf of Khambhat (Arabian Sea). Mahi - flows westward through Gujarat, drains into Gulf of Khambhat (Arabian Sea). Periyar - flows westward through Kerala, drains into Arabian Sea/Lakshadweep Sea. Sharavathi - flows westward through Karnataka, joins Jog Falls area, drains into Arabian Sea. Mandovi - flows westward through Goa, drains into Arabian Sea. Zuari - flows through Goa, drains into Arabian Sea. Answer: D.",
         topic: "Rivers of India",
         difficulty: "Medium",
         pyqYear: null,
@@ -284,7 +284,7 @@ export const TEST_T35 = [
         ],
         correct: "D",
         explanation:
-          "Statement 1 is correct — The Deccan Plateau has a general tilt from west to east, but it rises gradually from north to south (higher in the south with peaks like Anaimudi). Statement 2 is incorrect — Malwa Plateau is north of the Vindhyas and forms the NORTHERN part of the Peninsular plateau region; it does NOT form the eastern flank. Statement 3 is correct — The Satpura range (including its western part) separates the Narmada (to the north) and Tapi (to the south) rift valleys. Statement 4 is incorrect — Chotanagpur Plateau is composed of ancient crystalline/igneous rocks (primarily granite, gneiss, and schist of Archaean age) — this is actually correct. Re-evaluating: Statements 1 and 3 are clearly correct; Statement 4 is also largely correct. Answer: D (1 and 3) as given in official key.",
+          "Statement 1 is correct - The Deccan Plateau has a general tilt from west to east, but it rises gradually from north to south (higher in the south with peaks like Anaimudi). Statement 2 is incorrect - Malwa Plateau is north of the Vindhyas and forms the NORTHERN part of the Peninsular plateau region; it does NOT form the eastern flank. Statement 3 is correct - The Satpura range (including its western part) separates the Narmada (to the north) and Tapi (to the south) rift valleys. Statement 4 is incorrect - Chotanagpur Plateau is composed of ancient crystalline/igneous rocks (primarily granite, gneiss, and schist of Archaean age) - this is actually correct. Re-evaluating: Statements 1 and 3 are clearly correct; Statement 4 is also largely correct. Answer: D (1 and 3) as given in official key.",
         topic: "Physiography of India",
         difficulty: "Hard",
         pyqYear: null,
@@ -320,7 +320,7 @@ export const TEST_T35 = [
         ],
         correct: "A",
         explanation:
-          "From east to west locations: Namcha Barwa (IV) — easternmost, in Arunachal Pradesh/Tibet border (~95°E). Makalu (III) — in Nepal, east of Everest (~87°E). Dhaulagiri (II) — in central Nepal (~83.5°E). Kamet (I) — westernmost, in Uttarakhand, India (~79.5°E). East to West sequence: IV–III–II–I (Namcha Barwa → Makalu → Dhaulagiri → Kamet). Answer: A.",
+          "From east to west locations: Namcha Barwa (IV) - easternmost, in Arunachal Pradesh/Tibet border (~95°E). Makalu (III) - in Nepal, east of Everest (~87°E). Dhaulagiri (II) - in central Nepal (~83.5°E). Kamet (I) - westernmost, in Uttarakhand, India (~79.5°E). East to West sequence: IV–III–II–I (Namcha Barwa → Makalu → Dhaulagiri → Kamet). Answer: A.",
         topic: "Himalayan Ranges & Peaks",
         difficulty: "Hard",
         pyqYear: null,
@@ -338,7 +338,7 @@ export const TEST_T35 = [
         ],
         correct: "A",
         explanation:
-          "Satmala Hills — located in Maharashtra, south of the Satpura range (✓ south of Satpura). Kaimur Hills — extension of Vindhya range in UP/Bihar/MP, north of the Satpura range (✗). Ajanta Range — in Maharashtra/MP border area, runs parallel to and south of the Satpura (✓ generally south). Vindhyan Range — runs east-west north of the Narmada, north of the Satpura range (✗). Satmala Hills are clearly south of Satpura. Ajanta range location is debated. For UPSC purposes, only Satmala Hills is clearly south of Satpura. Answer: A (Only one).",
+          "Satmala Hills - located in Maharashtra, south of the Satpura range (✓ south of Satpura). Kaimur Hills - extension of Vindhya range in UP/Bihar/MP, north of the Satpura range (✗). Ajanta Range - in Maharashtra/MP border area, runs parallel to and south of the Satpura (✓ generally south). Vindhyan Range - runs east-west north of the Narmada, north of the Satpura range (✗). Satmala Hills are clearly south of Satpura. Ajanta range location is debated. For UPSC purposes, only Satmala Hills is clearly south of Satpura. Answer: A (Only one).",
         topic: "Mountain Ranges of India",
         difficulty: "Hard",
         pyqYear: null,
@@ -356,7 +356,7 @@ export const TEST_T35 = [
         ],
         correct: "B",
         explanation:
-          "Statement I is incorrect — Banger (Bangar) is the OLDER alluvial plain, lying above flood levels, and contains Kankar (calcium carbonate nodules). It is NOT replenished annually by floods. Statement II is incorrect — Khadar is the NEWER alluvial plain closer to rivers, highly fertile and replenished annually by floods. The definitions of Banger and Khadar are swapped in Statements I and II. Statement III is correct — Bhabhar is the narrow zone at the foothills where rivers deposit coarse materials and disappear underground. Statement IV is correct — Tarai is the swampy, marshy zone south of Bhabhar where underground streams re-emerge as swamps/springs. Answer: B.",
+          "Statement I is incorrect - Banger (Bangar) is the OLDER alluvial plain, lying above flood levels, and contains Kankar (calcium carbonate nodules). It is NOT replenished annually by floods. Statement II is incorrect - Khadar is the NEWER alluvial plain closer to rivers, highly fertile and replenished annually by floods. The definitions of Banger and Khadar are swapped in Statements I and II. Statement III is correct - Bhabhar is the narrow zone at the foothills where rivers deposit coarse materials and disappear underground. Statement IV is correct - Tarai is the swampy, marshy zone south of Bhabhar where underground streams re-emerge as swamps/springs. Answer: B.",
         topic: "Northern Plains of India",
         difficulty: "Medium",
         pyqYear: null,
@@ -374,7 +374,7 @@ export const TEST_T35 = [
         ],
         correct: "A",
         explanation:
-          "Statement I is correct — The Western Ghats and Eastern Ghats meet at the Nilgiri Hills in Tamil Nadu. Statement II is incorrect — Javadi Hills and Nallamala Hills are ranges of the EASTERN Ghats, not the Western Ghats. Statement III is incorrect — Doddabetta (2637 m) is the highest peak of the Nilgiri Hills and the highest in Tamil Nadu, but the highest peak of the Peninsular Plateau is Anaimudi (2695 m) in Kerala. Also, Doddabetta is part of the Nilgiris where Western and Eastern Ghats meet. Answer: A.",
+          "Statement I is correct - The Western Ghats and Eastern Ghats meet at the Nilgiri Hills in Tamil Nadu. Statement II is incorrect - Javadi Hills and Nallamala Hills are ranges of the EASTERN Ghats, not the Western Ghats. Statement III is incorrect - Doddabetta (2637 m) is the highest peak of the Nilgiri Hills and the highest in Tamil Nadu, but the highest peak of the Peninsular Plateau is Anaimudi (2695 m) in Kerala. Also, Doddabetta is part of the Nilgiris where Western and Eastern Ghats meet. Answer: A.",
         topic: "Western & Eastern Ghats",
         difficulty: "Medium",
         pyqYear: null,
@@ -392,7 +392,7 @@ export const TEST_T35 = [
         ],
         correct: "A",
         explanation:
-          "Delhi is approximately at 77°13'E longitude. Bengaluru — ~77°35'E (very close to Delhi's longitude). Hyderabad — ~78°28'E. Nagpur — ~79°05'E. Pune — ~73°51'E. Bengaluru has the longitude closest to Delhi's 77°13'E. Answer: A.",
+          "Delhi is approximately at 77°13'E longitude. Bengaluru - ~77°35'E (very close to Delhi's longitude). Hyderabad - ~78°28'E. Nagpur - ~79°05'E. Pune - ~73°51'E. Bengaluru has the longitude closest to Delhi's 77°13'E. Answer: A.",
         topic: "Location & Extent of India",
         difficulty: "Medium",
         pyqYear: null,
@@ -410,7 +410,7 @@ export const TEST_T35 = [
         ],
         correct: "B",
         explanation:
-          "Statement I is incorrect — The Eastern Coast is a submerged/submergent coast (where the sea level rose and submerged the coastline). The Western Coast is the emergent coast. Statement II is correct — The Eastern Coastal Plains (Coromandel Coast + Northern Circar) are wider (100–130 km) compared to the Western Coastal Plains (Malabar Coast) which are narrower (10–25 km). Statement III is incorrect — The opposite is true: Western coast rivers form ESTUARIES (due to short, fast-flowing rivers with less silt). Eastern coast rivers form DELTAS (Ganga, Mahanadi, Krishna, Godavari, Cauvery) due to gentler slopes and heavy silt load. Answer: B.",
+          "Statement I is incorrect - The Eastern Coast is a submerged/submergent coast (where the sea level rose and submerged the coastline). The Western Coast is the emergent coast. Statement II is correct - The Eastern Coastal Plains (Coromandel Coast + Northern Circar) are wider (100–130 km) compared to the Western Coastal Plains (Malabar Coast) which are narrower (10–25 km). Statement III is incorrect - The opposite is true: Western coast rivers form ESTUARIES (due to short, fast-flowing rivers with less silt). Eastern coast rivers form DELTAS (Ganga, Mahanadi, Krishna, Godavari, Cauvery) due to gentler slopes and heavy silt load. Answer: B.",
         topic: "Coastal Plains of India",
         difficulty: "Medium",
         pyqYear: null,
@@ -428,7 +428,7 @@ export const TEST_T35 = [
         ],
         correct: "C",
         explanation:
-          "Statement I is correct — The Ten Degree Channel (10°N latitude) separates the Andaman Islands from the Nicobar Islands. Statement II is incorrect — Barren Island is situated about 135 km northeast of Port Blair in the Andaman Sea; it is the only active volcano in India, but its position is described as northeast of the main Andaman Islands, not 140 km northwest of Nicobar Islands. The direction/reference is incorrect. Statement III is correct — The A&N Islands are covered with tropical evergreen and semi-evergreen rainforests due to heavy rainfall. Answer: C.",
+          "Statement I is correct - The Ten Degree Channel (10°N latitude) separates the Andaman Islands from the Nicobar Islands. Statement II is incorrect - Barren Island is situated about 135 km northeast of Port Blair in the Andaman Sea; it is the only active volcano in India, but its position is described as northeast of the main Andaman Islands, not 140 km northwest of Nicobar Islands. The direction/reference is incorrect. Statement III is correct - The A&N Islands are covered with tropical evergreen and semi-evergreen rainforests due to heavy rainfall. Answer: C.",
         topic: "Islands of India",
         difficulty: "Medium",
         pyqYear: null,
@@ -436,7 +436,7 @@ export const TEST_T35 = [
       {
         id: "t35_q24",
         qNo: 24,
-        text: "With reference to rivers of India, consider the following pairs:\n\nRiver — Originates in\nI. Chambal — Aravali Hills\nII. Son — Chotanagpur Plateau\nIII. Saryu — Milam glacier in the Nepal\nIV. Mahananda — Darjeeling Hills",
+        text: "With reference to rivers of India, consider the following pairs:\n\nRiver - Originates in\nI. Chambal - Aravali Hills\nII. Son - Chotanagpur Plateau\nIII. Saryu - Milam glacier in the Nepal\nIV. Mahananda - Darjeeling Hills",
         suffix: "How many of the pairs given above are correctly matched?",
         options: [
           { id: "A", text: "Only one" },
@@ -446,7 +446,7 @@ export const TEST_T35 = [
         ],
         correct: "B",
         explanation:
-          "Pair I is incorrect — Chambal River originates from the Vindhya Range/Janapao Hill in Madhya Pradesh (near Mhow/Indore), NOT from the Aravalli Hills. Pair II is incorrect — Son River originates from the Amarkantak Plateau in Madhya Pradesh (Maikal Hills/Vindhya Range), not from Chotanagpur Plateau. Pair III is incorrect — Saryu (also Sarju) River originates from the Milam Glacier in Uttarakhand (Kumaon Himalayas), not in Nepal. Pair IV is correct — Mahananda River originates in the Darjeeling Hills (Pahalguri area) and flows through West Bengal and Bangladesh. Re-evaluating: Only Pair IV seems correct, making it 'Only one'. However, if we're generous about Pair III (Milam glacier is near the Nepal border), the answer could be two. Answer: B (Only two) if Son's origin is considered debated.",
+          "Pair I is incorrect - Chambal River originates from the Vindhya Range/Janapao Hill in Madhya Pradesh (near Mhow/Indore), NOT from the Aravalli Hills. Pair II is incorrect - Son River originates from the Amarkantak Plateau in Madhya Pradesh (Maikal Hills/Vindhya Range), not from Chotanagpur Plateau. Pair III is incorrect - Saryu (also Sarju) River originates from the Milam Glacier in Uttarakhand (Kumaon Himalayas), not in Nepal. Pair IV is correct - Mahananda River originates in the Darjeeling Hills (Pahalguri area) and flows through West Bengal and Bangladesh. Re-evaluating: Only Pair IV seems correct, making it 'Only one'. However, if we're generous about Pair III (Milam glacier is near the Nepal border), the answer could be two. Answer: B (Only two) if Son's origin is considered debated.",
         topic: "Rivers of India",
         difficulty: "Hard",
         pyqYear: null,
@@ -464,7 +464,7 @@ export const TEST_T35 = [
         ],
         correct: "A",
         explanation:
-          "Statement 1 is correct — The Great Northern Plains are formed by the alluvial deposits of the Indus, Ganga, and Brahmaputra river systems. Statement 2 is correct — The Indo-Gangetic Plain is among the most densely populated regions on Earth. Statement 3 is correct — The Northern Plains have an extremely gentle gradient; from Delhi to the Bay of Bengal (~1600 km), the elevation drops only about 200 metres, making it one of the most level plains in the world. All three statements are correct. Answer: A.",
+          "Statement 1 is correct - The Great Northern Plains are formed by the alluvial deposits of the Indus, Ganga, and Brahmaputra river systems. Statement 2 is correct - The Indo-Gangetic Plain is among the most densely populated regions on Earth. Statement 3 is correct - The Northern Plains have an extremely gentle gradient; from Delhi to the Bay of Bengal (~1600 km), the elevation drops only about 200 metres, making it one of the most level plains in the world. All three statements are correct. Answer: A.",
         topic: "Northern Plains of India",
         difficulty: "Easy",
         pyqYear: null,
@@ -482,7 +482,7 @@ export const TEST_T35 = [
         ],
         correct: "A",
         explanation:
-          "Statement I is correct — Arabian Sea (~36–37 ppt) has higher salinity than Bay of Bengal (~32–33 ppt). Statement II is correct — The Bay of Bengal receives freshwater from major rivers (Ganga, Brahmaputra, Mahanadi, Krishna, Godavari, Cauvery), significantly lowering salinity. Arabian Sea receives less river input. Statement III is correct — The Arabian Sea, being in a more arid/tropical region with strong monsoon winds, has higher evaporation rates which concentrate salts. Both II and III are correct and both explain Statement I. Answer: A.",
+          "Statement I is correct - Arabian Sea (~36–37 ppt) has higher salinity than Bay of Bengal (~32–33 ppt). Statement II is correct - The Bay of Bengal receives freshwater from major rivers (Ganga, Brahmaputra, Mahanadi, Krishna, Godavari, Cauvery), significantly lowering salinity. Arabian Sea receives less river input. Statement III is correct - The Arabian Sea, being in a more arid/tropical region with strong monsoon winds, has higher evaporation rates which concentrate salts. Both II and III are correct and both explain Statement I. Answer: A.",
         topic: "Oceanography",
         difficulty: "Medium",
         pyqYear: null,
@@ -500,7 +500,7 @@ export const TEST_T35 = [
         ],
         correct: "D",
         explanation:
-          "All three statements are correct. Statement I: Shola forests are found in the higher reaches (above 1500 m) of the Western Ghats in Karnataka, Kerala, and Tamil Nadu (Nilgiris, Anamalai, Palani Hills). Statement II: Shola vegetation is dominated by dense, tropical montane evergreen forests. Statement III: Shola forests characteristically occur in patches (sheltered valleys/gullies) surrounded by montane grasslands — this 'shola-grassland mosaic' is unique to the Western Ghats. Answer: D.",
+          "All three statements are correct. Statement I: Shola forests are found in the higher reaches (above 1500 m) of the Western Ghats in Karnataka, Kerala, and Tamil Nadu (Nilgiris, Anamalai, Palani Hills). Statement II: Shola vegetation is dominated by dense, tropical montane evergreen forests. Statement III: Shola forests characteristically occur in patches (sheltered valleys/gullies) surrounded by montane grasslands - this 'shola-grassland mosaic' is unique to the Western Ghats. Answer: D.",
         topic: "Natural Vegetation",
         difficulty: "Easy",
         pyqYear: null,
@@ -518,7 +518,7 @@ export const TEST_T35 = [
         ],
         correct: "C",
         explanation:
-          "Statement I is correct — Satluj (Sutlej) is an antecedent river that originated before the Himalayas rose, and cut through them as the mountains were uplifted. Statement II is incorrect — The Satluj enters India through the Shipki La pass (in Himachal Pradesh), NOT through Lipulekh pass (Lipulekh is on the Uttarakhand-Tibet border, associated with the Kali/Mahakali river). Statement III is correct — The Satluj River is dammed at Bhakra Nangal, and the Bhakra canal system is one of the largest irrigation canal systems in Asia. Answer: C.",
+          "Statement I is correct - Satluj (Sutlej) is an antecedent river that originated before the Himalayas rose, and cut through them as the mountains were uplifted. Statement II is incorrect - The Satluj enters India through the Shipki La pass (in Himachal Pradesh), NOT through Lipulekh pass (Lipulekh is on the Uttarakhand-Tibet border, associated with the Kali/Mahakali river). Statement III is correct - The Satluj River is dammed at Bhakra Nangal, and the Bhakra canal system is one of the largest irrigation canal systems in Asia. Answer: C.",
         topic: "Rivers of India",
         difficulty: "Medium",
         pyqYear: null,
@@ -536,7 +536,7 @@ export const TEST_T35 = [
         ],
         correct: "D",
         explanation:
-          "Uttar Pradesh shares its border with the maximum number of Indian states — it borders: Uttarakhand, Himachal Pradesh, Haryana, Rajasthan, Madhya Pradesh, Chhattisgarh, Jharkhand, Bihar — 8 states (plus Nepal as international border). Madhya Pradesh borders 5 states, Rajasthan borders 5 states, and Assam borders 7 states/UTs. Uttar Pradesh has the most. Answer: D.",
+          "Uttar Pradesh shares its border with the maximum number of Indian states - it borders: Uttarakhand, Himachal Pradesh, Haryana, Rajasthan, Madhya Pradesh, Chhattisgarh, Jharkhand, Bihar - 8 states (plus Nepal as international border). Madhya Pradesh borders 5 states, Rajasthan borders 5 states, and Assam borders 7 states/UTs. Uttar Pradesh has the most. Answer: D.",
         topic: "Political Geography of India",
         difficulty: "Easy",
         pyqYear: null,
@@ -554,7 +554,7 @@ export const TEST_T35 = [
         ],
         correct: "C",
         explanation:
-          "Tendu (Diospyros melanoxylon) — deciduous tree found in tropical dry deciduous forests. Amla (Indian Gooseberry / Phyllanthus emblica) — deciduous tree, sheds leaves seasonally. Khejri (Prosopis cineraria) — semi-arid/arid tree found in Rajasthan (State Tree); it is evergreen (drought-deciduous but generally keeps leaves). Teak (Tectona grandis) — one of the most important tropical deciduous trees. Three trees (Tendu, Amla, Teak) are deciduous; Khejri is generally considered evergreen. Answer: C.",
+          "Tendu (Diospyros melanoxylon) - deciduous tree found in tropical dry deciduous forests. Amla (Indian Gooseberry / Phyllanthus emblica) - deciduous tree, sheds leaves seasonally. Khejri (Prosopis cineraria) - semi-arid/arid tree found in Rajasthan (State Tree); it is evergreen (drought-deciduous but generally keeps leaves). Teak (Tectona grandis) - one of the most important tropical deciduous trees. Three trees (Tendu, Amla, Teak) are deciduous; Khejri is generally considered evergreen. Answer: C.",
         topic: "Natural Vegetation",
         difficulty: "Medium",
         pyqYear: null,
@@ -590,7 +590,7 @@ export const TEST_T35 = [
         ],
         correct: "D",
         explanation:
-          "The Indus flows generally from northeast to southwest through Ladakh. Right-bank tributaries join from the right side (south/southwest) of the river's flow direction. Shyok — joins the Indus from the LEFT bank (northeast/north). Zaskar — joins the Indus from the RIGHT bank near Nimmu (flows from south/southeast). Suru — is a tributary of the Zaskar, not directly of the Indus. Re-evaluating: All three (Shyok, Zaskar, Suru) join the Indus from its left bank in the broader sense. For UPSC standard answer: None of them are right-bank tributaries. Answer: D.",
+          "The Indus flows generally from northeast to southwest through Ladakh. Right-bank tributaries join from the right side (south/southwest) of the river's flow direction. Shyok - joins the Indus from the LEFT bank (northeast/north). Zaskar - joins the Indus from the RIGHT bank near Nimmu (flows from south/southeast). Suru - is a tributary of the Zaskar, not directly of the Indus. Re-evaluating: All three (Shyok, Zaskar, Suru) join the Indus from its left bank in the broader sense. For UPSC standard answer: None of them are right-bank tributaries. Answer: D.",
         topic: "Rivers of India",
         difficulty: "Hard",
         pyqYear: null,
@@ -608,7 +608,7 @@ export const TEST_T35 = [
         ],
         correct: "A",
         explanation:
-          "Statement A is incorrect — The Meghalaya Plateau (also called Shillong Plateau) is separated from the Chotanagpur Plateau by the Ganga-Brahmaputra alluvial plains, not by a fault called 'Malda Fault'. The geological separation is primarily through the subsidence of the land (Rajmahal-Garo gap). The Malda fault is not the standard term used for this separation. Statements B (coal in Jaintia Hills, uranium near Domiasiat), C (famous karst/limestone caves), and D (seismic zone V — actually Meghalaya is in Zone V, the highest risk zone) — Statement D may also be contestable. Answer: A.",
+          "Statement A is incorrect - The Meghalaya Plateau (also called Shillong Plateau) is separated from the Chotanagpur Plateau by the Ganga-Brahmaputra alluvial plains, not by a fault called 'Malda Fault'. The geological separation is primarily through the subsidence of the land (Rajmahal-Garo gap). The Malda fault is not the standard term used for this separation. Statements B (coal in Jaintia Hills, uranium near Domiasiat), C (famous karst/limestone caves), and D (seismic zone V - actually Meghalaya is in Zone V, the highest risk zone) - Statement D may also be contestable. Answer: A.",
         topic: "Physiography of India",
         difficulty: "Medium",
         pyqYear: null,
@@ -662,7 +662,7 @@ export const TEST_T35 = [
         ],
         correct: "C",
         explanation:
-          "Statement I is correct — Peninsular rivers flow over hard rock surfaces with steeper gradients and do NOT form extensive meanders. Himalayan rivers in their plains sections form extensive meanders. Statement II is incorrect — Peninsular rivers are mostly rain-fed (seasonal) and are NOT perennial (except those with glacier/spring contributions); Himalayan rivers are perennial as they are glacier-fed. Statement III is correct — Peninsular rivers have smaller drainage basins and shorter lengths compared to the vast Himalayan river systems. Answer: C.",
+          "Statement I is correct - Peninsular rivers flow over hard rock surfaces with steeper gradients and do NOT form extensive meanders. Himalayan rivers in their plains sections form extensive meanders. Statement II is incorrect - Peninsular rivers are mostly rain-fed (seasonal) and are NOT perennial (except those with glacier/spring contributions); Himalayan rivers are perennial as they are glacier-fed. Statement III is correct - Peninsular rivers have smaller drainage basins and shorter lengths compared to the vast Himalayan river systems. Answer: C.",
         topic: "Rivers of India",
         difficulty: "Easy",
         pyqYear: null,
@@ -734,7 +734,7 @@ export const TEST_T35 = [
         ],
         correct: "B",
         explanation:
-          "Statement I is incorrect — La Niña is characterized by ABNORMAL COOLING (not warming) of sea surface temperatures in the central and eastern equatorial Pacific Ocean. El Niño involves warming. Statement II is correct — La Niña years generally bring above-normal southwest monsoon rainfall to India because stronger-than-usual trade winds enhance moisture transport to the Indian subcontinent. Statement III is incorrect — La Niña conditions generally lead to warmer-than-normal winters in some regions; cooler winters in northern India are more associated with western disturbances and other factors, not directly with La Niña. Answer: B.",
+          "Statement I is incorrect - La Niña is characterized by ABNORMAL COOLING (not warming) of sea surface temperatures in the central and eastern equatorial Pacific Ocean. El Niño involves warming. Statement II is correct - La Niña years generally bring above-normal southwest monsoon rainfall to India because stronger-than-usual trade winds enhance moisture transport to the Indian subcontinent. Statement III is incorrect - La Niña conditions generally lead to warmer-than-normal winters in some regions; cooler winters in northern India are more associated with western disturbances and other factors, not directly with La Niña. Answer: B.",
         topic: "Monsoon & Climate",
         difficulty: "Medium",
         pyqYear: null,
@@ -752,7 +752,7 @@ export const TEST_T35 = [
         ],
         correct: "B",
         explanation:
-          "Statement 1 is incorrect — The Himalayas spread across more than five states: Jammu & Kashmir, Ladakh (UT), Himachal Pradesh, Uttarakhand, Sikkim, and Arunachal Pradesh — at least 5–6 states/UTs. Statement 2 is incorrect — Western Ghats spread across six states: Gujarat (partially), Maharashtra, Goa, Karnataka, Kerala, and Tamil Nadu. Statement 3 is correct — Pulicat Lake (second largest brackish water lagoon in India) is spread across Andhra Pradesh and Tamil Nadu — two states. Answer: B.",
+          "Statement 1 is incorrect - The Himalayas spread across more than five states: Jammu & Kashmir, Ladakh (UT), Himachal Pradesh, Uttarakhand, Sikkim, and Arunachal Pradesh - at least 5–6 states/UTs. Statement 2 is incorrect - Western Ghats spread across six states: Gujarat (partially), Maharashtra, Goa, Karnataka, Kerala, and Tamil Nadu. Statement 3 is correct - Pulicat Lake (second largest brackish water lagoon in India) is spread across Andhra Pradesh and Tamil Nadu - two states. Answer: B.",
         topic: "Political Geography of India",
         difficulty: "Medium",
         pyqYear: null,
@@ -770,7 +770,7 @@ export const TEST_T35 = [
         ],
         correct: "A",
         explanation:
-          "Statement I is correct — Northwestern India (Punjab, Rajasthan, Delhi) experiences much colder winters than Peninsular India. Statement II is correct — Northwestern India is a landlocked region far from the sea, so it lacks the moderating influence of the ocean. The Peninsula is surrounded by sea on three sides, keeping temperatures moderate. Statement III is correct — Cold winds from Central Asian regions (via Afghanistan/Pakistan) do influence northwestern India during winters. Both Statements II and III are correct and together explain Statement I. Answer: A.",
+          "Statement I is correct - Northwestern India (Punjab, Rajasthan, Delhi) experiences much colder winters than Peninsular India. Statement II is correct - Northwestern India is a landlocked region far from the sea, so it lacks the moderating influence of the ocean. The Peninsula is surrounded by sea on three sides, keeping temperatures moderate. Statement III is correct - Cold winds from Central Asian regions (via Afghanistan/Pakistan) do influence northwestern India during winters. Both Statements II and III are correct and together explain Statement I. Answer: A.",
         topic: "Climate of India",
         difficulty: "Medium",
         pyqYear: null,
@@ -778,7 +778,7 @@ export const TEST_T35 = [
       {
         id: "t35_q43",
         qNo: 43,
-        text: "With reference to local storms of hot weather season in India, consider the following information:\n\nLocal Storms — Area of Occurrence — Description\nI. Blossom Shower — Bengal and Assam — Pre-monsoon showers which help in the early ripening of mangoes.\nII. Nor Westers — Coastal Kerala and Karnataka — Evening thunderstorms which are useful for tea and rice cultivation.\nIII. Loo — Punjab to Bihar in the Northern Plains — Hot, dry and oppressing winds during summers.",
+        text: "With reference to local storms of hot weather season in India, consider the following information:\n\nLocal Storms - Area of Occurrence - Description\nI. Blossom Shower - Bengal and Assam - Pre-monsoon showers which help in the early ripening of mangoes.\nII. Nor Westers - Coastal Kerala and Karnataka - Evening thunderstorms which are useful for tea and rice cultivation.\nIII. Loo - Punjab to Bihar in the Northern Plains - Hot, dry and oppressing winds during summers.",
         suffix: "In how many of the above rows is the given information correctly matched?",
         options: [
           { id: "A", text: "Only one" },
@@ -788,7 +788,7 @@ export const TEST_T35 = [
         ],
         correct: "A",
         explanation:
-          "Row I is incorrect — Blossom Showers occur in coastal Kerala and Karnataka (they help in coffee blossom and are associated with the pre-monsoon rains, not mango ripening in Bengal). The pre-monsoon showers in Bengal/Assam that help mangoes are called 'Mango Showers' (Kalbaisakhi/Nor'westers cause them). Row II is incorrect — Nor'westers (Kalbaisakhi) occur in Bengal and Assam, NOT in Kerala/Karnataka. They are violent evening thunderstorms useful for tea, jute, and rice in NE India. Row III is correct — Loo is the hot, dry, and oppressive wind that blows over the Northern Plains from Punjab to Bihar during summer. Answer: A (Only Row III is correct).",
+          "Row I is incorrect - Blossom Showers occur in coastal Kerala and Karnataka (they help in coffee blossom and are associated with the pre-monsoon rains, not mango ripening in Bengal). The pre-monsoon showers in Bengal/Assam that help mangoes are called 'Mango Showers' (Kalbaisakhi/Nor'westers cause them). Row II is incorrect - Nor'westers (Kalbaisakhi) occur in Bengal and Assam, NOT in Kerala/Karnataka. They are violent evening thunderstorms useful for tea, jute, and rice in NE India. Row III is correct - Loo is the hot, dry, and oppressive wind that blows over the Northern Plains from Punjab to Bihar during summer. Answer: A (Only Row III is correct).",
         topic: "Local Winds & Climate",
         difficulty: "Medium",
         pyqYear: null,
@@ -806,7 +806,7 @@ export const TEST_T35 = [
         ],
         correct: "D",
         explanation:
-          "Statement I is correct — Godavari (also called 'Vriddha Ganga' or Dakshin Ganga) is the largest Peninsular river by length (~1465 km) and drainage area. Statement II is correct — The Godavari basin spans Maharashtra (~49%), Telangana (~23%), Andhra Pradesh (~13%), Chhattisgarh, Odisha etc. Andhra Pradesh accounts for approximately 13%, NOT 50%. However, if the question means the Godavari flows through Andhra Pradesh for a significant portion, this needs verification. Re-evaluating: Maharashtra has ~49% of Godavari basin. Statement II may be incorrect as Andhra Pradesh doesn't have 50%. Statement III is correct — Polavaram is on the Godavari in Andhra Pradesh. If II is incorrect → Answer: C. But if the question's official key is D, then all three are considered correct. Answer: D (as per official key).",
+          "Statement I is correct - Godavari (also called 'Vriddha Ganga' or Dakshin Ganga) is the largest Peninsular river by length (~1465 km) and drainage area. Statement II is correct - The Godavari basin spans Maharashtra (~49%), Telangana (~23%), Andhra Pradesh (~13%), Chhattisgarh, Odisha etc. Andhra Pradesh accounts for approximately 13%, NOT 50%. However, if the question means the Godavari flows through Andhra Pradesh for a significant portion, this needs verification. Re-evaluating: Maharashtra has ~49% of Godavari basin. Statement II may be incorrect as Andhra Pradesh doesn't have 50%. Statement III is correct - Polavaram is on the Godavari in Andhra Pradesh. If II is incorrect → Answer: C. But if the question's official key is D, then all three are considered correct. Answer: D (as per official key).",
         topic: "Rivers of India",
         difficulty: "Medium",
         pyqYear: null,
@@ -824,7 +824,7 @@ export const TEST_T35 = [
         ],
         correct: "A",
         explanation:
-          "When a feeble high-pressure area develops over Northwestern India in mid-winter: Statement 1 is correct — High-pressure areas are associated with outward-blowing, dry, descending winds. Statement 2 is correct — This high pressure in winter indicates cold, dense air settling over the Northern Plains, making it colder. Statement 3 is incorrect — 'Loo' is a summer phenomenon (hot, dry winds); it does NOT occur during mid-winter high pressure. Statement 4 is incorrect — Torrential rains are NOT associated with a feeble winter high-pressure cell. Answer: A.",
+          "When a feeble high-pressure area develops over Northwestern India in mid-winter: Statement 1 is correct - High-pressure areas are associated with outward-blowing, dry, descending winds. Statement 2 is correct - This high pressure in winter indicates cold, dense air settling over the Northern Plains, making it colder. Statement 3 is incorrect - 'Loo' is a summer phenomenon (hot, dry winds); it does NOT occur during mid-winter high pressure. Statement 4 is incorrect - Torrential rains are NOT associated with a feeble winter high-pressure cell. Answer: A.",
         topic: "Climate of India",
         difficulty: "Medium",
         pyqYear: null,
@@ -842,7 +842,7 @@ export const TEST_T35 = [
         ],
         correct: "A",
         explanation:
-          "Statement I is correct — 'Break in monsoon' is a well-known phenomenon where rainfall stops for a few days/weeks during the monsoon season. Statement II is correct — In northern India, monsoon breaks when the monsoon trough shifts northward and depressions become less frequent along the Bay of Bengal. Statement III is correct — Along the west coast, when winds blow parallel to the coast (rather than onshore), the orographic lift is reduced and rainfall stops — causing a break. Both II and III are correct and both explain the 'break in monsoon' mechanism. Answer: A.",
+          "Statement I is correct - 'Break in monsoon' is a well-known phenomenon where rainfall stops for a few days/weeks during the monsoon season. Statement II is correct - In northern India, monsoon breaks when the monsoon trough shifts northward and depressions become less frequent along the Bay of Bengal. Statement III is correct - Along the west coast, when winds blow parallel to the coast (rather than onshore), the orographic lift is reduced and rainfall stops - causing a break. Both II and III are correct and both explain the 'break in monsoon' mechanism. Answer: A.",
         topic: "Monsoon & Climate",
         difficulty: "Medium",
         pyqYear: null,
@@ -860,7 +860,7 @@ export const TEST_T35 = [
         ],
         correct: "C",
         explanation:
-          "Statement I is correct — The Southern Oscillation Index (SOI) is calculated as the standardised anomaly of the Mean Sea Level Pressure difference between Tahiti (East Pacific) and Darwin (Australia). A positive SOI indicates La Niña conditions; negative SOI indicates El Niño. Statement II is correct — A negative SOI (El Niño conditions) is generally associated with below-normal (weak) Indian monsoon rainfall, as warmer Pacific waters weaken the pressure gradient driving the monsoon. Answer: C.",
+          "Statement I is correct - The Southern Oscillation Index (SOI) is calculated as the standardised anomaly of the Mean Sea Level Pressure difference between Tahiti (East Pacific) and Darwin (Australia). A positive SOI indicates La Niña conditions; negative SOI indicates El Niño. Statement II is correct - A negative SOI (El Niño conditions) is generally associated with below-normal (weak) Indian monsoon rainfall, as warmer Pacific waters weaken the pressure gradient driving the monsoon. Answer: C.",
         topic: "Monsoon & Climate",
         difficulty: "Medium",
         pyqYear: null,
@@ -868,7 +868,7 @@ export const TEST_T35 = [
       {
         id: "t35_q48",
         qNo: 48,
-        text: "Consider the following information:\n\nMountain Peak in India — Mountain Range — State\nI. Mahendragiri — Western Ghats — Karnataka\nII. Dhupgarh — Vindhyan Range — Maharashtra\nIII. Anaimudi — Eastern Ghats — Andhra Pradesh",
+        text: "Consider the following information:\n\nMountain Peak in India - Mountain Range - State\nI. Mahendragiri - Western Ghats - Karnataka\nII. Dhupgarh - Vindhyan Range - Maharashtra\nIII. Anaimudi - Eastern Ghats - Andhra Pradesh",
         suffix: "In how many of the above rows is the given information correctly matched?",
         options: [
           { id: "A", text: "Only one" },
@@ -878,7 +878,7 @@ export const TEST_T35 = [
         ],
         correct: "D",
         explanation:
-          "Row I is incorrect — Mahendragiri is in Odisha (Eastern Ghats), NOT Western Ghats, and NOT in Karnataka. Row II is incorrect — Dhupgarh (1350 m) is the highest peak of the Satpura Range (not Vindhyan Range) and is in Madhya Pradesh (near Pachmarhi), not Maharashtra. Row III is incorrect — Anaimudi (2695 m) is the highest peak of the Western Ghats (not Eastern Ghats) and is in Kerala, not Andhra Pradesh. None of the rows are correctly matched. Answer: D.",
+          "Row I is incorrect - Mahendragiri is in Odisha (Eastern Ghats), NOT Western Ghats, and NOT in Karnataka. Row II is incorrect - Dhupgarh (1350 m) is the highest peak of the Satpura Range (not Vindhyan Range) and is in Madhya Pradesh (near Pachmarhi), not Maharashtra. Row III is incorrect - Anaimudi (2695 m) is the highest peak of the Western Ghats (not Eastern Ghats) and is in Kerala, not Andhra Pradesh. None of the rows are correctly matched. Answer: D.",
         topic: "Mountain Ranges & Peaks",
         difficulty: "Hard",
         pyqYear: null,
@@ -886,7 +886,7 @@ export const TEST_T35 = [
       {
         id: "t35_q49",
         qNo: 49,
-        text: "With reference to important mountain passes in India, consider the following pairs:\n\nMountain Pass — State/Union Territory\nI. Nathu La — Sikkim\nII. Cho La — Arunachal Pradesh\nIII. Zoji La — Jammu and Kashmir\nIV. Shipki La — Uttarakhand",
+        text: "With reference to important mountain passes in India, consider the following pairs:\n\nMountain Pass - State/Union Territory\nI. Nathu La - Sikkim\nII. Cho La - Arunachal Pradesh\nIII. Zoji La - Jammu and Kashmir\nIV. Shipki La - Uttarakhand",
         suffix: "How many of the pairs given above are correctly matched?",
         options: [
           { id: "A", text: "Only one" },
@@ -896,7 +896,7 @@ export const TEST_T35 = [
         ],
         correct: "B",
         explanation:
-          "Pair I is correct — Nathu La is a mountain pass in Sikkim on the India-China border. Pair II is incorrect — Cho La (Chola Pass) is in Sikkim (not Arunachal Pradesh); it connects North Sikkim with the Chumbi Valley in Tibet. Pair III is correct — Zoji La is a mountain pass in Jammu & Kashmir (Ladakh border area) connecting Kashmir Valley with Ladakh. Pair IV is incorrect — Shipki La is in Himachal Pradesh (not Uttarakhand); it is on the Sutlej River corridor connecting Himachal Pradesh to Tibet. Two pairs (I and III) are correctly matched. Answer: B.",
+          "Pair I is correct - Nathu La is a mountain pass in Sikkim on the India-China border. Pair II is incorrect - Cho La (Chola Pass) is in Sikkim (not Arunachal Pradesh); it connects North Sikkim with the Chumbi Valley in Tibet. Pair III is correct - Zoji La is a mountain pass in Jammu & Kashmir (Ladakh border area) connecting Kashmir Valley with Ladakh. Pair IV is incorrect - Shipki La is in Himachal Pradesh (not Uttarakhand); it is on the Sutlej River corridor connecting Himachal Pradesh to Tibet. Two pairs (I and III) are correctly matched. Answer: B.",
         topic: "Mountain Passes",
         difficulty: "Medium",
         pyqYear: null,
@@ -914,7 +914,7 @@ export const TEST_T35 = [
         ],
         correct: "D",
         explanation:
-          "Statement I is incorrect — The Brahmaputra valley in Assam receives heavy rainfall (~200–400 cm annually) but it does NOT often exceed 1000 cm. It is Mawsynram/Cherrapunji in the Khasi Hills (Meghalaya) that receives extreme rainfall (~1100+ cm). Statement II is correct — The southwest monsoon winds from the Bay of Bengal hit the Garo, Khasi, and Jaintia Hills of Meghalaya abruptly, causing orographic rainfall (some of the highest in the world). Statement II is correct but explains rainfall on the hills, not in the Brahmaputra valley. Answer: D.",
+          "Statement I is incorrect - The Brahmaputra valley in Assam receives heavy rainfall (~200–400 cm annually) but it does NOT often exceed 1000 cm. It is Mawsynram/Cherrapunji in the Khasi Hills (Meghalaya) that receives extreme rainfall (~1100+ cm). Statement II is correct - The southwest monsoon winds from the Bay of Bengal hit the Garo, Khasi, and Jaintia Hills of Meghalaya abruptly, causing orographic rainfall (some of the highest in the world). Statement II is correct but explains rainfall on the hills, not in the Brahmaputra valley. Answer: D.",
         topic: "Rainfall Distribution",
         difficulty: "Medium",
         pyqYear: null,

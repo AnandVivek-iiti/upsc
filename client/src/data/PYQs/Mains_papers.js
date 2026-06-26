@@ -6,7 +6,7 @@ const BASE = "https://www.upsc.gov.in/sites/default/files/";
 const UPSC_PYQ_PAGE =
   "https://www.upsc.gov.in/examinations/previous-question-papers?field_exam_name_value=Civil+Services+(Main)+Examination";
 
-// Google Drive mirrors for 2009–2015 (sourced from iasgyan.in — publicly accessible)
+// Google Drive mirrors for 2009–2015 (sourced from iasgyan.in - publicly accessible)
 const GD = {
   // 2015
   "2015-essay":
@@ -160,7 +160,7 @@ const Y2021 = {
   // Optional: Sociology (CDN filenames for 2021 not confirmed; using PYQ page)
   "optional-i":    UPSC_PYQ_PAGE,
   "optional-ii":   UPSC_PYQ_PAGE,
-  // Qualifying papers (generic filenames, no year tag — not reliably year-specific; use PYQ page)
+  // Qualifying papers (generic filenames, no year tag - not reliably year-specific; use PYQ page)
   "language-i":    UPSC_PYQ_PAGE,
   "language-ii":   UPSC_PYQ_PAGE,
 };
@@ -177,7 +177,7 @@ const Y2020 = {
   // Optional: Sociology (CDN filenames for 2020 not confirmed; using PYQ page)
   "optional-i":    UPSC_PYQ_PAGE,
   "optional-ii":   UPSC_PYQ_PAGE,
-  // Qualifying papers (generic filenames, no year tag — not reliably year-specific; use PYQ page)
+  // Qualifying papers (generic filenames, no year tag - not reliably year-specific; use PYQ page)
   "language-i":    UPSC_PYQ_PAGE,
   "language-ii":   UPSC_PYQ_PAGE,
 };
@@ -208,7 +208,7 @@ const Y2018 = {
   gs2:             `${BASE}GENERAL-STUDIES-PAPER-II.pdf`,
   gs3:             `${BASE}GENERAL-STUDIES-PAPER-III.pdf`,
   gs4:             `${BASE}GENERAL-STUDIES-PAPER-IV.pdf`,
-  // Optional: Sociology (generic filenames shared with other years — not year-specific; use PYQ page)
+  // Optional: Sociology (generic filenames shared with other years - not year-specific; use PYQ page)
   "optional-i":    UPSC_PYQ_PAGE,
   "optional-ii":   UPSC_PYQ_PAGE,
   // Qualifying papers (generic filenames, no year tag; use PYQ page)
@@ -250,7 +250,7 @@ const Y2016 = {
   "language-ii":   UPSC_PYQ_PAGE,
 };
 // ─────────────────────────────────────────────────────────────────────────────
-// 2015  (Mains: 18–27 Dec 2015 — first year of new pattern on CDN gap)
+// 2015  (Mains: 18–27 Dec 2015 - first year of new pattern on CDN gap)
 // Google Drive mirrors sourced from iasgyan.in
 // ─────────────────────────────────────────────────────────────────────────────
 const Y2015 = {
@@ -282,7 +282,7 @@ const Y2014 = {
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 2013  (Mains: 1–10 Dec 2013 — first year of new 4-GS-paper pattern)
+// 2013  (Mains: 1–10 Dec 2013 - first year of new 4-GS-paper pattern)
 // Google Drive mirrors sourced from iasgyan.in
 // ─────────────────────────────────────────────────────────────────────────────
 const Y2013 = {
@@ -298,7 +298,7 @@ const Y2013 = {
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 2012 and older — old pattern (only 2 GS papers; gs3/gs4 do not apply).
+// 2012 and older - old pattern (only 2 GS papers; gs3/gs4 do not apply).
 // gs1/gs2 map to the old GS Paper I / GS Paper II respectively.
 // Google Drive mirrors sourced from iasgyan.in where available;
 // UPSC PYQ page used as fallback for unavailable papers.

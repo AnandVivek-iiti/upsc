@@ -289,12 +289,12 @@ const AMC_STYLES = `
   .amc-dock { right: 28px; bottom: calc(var(--safe-bottom,0px) + 28px); }
 }
 
-/* FAB row — wraps dismiss × and main FAB side-by-side */
+/* FAB row - wraps dismiss × and main FAB side-by-side */
 .amc-fab-row {
   display: flex; align-items: center; gap: 8px;
 }
 
-/* Dismiss button — only shown on mobile when panel is closed */
+/* Dismiss button - only shown on mobile when panel is closed */
 .amc-fab-dismiss {
   width: 26px; height: 26px; border-radius: 9999px;
   display: none; align-items: center; justify-content: center;
@@ -357,7 +357,7 @@ const AMC_STYLES = `
 }
 .amc-icon-btn:hover { background: rgba(255,255,255,0.15); }
 
-/* Mobile history toggle — only relevant once the sidebar collapses off-canvas */
+/* Mobile history toggle - only relevant once the sidebar collapses off-canvas */
 .amc-mobile-history-btn { display: none; }
 @media (max-width: 540px) { .amc-mobile-history-btn { display: inline-flex; } }
 
@@ -365,7 +365,7 @@ const AMC_STYLES = `
 .amc-scroll::-webkit-scrollbar { width: 3px; }
 .amc-scroll::-webkit-scrollbar-thumb { background: var(--bg-border); border-radius: 999px; }
 
-/* Sidebar — fixed width, never covers more than 42% on larger screens.
+/* Sidebar - fixed width, never covers more than 42% on larger screens.
    Below 540px there's no room for a permanent column, so it becomes a
    slide-in overlay toggled via the history button in the header instead
    of just disappearing (which used to leave mobile users with no way to
@@ -964,7 +964,7 @@ const ChatInputWithRef = memo(React.forwardRef(function ChatInputWithRef(
     requestAnimationFrame(() => textareaRef.current?.focus());
   }, [input, sending, onSend]);
 
-  // Enter alone inserts a newline (default textarea behavior — just let it
+  // Enter alone inserts a newline (default textarea behavior - just let it
   // through). Ctrl+Enter (Cmd+Enter on Mac) sends, since multi-line notes-style
   // messages are now common and accidental sends on Enter were disruptive.
   const handleKey = useCallback(e => {
@@ -1024,7 +1024,7 @@ export default function AIMentorChat({
   prefill = "",
   quoteMeta = null,
   onClearPrefill = null,
-  // Controlled open state — when provided, App.jsx owns open/close
+  // Controlled open state - when provided, App.jsx owns open/close
   open: controlledOpen = undefined,
   onOpen = null,
   onClose = null,
