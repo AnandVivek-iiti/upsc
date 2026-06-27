@@ -118,6 +118,16 @@ export async function deleteChatThread(id) {
   });
 }
 
+// ─── POST /api/evaluate/prelim-explain ───────────────────────────────────────
+// Returns { success, provider_used, explanation: string }
+export async function explainPrelimQuestion({ questionText, options, correctOption, explanation }) {
+  return request(`${BASE}/evaluate/prelim-explain`, {
+    method: "POST",
+    headers: authHeaders(),
+    body: JSON.stringify({ questionText, options, correctOption, explanation }),
+  });
+}
+
 // ─── Legacy aliases (still used by embedded widgets like AIMentorChat compact) ─
 export async function getChatHistory() {
   // Redirect to thread list for backwards compat

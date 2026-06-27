@@ -7,35 +7,35 @@ export const LAST_VERIFIED_DATE = "June 2025";
 export const OFFICIAL_UPSC_LINKS = [
   {
     label: "UPSC Home",
-    url: "https://upsc.gov.in",
+    url: "https://www.upsc.gov.in",
   },
   {
     label: "CSE Notification",
-    url: "https://upsc.gov.in/examinations/exam-notifications",
+    url: "https://www.upsc.gov.in/examinations/exam-notifications",
   },
   {
     label: "CSE Syllabus",
-    url: "https://upsc.gov.in/recruitment/syllabus",
+    url: "https://www.upsc.gov.in/recruitment/syllabus",
   },
   {
     label: "Previous Year Papers",
-    url: "https://upsc.gov.in/examinations/previous-question-papers",
+    url: "https://www.upsc.gov.in/examinations/previous-question-papers",
   },
   {
     label: "Results",
-    url: "https://upsc.gov.in/examinations/results",
+    url: "https://www.upsc.gov.in/examinations/results",
   },
   {
     label: "Exam Calendar",
-    url: "https://upsc.gov.in/examinations/exam-calendar",
+    url: "https://www.upsc.gov.in/examinations/exam-calendar",
   },
   {
     label: "Active Exams",
-    url: "https://upsc.gov.in/examinations/active-exams",
+    url: "https://www.upsc.gov.in/examinations/active-exams",
   },
   {
     label: "Answer Keys",
-    url: "https://upsc.gov.in/examinations/answer-keys",
+    url: "https://www.upsc.gov.in/examinations/answer-key",
   },
 ];
 
@@ -124,7 +124,7 @@ export const LEARNING_LINKS = [
   // topicwise learning portals like
   {
     label: "SuperKalam (PYQs)",
-    url: "https://superkalam.com/upsc-prelims/previous-year-question-paper",
+    url: "https://superkalam.com/www.upsc-prelims/previous-year-question-paper",
   },
   {
     label: "e-PG Pathshala",
@@ -178,10 +178,10 @@ export const NEWS_LINKS = [
 
 // ── Bottom bar quick-reference pills (kept minimal) ─────────────────────────
 export const OFFICIAL_UPSC_REFERENCE_LINKS = [
-  { label: "UPSC.gov.in",       url: "https://upsc.gov.in" },
-  { label: "Syllabus",          url: "https://upsc.gov.in/recruitment/syllabus" },
-  { label: "Exam Calendar",     url: "https://upsc.gov.in/examinations/exam-calendar" },
-  { label: "Previous Papers",   url: "https://upsc.gov.in/examinations/previous-question-papers" },
-  { label: "Results",           url: "https://upsc.gov.in/examinations/results" },
-  { label: "Answer Keys",       url: "https://upsc.gov.in/examinations/answer-keys" },
+  { label: "UPSC.gov.in",       url: "https://www.upsc.gov.in" },
+  { label: "Syllabus",          url: "https://www.upsc.gov.in/recruitment/syllabus" },
+  { label: "Exam Calendar",     url: "https://www.upsc.gov.in/examinations/exam-calendar" },
+  { label: "Previous Papers",   url: "https://www.upsc.gov.in/examinations/previous-question-papers" },
+  { label: "Results",           url: "https://www.upsc.gov.in/examinations/results" },
+  { label: "Answer Keys",       url: "https://www.upsc.gov.in/examinations/answer-keys" },
 ];

@@ -742,6 +742,7 @@ module.exports = {
   analyzeTestPerformance,
   runNotesAction,
   runMentorChat,
+  runWithProviders,
   isAnyProviderAvailable,
   CHAT_SYSTEM_INSTRUCTION,
   TEST_ANALYSIS_SYSTEM_INSTRUCTION,

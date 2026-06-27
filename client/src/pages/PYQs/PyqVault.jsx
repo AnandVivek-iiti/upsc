@@ -1,10 +1,11 @@
-import { useState, useMemo, useCallback, useEffect } from "react";
+import { useState, useMemo, useCallback, useEffect, useRef } from "react";
 import { Archive, Link2, Sparkles, BookOpen, Library, PenSquare } from "lucide-react";
 import { useRevisionQueue } from "../../hooks/useRevisionQueue";
 import { useQuestionAttempts } from "../../hooks/useQuestionAttempts";
 import ResourceLibrary from "../User/ResourceLibrary";
 import AddCustomQuestion from "../../components/QuestionStats";
 import AIMentorChat from "../AI/AIMentorChat";
+import { explainPrelimQuestion } from "../../hooks/useAI";
 
 // ─── MAINS DATA IMPORTS ─────────────────────────────────────────────────────────
 import mainsGS1Data from "../../data/Subjectwise/mains/2025/GS1";
@@ -336,6 +337,40 @@ function MainsQuestionCard({ q, index, accentColor, paper, isLoggedIn }) {
   );
 }
 
+// ─── AI EXPLANATION HOOK ──────────────────────────────────────────────────────
+function useAIExplanation(q, enabled) {
+  const [aiExplanation, setAiExplanation] = useState(null);
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiError, setAiError] = useState(false);
+  const fetchedRef = useRef(false);
+
+  useEffect(() => {
+    if (!enabled || fetchedRef.current) return;
+    fetchedRef.current = true;
+    setAiLoading(true);
+    setAiError(false);
+
+    explainPrelimQuestion({
+      questionText: q.questionText,
+      options: q.options || [],
+      correctOption: q.correctOption,
+      explanation: q.explanation || "",
+    })
+      .then(data => {
+        const text = data?.explanation?.trim();
+        if (text && text.length > 20) {
+          setAiExplanation(text);
+        } else {
+          setAiError(true);
+        }
+      })
+      .catch(() => setAiError(true))
+      .finally(() => setAiLoading(false));
+  }, [enabled, q]);
+
+  return { aiExplanation, aiLoading, aiError };
+}
+
 // ─── PRELIMS QUESTION CARD ──────────────────────────────────────────────────────────
 function PrelimQuestionCard({ q, index, accentColor, revQueue, subjectMeta, onCorrect, recordAttempt, attemptedIds }) {
   const [showAnswer, setShowAnswer] = useState(false);
@@ -344,6 +379,10 @@ function PrelimQuestionCard({ q, index, accentColor, revQueue, subjectMeta, onCo
   const qId = q._id || q.id || `q-${index}`;
   const solved = attemptedIds?.has(qId);
   const pinned = revQueue.isPinned(qId);
+
+  // Fetch AI explanation only once the user first opens the panel
+  const { aiExplanation, aiLoading, aiError } = useAIExplanation(q, showAnswer);
+
   const styleMeta = STYLE_META[q.styleTag];
   const diffMeta = DIFF_META[q.difficulty];
   const isCorrect = selected === q.correctOption;
@@ -434,9 +473,27 @@ function PrelimQuestionCard({ q, index, accentColor, revQueue, subjectMeta, onCo
           </span>
         )}
       </div>
-      {showAnswer && q.explanation && (
+      {showAnswer && (
         <div className="px-4 pb-3">
-          <div className="text-sm bg-bg-muted p-3 rounded-lg text-text-secondary">{q.explanation}</div>
+          {aiLoading ? (
+            <div className="flex items-center gap-2 text-xs text-text-muted font-mono p-3 bg-bg-muted rounded-lg">
+              <span className="inline-block w-3 h-3 rounded-full border-2 border-accent-gold border-t-transparent animate-spin" />
+              Generating explanation…
+            </div>
+          ) : aiExplanation ? (
+            <div className="text-sm bg-bg-muted p-3 rounded-lg text-text-secondary leading-relaxed">
+              {aiExplanation}
+            </div>
+          ) : aiError && q.explanation ? (
+            /* silent static fallback — only shown when AI fails and static text exists */
+            <div className="text-sm bg-bg-muted p-3 rounded-lg text-text-secondary leading-relaxed">
+              {q.explanation}
+            </div>
+          ) : aiError ? (
+            <div className="text-xs text-text-muted font-mono p-3 bg-bg-muted rounded-lg">
+              Explanation unavailable right now.
+            </div>
+          ) : null}
         </div>
       )}
     </div>
