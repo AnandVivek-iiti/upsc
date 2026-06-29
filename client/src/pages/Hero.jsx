@@ -10,12 +10,16 @@ function getSearchUrl(quote) {
 
 // ─── Category badge colours ───────────────────────────────────────────────────
 const CATEGORY_COLOURS = {
+  EssayGold: { bg: "rgba(245,158,11,.22)", color: "var(--accent-gold)", border: "rgba(245,158,11,.4)" },
   Indian: { bg: "rgba(245,158,11,.18)", color: "var(--accent-gold)", border: "rgba(245,158,11,.35)" },
   Sufi: { bg: "rgba(168,85,247,.15)", color: "#c084fc", border: "rgba(168,85,247,.3)" },
   Philosophy: { bg: "rgba(59,130,246,.15)", color: "#93c5fd", border: "rgba(59,130,246,.3)" },
   Sociology: { bg: "rgba(16,185,129,.15)", color: "#6ee7b7", border: "rgba(16,185,129,.3)" },
   Poetry: { bg: "rgba(244,63,94,.15)", color: "#fb7185", border: "rgba(244,63,94,.3)" },
   Literature: { bg: "rgba(251,146,60,.15)", color: "#fdba74", border: "rgba(251,146,60,.3)" },
+  EnglishLiterature: { bg: "rgba(251,146,60,.15)", color: "#fdba74", border: "rgba(251,146,60,.3)" },
+  HindiLiterature: { bg: "rgba(234,88,12,.15)", color: "#fb923c", border: "rgba(234,88,12,.3)" },
+  FillIn: { bg: "rgba(99,102,241,.2)", color: "#a5b4fc", border: "rgba(99,102,241,.4)" },
   Ethics: { bg: "rgba(99,102,241,.15)", color: "#a5b4fc", border: "rgba(99,102,241,.3)" },
   UPSC: { bg: "rgba(245,158,11,.22)", color: "var(--accent-gold)", border: "rgba(245,158,11,.4)" },
   Environment: { bg: "rgba(34,197,94,.15)", color: "#86efac", border: "rgba(34,197,94,.3)" },
