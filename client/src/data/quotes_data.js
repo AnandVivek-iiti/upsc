@@ -845,214 +845,8 @@ export const QUOTES = [
     category: "Indian",
   },
 
-  // ─────────────────────────────────────────────
-  // HINDI LITERATURE (literary quotes, not proverbs)
-  // ─────────────────────────────────────────────
-  {
-    text: "धीरे-धीरे रे मना, धीरे सब कुछ होय। माली सींचे सौ घड़ा, ऋतु आए फल होय॥",
-    src: "कबीर",
-    category: "HindiLiterature",
-    lang: "hi",
-    meaning:
-      "Patience brings everything in its own time - the gardener may water with a hundred pots, but the fruit ripens only when its season comes.",
-  },
-  {
-    text: "बुरा जो देखन मैं चला, बुरा न मिलिया कोय। जो मन खोजा आपना, मुझसे बुरा न कोय॥",
-    src: "कबीर",
-    category: "HindiLiterature",
-    lang: "hi",
-    meaning:
-      "I went out looking for someone wicked, but found no one. When I looked within my own heart, I found no one worse than myself.",
-  },
-  {
-    text: "मो को कहाँ ढूँढ़े रे बंदे, मैं तो तेरे पास में। ना मैं मंदिर ना मैं मस्जिद, ना काबे कैलाश में॥",
-    src: "कबीर",
-    category: "HindiLiterature",
-    lang: "hi",
-    meaning:
-      "Where do you search for me, seeker? I am right beside you - not in temple, not in mosque, not in Kaaba or Kailash.",
-  },
-  {
-    text: "पायो जी मैंने राम रतन धन पायो।",
-    src: "मीराबाई",
-    category: "HindiLiterature",
-    lang: "hi",
-    meaning: "I have found the priceless treasure - the name of Ram.",
-  },
-  {
-    text: "खुदी को कर बुलंद इतना, कि हर तक़दीर से पहले। ख़ुदा बंदे से ख़ुद पूछे, बता तेरी रज़ा क्या है॥",
-    src: "अल्लामा इक़बाल",
-    category: "HindiLiterature",
-    lang: "hi",
-    meaning:
-      "Raise your selfhood so high that before every destiny is written, God Himself asks you: tell me, what is your wish?",
-  },
-  {
-    text: "सितारों से आगे जहाँ और भी हैं, अभी इश्क़ के इम्तिहान और भी हैं॥",
-    src: "अल्लामा इक़बाल",
-    category: "HindiLiterature",
-    lang: "hi",
-    meaning:
-      "Beyond the stars lie other worlds still; there are yet more trials of passion to face.",
-  },
-  {
-    text: "काल करे सो आज कर, आज करे सो अब। पल में प्रलय होएगी, बहुरि करोगे कब॥",
-    src: "कबीर",
-    category: "HindiLiterature",
-    lang: "hi",
-    meaning:
-      "Do today what you planned for tomorrow, do now what you planned for today - in an instant everything can end, so when will you do it if not now?",
-  },
-  {
-    text: "करत-करत अभ्यास के जड़मति होत सुजान। रसरी आवत जात ते सिल पर परत निशान॥",
-    src: "तुलसीदास",
-    category: "HindiLiterature",
-    lang: "hi",
-    meaning:
-      "Through constant practice, even a dull mind becomes sharp - just as a rope, going back and forth, leaves its mark on stone.",
-  },
-  {
-    text: "तुम मुझे ख़ून दो, मैं तुम्हें आज़ादी दूँगा।",
-    src: "सुभाष चंद्र बोस",
-    category: "HindiLiterature",
-    lang: "hi",
-    meaning: "Give me blood, and I shall give you freedom.",
-  },
-  {
-    text: "इन्क़लाब ज़िंदाबाद!",
-    src: "भगत सिंह",
-    category: "HindiLiterature",
-    lang: "hi",
-    meaning: "Long live the revolution!",
-  },
-  {
-    text: "दुश्मन की गोलियों का सामना हम करेंगे, आज़ाद ही रहे हैं, आज़ाद ही रहेंगे।",
-    src: "चंद्रशेखर आज़ाद",
-    category: "HindiLiterature",
-    lang: "hi",
-    meaning:
-      "We will face the enemy's bullets - we have always been free, and free we shall remain.",
-  },
-  {
-    text: "स्वराज्य हमारा जन्मसिद्ध अधिकार है और इसे लेकर ही रहूँगा।",
-    src: "बाल गंगाधर तिलक",
-    category: "HindiLiterature",
-    lang: "hi",
-    meaning: "Swaraj is my birthright, and I shall have it.",
-  },
-  {
-    text: "सरफ़रोशी की तमन्ना अब हमारे दिल में है, देखना है ज़ोर कितना बाज़ु-ए-क़ातिल में है।",
-    src: "राम प्रसाद बिस्मिल",
-    category: "HindiLiterature",
-    lang: "hi",
-    meaning:
-      "The desire for sacrifice now lives in our hearts; let's see how much strength remains in the executioner's arm.",
-  },
 
-  // ─────────────────────────────────────────────
-  // HINDI PROVERBS & MUHAVARE (max 2 per day)
-  // ─────────────────────────────────────────────
-  {
-    text: "बूँद-बूँद से घड़ा भरता है।",
-    src: "हिंदी कहावत",
-    category: "Proverb",
-    lang: "hi",
-    meaning:
-      "Drop by drop, the pitcher fills - small, consistent efforts add up to big results.",
-  },
-  {
-    text: "जैसी करनी वैसी भरनी।",
-    src: "हिंदी कहावत",
-    category: "Proverb",
-    lang: "hi",
-    meaning: "As you sow, so shall you reap.",
-  },
-  {
-    text: "होनहार बिरवान के होत चीकने पात।",
-    src: "हिंदी कहावत",
-    category: "Proverb",
-    lang: "hi",
-    meaning:
-      "A promising sapling shows its quality in its leaves early on - true talent reveals itself early.",
-  },
-  {
-    text: "मन के हारे हार है, मन के जीते जीत।",
-    src: "हिंदी कहावत",
-    category: "Proverb",
-    lang: "hi",
-    meaning:
-      "Defeat begins in the mind, and so does victory - your mindset decides the outcome.",
-  },
-  {
-    text: "जान है तो जहान है।",
-    src: "हिंदी कहावत",
-    category: "Proverb",
-    lang: "hi",
-    meaning:
-      "If there is life, there is a whole world of possibility - health comes first.",
-  },
-  {
-    text: "अंत भला तो सब भला।",
-    src: "हिंदी कहावत",
-    category: "Proverb",
-    lang: "hi",
-    meaning: "All is well that ends well.",
-  },
-  {
-    text: "साँच को आँच नहीं।",
-    src: "हिंदी कहावत",
-    category: "Proverb",
-    lang: "hi",
-    meaning: "Truth fears no fire - an honest person has nothing to be afraid of.",
-  },
-  {
-    text: "नेकी कर, दरिया में डाल।",
-    src: "हिंदी कहावत",
-    category: "Proverb",
-    lang: "hi",
-    meaning:
-      "Do good, and cast it into the river - do good without expecting anything in return.",
-  },
-  {
-    text: "दाने-दाने पर लिखा है खाने वाले का नाम।",
-    src: "हिंदी कहावत",
-    category: "Proverb",
-    lang: "hi",
-    meaning:
-      "Every grain of food carries the name of the one destined to eat it - what is meant for you will reach you.",
-  },
-  {
-    text: "हाथ कंगन को आरसी क्या।",
-    src: "हिंदी मुहावरा",
-    category: "Proverb",
-    lang: "hi",
-    meaning:
-      "A bangle on the wrist needs no mirror to be seen - a self-evident truth needs no proof.",
-  },
-  {
-    text: "अधजल गगरी छलकत जाए।",
-    src: "हिंदी मुहावरा",
-    category: "Proverb",
-    lang: "hi",
-    meaning:
-      "A half-filled pitcher spills the most - those who know the least tend to boast the loudest.",
-  },
-  {
-    text: "ऊँट के मुँह में जीरा।",
-    src: "हिंदी मुहावरा",
-    category: "Proverb",
-    lang: "hi",
-    meaning:
-      "A pinch of cumin in a camel's mouth - far too small an effort for the scale of the need.",
-  },
-  {
-    text: "बंदर क्या जाने अदरक का स्वाद।",
-    src: "हिंदी मुहावरा",
-    category: "Proverb",
-    lang: "hi",
-    meaning:
-      "What does a monkey know of the taste of ginger - one who lacks understanding cannot judge something refined.",
-  },
+
 
   // ─────────────────────────────────────────────
   // ENGLISH PROVERBS & IDIOMS (max 2 per day)
@@ -1968,28 +1762,16 @@ function pickN(pool, n, rng) {
   return picked;
 }
 
-// Builds today's deterministic 24-quote set with required quotas:
-// - at least 1 EssayGold
-// - at least 1 HindiLiterature (lang === "hi" && category === "HindiLiterature")
-// - at least 1 EnglishLiterature (category === "EnglishLiterature")
-// - at most 2 Hindi proverbs (lang === "hi" && category === "Proverb")
-// - at most 2 English proverbs (category === "Proverb" && lang !== "hi")
-// - at least 1 FillIn
-// The rest are filled from general pool (all other quotes)
 function buildDailySet(date, count = 24) {
   const rng = mulberry32(dateSeed(date));
 
   // Define pools
   const essayGoldPool = QUOTES.filter((q) => q.category === "EssayGold");
-  const hindiLitPool = QUOTES.filter(
-    (q) => q.lang === "hi" && q.category === "HindiLiterature"
-  );
+  
   const englishLitPool = QUOTES.filter(
     (q) => q.category === "EnglishLiterature"
   );
-  const hindiProverbPool = QUOTES.filter(
-    (q) => q.lang === "hi" && q.category === "Proverb"
-  );
+  
   const englishProverbPool = QUOTES.filter(
     (q) => q.category === "Proverb" && q.lang !== "hi"
   );
@@ -1998,9 +1780,9 @@ function buildDailySet(date, count = 24) {
   // General pool – everything else (excluding those categories to avoid duplication)
   const excludedCategories = new Set([
     "EssayGold",
-    "HindiLiterature",
+  
     "EnglishLiterature",
-    "Proverb",
+    
     "FillIn",
   ]);
   const generalPool = QUOTES.filter(
@@ -2012,15 +1794,10 @@ function buildDailySet(date, count = 24) {
   // 1 EssayGold
   const essayPick = pickN(essayGoldPool, 1, rng);
   required.push(...essayPick);
-  // 1 HindiLiterature
-  const hindiLitPick = pickN(hindiLitPool, 1, rng);
-  required.push(...hindiLitPick);
+
   // 1 EnglishLiterature
   const englishLitPick = pickN(englishLitPool, 1, rng);
   required.push(...englishLitPick);
-  // at most 2 Hindi proverbs – we'll pick up to 2
-  const hindiProverbPick = pickN(hindiProverbPool, 2, rng);
-  required.push(...hindiProverbPick);
   // at most 2 English proverbs
   const englishProverbPick = pickN(englishProverbPool, 2, rng);
   required.push(...englishProverbPick);
