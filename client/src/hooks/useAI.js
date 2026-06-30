@@ -65,15 +65,6 @@ export async function evaluateAnswer({ question, answer, paper }) {
   });
 }
 
-// ─── POST /api/evaluate/answer (handwritten image) ───────────────────────────
-// Same endpoint - the controller branches on the presence of `image.data`.
-// `image` must be the full data URI from FileReader.readAsDataURL(), e.g.
-// "data:image/jpeg;base64,/9j/4AAQ…"  (JPG · JPEG · PNG · WEBP, max 10 MB).
-//
-// On unreadable handwriting the backend returns HTTP 422 with
-// { success: false, extraction_failed: true }.  The request() helper above
-// attaches all extra JSON fields onto the thrown Error, so callers can do:
-//   catch (e) { if (e.extraction_failed) showClearerPhotoPrompt(); }
 export async function evaluateAnswerImage({ question, paper, image }) {
   return request(`${BASE}/evaluate/answer`, {
     method: "POST",
@@ -136,6 +127,45 @@ export async function getChatHistory() {
 export async function clearChatHistory() {
   // No-op in threads model - individual threads are deleted via deleteChatThread
   return { success: true };
+}
+
+// ─── Notes CRUD - DB-backed, per-user notes ──────────────────────────────────
+// Served by notesRoutes.js → GET/POST /api/notes, PATCH/DELETE /api/notes/:id.
+// Every endpoint is scoped server-side to req.user.id, so a note is only ever
+// visible to the account that created it.
+
+// Returns the full note list for the signed-in user, most recently updated first.
+export async function fetchNotes() {
+  const res = await request(`${BASE}/notes`, {
+    headers: authHeaders(),
+  });
+  return res.notes || [];
+}
+
+export async function createNoteRemote({ title = "", topic = null, content = "" } = {}) {
+  const res = await request(`${BASE}/notes`, {
+    method: "POST",
+    headers: authHeaders(),
+    body: JSON.stringify({ title, topic, content }),
+  });
+  return res.note;
+}
+
+// `patch` may be any subset of { title, topic, content, versions }.
+export async function updateNoteRemote(id, patch) {
+  const res = await request(`${BASE}/notes/${id}`, {
+    method: "PATCH",
+    headers: authHeaders(),
+    body: JSON.stringify(patch),
+  });
+  return res.note;
+}
+
+export async function deleteNoteRemote(id) {
+  return request(`${BASE}/notes/${id}`, {
+    method: "DELETE",
+    headers: authHeaders(),
+  });
 }
 
 // ─── Notes AI actions ──────────────────────────────────────────────────────
