@@ -10,6 +10,7 @@ const VisitorLog = require("./models/VisitorLog");
 // ── Import all models so Sequelize registers them before sync ─────────────────
 require("./models/User");
 require("./models/UserData");
+require("./models/Note");
 require("./models/TestAttempt");
 require("./models/UserEvents");
 require("./models/DailyActiveUsers");
