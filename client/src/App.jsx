@@ -23,6 +23,7 @@ import AIMentorChat from "./pages/AI/AIMentorChat";
 import MentorNotes from "./pages/User/MentorNotes.jsx";
 import TestSeriesPage from "./pages/User/Testseriespage";
 import FeedbackModal from "./components/FeedbackModal";
+import SetupWizard, { hasSeenSetupWizard } from "./pages/User/SetupWizard.jsx";
 
 // ─── Splash Screen ────────────────────────────────────────────────────────────
 function SplashScreen() {
@@ -161,6 +162,7 @@ export default function App() {
     refetch,
     updateProgress,
     bulkUpdateProgress,
+    updateProfile,
     logHours,
     overallProgress,
     todayHours,
@@ -195,6 +197,21 @@ export default function App() {
 
   // ─── Derived booleans ─────────────────────────────────────────────────────
   const isLoggedIn = !!user && !!token;
+  const userId = user?.id || user?._id || null;
+
+  // One-time post-signup setup wizard. `setupJustCompleted` is a plain React
+  // state flag (not derived from localStorage on every render) so that once
+  // the wizard finishes, this component re-renders and stops showing it
+  // immediately - localStorage alone wouldn't trigger that re-render.
+  const [setupJustCompleted, setSetupJustCompleted] = useState(false);
+  const isPreExistingUser =
+    !!(userData?.profile?.examDate || userData?.daily_logs?.length || (userData?.answers?.length ?? 0) > 0);
+  const needsSetup =
+    isLoggedIn &&
+    !!userId &&
+    !setupJustCompleted &&
+    !isPreExistingUser &&
+    !hasSeenSetupWizard(userId);
 
   // Show LandingHero when: not logged in AND on the dashboard view.
   // All other pages keep their own internal AuthGate gating.
@@ -202,6 +219,20 @@ export default function App() {
 
   if (authLoading) return <SplashScreen />;
   if (loading && !userData && (user || token)) return <LoadingScreen />;
+
+  if (needsSetup) {
+    return (
+      <SetupWizard
+        user={user}
+        token={token}
+        userData={userData}
+        onUpdateProfile={updateProfile}
+        onBulkUpdateProgress={bulkUpdateProgress}
+        onRefetch={refetch}
+        onComplete={() => setSetupJustCompleted(true)}
+      />
+    );
+  }
 
   const userName = userData?.profile?.name || user?.name || "";
   const isWorkspace = activeView === "ai-mentor" || activeView === "notes";
@@ -287,7 +318,10 @@ export default function App() {
                 <SyllabusTracker
                   userData={userData}
                   onUpdateProgress={updateProgress}
+                  onBulkUpdateProgress={bulkUpdateProgress}
                   isLoggedIn={isLoggedIn}
+                  error={error}
+                  onNavigateProfile={handleNavigateProfile}
                 />
               )}
               {activeView === "mains" && (

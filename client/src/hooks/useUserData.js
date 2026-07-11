@@ -100,6 +100,10 @@ export function useUserData({ enabled = true, token = null } = {}) {
           if (!base[stage][paperId].modules[modName]) continue;
           base[stage][paperId].modules[modName].progress = saved.progress ?? 0;
           base[stage][paperId].modules[modName].status   = saved.state   ?? "pending";
+          // completedTopics was being dropped here on every fetch/refetch/
+          // socket sync, silently resetting every checked topic tag back
+          // to unchecked even though progress % and status were correct.
+          base[stage][paperId].modules[modName].completedTopics = saved.completedTopics ?? [];
         }
       }
     }
@@ -125,7 +129,7 @@ export function useUserData({ enabled = true, token = null } = {}) {
   }
 
   // ─── Optimistic syllabus update → PATCH backend ──────────────────────────────
-  const updateProgress = useCallback(async (stage, paper, moduleName, progress, statusOrState) => {
+  const updateProgress = useCallback(async (stage, paper, moduleName, progress, statusOrState, completedTopics) => {
     setData((prev) => {
       if (!prev) return prev;
       const mod = prev.syllabus?.[stage]?.[paper]?.modules?.[moduleName];
@@ -144,6 +148,7 @@ export function useUserData({ enabled = true, token = null } = {}) {
                   ...mod,
                   progress,
                   ...(statusOrState ? { status: statusOrState, state: statusOrState } : {}),
+                  ...(completedTopics !== undefined ? { completedTopics } : {}),
                 },
               },
             },
@@ -152,7 +157,7 @@ export function useUserData({ enabled = true, token = null } = {}) {
       };
     });
     try {
-      await updateSyllabusProgress(stage, paper, moduleName, progress, statusOrState);
+      await updateSyllabusProgress(stage, paper, moduleName, progress, statusOrState, completedTopics);
     } catch (e) {
       setError(`Sync failed: ${e.message}`);
       fetchData(token);
@@ -166,7 +171,7 @@ export function useUserData({ enabled = true, token = null } = {}) {
     setData((prev) => {
       if (!prev) return prev;
       let syllabus = prev.syllabus;
-      for (const { stage, paper, module: moduleName, progress, state: statusOrState } of updates) {
+      for (const { stage, paper, module: moduleName, progress, state: statusOrState, completedTopics } of updates) {
         const mod = syllabus?.[stage]?.[paper]?.modules?.[moduleName];
         if (!mod) continue;
         syllabus = {
@@ -181,6 +186,7 @@ export function useUserData({ enabled = true, token = null } = {}) {
                   ...mod,
                   progress,
                   ...(statusOrState ? { status: statusOrState, state: statusOrState } : {}),
+                  ...(completedTopics !== undefined ? { completedTopics } : {}),
                 },
               },
             },

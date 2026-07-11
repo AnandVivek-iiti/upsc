@@ -1,9 +1,18 @@
-const { runNotesAction } = require("../config/ai-client");
+const { runNotesAction, extractNoteFromImage, ExtractionFailedError } = require("../config/ai-client");
 const trackEvent = require("../utils/trackEvent");
 const { UserData } = require("../models/UserData");
 const Note = require("../models/Note");
 
-// ─── AI actions on note content (unchanged) ──────────────────────────────────
+// ─── Photo upload limits 
+const MAX_IMAGE_BYTES = 10 * 1024 * 1024; // 10MB
+const ALLOWED_IMAGE_MIME = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
+const DATA_URI_PATTERN = /^data:(image\/[a-zA-Z0-9.+-]+);base64,([\s\S]+)$/;
+function parseImageDataUri(dataUri) {
+  const match = typeof dataUri === "string" ? dataUri.match(DATA_URI_PATTERN) : null;
+  if (!match) return null;
+  return { mimeType: match[1].toLowerCase(), base64Data: match[2] };
+}
+
 
 function makeNotesHandler(actionId) {
   return async (req, res, next) => {
@@ -27,8 +36,6 @@ function makeNotesHandler(actionId) {
         action: actionId,
       }).catch(() => {});
 
-      // Fire-and-forget: append a note_audits entry so the
-      // "Audit your first set of notes" onboarding milestone marks done.
       UserData.findOne({ where: { user_id: req.user.id } }).then((ud) => {
         if (!ud) return;
         ud.note_audits = [
@@ -55,12 +62,58 @@ exports.findMistakes = makeNotesHandler("mistakes");
 exports.revisionNotes = makeNotesHandler("revision");
 exports.mainsFormat = makeNotesHandler("mains");
 
-// ─── Note CRUD ────────────────────────────────────────────────────────────
-// Every query below is scoped to `user_id: req.user.id` (req.user is set by
-// the `protect` middleware from the verified JWT). This is what guarantees a
-// note is only ever readable/writable by the account that created it — a
-// note belonging to another user simply will not match the WHERE clause, so
-// it 404s exactly like it doesn't exist, rather than leaking a 403.
+// ─── POST /api/notes/extract-image
+exports.extractFromImage = async (req, res, next) => {
+  try {
+    const { image } = req.body;
+    if (!image || !image.data) {
+      return res.status(400).json({ success: false, error: "No image provided." });
+    }
+
+    const parsedImage = parseImageDataUri(image.data);
+    if (!parsedImage) {
+      return res.status(400).json({ success: false, error: "Invalid image data. Please re-upload the photo." });
+    }
+    const { mimeType, base64Data } = parsedImage;
+
+    if (!ALLOWED_IMAGE_MIME.includes(mimeType)) {
+      return res.status(400).json({
+        success: false,
+        error: "Unsupported image format. Please upload a JPG, PNG, or WEBP file.",
+      });
+    }
+    const byteSize = Buffer.byteLength(base64Data, "base64");
+    if (byteSize > MAX_IMAGE_BYTES) {
+      return res.status(400).json({ success: false, error: "Image is too large. Maximum allowed size is 10MB." });
+    }
+
+    console.log(
+      `[Notes:Image] Processing for user: ${req.user.id} (${(byteSize / (1024 * 1024)).toFixed(2)}MB, ${mimeType})`,
+    );
+
+    let result, provider;
+    try {
+      ({ result, provider } = await extractNoteFromImage({ imageBase64: base64Data, mimeType }));
+    } catch (err) {
+      if (err instanceof ExtractionFailedError || err.code === "EXTRACTION_FAILED") {
+        return res.status(422).json({ success: false, error: err.message, extraction_failed: true });
+      }
+      throw err;
+    }
+
+    trackEvent(req.user.id, "notes_photo_upload", "Notes Photo Upload").catch(() => {});
+
+    return res.status(200).json({
+      success: true,
+      provider_used: provider,
+      extracted_text: result.extracted_text,
+      suggestions: result.suggestions,
+    });
+  } catch (err) {
+    console.error("Notes image extraction crashed:", err);
+    next(err);
+  }
+};
 
 const ALLOWED_TOPICS = new Set([
   "polity", "history", "economy", "geography",
@@ -76,8 +129,6 @@ function sanitizeTopic(topic) {
   if (typeof topic !== "string" || !ALLOWED_TOPICS.has(topic)) return null;
   return topic;
 }
-// Returns undefined (meaning "don't touch this field") if the body didn't
-// send a usable content string, so a malformed PATCH never blanks a note.
 function sanitizeContent(content) {
   if (typeof content !== "string") return undefined;
   return content;
@@ -93,7 +144,6 @@ function sanitizeVersions(versions) {
   return clean;
 }
 
-// ─── GET /api/notes - every note belonging to the signed-in user ────────────
 exports.listNotes = async (req, res, next) => {
   try {
     const notes = await Note.findAll({
@@ -106,7 +156,7 @@ exports.listNotes = async (req, res, next) => {
   }
 };
 
-// ─── POST /api/notes - create a new note (blank, or pre-filled) ─────────────
+// ─── POST /api/notes
 exports.createNote = async (req, res, next) => {
   try {
     const body = req.body || {};
@@ -123,11 +173,6 @@ exports.createNote = async (req, res, next) => {
   }
 };
 
-// ─── PATCH /api/notes/:id - partial update ───────────────────────────────────
-// Accepts any subset of { title, topic, content, versions }. `versions`, when
-// sent, fully replaces the stored versions object (the client always sends
-// the complete merged object — see handleSaveVersion/handleClearVersion in
-// MentorNotes.jsx), it is not deep-merged server-side.
 exports.updateNote = async (req, res, next) => {
   try {
     const note = await Note.findOne({
@@ -159,7 +204,7 @@ exports.updateNote = async (req, res, next) => {
   }
 };
 
-// ─── DELETE /api/notes/:id ────────────────────────────────────────────────
+// ─── DELETE /api/notes
 exports.deleteNote = async (req, res, next) => {
   try {
     const deleted = await Note.destroy({

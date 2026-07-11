@@ -671,6 +671,71 @@ ${topicLines || "(no topic breakdown provided)"}
 
 Analyze this performance. Identify genuine strengths, diagnose weak topics with priority for revision, and produce a realistic 7-day study plan targeting the weakest areas first. Be specific and reference the actual numbers above.`;
 }
+// ─── Notes: Photo → Text
+const NOTES_EXTRACTION_FAILURE_MESSAGE =
+  "Unable to confidently read the photo. Please upload a clearer image.";
+
+function buildNotesVisionPrompt() {
+  return `You are given a photograph of handwritten or printed study notes (UPSC Civil Services prep). Transcribe the content faithfully into clean markdown - preserve headings, bullets, and structure as written. Do NOT rephrase, correct, or enrich the content itself.
+
+If the image is too blurry, poorly lit, rotated, or illegible across most of the note, return ONLY this JSON:
+{ "extraction_failed": true, "extracted_text": "", "suggestions": [] }
+
+Otherwise return ONLY this JSON:
+{ "extraction_failed": false, "extracted_text": "<full faithful transcription, markdown>", "suggestions": ["<specific, actionable tip>", "..."] }
+
+Give 3-5 suggestions (missing dimensions, articles/cases/data worth adding, structure fixes) specific to this note's actual topic - not generic advice. Output ONLY the JSON object.`;
+}
+
+/**
+ * extractNoteFromImage - OCR + improvement-suggestions for the Notes photo
+ * upload flow. One Gemini Vision call, no grading.
+ * @param {{ imageBase64: string, mimeType: string }} args
+ * @returns {Promise<{ result: { extracted_text: string, suggestions: string[] }, provider: string }>}
+ * @throws {ExtractionFailedError} when the photo can't be read reliably.
+ */
+async function extractNoteFromImage({ imageBase64, mimeType }) {
+  if (!process.env.GEMINI_API_KEY) {
+    throw new Error("Photo-to-notes requires Gemini Vision, which is not configured on this server.");
+  }
+  if (!imageBase64 || !mimeType) {
+    throw new Error("No image was provided.");
+  }
+
+  const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+  const model = genAI.getGenerativeModel({
+    model: "gemini-2.5-flash",
+    generationConfig: { temperature: 0.3, maxOutputTokens: 4096, responseMimeType: "application/json" },
+  });
+
+  let rawText;
+  try {
+    console.log("[Notes:Image] Trying provider: Gemini Vision...");
+    const result = await model.generateContent([
+      { inlineData: { mimeType, data: imageBase64 } },
+      { text: buildNotesVisionPrompt() },
+    ]);
+    rawText = result.response.text();
+    console.log("[Notes:Image] Success with: Gemini Vision");
+  } catch (err) {
+    throw new Error(`Gemini Vision request failed: ${err.message}`);
+  }
+
+  const parsed = safeJSONParse(rawText);
+  if (!parsed) throw new Error("Gemini Vision returned an unparseable response.");
+
+  const extractedText = (parsed.extracted_text || "").trim();
+  if (parsed.extraction_failed === true || extractedText.length < 20) {
+    throw new ExtractionFailedError(NOTES_EXTRACTION_FAILURE_MESSAGE);
+  }
+
+  const suggestions = Array.isArray(parsed.suggestions)
+    ? parsed.suggestions.filter((s) => typeof s === "string" && s.trim()).slice(0, 5)
+    : [];
+
+  return { result: { extracted_text: extractedText, suggestions }, provider: "Gemini Vision" };
+}
+
 const NOTES_SYSTEM_INSTRUCTIONS = {
   improve: NOTES_IMPROVE_SYSTEM_INSTRUCTION,
   mistakes: NOTES_MISTAKES_SYSTEM_INSTRUCTION,
@@ -694,16 +759,7 @@ const NOTES_MIN_OUTPUT_CHARS = {
 };
 
 /**
- * runNotesAction - single entry point for all 4 Notes AI actions (Improve /
- * Find Mistakes / Generate Revision Notes / Convert to Mains Format). Each
- * action gets its own dedicated UPSC-examiner-grade system instruction (see
- * notesInstructions.js) and runs through the same multi-provider fallback
- * chain as the Mains evaluator (Gemini → OpenAI → Claude → Groq). Always
- * requested as plain text/markdown ("mode: text"), never JSON, since every
- * notes instruction is written to output markdown directly - this is what
- * lets "Convert to Mains Format" genuinely regenerate a full topper-standard
- * answer using the model's own UPSC knowledge, not just reformat the note.
- *
+
  * @param {"improve"|"mistakes"|"revision"|"mains"} actionId
  * @param {{ title?: string, topic?: string, content: string }} payload
  * @returns {Promise<{ result: string, provider: string }>}
@@ -741,6 +797,7 @@ module.exports = {
   EXTRACTION_FAILURE_MESSAGE,
   analyzeTestPerformance,
   runNotesAction,
+  extractNoteFromImage,
   runMentorChat,
   runWithProviders,
   isAnyProviderAvailable,

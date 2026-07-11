@@ -20,8 +20,7 @@ async function request(url, options = {}) {
   try {
     res = await fetch(url, options);
   } catch (networkErr) {
-    // fetch() itself rejected - offline, DNS failure, CORS, timeout, etc.
-    throw new Error("Network error - check your connection and try again.");
+     throw new Error("Network error - check your connection and try again.");
   }
 
   let json = null;
@@ -39,9 +38,7 @@ async function request(url, options = {}) {
       (rawText && rawText.length < 200 ? rawText : null) ||
       `Request failed (${res.status} ${res.statusText || ""})`.trim();
     const err = new Error(message);
-    // Attach any extra flags from the JSON body so callers can branch on them.
-    // e.g. extraction_failed: true  →  AIEvaluatorPanel shows "try a clearer photo"
-    if (json && typeof json === "object") {
+     if (json && typeof json === "object") {
       Object.keys(json).forEach((k) => {
         if (k !== "error" && k !== "success") err[k] = json[k];
       });
@@ -72,7 +69,7 @@ export async function evaluateAnswerImage({ question, paper, image }) {
     body: JSON.stringify({
       question,
       paper,
-      image: { data: image }, // full data URI - parseImageDataUri() on the server splits mimeType + base64
+      image: { data: image },
     }),
   });
 }
@@ -109,8 +106,6 @@ export async function deleteChatThread(id) {
   });
 }
 
-// ─── POST /api/evaluate/prelim-explain ───────────────────────────────────────
-// Returns { success, provider_used, explanation: string }
 export async function explainPrelimQuestion({ questionText, options, correctOption, explanation }) {
   return request(`${BASE}/evaluate/prelim-explain`, {
     method: "POST",
@@ -119,22 +114,12 @@ export async function explainPrelimQuestion({ questionText, options, correctOpti
   });
 }
 
-// ─── Legacy aliases (still used by embedded widgets like AIMentorChat compact) ─
 export async function getChatHistory() {
-  // Redirect to thread list for backwards compat
   return listChatThreads();
 }
 export async function clearChatHistory() {
-  // No-op in threads model - individual threads are deleted via deleteChatThread
   return { success: true };
 }
-
-// ─── Notes CRUD - DB-backed, per-user notes ──────────────────────────────────
-// Served by notesRoutes.js → GET/POST /api/notes, PATCH/DELETE /api/notes/:id.
-// Every endpoint is scoped server-side to req.user.id, so a note is only ever
-// visible to the account that created it.
-
-// Returns the full note list for the signed-in user, most recently updated first.
 export async function fetchNotes() {
   const res = await request(`${BASE}/notes`, {
     headers: authHeaders(),
@@ -168,9 +153,7 @@ export async function deleteNoteRemote(id) {
   });
 }
 
-// ─── Notes AI actions ──────────────────────────────────────────────────────
-// Served by notesRoutes.js → POST /api/notes/:action (mounted directly in
-// server.js, separate from the evaluate/* chat & answer-grading routes).
+// ─── Notes AI actions
 export async function improveNotes(payload) {
   const res = await request(`${BASE}/notes/improve`, {
     method: "POST",
@@ -210,6 +193,16 @@ export async function convertToMainsFormat(payload) {
   return res.result;
 }
 
+// ─── POST /api/notes/extract-image ──
+export async function extractNoteFromImage({ image }) {
+  const res = await request(`${BASE}/notes/extract-image`, {
+    method: "POST",
+    headers: authHeaders(),
+    body: JSON.stringify({ image: { data: image } }),
+  });
+  return { extractedText: res.extracted_text, suggestions: res.suggestions || [] };
+}
+
 export async function submitTestResult(payload) {
   return request(`${BASE}/tests/submit`, {
     method: "POST",
@@ -219,7 +212,7 @@ export async function submitTestResult(payload) {
 }
 
 // ─── GET /api/tests ───────────────────────────────────────────────────────────
-// Lightweight history list (no full ai_analysis blob) - most recent first.
+// Lightweight history list
 export async function getTestHistory(limit = 20) {
   return request(`${BASE}/tests?limit=${limit}`, {
     headers: authHeaders(),
@@ -235,7 +228,7 @@ export async function getTestAttempt(id) {
 }
 
 // ─── POST /api/tests/:id/reanalyze ───────────────────────────────────────────
-// Re-runs AI analysis on an existing attempt (e.g. retry after a failure).
+// Re-runs AI analysis on an existing attempt
 export async function reanalyzeTest(id) {
   return request(`${BASE}/tests/${id}/reanalyze`, {
     method: "POST",

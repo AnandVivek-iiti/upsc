@@ -91,7 +91,7 @@ function buildResponse(res, user, userData, testAttemptCount = 0) {
 const updateModuleProgress = async (req, res, next) => {
   try {
     const { stage, paper, module: moduleName } = req.params;
-    const { progress, state } = req.body;
+    const { progress, state, completedTopics } = req.body;
 
     const validStages = ["prelims", "mains"];
     const validStates = ["pending", "progress", "revision", "done"];
@@ -105,6 +105,14 @@ const updateModuleProgress = async (req, res, next) => {
     if (state && !validStates.includes(state)) {
       return res.status(400).json({ success: false, error: `Invalid state. Must be: ${validStates.join(", ")}` });
     }
+    if (completedTopics !== undefined) {
+      if (!Array.isArray(completedTopics) || completedTopics.some((t) => typeof t !== "string")) {
+        return res.status(400).json({ success: false, error: "completedTopics must be an array of strings." });
+      }
+      if (completedTopics.length > 200) {
+        return res.status(400).json({ success: false, error: "Too many completedTopics for one module." });
+      }
+    }
 
     const userData = await UserData.findOne({ where: { user_id: req.user.id } });
     if (!userData) {
@@ -114,10 +122,11 @@ const updateModuleProgress = async (req, res, next) => {
     const sp = userData.syllabus_progress ? { ...userData.syllabus_progress } : {};
     if (!sp[stage])                     sp[stage]                     = {};
     if (!sp[stage][paper])              sp[stage][paper]              = {};
-    if (!sp[stage][paper][moduleName])  sp[stage][paper][moduleName]  = { progress: 0, state: "pending" };
+    if (!sp[stage][paper][moduleName])  sp[stage][paper][moduleName]  = { progress: 0, state: "pending", completedTopics: [] };
 
-    if (progress !== undefined) sp[stage][paper][moduleName].progress = progress;
-    if (state)                  sp[stage][paper][moduleName].state    = state;
+    if (progress !== undefined)        sp[stage][paper][moduleName].progress        = progress;
+    if (state)                         sp[stage][paper][moduleName].state           = state;
+    if (completedTopics !== undefined) sp[stage][paper][moduleName].completedTopics = completedTopics;
 
     userData.syllabus_progress = sp;
     userData.changed("syllabus_progress", true);
@@ -129,8 +138,9 @@ const updateModuleProgress = async (req, res, next) => {
     res.json({
       success: true,
       stage, paper, module: moduleName,
-      progress: sp[stage][paper][moduleName].progress,
-      state:    sp[stage][paper][moduleName].state,
+      progress:        sp[stage][paper][moduleName].progress,
+      state:           sp[stage][paper][moduleName].state,
+      completedTopics: sp[stage][paper][moduleName].completedTopics || [],
     });
   } catch (err) {
     next(err);
@@ -165,6 +175,14 @@ const bulkUpdateSyllabus = async (req, res, next) => {
       if (u.state && !validStates.includes(u.state)) {
         return res.status(400).json({ success: false, error: `Invalid state: ${u.state}` });
       }
+      if (u.completedTopics !== undefined) {
+        if (!Array.isArray(u.completedTopics) || u.completedTopics.some((t) => typeof t !== "string")) {
+          return res.status(400).json({ success: false, error: `completedTopics must be an array of strings for module ${u.module}` });
+        }
+        if (u.completedTopics.length > 200) {
+          return res.status(400).json({ success: false, error: `Too many completedTopics for module ${u.module}` });
+        }
+      }
     }
 
     const userData = await UserData.findOne({ where: { user_id: req.user.id } });
@@ -175,13 +193,14 @@ const bulkUpdateSyllabus = async (req, res, next) => {
     const sp = userData.syllabus_progress ? JSON.parse(JSON.stringify(userData.syllabus_progress)) : {};
 
     for (const u of updates) {
-      const { stage, paper, module: mod, progress, state } = u;
+      const { stage, paper, module: mod, progress, state, completedTopics } = u;
       if (!sp[stage])          sp[stage]          = {};
       if (!sp[stage][paper])   sp[stage][paper]   = {};
-      if (!sp[stage][paper][mod]) sp[stage][paper][mod] = { progress: 0, state: "pending" };
+      if (!sp[stage][paper][mod]) sp[stage][paper][mod] = { progress: 0, state: "pending", completedTopics: [] };
 
-      if (progress !== undefined) sp[stage][paper][mod].progress = progress;
-      if (state)                  sp[stage][paper][mod].state    = state;
+      if (progress !== undefined)        sp[stage][paper][mod].progress        = progress;
+      if (state)                         sp[stage][paper][mod].state           = state;
+      if (completedTopics !== undefined) sp[stage][paper][mod].completedTopics = completedTopics;
     }
 
     userData.syllabus_progress = sp;

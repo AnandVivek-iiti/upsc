@@ -1,15 +1,17 @@
 /**
- * DashboardOnboardingCards v2 - Progressive preparation journey.
+ * DashboardOnboardingCards v3 - Progressive preparation journey.
  *
- * This replaces the flat 6-card list with a 5-stage milestones system that
- * mirrors the actual UPSC preparation sequence, not generic SaaS onboarding.
+ * Covers the "feature discovery" milestones only. The old Foundation stage
+ * (exam year, daily study goal, syllabus baseline) has been removed from
+ * here - that functional setup now happens once, up front, in SetupWizard
+ * right after sign-in. Duplicating it here would mean asking the same
+ * question twice, so this panel starts at Consistency.
  *
  * Stages:
- *   1. Foundation  - Set exam year, study goal, complete syllabus setup
- *   2. Consistency - Log first session, maintain 3-day streak, log 5 hours
- *   3. Practice    - Attempt first PYQ, complete 20 PYQs, take first mock
- *   4. Improvement - Write first answer, audit first notes, use AI Mentor
- *   5. Revision    - Review weak topics, clear revision queue
+ *   1. Consistency - Log first session, maintain 3-day streak, log 5 hours
+ *   2. Practice    - Attempt first PYQ, complete 20 PYQs, take first mock
+ *   3. Improvement - Write first answer, audit first notes, use AI Mentor
+ *   4. Revision    - Review weak topics, clear revision queue
  *
  * How it works:
  * - Every milestone derives its "done" state from the same props already
@@ -21,6 +23,11 @@
  * - If ALL milestones across all stages are done, the component returns null
  *   (no clutter for established users).
  * - The component remembers dismissed milestones via localStorage.
+ * - ONE-TIME PANEL: the whole panel is shown only on the user's very first
+ *   dashboard render ever (tracked via a single localStorage flag). Once
+ *   that first render has happened, the panel never appears again on any
+ *   future visit - even if some milestones are still incomplete. This is
+ *   intentional: it's a one-time welcome tour, not a persistent nag.
  *
  * Usage (inside Dashboard.jsx, near the top of the page):
  *
@@ -32,9 +39,8 @@
  *   />
  */
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
-  Calendar, Target, ClipboardList,
   Clock, Flame, TrendingUp,
   BookOpen, BarChart2, FlaskConical,
   PenLine, FileSearch, Brain,
@@ -44,38 +50,6 @@ import {
 
 /* ─── Stage + milestone definitions ─────────────────────────────────────── */
 const STAGES = [
-  {
-    id: "foundation",
-    label: "Foundation",
-    color: "blue",
-    description: "Set up your preparation workspace.",
-    milestones: [
-      {
-        id: "set-exam-year",
-        icon: Calendar,
-        title: "Set your exam year",
-        text: "Go to Profile and set your target exam date so your countdown and pacing are correct.",
-        view: "profile",
-        isDone: ({ userData }) => !!(userData?.profile?.examDate),
-      },
-      {
-        id: "set-study-goal",
-        icon: Target,
-        title: "Set a daily study goal",
-        text: "Set how many hours you plan to study each day - this powers your timer target and weekly chart.",
-        view: "profile",
-        isDone: ({ userData }) => (userData?.profile?.daily_target_hours || 0) > 0,
-      },
-      {
-        id: "syllabus-setup",
-        icon: ClipboardList,
-        title: "Start your syllabus setup",
-        text: "Open Syllabus Tracker and mark what you've already covered so your progress bars start accurate.",
-        view: "syllabus",
-        isDone: ({ overallProgress }) => (overallProgress || 0) > 0,
-      },
-    ],
-  },
   {
     id: "consistency",
     label: "Consistency",
@@ -293,12 +267,36 @@ function StageHeader({ stage, state, isOpen, onToggle }) {
 /* ════════════════════════════════════════════════════════════════════════════
    Main component
    ════════════════════════════════════════════════════════════════════════════ */
+const SEEN_KEY = "upsc-onboarding-panel-seen";
+
 export default function DashboardOnboardingCards({
   userData,
   todayHours = 0,
   overallProgress = 0,
   onNavigate,
 }) {
+  /* One-time-only gate: has this browser/user already been shown the
+     panel once before? Read synchronously on first render so there's no
+     flash of content before it disappears. */
+  const [alreadySeen] = useState(() => {
+    try {
+      return localStorage.getItem(SEEN_KEY) === "1";
+    } catch {
+      return false;
+    }
+  });
+
+  /* Mark as seen the moment this component actually mounts and is going
+     to render (i.e. on the user's first real dashboard visit) - so even
+     if they navigate away before finishing any milestone, it will not
+     show again. */
+  useEffect(() => {
+    if (alreadySeen) return;
+    try {
+      localStorage.setItem(SEEN_KEY, "1");
+    } catch { /* non-fatal */ }
+  }, [alreadySeen]);
+
   /* Persistent dismissed set */
   const [dismissed, setDismissed] = useState(() => {
     try {
@@ -327,6 +325,10 @@ export default function DashboardOnboardingCards({
   const [openStage, setOpenStage] = useState(
     firstIncomplete >= 0 ? firstIncomplete : 0
   );
+
+  /* One-time panel: never render again after the first-ever mount, no
+     matter how much (or how little) progress the user has made. */
+  if (alreadySeen) return null;
 
   /* If every milestone across every stage is done/dismissed, hide the panel */
   const totalMilestones = STAGES.reduce((s, st) => s + st.milestones.length, 0);

@@ -6,7 +6,6 @@ import {
 } from "lucide-react";
 import { AvatarCircle } from "../../pages/User/ProfilePage";
 
-// ─── Primary nav (shown in the bar) ──
 const PRIMARY_NAV = [
   { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
   { id: "mains", label: "Mains", icon: PenTool },
@@ -16,7 +15,6 @@ const PRIMARY_NAV = [
 
 ];
 
-// ─── "More" drawer items ──
 const MORE_NAV = [
   { id: "pyq-vault", label: "PYQS", icon: Archive },
 
@@ -72,7 +70,6 @@ export default function BottomNav({
 
   return (
     <>
-      {/* ── More drawer backdrop ── */}
       {moreOpen && (
         <div
           className="lg:hidden fixed inset-0 z-40 bg-black/40 backdrop-blur-sm"
@@ -80,7 +77,6 @@ export default function BottomNav({
         />
       )}
 
-      {/* ── More drawer panel ── */}
       {moreOpen && (
         <div
           ref={drawerRef}

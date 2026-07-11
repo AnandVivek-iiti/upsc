@@ -56,12 +56,16 @@ export async function getUserData(explicitToken = null) {
 }
 
 // ─── Syllabus ─────────────────────────────────────────────────────────────────
-export async function updateSyllabusProgress(stage, paper, moduleName, progress, state) {
+export async function updateSyllabusProgress(stage, paper, moduleName, progress, state, completedTopics) {
   return apiFetch(
     `/dashboard/syllabus/${encodeURIComponent(stage)}/${encodeURIComponent(paper)}/${encodeURIComponent(moduleName)}`,
     {
       method: "PATCH",
-      body: JSON.stringify({ progress, ...(state ? { state } : {}) }),
+      body: JSON.stringify({
+        progress,
+        ...(state ? { state } : {}),
+        ...(completedTopics !== undefined ? { completedTopics } : {}),
+      }),
     }
   );
 }
