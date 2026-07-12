@@ -1,6 +1,6 @@
 const router = require("express").Router();
 const controller = require("../controllers/notesController");
-const { protect } = require("../middleware/authMiddleware");
+const { protect , adminOnly } = require("../middleware/authMiddleware");
 const { evaluateLimiter } = require("../middleware/rateLimiter");
 
 // ─── Note CRUD

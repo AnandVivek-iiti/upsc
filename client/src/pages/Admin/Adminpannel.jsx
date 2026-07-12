@@ -1486,6 +1486,7 @@ const fetchFeedback = useCallback(async () => {
     { id: "discovery", label: "Discovery", icon: Compass },
     { id: "insights", label: "Insights", icon: Lightbulb },
     { id: "feedback", label: "Feedback", icon: MessageCircle },
+    { id: "study",    label: "Study",    icon: BookOpen },
     { id: "email",    label: "Email",    icon: Mail },
   ];
 
@@ -1586,11 +1587,11 @@ const fetchFeedback = useCallback(async () => {
           onRefresh={fetchFeedback}
         />
       )}
+      {tab === "study" && <AdminStudyAnalytics />}
       {tab === "email" && <PowerUserEmailer />}
       {profileUserId && (
         <UserProfileModal userId={profileUserId} onClose={closeProfile} />
       )}
-      <AdminStudyAnalytics />
       {toast && <Toast msg={toast.msg} type={toast.type} onClose={() => setToast(null)} />}
     </div>
   );

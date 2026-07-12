@@ -307,6 +307,7 @@ export default function App() {
                   weekAvgHours={weekAvgHours}
                   overallProgress={overallProgress}
                   onLogHours={logHours}
+                  onBulkUpdateSyllabus={bulkUpdateProgress}
                   user={user}
                   isLoggedIn={isLoggedIn}
                   onNavigateAuth={() => setActiveView("auth")}

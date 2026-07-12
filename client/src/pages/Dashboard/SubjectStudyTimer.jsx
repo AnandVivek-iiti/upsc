@@ -1,11 +1,12 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import {
   Play, Pause, RotateCcw, Timer, Cloud, CloudOff,
-  BookOpen, ChevronDown, ChevronUp, Clock, Edit3,
+  BookOpen, ChevronDown, ChevronUp, Clock, Edit3, Link2,
 } from "lucide-react";
 import timerStore from "../../hooks/timerStore";
-import { useSubjectTimer, UPSC_SUBJECTS, SUBJECT_COLORS, SUBJECT_ICONS } from "../../hooks/useSubjectTimer";
+import { useSubjectTimer, UPSC_SUBJECTS, SUBJECT_COLORS, SUBJECT_ICONS, SUBJECT_SYLLABUS_MAP } from "../../hooks/useSubjectTimer";
 import UserTimeline from "../../components/ui/UserTimeline";
+import SyllabusSyncModal from "./SyllabusSyncModal";
 
 // ─── Formatters ───────────────────────────────────────────────────────────────
 function fmtTime(secs) {
@@ -21,11 +22,6 @@ function fmtHM(secs) {
   return m === 0 ? `${h}h` : `${h}h ${m}m`;
 }
 
-// ─── SubjectPicker ────────────────────────────────────────────────────────────
-// Single prompt for "today's topic": pick a subject (required) and, optionally,
-// a chapter/topic detail. Nothing starts until the student confirms - this is
-// the gate that stops the timer ever running without a topic attached, and
-// keeps the topic shown in sync with the subject actually being timed.
 function SubjectPicker({ initialSubject = null, initialChapter = "", onConfirm, onCancel, confirmLabel = "Start Studying" }) {
   const [selected, setSelected] = useState(initialSubject);
   const [chapter, setChapterInput] = useState(initialChapter);
@@ -104,6 +100,8 @@ export default function SubjectStudyTimer({
   serverHours = 0,
   dataReady = false,
   userId = null,
+  syllabusData = null,        // data.syllabus from useUserData - needed to build the sync modal's topic checklist
+  onBulkUpdateSyllabus = null, // bulkUpdateProgress from useUserData
 }) {
   const [elapsed, setElapsed] = useState(timerStore.elapsed);
   const [running, setRunning] = useState(timerStore.running);
@@ -111,6 +109,7 @@ export default function SubjectStudyTimer({
   const [ringGrown, setRingGrown] = useState(false);
   const [isCompact, setIsCompact] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
+  const [showSyllabusSync, setShowSyllabusSync] = useState(false);
 
   const subjectTimer = useSubjectTimer({
     userId, onLogHours, onSynced, targetHours, serverHours, dataReady,
@@ -120,17 +119,11 @@ export default function SubjectStudyTimer({
     subject, chapter, phase, error,
     showSubjectPicker, startStudy, pauseStudy, resumeStudy, resetStudy, setPhase,
     todaySessions, todayTimeline,
+    lastSession, sessionStartElapsedRef, addSessionNote,
   } = subjectTimer;
 
-  // Remembers the phase to fall back to if the student cancels out of the
-  // picker, so "Cancel" never strands them on the picker screen and never
-  // wipes a topic/session that was already in progress.
   const previousPhaseRef = useRef(phase);
 
-  // Opens the subject/topic picker. If a session is currently running, it is
-  // paused (and its hours synced) first - this is what keeps "today's topic"
-  // and "the subject actually being timed" from ever drifting apart: you can
-  // never have a new topic selected while an old one is still silently ticking.
   const openPicker = useCallback(async () => {
     if (phase === "running") {
       await pauseStudy();
@@ -168,11 +161,6 @@ export default function SubjectStudyTimer({
   // ── Bind userId to timerStore ──────────────────────────────────────────
   useEffect(() => { timerStore.setUser(userId); }, [userId]);
 
-  // ── Register sync handler ───────────────────────────────────────────────
-  // timerStore can invoke this independently of pauseStudy() above (e.g. on
-  // its own auto-sync). Keeping the note here built from the same
-  // subject/chapter means there's no path where an hours-log can show up
-  // without today's topic attached.
   useEffect(() => {
     timerStore.setSyncHandler(async (hours) => {
       setSyncState("syncing");
@@ -223,6 +211,24 @@ export default function SubjectStudyTimer({
                     : "var(--text-muted)";
 
   const todayTotalSecs = todaySessions.reduce((t, s) => t + (s.duration_seconds || 0), 0);
+
+  const syncTarget = (() => {
+    if (!subject || !SUBJECT_SYLLABUS_MAP[subject]) return null;
+    if (phase === "paused" && lastSession?.subject === subject) {
+      return { sessionId: lastSession.id, subject, durationSeconds: lastSession.durationSeconds };
+    }
+    if (phase === "running") {
+      const durationSeconds = Math.max(0, elapsed - sessionStartElapsedRef.current);
+      return { sessionId: subjectTimer.activeId, subject, durationSeconds };
+    }
+    return null;
+  })();
+
+  const handleSyncConfirm = async ({ updates, note }) => {
+    if (updates.length > 0) await onBulkUpdateSyllabus?.(updates);
+    if (note) await addSessionNote(syncTarget?.sessionId, note);
+    setShowSyllabusSync(false);
+  };
 
   return (
     <div className="glass-panel p-3 sm:p-5 space-y-4">
@@ -333,14 +339,34 @@ export default function SubjectStudyTimer({
                   <button onClick={resumeStudy} className="btn-primary flex items-center gap-1.5 flex-1 justify-center text-xs sm:text-sm py-2.5">
                     <Play size={13} fill="currentColor" /> Resume {subject}
                   </button>
+                  {syncTarget && (
+                    <button
+                      onClick={() => setShowSyllabusSync(true)}
+                      title="Confirm what you covered and update the syllabus tracker"
+                      className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium bg-accent-gold/10 border border-accent-gold/30 text-accent-gold hover:bg-accent-gold/20 transition-colors"
+                    >
+                      <Link2 size={12} /> Sync
+                    </button>
+                  )}
                   <button onClick={openPicker} className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium bg-bg-muted border border-bg-border text-text-muted hover:text-text-primary transition-colors">
                     Switch
                   </button>
                 </>
               ) : (
-                <button onClick={pauseStudy} className="flex items-center gap-1.5 flex-1 justify-center px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-medium bg-accent-gold/15 text-accent-gold border border-accent-gold/30 hover:bg-accent-gold/25 transition-colors">
-                  <Pause size={13} fill="currentColor" /> Pause &amp; Save
-                </button>
+                <>
+                  <button onClick={pauseStudy} className="flex items-center gap-1.5 flex-1 justify-center px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-medium bg-accent-gold/15 text-accent-gold border border-accent-gold/30 hover:bg-accent-gold/25 transition-colors">
+                    <Pause size={13} fill="currentColor" /> Pause &amp; Save
+                  </button>
+                  {syncTarget && (
+                    <button
+                      onClick={() => setShowSyllabusSync(true)}
+                      title="Confirm what you covered and update the syllabus tracker"
+                      className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium bg-bg-muted border border-bg-border text-text-muted hover:text-accent-gold hover:border-accent-gold/30 transition-colors"
+                    >
+                      <Link2 size={12} /> Sync
+                    </button>
+                  )}
+                </>
               )}
               <button onClick={resetStudy} className="btn-ghost border border-bg-border flex items-center justify-center px-2 sm:px-3 py-2 sm:py-2.5" title="Reset timer">
                 <RotateCcw size={13} />
@@ -362,6 +388,14 @@ export default function SubjectStudyTimer({
           {showHistory && <UserTimeline events={todayTimeline} compact />}
         </div>
       )}
+      <SyllabusSyncModal
+        open={showSyllabusSync && !!syncTarget}
+        subject={syncTarget?.subject}
+        durationSeconds={syncTarget?.durationSeconds || 0}
+        syllabusData={syllabusData}
+        onConfirm={handleSyncConfirm}
+        onSkip={() => setShowSyllabusSync(false)}
+      />
     </div>
   );
 }

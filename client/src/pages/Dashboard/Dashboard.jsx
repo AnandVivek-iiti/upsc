@@ -948,6 +948,7 @@ export default function Dashboard({
   weekAvgHours,
   overallProgress,
   onLogHours,
+  onBulkUpdateSyllabus,
   user,
   isLoggedIn = false,
   onNavigateAuth,
@@ -1088,6 +1089,8 @@ export default function Dashboard({
         serverHours={serverHoursNum}
         dataReady={!!userData}
         userId={userId}
+        syllabusData={syllabusData}
+        onBulkUpdateSyllabus={onBulkUpdateSyllabus}
       />
 
       {/* ── Subject Study Analytics ── */}

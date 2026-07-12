@@ -2,7 +2,7 @@
 
 **An AI-powered preparation companion for UPSC Civil Services aspirants - syllabus tracking, subject-wise study analytics, Mains answer evaluation, Prelims PYQ drilling, MCQ test series with AI diagnostics, an AI notes workspace, and a personal AI mentor, all in one platform.**
 
-🔗 **Live App:** [https://www.upscbyiitians.in](https://www.upscbyiitians.in//)
+🔗 **Live App:** [https://www.upscbyiitians.in](https://www.upscbyiitians.in/) &nbsp;·&nbsp; **Fallback (if `.in` is down):** [https://upsc-by-iitian.onrender.com](https://upsc-by-iitian.onrender.com/)
 
 ---
 
@@ -16,6 +16,7 @@ UPSC Mentor is a full-stack exam-prep platform built for CSE aspirants. It combi
 
 ### 📊 Dashboard
 - **Subject Study Timer** - live stopwatch that tracks time per UPSC subject (12 subjects), persists per day/user, and syncs across open tabs/devices in real time via Socket.io.
+- **Syllabus Sync Modal** - after a study session, a confirm-before-updating checklist of the real Prelims/Mains syllabus modules mapped to that subject (sourced from `syllabusData.js`), split into switchable **Prelims / Mains tabs** with a remaining-topic count badge on each; only the topics the student actually checks off get marked complete, with a free-text fallback note for anything outside the mapped list.
 - **Subject Analytics Dashboard** - per-subject daily/weekly/monthly/lifetime accumulation with a syllabus bridge (1 hr = 10% progress, capped at 95%).
 - **Study Chart** - visual history of daily study hours vs. the user's daily target.
 - **Today Planner** - quick add/check-off daily task list.
@@ -30,6 +31,7 @@ UPSC Mentor is a full-stack exam-prep platform built for CSE aspirants. It combi
 - Per-module status (Pending / In Progress / Revision / Done) with progress bars.
 - **Bulk syllabus update** endpoint so multiple modules can be saved in a single request.
 - Stage-level coverage bars summarizing how much of Prelims/Mains is complete.
+- **Subject → syllabus module mapping** (`SUBJECT_SYLLABUS_MAP`, mirrored between `client/src/hooks/useSubjectTimer.js` and `server/src/controllers/subjectSessionController.js`) - an exhaustive, per-stage list of every real `syllabusData.js` module that belongs to each of the 12 timer subjects, independently for Prelims and Mains. Modules with no clean 1:1 subject (e.g. Indian Society & Diversity, Internal Security, International Relations) are deliberately left unmapped rather than forced into one. This is what powers the Syllabus Sync Modal's checklist.
 
 ### 🤖 AI Mentor Chat
 - Persistent, multi-thread conversational mentor backed by a dedicated system prompt that enforces structured markdown (headings, tables, `:::memory:::` recall blocks, exam tips) and bans flattery/filler.
@@ -276,7 +278,7 @@ index.css / main.jsx
 │   └── useUserData.js           # Central server data hook + mutation helpers
 
 ├── pages/
-│   ├── Hero.jsx                 # HeroBanner with 365-quote engine + QuotePanel
+│   ├── Hero.jsx                 # HeroBanner with 365-quote engine + QuotePanel; motto: "From syllabus to selection."
 │   ├── LandingHero.jsx
 │   ├── Admin/
 │   │   ├── Adminpannel.jsx      # Visitor analytics, user list, feature flags
@@ -289,7 +291,8 @@ index.css / main.jsx
 │   ├── Dashboard/
 │   │   ├── Dashboard.jsx        # Main dashboard with ActionHub
 │   │   ├── SubjectAnalyticsDashboard.jsx  # Per-subject charts + syllabus bridge
-│   │   └── SubjectStudyTimer.jsx          # 12-subject study timer UI
+│   │   ├── SubjectStudyTimer.jsx          # 12-subject study timer UI
+│   │   └── SyllabusSyncModal.jsx          # Post-session Prelims/Mains tabbed confirm checklist
 │   ├── PYQs/
 │   │   ├── MainsGrind.jsx       # Mains answer evaluation workspace
 │   │   ├── PrelimsGrind.jsx     # Prelims PYQ drilling by subject

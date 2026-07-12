@@ -8,7 +8,7 @@ const { authLimiter } = require("../middleware/rateLimiter");
 
 router.post  ("/register",        authLimiter, register);
 router.post  ("/login",           authLimiter, login);
-router.post  ("/google",          authLimiter, googleAuth);   // ← Google OAuth
+router.post  ("/google",          authLimiter, googleAuth); 
 router.get   ("/me",              protect,     getProfile);
 router.patch ("/profile",         protect,     updateProfile);
 router.patch ("/change-password", protect,     changePassword);

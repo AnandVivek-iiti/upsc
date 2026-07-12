@@ -8,7 +8,7 @@ import {
   getAllModules,
 } from "../../data/PYQs/syllabusData";
 import { useState, useCallback, useEffect, useRef, useMemo } from "react";
-import { Search, RotateCcw, CheckCheck, Loader2, Cloud, CloudOff, X, Check, Circle, CircleDot, CheckCircle2, Minus, Plus as PlusIcon } from "lucide-react";
+import { Search, RotateCcw, CheckCheck, Loader2, Cloud, CloudOff, X, Check, Circle, CircleDot,Clock, CheckCircle2, Minus, Plus as PlusIcon } from "lucide-react";
 import AIRevisionPanel from "../AI/AIRevisionPanel";
 
 const STAGE_KEY = "upsc-syllabus-stage";
@@ -38,8 +38,6 @@ function moduleMatches(name, mod, query) {
   return (mod.topics || []).some((t) => t.toLowerCase().includes(q));
 }
 
-// Wraps the substring of `text` matching `query` in a <mark>-style span so
-// search hits are visible inside topic chips, not just used for filtering.
 function highlightMatch(text, query) {
   if (!query) return text;
   const idx = text.toLowerCase().indexOf(query.toLowerCase());
@@ -74,13 +72,9 @@ function StatusBadge({ status, onClick }) {
 // ─── StatusIcon ───
 
 function StatusIcon({ status, onClick }) {
-  // Real icon components instead of unicode glyphs (○ ◑ ↻ ✓) - unicode
-  // symbols render inconsistently across Android system fonts/browsers,
-  // which matters given this app's audience skews toward budget Android
-  // devices. lucide-react is already used everywhere else in this app.
   const icons = {
     pending:  { Icon: Circle,        color: "var(--text-muted)" },
-    progress: { Icon: CircleDot,     color: "var(--accent-blue)" },
+    progress: { Icon: Clock,     color: "var(--accent-blue)" },
     revision: { Icon: RotateCcw,     color: "var(--accent-gold)" },
     done:     { Icon: CheckCircle2,  color: "var(--accent-green)" },
   };

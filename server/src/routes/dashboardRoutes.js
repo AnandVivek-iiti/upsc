@@ -25,7 +25,6 @@ router.post("/syllabus/bulk", bulkUpdateSyllabus);
 // Daily study log
 router.post("/daily-log", logStudyHours);
 
-// Question attempts - server sync for cross-device and profile stats
 router.post("/question-attempts", syncQuestionAttempts);
 
 // Spaced repetition

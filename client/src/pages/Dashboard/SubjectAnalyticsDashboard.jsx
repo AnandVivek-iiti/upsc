@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { BarChart2, TrendingUp, TrendingDown, RefreshCw, Link2, CheckCircle2 } from "lucide-react";
+import { BarChart2, TrendingUp, TrendingDown, RefreshCw } from "lucide-react";
 import { SUBJECT_COLORS, SUBJECT_ICONS } from "../../hooks/useSubjectTimer";
 
 const BASE = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
@@ -69,8 +69,6 @@ export default function SubjectAnalyticsDashboard({ userId, isLoggedIn = false }
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [grown, setGrown] = useState(false);
-  const [syncingF5, setSyncingF5] = useState(false);
-  const [f5Result, setF5Result] = useState(null);
 
   const fetchData = useCallback(async (p = "day") => {
     if (!isLoggedIn) return;
@@ -94,25 +92,6 @@ export default function SubjectAnalyticsDashboard({ userId, isLoggedIn = false }
   useEffect(() => { fetchData("day"); }, [fetchData]);
 
   const handlePeriod = (p) => { setPeriod(p); fetchData(p); };
-
-  const handleSyncSyllabus = async () => {
-    setSyncingF5(true);
-    setF5Result(null);
-    try {
-      const res = await fetch(`${BASE}/subject-sessions/sync-syllabus`, {
-        method: "POST", headers: authHeaders(),
-      });
-      const json = await res.json();
-      if (json.success) {
-        setF5Result({ modules: json.synced_modules });
-      }
-    } catch (err) {
-      console.error("❌ Sync syllabus error:", err);
-    } finally {
-      setSyncingF5(false);
-      setTimeout(() => setF5Result(null), 4000);
-    }
-  };
 
   if (!isLoggedIn) {
     return (
@@ -218,20 +197,6 @@ export default function SubjectAnalyticsDashboard({ userId, isLoggedIn = false }
         </div>
       )}
 
-      {dist.length > 0 && (
-        <div className="pt-2 border-t border-bg-border/50">
-          <div className="flex items-center justify-between gap-3">
-            <div>
-              <p className="text-xs font-display font-semibold text-text-primary">Sync to Syllabus</p>
-              <p className="text-[10px] font-mono text-text-muted mt-0.5">Push your study hours into syllabus progress automatically.</p>
-            </div>
-            <button onClick={handleSyncSyllabus} disabled={syncingF5} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold font-mono border border-accent-gold/40 bg-accent-gold/10 text-accent-gold hover:bg-accent-gold/20 transition-all shrink-0 disabled:opacity-50">
-              {syncingF5 ? <RefreshCw size={11} className="animate-spin" /> : f5Result ? <CheckCircle2 size={11} /> : <Link2 size={11} />}
-              {syncingF5 ? "Syncing…" : f5Result ? `${f5Result.modules} updated` : "Sync"}
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

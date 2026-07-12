@@ -145,7 +145,7 @@ export default function HeroBanner({
       </div>
 
       {/* Content */}
-      <div className="relative z-10 px-2 sm:px-4 md:px-6 pt-3 sm:pt-4 md:pt-5 pb-6 sm:pb-7 md:pb-8">
+      <div className="relative z-5 px-2 sm:px-4 md:px-6 pt-3 sm:pt-4 md:pt-5 pb-6 sm:pb-7 md:pb-8">
         {/* Top row - label + date + exam countdown */}
         <div className="flex flex-wrap items-start justify-between gap-2 mb-4 sm:mb-5 md:mb-6">
           <p className="font-mono text-[9px] sm:text-[10px] tracking-[.18em] uppercase text-accent-gold">UPSC Mentor</p>
@@ -164,9 +164,9 @@ export default function HeroBanner({
         {/* Hero title */}
         <h1 className="font-display text-2xl sm:text-3xl md:text-[38px] lg:text-[42px] font-normal text-white leading-[1.2] sm:leading-[1.1] max-w-lg drop-shadow-sm
           mb-3 sm:mb-4">
-          Every day counts.
+          From syllabus
           <br />
-          Every answer matters.
+          to selection.
         </h1>
 
         {/* Quote - 365-quote engine, original compact panel look */}

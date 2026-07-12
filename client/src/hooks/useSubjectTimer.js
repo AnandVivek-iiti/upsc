@@ -37,6 +37,86 @@ export const SUBJECT_ICONS = {
   Optional: "📖", "Current Affairs": "📰", Other: "📚",
 };
 
+// ─── Subject → Syllabus module mapping ───────────────────────────────────────
+// Mirrors server/src/controllers/subjectSessionController.js's
+// SUBJECT_SYLLABUS_MAP exactly (stage/paper/module keys must match
+// src/data/PYQs/syllabusData.js). This is the single source of truth the
+// syllabus-sync confirm modal uses to know which modules - and therefore
+// which real topics[] - a given subject's study session maps to.
+//
+// Deliberately exhaustive per subject/paper (not a curated shortlist): every
+// module in syllabusData.js that genuinely belongs to a subject is listed,
+// for BOTH prelims and mains independently, so nothing studied is left
+// unreachable in the checklist. Modules with no clean 1:1 subject (e.g.
+// "Indian Society & Diversity", "Internal Security", "International
+// Relations") are intentionally left out of every list rather than forced
+// into one - they don't map to any of the 12 subjects in UPSC_SUBJECTS.
+// Current Affairs / Other stay absent for the same reason: cross-cutting,
+// no single syllabus module to attach them to.
+export const SUBJECT_SYLLABUS_MAP = {
+  History: [
+    { stage: "prelims", paper: "GS1", module: "History of India & Indian National Movement" },
+    { stage: "mains", paper: "GS1", module: "Indian Art, Culture & Architecture" },
+    { stage: "mains", paper: "GS1", module: "Modern Indian History" },
+    { stage: "mains", paper: "GS1", module: "Freedom Struggle" },
+    { stage: "mains", paper: "GS1", module: "Post-Independence India" },
+    { stage: "mains", paper: "GS1", module: "World History" },
+  ],
+  Polity: [
+    { stage: "prelims", paper: "GS1", module: "Indian Polity & Governance" },
+    { stage: "mains", paper: "GS2", module: "Indian Constitution" },
+    { stage: "mains", paper: "GS2", module: "Federal Structure" },
+    { stage: "mains", paper: "GS2", module: "Separation of Powers & Institutions" },
+    { stage: "mains", paper: "GS2", module: "Legislature" },
+    { stage: "mains", paper: "GS2", module: "Executive & Judiciary" },
+    { stage: "mains", paper: "GS2", module: "Constitutional & Statutory Bodies" },
+    { stage: "mains", paper: "GS2", module: "Governance & Accountability" },
+  ],
+  Economy: [
+    { stage: "prelims", paper: "GS1", module: "Economic & Social Development" },
+    { stage: "mains", paper: "GS3", module: "Indian Economy" },
+    { stage: "mains", paper: "GS3", module: "Agriculture" },
+    { stage: "mains", paper: "GS3", module: "Food Processing & Industry" },
+    { stage: "mains", paper: "GS3", module: "Infrastructure & Investment" },
+  ],
+  Geography: [
+    { stage: "prelims", paper: "GS1", module: "Indian & World Geography" },
+    { stage: "mains", paper: "GS1", module: "World Physical Geography" },
+    { stage: "mains", paper: "GS1", module: "Geophysical Phenomena" },
+  ],
+  Environment: [
+    { stage: "prelims", paper: "GS1", module: "Environment, Ecology & Climate Change" },
+    { stage: "mains", paper: "GS3", module: "Environment & Disaster Management" },
+  ],
+  "Science & Tech": [
+    { stage: "prelims", paper: "GS1", module: "General Science" },
+    { stage: "mains", paper: "GS3", module: "Science & Technology" },
+  ],
+  CSAT: [
+    { stage: "prelims", paper: "CSAT", module: "Comprehension" },
+    { stage: "prelims", paper: "CSAT", module: "Interpersonal & Communication Skills" },
+    { stage: "prelims", paper: "CSAT", module: "Logical Reasoning & Analytical Ability" },
+    { stage: "prelims", paper: "CSAT", module: "Decision Making & Problem Solving" },
+    { stage: "prelims", paper: "CSAT", module: "General Mental Ability" },
+    { stage: "prelims", paper: "CSAT", module: "Basic Numeracy & Data Interpretation" },
+  ],
+  Ethics: [
+    { stage: "mains", paper: "GS4", module: "Ethics & Human Interface" },
+    { stage: "mains", paper: "GS4", module: "Attitude" },
+    { stage: "mains", paper: "GS4", module: "Aptitude & Foundational Values" },
+    { stage: "mains", paper: "GS4", module: "Emotional Intelligence" },
+    { stage: "mains", paper: "GS4", module: "Moral Thinkers & Philosophers" },
+    { stage: "mains", paper: "GS4", module: "Public/Civil Service Values & Ethics" },
+    { stage: "mains", paper: "GS4", module: "Probity in Governance" },
+    { stage: "mains", paper: "GS4", module: "Case Studies" },
+  ],
+  Essay: [{ stage: "mains", paper: "Essay", module: "Essay Writing" }],
+  Optional: [
+    { stage: "mains", paper: "OptionalSubject", module: "Optional Subject Paper I" },
+    { stage: "mains", paper: "OptionalSubject", module: "Optional Subject Paper II" },
+  ],
+};
+
 function authHeaders() {
   const token = localStorage.getItem("upsc_token");
   return {
@@ -122,6 +202,13 @@ export function useSubjectTimer({
   const [error, setError] = useState(null);
   const startedAtRef = useRef(null);
 
+  // ── Per-session duration tracking (for the syllabus-sync modal) ──────────
+  // timerStore.elapsed is the day's cumulative total, not this session's
+  // duration, so it's tracked separately here: snapshot elapsed at
+  // startStudy(), diff it at pauseStudy() to know this session's real length.
+  const sessionStartElapsedRef = useRef(0);
+  const [lastSession, setLastSession] = useState(null); // { id, subject, chapter, durationSeconds } | null
+
   // Restore session + today's topic across reloads
   useEffect(() => {
     const savedId = sessionStorage.getItem(ACTIVE_SESSION_KEY);
@@ -200,6 +287,7 @@ export function useSubjectTimer({
   const startStudy = useCallback(async (selectedSubject, selectedChapter = "") => {
     setError(null);
     startedAtRef.current = Date.now();
+    sessionStartElapsedRef.current = timerStore.elapsed;
     timerStore.start();
     setSubject(selectedSubject);
     setChapter(selectedChapter || "");
@@ -235,6 +323,10 @@ export function useSubjectTimer({
     timerStore.pause();
     setPhase("paused");
 
+    // This session's own length, independent of timerStore.elapsed (which is
+    // the day's running total across all subjects/sessions).
+    const thisSessionSeconds = Math.max(0, timerStore.elapsed - sessionStartElapsedRef.current);
+
     const currentId = activeId;
     if (!currentId || !userId) return;
 
@@ -252,6 +344,10 @@ export function useSubjectTimer({
           await onLogHours(totalHours, note);
           onSynced?.(totalHours);
         }
+        // Server's own duration_seconds is the authoritative figure if present;
+        // fall back to the local diff (e.g. if the response shape ever changes).
+        const durationSeconds = json.session?.duration_seconds ?? thisSessionSeconds;
+        setLastSession({ id: currentId, subject, chapter, durationSeconds });
         await fetchTodaySessions();
         await fetchAnalytics("lifetime");
       }
@@ -263,6 +359,24 @@ export function useSubjectTimer({
     sessionStorage.removeItem(ACTIVE_SESSION_KEY);
     sessionStorage.removeItem(ACTIVE_SUBJECT_KEY);
   }, [activeId, userId, subject, chapter, onLogHours, onSynced, fetchTodaySessions, fetchAnalytics]);
+
+  // ── Attach a free-text note to a session after the fact ──────────────────
+  // Used by the syllabus-sync modal's "didn't cover any of these?" fallback.
+  const addSessionNote = useCallback(async (sessionId, note) => {
+    if (!sessionId || !note?.trim() || !userId) return false;
+    try {
+      const res = await fetch(`${BASE}/subject-sessions/${sessionId}/notes`, {
+        method: "PATCH",
+        headers: authHeaders(),
+        body: JSON.stringify({ notes: note.trim() }),
+      });
+      const json = await res.json();
+      return !!json.success;
+    } catch (err) {
+      console.error("❌ addSessionNote error:", err);
+      return false;
+    }
+  }, [userId]);
 
   const resumeStudy = useCallback(async () => {
     if (!subject) {
@@ -315,5 +429,9 @@ export function useSubjectTimer({
     setPhase,
     fetchTodaySessions,
     fetchAnalytics,
+    // Syllabus-sync modal support:
+    lastSession,               // { id, subject, chapter, durationSeconds } for the most recently *ended* session
+    sessionStartElapsedRef,    // .current = timerStore.elapsed snapshot at start, so callers can derive a live running-session duration
+    addSessionNote,
   };
 }

@@ -1,63 +1,15 @@
 const { Op, fn, col, literal } = require("sequelize");
-const { DataTypes } = require("sequelize");
 const { sequelize } = require("../config/db");
 const { getISTDateString } = require("../utils/dateUtils");
-const { UserData } = require("../models/UserData"); // default export
+const { UserData } = require("../models/UserData");
 const User = require("../models/User");
+const SubjectSession = require("../models/SubjectSession");
 const trackEvent = require("../utils/trackEvent");
 
-// ─── Model (defined once here; also exported for server.js sync) ──────────────
-const SubjectSession = sequelize.define(
-  "SubjectSession",
-  {
-    id: {
-      type: DataTypes.UUID,
-      defaultValue: DataTypes.UUIDV4,
-      primaryKey: true,
-    },
-    user_id: {
-      type: DataTypes.UUID,
-      allowNull: false,
-      references: { model: "users", key: "id" },
-      onDelete: "CASCADE",
-    },
-    subject: {
-      type: DataTypes.ENUM(
-        "History",
-        "Polity",
-        "Economy",
-        "Geography",
-        "Environment",
-        "Science & Tech",
-        "CSAT",
-        "Ethics",
-        "Essay",
-        "Optional",
-        "Current Affairs",
-        "Other",
-      ),
-      allowNull: false,
-    },
-    // IST date "YYYY-MM-DD" for fast per-day group-bys
-    date: { type: DataTypes.DATEONLY, allowNull: false },
-    // Epoch ms as BIGINT - no precision loss
-    start_time: { type: DataTypes.BIGINT, allowNull: false },
-    end_time: { type: DataTypes.BIGINT, allowNull: true }, // null = running
-    duration_seconds: { type: DataTypes.INTEGER, allowNull: true },
-    notes: { type: DataTypes.STRING(500), allowNull: true },
-  },
-  {
-    tableName: "subject_sessions",
-    timestamps: true,
-    underscored: true,
-    indexes: [
-      { fields: ["user_id"] },
-      { fields: ["user_id", "date"] },
-      { fields: ["subject"] },
-      { fields: ["created_at"] },
-    ],
-  },
-);
+const EXCL_NAMES = ["admin", "anand vivek"];
+const EXCL_SQL = EXCL_NAMES.map((n) => `'${n}'`).join(", ");
+const EXCL_UID_COND = `user_id NOT IN (SELECT id FROM "users" WHERE LOWER(name) IN (${EXCL_SQL}))`;
+const MAX_SESSION_SECONDS = 4 * 60 * 60;
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 function fmtDisplay(secs) {
@@ -70,6 +22,40 @@ function fmtDisplay(secs) {
 
 function toHours(secs) {
   return Math.round((secs / 3600) * 100) / 100;
+}
+async function addSubjectSessionToDailyLog(userId, dateStr, sessionSeconds) {
+  if (!sessionSeconds || sessionSeconds <= 0) return;
+
+  const userData = await UserData.findOne({ where: { user_id: userId } });
+  if (!userData) return;
+
+  const logs = Array.isArray(userData.daily_logs) ? [...userData.daily_logs] : [];
+  const idx = logs.findIndex((l) => l.date === dateStr);
+  const addedHours = Math.round((sessionSeconds / 3600) * 100) / 100;
+  const isNewDay = idx < 0;
+
+  if (idx >= 0) {
+    logs[idx] = { ...logs[idx], hours: Math.round(((logs[idx].hours || 0) + addedHours) * 100) / 100 };
+  } else {
+    logs.push({ date: dateStr, hours: addedHours, notes: "", logged_at: new Date().toISOString() });
+  }
+
+  userData.daily_logs = logs;
+  userData.changed("daily_logs", true);
+  await userData.save();
+
+  // mirror the streak logic from dashboardController's logStudyHours - only on a fresh day with real hours
+  if (isNewDay) {
+    const user = await User.findByPk(userId);
+    if (user) {
+      const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000);
+      const yDate = getISTDateString(yesterday);
+      const hadYesterday = logs.some((l) => l.date === yDate && l.hours > 0);
+      user.streak = hadYesterday ? (user.streak || 0) + 1 : 1;
+      if (user.streak > (user.longest_streak || 0)) user.longest_streak = user.streak;
+      await user.save();
+    }
+  }
 }
 
 function periodRange(period) {
@@ -90,96 +76,67 @@ function periodRange(period) {
 
 const SUBJECT_SYLLABUS_MAP = {
   History: [
-    // Prelims GS1 - History section
-    {
-      stage: "prelims",
-      paper: "GS1",
-      module: "History of India & Indian National Movement",
-    },
-    // Mains GS1 - Multiple history modules; we nudge the most directly relevant
+    { stage: "prelims", paper: "GS1", module: "History of India & Indian National Movement" },
+    { stage: "mains", paper: "GS1", module: "Indian Art, Culture & Architecture" },
     { stage: "mains", paper: "GS1", module: "Modern Indian History" },
     { stage: "mains", paper: "GS1", module: "Freedom Struggle" },
+    { stage: "mains", paper: "GS1", module: "Post-Independence India" },
+    { stage: "mains", paper: "GS1", module: "World History" },
   ],
-
   Polity: [
     { stage: "prelims", paper: "GS1", module: "Indian Polity & Governance" },
     { stage: "mains", paper: "GS2", module: "Indian Constitution" },
     { stage: "mains", paper: "GS2", module: "Federal Structure" },
+    { stage: "mains", paper: "GS2", module: "Separation of Powers & Institutions" },
+    { stage: "mains", paper: "GS2", module: "Legislature" },
+    { stage: "mains", paper: "GS2", module: "Executive & Judiciary" },
+    { stage: "mains", paper: "GS2", module: "Constitutional & Statutory Bodies" },
+    { stage: "mains", paper: "GS2", module: "Governance & Accountability" },
   ],
-
   Economy: [
     { stage: "prelims", paper: "GS1", module: "Economic & Social Development" },
     { stage: "mains", paper: "GS3", module: "Indian Economy" },
+    { stage: "mains", paper: "GS3", module: "Agriculture" },
+    { stage: "mains", paper: "GS3", module: "Food Processing & Industry" },
+    { stage: "mains", paper: "GS3", module: "Infrastructure & Investment" },
   ],
-
   Geography: [
     { stage: "prelims", paper: "GS1", module: "Indian & World Geography" },
     { stage: "mains", paper: "GS1", module: "World Physical Geography" },
     { stage: "mains", paper: "GS1", module: "Geophysical Phenomena" },
   ],
-
   Environment: [
-    {
-      stage: "prelims",
-      paper: "GS1",
-      module: "Environment, Ecology & Climate Change",
-    },
-    {
-      stage: "mains",
-      paper: "GS3",
-      module: "Environment & Disaster Management",
-    },
+    { stage: "prelims", paper: "GS1", module: "Environment, Ecology & Climate Change" },
+    { stage: "mains", paper: "GS3", module: "Environment & Disaster Management" },
   ],
-
   "Science & Tech": [
     { stage: "prelims", paper: "GS1", module: "General Science" },
     { stage: "mains", paper: "GS3", module: "Science & Technology" },
   ],
-
   CSAT: [
     { stage: "prelims", paper: "CSAT", module: "Comprehension" },
-    {
-      stage: "prelims",
-      paper: "CSAT",
-      module: "Logical Reasoning & Analytical Ability",
-    },
-    {
-      stage: "prelims",
-      paper: "CSAT",
-      module: "Basic Numeracy & Data Interpretation",
-    },
+    { stage: "prelims", paper: "CSAT", module: "Interpersonal & Communication Skills" },
+    { stage: "prelims", paper: "CSAT", module: "Logical Reasoning & Analytical Ability" },
+    { stage: "prelims", paper: "CSAT", module: "Decision Making & Problem Solving" },
+    { stage: "prelims", paper: "CSAT", module: "General Mental Ability" },
+    { stage: "prelims", paper: "CSAT", module: "Basic Numeracy & Data Interpretation" },
   ],
-
   Ethics: [
     { stage: "mains", paper: "GS4", module: "Ethics & Human Interface" },
-    {
-      stage: "mains",
-      paper: "GS4",
-      module: "Public/Civil Service Values & Ethics",
-    },
+    { stage: "mains", paper: "GS4", module: "Attitude" },
+    { stage: "mains", paper: "GS4", module: "Aptitude & Foundational Values" },
+    { stage: "mains", paper: "GS4", module: "Emotional Intelligence" },
+    { stage: "mains", paper: "GS4", module: "Moral Thinkers & Philosophers" },
+    { stage: "mains", paper: "GS4", module: "Public/Civil Service Values & Ethics" },
+    { stage: "mains", paper: "GS4", module: "Probity in Governance" },
+    { stage: "mains", paper: "GS4", module: "Case Studies" },
   ],
-
   Essay: [{ stage: "mains", paper: "Essay", module: "Essay Writing" }],
-
   Optional: [
-    {
-      stage: "mains",
-      paper: "OptionalSubject",
-      module: "Optional Subject Paper I",
-    },
-    {
-      stage: "mains",
-      paper: "OptionalSubject",
-      module: "Optional Subject Paper II",
-    },
+    { stage: "mains", paper: "OptionalSubject", module: "Optional Subject Paper I" },
+    { stage: "mains", paper: "OptionalSubject", module: "Optional Subject Paper II" },
   ],
-
-  // Current Affairs and Other don't map cleanly to specific syllabus modules;
-  // they're cross-cutting. Adding them would produce misleading progress nudges.
-  // Feature 5 extension: if you want CA to nudge "Current Events" in prelims,
-  // uncomment below:
-  // "Current Affairs": [{ stage: "prelims", paper: "GS1", module: "Current Events" }],
-};
+  };
 
 // ─── POST /api/subject-sessions/start ────────────────────────────────────────
 const startSession = async (req, res, next) => {
@@ -187,18 +144,9 @@ const startSession = async (req, res, next) => {
     const { subject, notes } = req.body;
 
     const VALID = [
-      "History",
-      "Polity",
-      "Economy",
-      "Geography",
-      "Environment",
-      "Science & Tech",
-      "CSAT",
-      "Ethics",
-      "Essay",
-      "Optional",
-      "Current Affairs",
-      "Other",
+      "History", "Polity", "Economy", "Geography", "Environment",
+      "Science & Tech", "CSAT", "Ethics", "Essay", "Optional",
+      "Current Affairs", "Other",
     ];
     if (!VALID.includes(subject)) {
       return res.status(400).json({
@@ -209,14 +157,16 @@ const startSession = async (req, res, next) => {
 
     const now = Date.now();
     const dateStr = getISTDateString();
+  const staleOpen = await SubjectSession.findAll({ where: { user_id: req.user.id, end_time: null } });
+    for (const stale of staleOpen) {
+      const rawSeconds = Math.max(0, Math.round((now - Number(stale.start_time)) / 1000));
+      const duration_seconds = Math.min(rawSeconds, MAX_SESSION_SECONDS);
+      stale.end_time = now;
+      stale.duration_seconds = duration_seconds;
+      await stale.save();
+      addSubjectSessionToDailyLog(req.user.id, stale.date, duration_seconds).catch(() => {});
+    }
 
-   await SubjectSession.update(
-  {
-    end_time: now,
-    duration_seconds: literal(`GREATEST(0, ROUND((${now} - "start_time") / 1000.0))::integer`),
-  },
-  { where: { user_id: req.user.id, end_time: null } }
-);
     const session = await SubjectSession.create({
       user_id: req.user.id,
       subject,
@@ -227,10 +177,7 @@ const startSession = async (req, res, next) => {
       notes: notes?.trim() || null,
     });
 
-    // Track the event (fire-and-forget)
-    trackEvent(req.user.id, "timer_start", "Subject Study Timer", {
-      subject,
-    }).catch(() => {});
+    trackEvent(req.user.id, "timer_start", "Subject Study Timer", { subject }).catch(() => {});
 
     return res.status(201).json({ success: true, session });
   } catch (err) {
@@ -246,31 +193,50 @@ const endSession = async (req, res, next) => {
     });
 
     if (!session) {
-      return res
-        .status(404)
-        .json({ success: false, error: "Session not found." });
+      return res.status(404).json({ success: false, error: "Session not found." });
     }
     if (session.end_time) {
-      return res
-        .status(409)
-        .json({ success: false, error: "Session already closed." });
+      return res.status(409).json({ success: false, error: "Session already closed." });
     }
 
     const now = Date.now();
-    const duration_seconds = Math.max(
-      0,
-      Math.round((now - Number(session.start_time)) / 1000),
-    );
+    const rawSeconds = Math.max(0, Math.round((now - Number(session.start_time)) / 1000));
+    const duration_seconds = Math.min(rawSeconds, MAX_SESSION_SECONDS);
 
     session.end_time = now;
     session.duration_seconds = duration_seconds;
     if (req.body?.notes) session.notes = req.body.notes.trim();
     await session.save();
 
-    // Feature 5: fire-and-forget syllabus nudge on every session close
-    nudgeSyllabusProgress(req.user.id, session.subject, duration_seconds).catch(
-      () => {},
-    );
+    addSubjectSessionToDailyLog(req.user.id, session.date, duration_seconds).catch(() => {});
+
+    return res.json({ success: true, session });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// ─── PATCH /api/subject-sessions/:id/notes ───────────────────────────────────
+// Lightweight, standalone note attach - used by the "didn't cover any of
+// these? add a quick note" fallback in the syllabus-sync confirm modal.
+// Deliberately separate from `end` (which 409s once a session is closed) so
+// a note can be attached after the session has already ended.
+const updateSessionNotes = async (req, res, next) => {
+  try {
+    const { notes } = req.body;
+    if (!notes || !notes.trim()) {
+      return res.status(400).json({ success: false, error: "notes is required." });
+    }
+
+    const session = await SubjectSession.findOne({
+      where: { id: req.params.id, user_id: req.user.id },
+    });
+    if (!session) {
+      return res.status(404).json({ success: false, error: "Session not found." });
+    }
+
+    session.notes = notes.trim().slice(0, 500);
+    await session.save();
 
     return res.json({ success: true, session });
   } catch (err) {
@@ -287,7 +253,6 @@ const getTodaySessions = async (req, res, next) => {
       order: [["start_time", "ASC"]],
     });
 
-    // Build Feature 8 timeline entries from today's sessions
     const timeline = [];
     for (const s of sessions) {
       timeline.push({
@@ -308,10 +273,7 @@ const getTodaySessions = async (req, res, next) => {
     }
     timeline.sort((a, b) => a.time - b.time);
 
-    const totalSeconds = sessions.reduce(
-      (acc, s) => acc + (s.duration_seconds || 0),
-      0,
-    );
+    const totalSeconds = sessions.reduce((acc, s) => acc + (s.duration_seconds || 0), 0);
 
     return res.json({
       success: true,
@@ -335,10 +297,7 @@ const getAnalytics = async (req, res, next) => {
     const period = req.query.period || "lifetime";
     const range = periodRange(period);
 
-    const where = {
-      user_id: req.user.id,
-      duration_seconds: { [Op.not]: null },
-    };
+    const where = { user_id: req.user.id, duration_seconds: { [Op.not]: null } };
     if (range) where.date = { [Op.between]: [range.start, range.end] };
 
     const rows = await SubjectSession.findAll({
@@ -359,17 +318,12 @@ const getAnalytics = async (req, res, next) => {
       total_seconds: Number(r.total_seconds),
       session_count: Number(r.session_count),
       display: fmtDisplay(Number(r.total_seconds)),
-      percentage:
-        grandTotal > 0
-          ? Math.round((Number(r.total_seconds) / grandTotal) * 100)
-          : 0,
+      percentage: grandTotal > 0 ? Math.round((Number(r.total_seconds) / grandTotal) * 100) : 0,
     }));
 
     const most_studied = distribution[0] || null;
-    const least_studied =
-      distribution.length > 1 ? distribution[distribution.length - 1] : null;
+    const least_studied = distribution.length > 1 ? distribution[distribution.length - 1] : null;
 
-    // Always pull week + month top regardless of selected period (Feature 4)
     const weekRange = periodRange("week");
     const monthRange = periodRange("month");
 
@@ -380,10 +334,7 @@ const getAnalytics = async (req, res, next) => {
           date: { [Op.between]: [weekRange.start, weekRange.end] },
           duration_seconds: { [Op.not]: null },
         },
-        attributes: [
-          "subject",
-          [fn("SUM", col("duration_seconds")), "total_seconds"],
-        ],
+        attributes: ["subject", [fn("SUM", col("duration_seconds")), "total_seconds"]],
         group: ["subject"],
         order: [[literal("total_seconds"), "DESC"]],
         limit: 1,
@@ -395,10 +346,7 @@ const getAnalytics = async (req, res, next) => {
           date: { [Op.between]: [monthRange.start, monthRange.end] },
           duration_seconds: { [Op.not]: null },
         },
-        attributes: [
-          "subject",
-          [fn("SUM", col("duration_seconds")), "total_seconds"],
-        ],
+        attributes: ["subject", [fn("SUM", col("duration_seconds")), "total_seconds"]],
         group: ["subject"],
         order: [[literal("total_seconds"), "DESC"]],
         limit: 3,
@@ -449,13 +397,7 @@ const getTimeline = async (req, res, next) => {
     const events = [];
     for (const s of sessions) {
       events.push(
-        {
-          type: "session_start",
-          subject: s.subject,
-          time: Number(s.start_time),
-          date: s.date,
-          label: `Started ${s.subject}`,
-        },
+        { type: "session_start", subject: s.subject, time: Number(s.start_time), date: s.date, label: `Started ${s.subject}` },
         {
           type: "session_end",
           subject: s.subject,
@@ -473,119 +415,6 @@ const getTimeline = async (req, res, next) => {
     next(err);
   }
 };
-async function nudgeSyllabusProgress(userId, subject, durationSeconds) {
-  const mappings = SUBJECT_SYLLABUS_MAP[subject];
-  if (!mappings || mappings.length === 0) return;
-
-  const minutesStudied = Math.floor(durationSeconds / 60);
-  if (minutesStudied < 5) return;
-
-  const progressGain = Math.min(minutesStudied * 0.15, 10);
-
-  const userData = await UserData.findOne({ where: { user_id: userId } });
-  if (!userData) return;
-
-  const sp = userData.syllabus_progress
-    ? JSON.parse(JSON.stringify(userData.syllabus_progress))
-    : {};
-
-  let changed = false;
-  for (const { stage, paper, module: mod } of mappings) {
-    if (!sp[stage]) sp[stage] = {};
-    if (!sp[stage][paper]) sp[stage][paper] = {};
-    if (!sp[stage][paper][mod])
-      sp[stage][paper][mod] = { progress: 0, state: "pending" };
-
-    const current = sp[stage][paper][mod].progress || 0;
-    const next = Math.min(95, current + progressGain);
-    if (next > current) {
-      sp[stage][paper][mod].progress = Math.round(next * 10) / 10;
-      if (sp[stage][paper][mod].state === "pending") {
-        sp[stage][paper][mod].state = "progress";
-      }
-      changed = true;
-    }
-  }
-
-  if (changed) {
-    userData.syllabus_progress = sp;
-    userData.changed("syllabus_progress", true);
-    await userData.save();
-  }
-}
-
-// ─── POST /api/subject-sessions/sync-syllabus (Feature 5 manual) ─────────────
-/**
- * Re-computes syllabus progress from lifetime study hours.
- * Safe to call multiple times - uses max(current, computed) so it never
- * downgrades progress the user may have set manually.
- * Formula: 1 hour = 10% progress, capped at 95%.
- */
-const syncSyllabus = async (req, res, next) => {
-  try {
-    const rows = await SubjectSession.findAll({
-      where: { user_id: req.user.id, duration_seconds: { [Op.not]: null } },
-      attributes: [
-        "subject",
-        [fn("SUM", col("duration_seconds")), "total_seconds"],
-      ],
-      group: ["subject"],
-      raw: true,
-    });
-
-   const userData = await UserData.findOne({ where: { user_id: req.user.id } });
-    if (!userData) {
-      return res
-        .status(404)
-        .json({ success: false, error: "User data not found." });
-    }
-
-    const sp = userData.syllabus_progress
-      ? JSON.parse(JSON.stringify(userData.syllabus_progress))
-      : {};
-
-    let synced = 0;
-    for (const row of rows) {
-      const mappings = SUBJECT_SYLLABUS_MAP[row.subject];
-      if (!mappings) continue;
-
-      const hoursStudied = Number(row.total_seconds) / 3600;
-      const targetProgress = Math.min(
-        95,
-        Math.round(hoursStudied * 10 * 10) / 10,
-      );
-
-      for (const { stage, paper, module: mod } of mappings) {
-        if (!sp[stage]) sp[stage] = {};
-        if (!sp[stage][paper]) sp[stage][paper] = {};
-        if (!sp[stage][paper][mod])
-          sp[stage][paper][mod] = { progress: 0, state: "pending" };
-
-        const current = sp[stage][paper][mod].progress || 0;
-        if (targetProgress > current) {
-          sp[stage][paper][mod].progress = targetProgress;
-          if (sp[stage][paper][mod].state === "pending") {
-            sp[stage][paper][mod].state = "progress";
-          }
-          synced++;
-        }
-      }
-    }
-
-    userData.syllabus_progress = sp;
-    userData.changed("syllabus_progress", true);
-    await userData.save();
-
-    return res.json({
-      success: true,
-      synced_modules: synced,
-      syllabus_progress: sp,
-    });
-  } catch (err) {
-    next(err);
-  }
-};
-
 // ─── GET /api/subject-sessions/admin/users (Feature 7) ───────────────────────
 const adminUserBreakdown = async (req, res, next) => {
   try {
@@ -598,10 +427,9 @@ const adminUserBreakdown = async (req, res, next) => {
     const offset = Math.max(parseInt(req.query.offset) || 0, 0);
     const range = periodRange(period);
 
-    const whereSession = { duration_seconds: { [Op.not]: null } };
+    const whereSession = { duration_seconds: { [Op.not]: null }, [Op.and]: sequelize.literal(EXCL_UID_COND) };
     if (range) whereSession.date = { [Op.between]: [range.start, range.end] };
 
-    // Step 1: aggregate per user
     const aggRows = await SubjectSession.findAll({
       where: whereSession,
       attributes: [
@@ -625,7 +453,6 @@ const adminUserBreakdown = async (req, res, next) => {
 
     const userIds = aggRows.map((r) => r.user_id);
 
-    // Step 2: user profiles
     const users = await User.findAll({
       where: { id: { [Op.in]: userIds } },
       attributes: ["id", "name", "email"],
@@ -634,7 +461,6 @@ const adminUserBreakdown = async (req, res, next) => {
     const userMap = {};
     for (const u of users) userMap[u.id] = u;
 
-    // Step 3: subject breakdown per user
     const subjectRows = await SubjectSession.findAll({
       where: { ...whereSession, user_id: { [Op.in]: userIds } },
       attributes: [
@@ -659,9 +485,7 @@ const adminUserBreakdown = async (req, res, next) => {
     }
 
     const result = aggRows.map((r) => {
-      const subs = (subjectByUser[r.user_id] || []).sort(
-        (a, b) => b.seconds - a.seconds,
-      );
+      const subs = (subjectByUser[r.user_id] || []).sort((a, b) => b.seconds - a.seconds);
       return {
         user_id: r.user_id,
         name: userMap[r.user_id]?.name || "Unknown",
@@ -682,14 +506,7 @@ const adminUserBreakdown = async (req, res, next) => {
       col: "user_id",
     });
 
-    return res.json({
-      success: true,
-      period,
-      users: result,
-      total: totalCount,
-      limit,
-      offset,
-    });
+    return res.json({ success: true, period, users: result, total: totalCount, limit, offset });
   } catch (err) {
     next(err);
   }
@@ -705,17 +522,10 @@ const adminGlobalInsights = async (req, res, next) => {
     const period = req.query.period || "month";
     const range = periodRange(period);
 
-    const whereSession = { duration_seconds: { [Op.not]: null } };
+    const whereSession = { duration_seconds: { [Op.not]: null }, [Op.and]: sequelize.literal(EXCL_UID_COND) };
     if (range) whereSession.date = { [Op.between]: [range.start, range.end] };
 
-    const [
-      subjectTotals,
-      platformTotals,
-      topUsers,
-      consistentRows,
-      dailyActivity,
-    ] = await Promise.all([
-      // Most studied subjects platform-wide
+    const [subjectTotals, platformTotals, topUsers, consistentRows, dailyActivity] = await Promise.all([
       SubjectSession.findAll({
         where: whereSession,
         attributes: [
@@ -728,7 +538,6 @@ const adminGlobalInsights = async (req, res, next) => {
         order: [[literal("total_seconds"), "DESC"]],
         raw: true,
       }),
-      // Platform totals
       SubjectSession.findAll({
         where: whereSession,
         attributes: [
@@ -739,7 +548,6 @@ const adminGlobalInsights = async (req, res, next) => {
         ],
         raw: true,
       }),
-      // Top 10 users by study hours
       SubjectSession.findAll({
         where: whereSession,
         attributes: [
@@ -752,22 +560,18 @@ const adminGlobalInsights = async (req, res, next) => {
         limit: 10,
         raw: true,
       }),
-      // Consistent studiers: ≥ 5 distinct study days in the period
       SubjectSession.findAll({
         where: whereSession,
-        attributes: [
-          "user_id",
-          [fn("COUNT", fn("DISTINCT", col("date"))), "study_days"],
-        ],
+        attributes: ["user_id", [fn("COUNT", fn("DISTINCT", col("date"))), "study_days"]],
         group: ["user_id"],
         having: literal("COUNT(DISTINCT date) >= 5"),
         order: [[literal("study_days"), "DESC"]],
         raw: true,
       }),
-      // Daily activity last 30 days
       SubjectSession.findAll({
         where: {
           duration_seconds: { [Op.not]: null },
+          [Op.and]: sequelize.literal(EXCL_UID_COND),
           date: {
             [Op.gte]: (() => {
               const d = new Date();
@@ -787,7 +591,6 @@ const adminGlobalInsights = async (req, res, next) => {
       }),
     ]);
 
-    // Hydrate top users with names/emails
     const topUserIds = topUsers.map((r) => r.user_id);
     const topUserRecords = await User.findAll({
       where: { id: { [Op.in]: topUserIds } },
@@ -807,9 +610,7 @@ const adminGlobalInsights = async (req, res, next) => {
         total_hours: toHours(Number(pt.total_seconds) || 0),
         total_sessions: Number(pt.total_sessions) || 0,
         active_users: activeUsers,
-        avg_hours_per_user: toHours(
-          Math.round((Number(pt.total_seconds) || 0) / activeUsers),
-        ),
+        avg_hours_per_user: toHours(Math.round((Number(pt.total_seconds) || 0) / activeUsers)),
         avg_session_min: Math.round((Number(pt.avg_session_seconds) || 0) / 60),
       },
       subject_distribution: subjectTotals.map((r) => ({
@@ -826,10 +627,7 @@ const adminGlobalInsights = async (req, res, next) => {
         total_hours: toHours(Number(r.total_seconds)),
         session_count: Number(r.session_count),
       })),
-      consistent_studiers: consistentRows.map((r) => ({
-        user_id: r.user_id,
-        study_days: Number(r.study_days),
-      })),
+      consistent_studiers: consistentRows.map((r) => ({ user_id: r.user_id, study_days: Number(r.study_days) })),
       daily_activity: dailyActivity.map((r) => ({
         date: r.date,
         active_users: Number(r.active_users),
@@ -848,7 +646,7 @@ module.exports = {
   getTodaySessions,
   getAnalytics,
   getTimeline,
-  syncSyllabus,
+  updateSessionNotes,
   adminUserBreakdown,
   adminGlobalInsights,
   SUBJECT_SYLLABUS_MAP,
