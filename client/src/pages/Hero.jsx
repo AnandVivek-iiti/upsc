@@ -167,7 +167,7 @@ export default function HeroBanner({
 The         
 Operating System
           <br />
-         Your UPSC Preparation
+        of Your UPSC Preparation
         </h1>
 
         {/* Quote - 365-quote engine, original compact panel look */}
