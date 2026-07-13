@@ -164,9 +164,10 @@ export default function HeroBanner({
         {/* Hero title */}
         <h1 className="font-display text-2xl sm:text-3xl md:text-[38px] lg:text-[42px] font-normal text-white leading-[1.2] sm:leading-[1.1] max-w-lg drop-shadow-sm
           mb-3 sm:mb-4">
-          From syllabus
+The         
+Operating System
           <br />
-          to selection.
+         Your UPSC Preparation
         </h1>
 
         {/* Quote - 365-quote engine, original compact panel look */}
