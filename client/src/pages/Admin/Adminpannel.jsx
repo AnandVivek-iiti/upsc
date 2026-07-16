@@ -188,7 +188,7 @@ function OverviewTab({ metrics, insights, loading, onRefresh }) {
   if (loading && !metrics) return <LoadSpinner />;
   if (!metrics) return <p className="text-sm text-text-muted py-8 text-center">No metrics available.</p>;
 
-  const { users = {}, engagement = {}, activity = {}, trends = {} } = metrics;
+  const { users = {}, engagement = {}, activity = {}, trends = {}, retention = {} } = metrics;
   const topInsights = insights?.slice(0, 3) || [];
 
   return (
@@ -226,8 +226,8 @@ function OverviewTab({ metrics, insights, loading, onRefresh }) {
       <div>
         <SectionHead title="Engagement" />
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-3">
-          <MetricCard icon={Calendar} label="Retention D1" value={engagement.retentionD1 !== undefined ? `${engagement.retentionD1}%` : "—"} iconColor="#4ade80" />
-          <MetricCard icon={Calendar} label="Retention D7" value={engagement.retentionD7 !== undefined ? `${engagement.retentionD7}%` : "—"} iconColor="#f59e0b" />
+          <MetricCard icon={Calendar} label="Retention D1" value={retention.d1?.percentage !== undefined ? `${retention.d1.percentage}%` : "—"} iconColor="#4ade80" />
+          <MetricCard icon={Calendar} label="Retention D7" value={retention.d7?.percentage !== undefined ? `${retention.d7.percentage}%` : "—"} iconColor="#f59e0b" />
           <MetricCard icon={Clock} label="Avg Study/Day" value={engagement.avgStudyHours !== undefined ? `${engagement.avgStudyHours}h` : "—"} iconColor="#60a5fa" />
           <MetricCard icon={Clock} label="Total Study Hrs" value={fmtNum(engagement.totalStudyHours)} iconColor="#a78bfa" />
           <MetricCard icon={Flame} label="Active Streaks" value={users.activeStreakUsers} iconColor="#fb923c" />
@@ -533,7 +533,7 @@ function AnalyticsTab({ funnel, features, loading }) {
               <table className="w-full text-sm min-w-[700px]">
                 <thead>
                   <tr className="border-b border-bg-border bg-bg-muted/40">
-                    {["#", "Feature", "Unique Users", "Total Uses", "Avg / User", "Score", "Last Used", "Top Users"].map(h => (
+                    {["#", "Feature", "Unique Users", "Total Opens", "Avg / User", "Retention D1", "Repeat Usage", "Avg Session"].map(h => (
                       <th key={h} className="text-left px-2 sm:px-4 py-2.5 sm:py-3 text-[10px] font-mono text-text-muted uppercase tracking-wider whitespace-nowrap">{h}</th>
                     ))}
                   </tr>
@@ -552,21 +552,13 @@ function AnalyticsTab({ funnel, features, loading }) {
                           </div>
                         </div>
                       </td>
-                      <td className="px-2 sm:px-4 py-2 sm:py-3 font-mono text-sm text-text-secondary">{f.totalUses}</td>
-                      <td className="px-2 sm:px-4 py-2 sm:py-3 font-mono text-xs text-text-muted">{f.avgUsagePerUser}×</td>
+                      <td className="px-2 sm:px-4 py-2 sm:py-3 font-mono text-sm text-text-secondary">{f.totalOpens}</td>
+                      <td className="px-2 sm:px-4 py-2 sm:py-3 font-mono text-xs text-text-muted">{f.avgOpensPerUser}×</td>
                       <td className="px-2 sm:px-4 py-2 sm:py-3">
-                        <span className="text-xs font-mono font-bold text-accent-gold">{f.engagementScore}</span>
+                        <span className="text-xs font-mono font-bold text-accent-gold">{f.retentionRatePct}%</span>
                       </td>
-                      <td className="px-2 sm:px-4 py-2 sm:py-3 text-xs font-mono text-text-muted whitespace-nowrap">{relTime(f.lastUsed)}</td>
-                      <td className="px-2 sm:px-4 py-2 sm:py-3">
-                        <div className="flex gap-1 flex-wrap">
-                          {(f.topUsers || []).slice(0, 3).map((u, j) => (
-                            <span key={j} className="text-[10px] font-mono bg-bg-muted border border-bg-border rounded px-1.5 py-0.5 text-text-muted truncate max-w-[60px] sm:max-w-[80px]" title={u.name}>
-                              {u.name?.split(" ")[0] || "—"}
-                            </span>
-                          ))}
-                        </div>
-                      </td>
+                      <td className="px-2 sm:px-4 py-2 sm:py-3 font-mono text-xs text-text-muted">{f.repeatUsageRatePct}%</td>
+                      <td className="px-2 sm:px-4 py-2 sm:py-3 font-mono text-xs text-text-muted whitespace-nowrap">{f.avgSessionTimeMin}m</td>
                     </tr>
                   ))}
                 </tbody>
@@ -776,21 +768,20 @@ function JourneyTab({ journeyData, loading }) {
   if (loading && !journeyData) return <LoadSpinner />;
   if (!journeyData) return <p className="text-sm text-text-muted py-8 text-center">No journey data yet.</p>;
 
-  const { firstFeatureRanked = [], journeyRows = [] } = journeyData;
+  const { firstFeatureRanked = [], stages = [], transitions = [] } = journeyData;
 
   return (
     <div className="space-y-8">
-      <SectionHead title="First Feature Discovery & Return Rates" />
+      <SectionHead title="First Feature Discovery" />
       {firstFeatureRanked.length ? (
         <div className="bg-bg-surface border border-bg-border rounded-2xl overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="w-full text-sm min-w-[500px]">
+            <table className="w-full text-sm min-w-[400px]">
               <thead>
                 <tr className="border-b border-bg-border bg-bg-muted/40">
                   <th className="text-left px-3 sm:px-4 py-2.5 sm:py-3 text-[10px] font-mono text-text-muted uppercase tracking-wider">Feature</th>
                   <th className="text-left px-3 sm:px-4 py-2.5 sm:py-3 text-[10px] font-mono text-text-muted uppercase tracking-wider">First‑time Users</th>
                   <th className="text-left px-3 sm:px-4 py-2.5 sm:py-3 text-[10px] font-mono text-text-muted uppercase tracking-wider">% of Total</th>
-                  <th className="text-left px-3 sm:px-4 py-2.5 sm:py-3 text-[10px] font-mono text-text-muted uppercase tracking-wider">Return Rate (D1)</th>
                 </tr>
               </thead>
               <tbody>
@@ -799,11 +790,6 @@ function JourneyTab({ journeyData, loading }) {
                     <td className="px-3 sm:px-4 py-2 font-medium text-text-primary">{item.feature}</td>
                     <td className="px-3 sm:px-4 py-2 font-mono text-sm text-text-secondary">{item.count}</td>
                     <td className="px-3 sm:px-4 py-2 font-mono text-sm text-text-secondary">{item.pct}%</td>
-                    <td className="px-3 sm:px-4 py-2 font-mono text-sm">
-                      <span className={item.returnRate >= 60 ? "text-accent-green" : item.returnRate >= 30 ? "text-accent-gold" : "text-accent-red"}>
-                        {item.returnRate}%
-                      </span>
-                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -814,45 +800,69 @@ function JourneyTab({ journeyData, loading }) {
         <p className="text-sm text-text-muted py-6 text-center">No first‑feature data yet.</p>
       )}
 
-      <SectionHead title="Recent User Journeys (last 200)" />
-      {journeyRows.length ? (
-        <div className="bg-bg-surface border border-bg-border rounded-2xl overflow-hidden max-h-96 overflow-y-auto">
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm min-w-[600px]">
-              <thead>
-                <tr className="border-b border-bg-border bg-bg-muted/40 sticky top-0">
-                  <th className="text-left px-3 sm:px-4 py-2 text-[10px] font-mono text-text-muted uppercase tracking-wider">User</th>
-                  <th className="text-left px-3 sm:px-4 py-2 text-[10px] font-mono text-text-muted uppercase tracking-wider">Signed Up</th>
-                  <th className="text-left px-3 sm:px-4 py-2 text-[10px] font-mono text-text-muted uppercase tracking-wider">First Feature</th>
-                  <th className="text-left px-3 sm:px-4 py-2 text-[10px] font-mono text-text-muted uppercase tracking-wider">Second Feature</th>
-                  <th className="text-left px-3 sm:px-4 py-2 text-[10px] font-mono text-text-muted uppercase tracking-wider">Most Used</th>
-                  <th className="text-left px-3 sm:px-4 py-2 text-[10px] font-mono text-text-muted uppercase tracking-wider">Returned?</th>
-                </tr>
-              </thead>
-              <tbody>
-                {journeyRows.map((row) => (
-                  <tr key={row.user_id} className="border-b border-bg-border/40 hover:bg-bg-muted/20 transition-colors">
-                    <td className="px-3 sm:px-4 py-2 font-medium text-text-primary">{row.name}</td>
-                    <td className="px-3 sm:px-4 py-2 font-mono text-xs text-text-muted">{relTime(row.signed_up)}</td>
-                    <td className="px-3 sm:px-4 py-2 font-mono text-xs text-accent-blue">{row.first_feature || "—"}</td>
-                    <td className="px-3 sm:px-4 py-2 font-mono text-xs text-text-muted">{row.second_feature || "—"}</td>
-                    <td className="px-3 sm:px-4 py-2 font-mono text-xs text-text-muted">{row.most_used_feature || "—"}</td>
-                    <td className="px-3 sm:px-4 py-2">
-                      {row.returned_next_day ? (
-                        <CheckCircle2 size={14} className="text-accent-green" />
-                      ) : (
-                        <X size={14} className="text-accent-red" />
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+      <div>
+        <SectionHead title="Onboarding Funnel" />
+        {stages.length ? (
+          <div className="bg-bg-surface border border-bg-border rounded-2xl p-4 sm:p-5 space-y-4">
+            {stages.map((s, i) => (
+              <div key={s.stage}>
+                <div className="flex items-center justify-between mb-1 gap-2 flex-wrap">
+                  <span className="text-sm text-text-primary">{s.stage}</span>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <span className="text-xs font-mono font-bold text-text-primary">{s.users}</span>
+                    <span className="text-[10px] font-mono text-text-muted w-10 text-right">{s.pctOfSignups}%</span>
+                  </div>
+                </div>
+                <div className="h-6 rounded-lg overflow-hidden bg-bg-muted">
+                  <div className="h-full rounded-lg transition-all duration-700"
+                    style={{
+                      width: `${Math.max(s.pctOfSignups, 2)}%`,
+                      background: i === 0 ? "linear-gradient(90deg, #60a5fa, #818cf8)" : "linear-gradient(90deg, #4ade80, #34d399)",
+                    }} />
+                </div>
+              </div>
+            ))}
           </div>
-        </div>
-      ) : (
-        <p className="text-sm text-text-muted py-6 text-center">No recent journeys.</p>
-      )}
+        ) : (
+          <p className="text-sm text-text-muted py-6 text-center">No funnel data yet.</p>
+        )}
+      </div>
+
+      <div>
+        <SectionHead title="Stage Transitions" />
+        {transitions.length ? (
+          <div className="bg-bg-surface border border-bg-border rounded-2xl overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm min-w-[400px]">
+                <thead>
+                  <tr className="border-b border-bg-border bg-bg-muted/40">
+                    <th className="text-left px-3 sm:px-4 py-2.5 sm:py-3 text-[10px] font-mono text-text-muted uppercase tracking-wider">From</th>
+                    <th className="text-left px-3 sm:px-4 py-2.5 sm:py-3 text-[10px] font-mono text-text-muted uppercase tracking-wider">To</th>
+                    <th className="text-left px-3 sm:px-4 py-2.5 sm:py-3 text-[10px] font-mono text-text-muted uppercase tracking-wider">Users</th>
+                    <th className="text-left px-3 sm:px-4 py-2.5 sm:py-3 text-[10px] font-mono text-text-muted uppercase tracking-wider">Conversion</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {transitions.map((t) => (
+                    <tr key={`${t.from}-${t.to}`} className="border-b border-bg-border/40 hover:bg-bg-muted/20 transition-colors">
+                      <td className="px-3 sm:px-4 py-2 text-text-primary">{t.from}</td>
+                      <td className="px-3 sm:px-4 py-2 text-text-primary">{t.to}</td>
+                      <td className="px-3 sm:px-4 py-2 font-mono text-sm text-text-secondary">{t.users}</td>
+                      <td className="px-3 sm:px-4 py-2 font-mono text-sm">
+                        <span className={t.conversionPct >= 60 ? "text-accent-green" : t.conversionPct >= 30 ? "text-accent-gold" : "text-accent-red"}>
+                          {t.conversionPct}%
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        ) : (
+          <p className="text-sm text-text-muted py-6 text-center">No transition data yet.</p>
+        )}
+      </div>
     </div>
   );
 }
@@ -864,7 +874,7 @@ function SegmentsTab({ segments, loading }) {
   if (loading && !segments) return <LoadSpinner />;
   if (!segments) return <p className="text-sm text-text-muted py-8 text-center">No segment data yet.</p>;
 
-  const { powerUsers, atRisk, dormant, newUsers, total } = segments;
+  const { powerUsers, churnRisk, dormant, newUsers, total } = segments;
 
   const renderSegment = (title, data, color, Icon) => (
     <div className="bg-bg-surface border border-bg-border rounded-2xl p-3 sm:p-4">
@@ -893,7 +903,7 @@ function SegmentsTab({ segments, loading }) {
       <SectionHead title={`User Segments (${total} total)`} />
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {renderSegment("Power Users", powerUsers, "#4ade80", Zap)}
-        {renderSegment("At Risk", atRisk, "#fbbf24", AlertTriangle)}
+        {renderSegment("At Risk", churnRisk, "#fbbf24", AlertTriangle)}
         {renderSegment("Dormant", dormant, "#f87171", X)}
         {renderSegment("New Users", newUsers, "#60a5fa", User)}
       </div>
@@ -908,101 +918,58 @@ function DiscoveryTab({ discovery, loading }) {
   if (loading && !discovery) return <LoadSpinner />;
   if (!discovery) return <p className="text-sm text-text-muted py-8 text-center">No discovery data yet.</p>;
 
-  const { firstFeatureDist = {}, retentionByFeature = [], ignoredFeatures = [], causeOfReturn = [] } = discovery;
+  const { discovery: featureDiscovery = [], ignoredFeatures = [] } = discovery;
+  const rankedByDiscovery = [...featureDiscovery].sort((a, b) => b.discoveredUsers - a.discoveredUsers);
 
   return (
     <div className="space-y-8">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div>
-          <SectionHead title="First Feature Distribution" />
-          <div className="bg-bg-surface border border-bg-border rounded-2xl p-4">
-            {Object.keys(firstFeatureDist).length ? (
-              <div className="space-y-2">
-                {Object.entries(firstFeatureDist)
-                  .sort((a, b) => b[1] - a[1])
-                  .map(([feature, count]) => (
-                    <div key={feature} className="flex items-center gap-2">
-                      <span className="text-sm font-medium text-text-primary w-24 sm:w-32 truncate">{feature}</span>
-                      <div className="flex-1 h-2 bg-bg-muted rounded-full overflow-hidden">
-                        <div
-                          className="h-full bg-accent-blue/70 rounded-full"
-                          style={{ width: `${(count / Math.max(...Object.values(firstFeatureDist))) * 100}%` }}
-                        />
-                      </div>
-                      <span className="text-xs font-mono text-text-muted w-10 text-right">{count}</span>
-                    </div>
-                  ))}
-              </div>
-            ) : (
-              <p className="text-sm text-text-muted">No data.</p>
-            )}
-          </div>
-        </div>
-
-        <div>
-          <SectionHead title="Retention Rate by Feature (D1)" />
-          <div className="bg-bg-surface border border-bg-border rounded-2xl p-4 max-h-64 overflow-y-auto">
-            {retentionByFeature.length ? (
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b border-bg-border">
-                    <th className="text-left text-[10px] font-mono text-text-muted uppercase py-1">Feature</th>
-                    <th className="text-right text-[10px] font-mono text-text-muted uppercase py-1">Return Rate</th>
+      <div>
+        <SectionHead title="Feature Discovery & Return Rate" />
+        <div className="bg-bg-surface border border-bg-border rounded-2xl overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm min-w-[600px]">
+              <thead>
+                <tr className="border-b border-bg-border bg-bg-muted/40">
+                  <th className="text-left px-3 sm:px-4 py-2.5 sm:py-3 text-[10px] font-mono text-text-muted uppercase tracking-wider">Feature</th>
+                  <th className="text-left px-3 sm:px-4 py-2.5 sm:py-3 text-[10px] font-mono text-text-muted uppercase tracking-wider">Discovered By</th>
+                  <th className="text-left px-3 sm:px-4 py-2.5 sm:py-3 text-[10px] font-mono text-text-muted uppercase tracking-wider">Avg Days After Signup</th>
+                  <th className="text-left px-3 sm:px-4 py-2.5 sm:py-3 text-[10px] font-mono text-text-muted uppercase tracking-wider">Avg Session # Before</th>
+                  <th className="text-left px-3 sm:px-4 py-2.5 sm:py-3 text-[10px] font-mono text-text-muted uppercase tracking-wider">Return Rate After</th>
+                </tr>
+              </thead>
+              <tbody>
+                {rankedByDiscovery.map((item) => (
+                  <tr key={item.feature} className="border-b border-bg-border/40 hover:bg-bg-muted/20 transition-colors">
+                    <td className="px-3 sm:px-4 py-2 font-medium text-text-primary">{item.feature}</td>
+                    <td className="px-3 sm:px-4 py-2 font-mono text-sm text-text-secondary">{item.discoveredUsers}</td>
+                    <td className="px-3 sm:px-4 py-2 font-mono text-xs text-text-muted">{item.avgDaysAfterSignup}d</td>
+                    <td className="px-3 sm:px-4 py-2 font-mono text-xs text-text-muted">{item.avgSessionBeforeDiscovery}</td>
+                    <td className="px-3 sm:px-4 py-2 font-mono text-sm">
+                      <span className={item.returnRatePct >= 60 ? "text-accent-green" : item.returnRatePct >= 30 ? "text-accent-gold" : "text-accent-red"}>
+                        {item.returnRatePct}%
+                      </span>
+                      <span className="text-[10px] text-text-muted ml-1">({item.usersReturningAfterDiscovery}/{item.discoveredUsers})</span>
+                    </td>
                   </tr>
-                </thead>
-                <tbody>
-                  {retentionByFeature.map((item) => (
-                    <tr key={item.feature} className="border-b border-bg-border/30">
-                      <td className="py-1 text-text-primary truncate max-w-[120px]">{item.feature}</td>
-                      <td className="py-1 text-right font-mono">
-                        <span className={item.returnRate >= 60 ? "text-accent-green" : item.returnRate >= 30 ? "text-accent-gold" : "text-accent-red"}>
-                          {item.returnRate}%
-                        </span>
-                        <span className="text-[10px] text-text-muted ml-1">({item.usersWhoReturned}/{item.totalUsersOfFeature})</span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            ) : (
-              <p className="text-sm text-text-muted">No data.</p>
-            )}
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <SectionHead title="Ignored Features (<10% adoption)" />
-          <div className="bg-bg-surface border border-bg-border rounded-2xl p-4">
-            {ignoredFeatures.length ? (
-              <ul className="list-disc list-inside space-y-1">
-                {ignoredFeatures.map((f) => (
-                  <li key={f} className="text-sm text-text-secondary">{f}</li>
-                ))}
-              </ul>
-            ) : (
-              <p className="text-sm text-accent-green">No ignored features – all are being adopted.</p>
-            )}
-          </div>
-        </div>
-
-        <div>
-          <SectionHead title="Features that drive return visits" />
-          <div className="bg-bg-surface border border-bg-border rounded-2xl p-4">
-            {causeOfReturn.length ? (
-              <ul className="space-y-2">
-                {causeOfReturn.map((item) => (
-                  <li key={item.feature} className="flex justify-between items-center border-b border-bg-border/30 py-1">
-                    <span className="text-sm text-text-primary">{item.feature}</span>
-                    <span className="text-xs font-mono text-text-muted">{item.count} users</span>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="text-sm text-text-muted">No data yet.</p>
-            )}
-          </div>
+      <div>
+        <SectionHead title="Ignored Features (<10% adoption)" />
+        <div className="bg-bg-surface border border-bg-border rounded-2xl p-4">
+          {ignoredFeatures.length ? (
+            <ul className="list-disc list-inside space-y-1">
+              {ignoredFeatures.map((f) => (
+                <li key={f} className="text-sm text-text-secondary">{f}</li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-sm text-accent-green">No ignored features – all are being adopted.</p>
+          )}
         </div>
       </div>
     </div>
@@ -1315,14 +1282,14 @@ export default function AdminPanel() {
   }, []);
 
   const fetchUsers = useCallback(async (page = 1, sb = sortBy, sd = sortDir) => {
-    load("Users", true);
+    load("users", true);
     try {
       const d = await adminFetch(`/users?page=${page}&limit=20&sort=${sb}&dir=${sd}`);
       setUsers(d.users || []);
       setUsersTotal(d.total || 0);
       setUserPage(page);
     } catch (e) { notify(e.message, "error"); }
-    finally { load("Users", false); }
+    finally { load("users", false); }
   }, [sortBy, sortDir]);
 
   const fetchAnalytics = useCallback(async () => {
