@@ -610,7 +610,7 @@ const getMetrics = async (req, res, next) => {
 const listUsers = async (req, res, next) => {
   try {
     const page   = Math.max(1, parseInt(req.query.page)  || 1);
-    const limit  = Math.min(50, parseInt(req.query.limit) || 20);
+    const limit  = Math.min(1000, parseInt(req.query.limit) || 20);
     const offset = (page - 1) * limit;
     const dir    = req.query.dir === "asc" ? "ASC" : "DESC";
 
