@@ -61,6 +61,41 @@ const EXCL_UID_COND  = `user_id NOT IN (SELECT id FROM "users" WHERE LOWER(name)
 
 const SESSION_GAP_SECONDS = 1800; // 30 min inactivity = new session
 
+// ── Activity tab: date-range resolution + row cap ─────────────────────────
+const ACTIVITY_ROW_CAP = 500;
+const ACTIVITY_RANGES = ["today", "week", "month", "custom"];
+
+function resolveActivityRange(range, startDateParam, endDateParam) {
+  const now = new Date();
+  let rangeStart, rangeEnd;
+
+  switch (range) {
+    case "today":
+      rangeStart = startOfDay(now);
+      rangeEnd = now;
+      break;
+    case "month":
+      rangeStart = daysAgo(30);
+      rangeEnd = now;
+      break;
+    case "custom": {
+      const s = startDateParam ? new Date(startDateParam) : daysAgo(7);
+      const e = endDateParam ? new Date(endDateParam) : now;
+      rangeStart = startOfDay(s);
+      const endOfDay = new Date(e);
+      endOfDay.setHours(23, 59, 59, 999);
+      rangeEnd = endOfDay;
+      break;
+    }
+    case "week":
+    default:
+      rangeStart = daysAgo(7);
+      rangeEnd = now;
+      break;
+  }
+  return { rangeStart, rangeEnd };
+}
+
 // one row per raw event, tagged with which session (session_seq) it belongs to
 const SESSIONIZED_CTE = `
   sessionized AS (
@@ -806,17 +841,45 @@ const getFeatureAnalytics = async (req, res, next) => {
   }
 };
 
+// ── Activity: date-range filtered, capped, with truncation metadata ───────
 const getActivity = async (req, res, next) => {
   try {
-    const events = await sequelize.query(
-      `SELECT ue.id, ue.event_type, ue.feature_name, ue.metadata, ue.created_at, u.name AS user_name
-       FROM "UserEvents" ue
-       LEFT JOIN "users" u ON u.id = ue.user_id
-       WHERE ue.user_id NOT IN (SELECT id FROM "users" WHERE LOWER(name) IN (${EXCL_SQL}))
-       ORDER BY ue.created_at DESC LIMIT 50`,
-      { type: QueryTypes.SELECT }
-    );
-    res.json({ success: true, events });
+    const { range: rawRange, startDate, endDate } = req.query;
+    const range = ACTIVITY_RANGES.includes(rawRange) ? rawRange : "week";
+    const { rangeStart, rangeEnd } = resolveActivityRange(range, startDate, endDate);
+
+    const [countRows, events] = await Promise.all([
+      sequelize.query(
+        `SELECT COUNT(*) AS total
+         FROM "UserEvents" ue
+         WHERE ${EXCL_UID_COND}
+           AND ue.created_at >= :rangeStart AND ue.created_at <= :rangeEnd`,
+        { replacements: { rangeStart, rangeEnd }, type: QueryTypes.SELECT }
+      ),
+      sequelize.query(
+        `SELECT ue.id, ue.event_type, ue.feature_name, ue.metadata, ue.created_at, u.name AS user_name
+         FROM "UserEvents" ue
+         LEFT JOIN "users" u ON u.id = ue.user_id
+         WHERE ue.user_id NOT IN (SELECT id FROM "users" WHERE LOWER(name) IN (${EXCL_SQL}))
+           AND ue.created_at >= :rangeStart AND ue.created_at <= :rangeEnd
+         ORDER BY ue.created_at DESC
+         LIMIT ${ACTIVITY_ROW_CAP}`,
+        { replacements: { rangeStart, rangeEnd }, type: QueryTypes.SELECT }
+      ),
+    ]);
+
+    const total = parseInt(countRows[0]?.total || 0);
+    const truncated = total > ACTIVITY_ROW_CAP;
+
+    res.json({
+      success: true,
+      events,
+      truncated,
+      total,
+      range,
+      rangeStart,
+      rangeEnd,
+    });
   } catch (err) {
     next(err);
   }
@@ -940,11 +1003,28 @@ const getJourney = async (req, res, next) => {
       { type: QueryTypes.SELECT }
     );
     const totalWithFirst = featureOrderRows.reduce((s, r) => s + parseInt(r.cnt), 0);
-    const firstFeatureRanked = featureOrderRows.map((r) => ({
-      feature: r.feature_name, count: parseInt(r.cnt), pct: pct(r.cnt, totalWithFirst),
-    }));
+    const firstMap = {};
+    featureOrderRows.forEach((r) => { firstMap[r.feature_name] = parseInt(r.cnt); });
+    const firstFeatureRanked = ALL_FEATURES.map((name) => ({
+      feature: name, count: firstMap[name] || 0, pct: pct(firstMap[name] || 0, totalWithFirst),
+    })).sort((a, b) => b.count - a.count);
 
-    const data = { stages, transitions, firstFeatureRanked };
+    // ── Overall feature adoption — real usage across ALL users, not just "who tried this first" ──
+    const featureUsageRows = await sequelize.query(
+      `SELECT feature_name, COUNT(DISTINCT user_id) AS cnt
+       FROM "UserEvents"
+       WHERE feature_name IS NOT NULL AND ${EXCL_UID_COND}
+       GROUP BY feature_name`,
+      { type: QueryTypes.SELECT }
+    );
+    const usageMap = {};
+    featureUsageRows.forEach((r) => { usageMap[r.feature_name] = parseInt(r.cnt); });
+    const totalUsersForAdoption = await User.count({ where: { role: "user", [Op.and]: sequelize.literal(EXCL_NAME_COND) } });
+    const featureAdoption = ALL_FEATURES.map((name) => ({
+      feature: name, users: usageMap[name] || 0, pct: pct(usageMap[name] || 0, totalUsersForAdoption),
+    })).sort((a, b) => b.users - a.users);
+
+    const data = { stages, transitions, firstFeatureRanked, featureAdoption };
     setCached("journey", data);
     res.json({ success: true, ...data });
   } catch (err) {

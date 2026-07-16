@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, Component } from "react";
 import {
   Users, BarChart2, Shield, RefreshCw, Download,
   ChevronLeft, ChevronRight, Eye, EyeOff, Activity,
@@ -45,6 +45,11 @@ function fmtNum(n) {
   if (n >= 1000000) return `${(n / 1000000).toFixed(1)}M`;
   if (n >= 1000) return `${(n / 1000).toFixed(1)}k`;
   return String(n);
+}
+
+function fmtDateTime(iso) {
+  if (!iso) return "—";
+  return new Date(iso).toLocaleString("en-IN", { day: "numeric", month: "short", year: "2-digit", hour: "2-digit", minute: "2-digit" });
 }
 
 // ─── Collapse consecutive same-user/same-event rows ──────────────────────────
@@ -180,6 +185,47 @@ const EVENT_LABELS = {
   syllabus_tracked: { label: "updated syllabus", icon: CheckCircle2, color: "#4ade80" },
   day_return: { label: "returned to study", icon: Flame, color: "#fb923c" },
 };
+
+// ─── Error boundary ───────────────────────────────────────────────────────────
+// Without this, an uncaught render error anywhere in a tab (e.g. a bad API
+// response shape) unmounts the ENTIRE panel and leaves a blank screen with no
+// way to recover except a full page reload. This isolates the crash to the
+// current tab and gives a retry button instead.
+class TabErrorBoundary extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { error: null };
+  }
+  static getDerivedStateFromError(error) {
+    return { error };
+  }
+  componentDidCatch(error, info) {
+    console.error("[AdminPanel] Tab crashed:", error, info);
+  }
+  componentDidUpdate(prevProps) {
+    if (prevProps.resetKey !== this.props.resetKey && this.state.error) {
+      this.setState({ error: null });
+    }
+  }
+  render() {
+    if (this.state.error) {
+      return (
+        <div className="bg-accent-red/5 border border-accent-red/20 rounded-2xl p-6 text-center space-y-2">
+          <AlertCircle size={20} className="text-accent-red mx-auto" />
+          <p className="text-sm text-text-primary font-semibold">This tab hit an unexpected error.</p>
+          <p className="text-xs text-text-muted font-mono break-words">{String(this.state.error?.message || this.state.error)}</p>
+          <button
+            onClick={() => this.setState({ error: null })}
+            className="mt-2 text-xs font-mono text-accent-blue hover:text-text-primary transition-colors px-3 py-1.5 rounded-lg border border-accent-blue/20 hover:border-accent-blue/50"
+          >
+            Try again
+          </button>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // OVERVIEW TAB
@@ -576,43 +622,107 @@ function AnalyticsTab({ funnel, features, loading }) {
 // ═══════════════════════════════════════════════════════════════════════════════
 // ACTIVITY TAB
 // ═══════════════════════════════════════════════════════════════════════════════
-function ActivityTab({ events, loading, onRefresh }) {
+const ACTIVITY_RANGE_OPTIONS = [
+  { id: "today", label: "Today" },
+  { id: "week", label: "This Week" },
+  { id: "month", label: "This Month" },
+  { id: "custom", label: "Custom" },
+];
+
+function ActivityTab({
+  events, meta, range, customStart, customEnd,
+  onRangeChange, onCustomStartChange, onCustomEndChange, onCustomApply,
+  loading, onRefresh,
+}) {
   const autoRef = useRef(null);
 
+  // Auto-refresh only for the default "today"/"week" live views — never while
+  // the admin is looking at a custom historical range (or "month", which is
+  // still bounded but less "live" in spirit; keeping it to today/week per spec).
   useEffect(() => {
+    if (range !== "today" && range !== "week") return;
     autoRef.current = setInterval(onRefresh, 60000);
     return () => clearInterval(autoRef.current);
-  }, [onRefresh]);
+  }, [onRefresh, range]);
 
   if (loading && !events?.length) return <LoadSpinner />;
 
   return (
     <div>
       <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
-        <SectionHead title="Activity Feed (latest 50)" />
+        <SectionHead title="Activity Feed" />
         <button onClick={onRefresh} disabled={loading}
           className="flex items-center gap-1.5 text-xs text-text-muted hover:text-text-primary font-mono transition-colors shrink-0">
           <RefreshCw size={12} className={loading ? "animate-spin" : ""} />
-          <span className="hidden xs:inline">Auto-refreshes every 60s</span>
+          <span className="hidden xs:inline">
+            {range === "today" || range === "week" ? "Auto-refreshes every 60s" : "Refresh"}
+          </span>
         </button>
       </div>
+
+      <div className="flex flex-wrap items-center gap-2 mb-3">
+        <div className="flex gap-1 p-1 bg-bg-muted border border-bg-border rounded-xl w-fit">
+          {ACTIVITY_RANGE_OPTIONS.map(({ id, label }) => (
+            <button key={id} onClick={() => onRangeChange(id)}
+              className={`px-2.5 sm:px-3 py-1.5 rounded-lg text-[10px] sm:text-xs font-mono transition-all whitespace-nowrap
+                ${range === id
+                  ? "bg-bg-surface text-text-primary shadow-sm border border-bg-border"
+                  : "text-text-muted hover:text-text-secondary"}`}>
+              {label}
+            </button>
+          ))}
+        </div>
+
+        {range === "custom" && (
+          <div className="flex items-center gap-2 flex-wrap">
+            <input
+              type="date"
+              value={customStart}
+              onChange={(e) => onCustomStartChange(e.target.value)}
+              className="text-xs font-mono bg-bg-surface border border-bg-border rounded-lg px-2 py-1.5 text-text-primary"
+            />
+            <span className="text-xs text-text-muted">to</span>
+            <input
+              type="date"
+              value={customEnd}
+              onChange={(e) => onCustomEndChange(e.target.value)}
+              className="text-xs font-mono bg-bg-surface border border-bg-border rounded-lg px-2 py-1.5 text-text-primary"
+            />
+            <button
+              onClick={onCustomApply}
+              disabled={!customStart || !customEnd}
+              className="text-xs font-mono text-accent-blue hover:text-text-primary transition-colors px-2.5 py-1.5 rounded-lg border border-accent-blue/20 hover:border-accent-blue/50 bg-accent-blue/5 hover:bg-accent-blue/10 disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              Apply
+            </button>
+          </div>
+        )}
+      </div>
+
+      {meta && (
+        <p className="text-[11px] font-mono text-text-muted mb-3">
+          Showing {meta.truncated ? `latest ${events?.length || 0} of ${meta.total}` : `${meta.total} event${meta.total === 1 ? "" : "s"}`}
+          {" "}· {fmtDateTime(meta.rangeStart)} – {fmtDateTime(meta.rangeEnd)}
+          {meta.truncated && <span className="text-accent-gold"> · refine your range for more</span>}
+        </p>
+      )}
 
       {events?.length ? (
         <div className="bg-bg-surface border border-bg-border rounded-2xl overflow-hidden divide-y divide-bg-border/50">
           {groupConsecutiveEvents(events).map((ev) => {
-            const meta = EVENT_LABELS[ev.event_type] || { label: ev.event_type, icon: Activity, color: "#94a3b8" };
-            const Icon = meta.icon;
+            const metaLabel = EVENT_LABELS[ev.event_type] || { label: ev.event_type, icon: Activity, color: "#94a3b8" };
+            const Icon = metaLabel.icon;
             return (
               <div key={ev.id} className="flex items-start gap-2 sm:gap-3 px-3 sm:px-4 py-2.5 sm:py-3 hover:bg-bg-muted/30 transition-colors">
                 <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-lg flex items-center justify-center shrink-0 mt-0.5"
-                  style={{ background: `${meta.color}15`, border: `1px solid ${meta.color}20` }}>
-                  <Icon size={12} style={{ color: meta.color }} />
+                  style={{ background: `${metaLabel.color}15`, border: `1px solid ${metaLabel.color}20` }}>
+                  <Icon size={12} style={{ color: metaLabel.color }} />
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-1.5 flex-wrap">
                     <p className="text-sm text-text-primary">
                       <span className="font-semibold">{ev.user_name || "A user"}</span>
-                      {" "}{meta.label}
+                      {" "}{metaLabel.label}
                       {ev.feature_name && ev.feature_name !== ev.user_name && (
                         <span className="text-text-muted text-xs sm:text-sm"> · {ev.feature_name}</span>
                       )}
@@ -638,8 +748,8 @@ function ActivityTab({ events, loading, onRefresh }) {
       ) : (
         <div className="bg-bg-surface border border-bg-border rounded-2xl py-16 text-center">
           <Activity size={24} className="text-text-muted mx-auto mb-3" />
-          <p className="text-sm text-text-muted">No activity recorded yet.</p>
-          <p className="text-xs text-text-muted mt-1">Events will appear here as users interact with the platform.</p>
+          <p className="text-sm text-text-muted">No activity recorded in this range.</p>
+          <p className="text-xs text-text-muted mt-1">Try a wider date range.</p>
         </div>
       )}
     </div>
@@ -658,16 +768,19 @@ function RetentionTab({ retention, cohort, churnList, loading }) {
         <SectionHead title="Retention Rates" />
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
           {[
-            { label: "Day 1", value: retention?.d1, sub: "Returned day after signup" },
-            { label: "Day 7", value: retention?.d7, sub: "Returned within first week" },
-            { label: "Day 30", value: retention?.d30, sub: "Returned within first month" },
-          ].map(({ label, value, sub }) => {
+            { label: "Day 1", value: retention?.d1?.percentage, retained: retention?.d1?.retainedUsers, eligible: retention?.d1?.eligibleUsers, sub: "Returned day after signup" },
+            { label: "Day 7", value: retention?.d7?.percentage, retained: retention?.d7?.retainedUsers, eligible: retention?.d7?.eligibleUsers, sub: "Returned within first week" },
+            { label: "Day 30", value: retention?.d30?.percentage, retained: retention?.d30?.retainedUsers, eligible: retention?.d30?.eligibleUsers, sub: "Returned within first month" },
+          ].map(({ label, value, retained, eligible, sub }) => {
             const color = value >= 40 ? "#4ade80" : value >= 15 ? "#fbbf24" : "#f87171";
             return (
               <div key={label} className="bg-bg-surface border border-bg-border rounded-2xl p-4 sm:p-5 text-center">
                 <p className="text-[11px] font-mono text-text-muted uppercase tracking-wider mb-2">{label}</p>
                 <p className="text-3xl sm:text-4xl font-display font-bold" style={{ color }}>{value ?? "—"}{value !== undefined ? "%" : ""}</p>
                 <p className="text-[11px] text-text-muted mt-1">{sub}</p>
+                {eligible !== undefined && (
+                  <p className="text-[10px] font-mono text-text-muted/70 mt-1">{retained ?? 0} / {eligible} eligible</p>
+                )}
               </div>
             );
           })}
@@ -768,37 +881,76 @@ function JourneyTab({ journeyData, loading }) {
   if (loading && !journeyData) return <LoadSpinner />;
   if (!journeyData) return <p className="text-sm text-text-muted py-8 text-center">No journey data yet.</p>;
 
-  const { firstFeatureRanked = [], stages = [], transitions = [] } = journeyData;
+  const { firstFeatureRanked = [], stages = [], transitions = [], featureAdoption = [] } = journeyData;
 
   return (
     <div className="space-y-8">
-      <SectionHead title="First Feature Discovery" />
-      {firstFeatureRanked.length ? (
-        <div className="bg-bg-surface border border-bg-border rounded-2xl overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm min-w-[400px]">
-              <thead>
-                <tr className="border-b border-bg-border bg-bg-muted/40">
-                  <th className="text-left px-3 sm:px-4 py-2.5 sm:py-3 text-[10px] font-mono text-text-muted uppercase tracking-wider">Feature</th>
-                  <th className="text-left px-3 sm:px-4 py-2.5 sm:py-3 text-[10px] font-mono text-text-muted uppercase tracking-wider">First‑time Users</th>
-                  <th className="text-left px-3 sm:px-4 py-2.5 sm:py-3 text-[10px] font-mono text-text-muted uppercase tracking-wider">% of Total</th>
-                </tr>
-              </thead>
-              <tbody>
-                {firstFeatureRanked.map((item) => (
-                  <tr key={item.feature} className="border-b border-bg-border/40 hover:bg-bg-muted/20 transition-colors">
-                    <td className="px-3 sm:px-4 py-2 font-medium text-text-primary">{item.feature}</td>
-                    <td className="px-3 sm:px-4 py-2 font-mono text-sm text-text-secondary">{item.count}</td>
-                    <td className="px-3 sm:px-4 py-2 font-mono text-sm text-text-secondary">{item.pct}%</td>
+      <div>
+        <SectionHead title="Overall Feature Adoption (all users)" />
+        {featureAdoption.length ? (
+          <div className="bg-bg-surface border border-bg-border rounded-2xl overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm min-w-[400px]">
+                <thead>
+                  <tr className="border-b border-bg-border bg-bg-muted/40">
+                    <th className="text-left px-3 sm:px-4 py-2.5 sm:py-3 text-[10px] font-mono text-text-muted uppercase tracking-wider">Feature</th>
+                    <th className="text-left px-3 sm:px-4 py-2.5 sm:py-3 text-[10px] font-mono text-text-muted uppercase tracking-wider">Users</th>
+                    <th className="text-left px-3 sm:px-4 py-2.5 sm:py-3 text-[10px] font-mono text-text-muted uppercase tracking-wider">% of Total</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {featureAdoption.map((item) => (
+                    <tr key={item.feature} className="border-b border-bg-border/40 hover:bg-bg-muted/20 transition-colors">
+                      <td className="px-3 sm:px-4 py-2 font-medium text-text-primary">{item.feature}</td>
+                      <td className="px-3 sm:px-4 py-2 font-mono text-sm text-text-secondary">{item.users}</td>
+                      <td className="px-3 sm:px-4 py-2 font-mono text-sm text-text-secondary">
+                        <div className="flex items-center gap-2">
+                          <span>{item.pct}%</span>
+                          <div className="h-1.5 w-16 bg-bg-muted rounded-full overflow-hidden hidden sm:block">
+                            <div className="h-full bg-accent-blue/60 rounded-full" style={{ width: `${item.pct}%` }} />
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
-        </div>
-      ) : (
-        <p className="text-sm text-text-muted py-6 text-center">No first‑feature data yet.</p>
-      )}
+        ) : (
+          <p className="text-sm text-text-muted py-6 text-center">No adoption data yet.</p>
+        )}
+      </div>
+
+      <div>
+        <SectionHead title="First Feature Discovery" />
+        {firstFeatureRanked.length ? (
+          <div className="bg-bg-surface border border-bg-border rounded-2xl overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm min-w-[400px]">
+                <thead>
+                  <tr className="border-b border-bg-border bg-bg-muted/40">
+                    <th className="text-left px-3 sm:px-4 py-2.5 sm:py-3 text-[10px] font-mono text-text-muted uppercase tracking-wider">Feature</th>
+                    <th className="text-left px-3 sm:px-4 py-2.5 sm:py-3 text-[10px] font-mono text-text-muted uppercase tracking-wider">First‑time Users</th>
+                    <th className="text-left px-3 sm:px-4 py-2.5 sm:py-3 text-[10px] font-mono text-text-muted uppercase tracking-wider">% of Total</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {firstFeatureRanked.map((item) => (
+                    <tr key={item.feature} className="border-b border-bg-border/40 hover:bg-bg-muted/20 transition-colors">
+                      <td className="px-3 sm:px-4 py-2 font-medium text-text-primary">{item.feature}</td>
+                      <td className="px-3 sm:px-4 py-2 font-mono text-sm text-text-secondary">{item.count}</td>
+                      <td className="px-3 sm:px-4 py-2 font-mono text-sm text-text-secondary">{item.pct}%</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        ) : (
+          <p className="text-sm text-text-muted py-6 text-center">No first‑feature data yet.</p>
+        )}
+      </div>
 
       <div>
         <SectionHead title="Onboarding Funnel" />
@@ -1253,6 +1405,10 @@ export default function AdminPanel() {
   const [funnel, setFunnel] = useState(null);
   const [features, setFeatures] = useState(null);
   const [events, setEvents] = useState(null);
+  const [activityMeta, setActivityMeta] = useState(null);
+  const [activityRange, setActivityRange] = useState("week");
+  const [customStart, setCustomStart] = useState("");
+  const [customEnd, setCustomEnd] = useState("");
   const [retention, setRetention] = useState(null);
   const [cohort, setCohort] = useState(null);
   const [churnList, setChurnList] = useState(null);
@@ -1305,14 +1461,36 @@ export default function AdminPanel() {
     finally { load("analytics", false); }
   }, []);
 
-  const fetchActivity = useCallback(async () => {
+  // fetchActivity now takes an optional (range, startDate, endDate) triplet;
+  // defaults fall back to current component state so a bare onRefresh() call
+  // re-fetches whatever range is currently selected.
+  const fetchActivity = useCallback(async (range = activityRange, startDate = customStart, endDate = customEnd) => {
     load("activity", true);
     try {
-      const d = await adminFetch("/activity");
+      const params = new URLSearchParams({ range });
+      if (range === "custom") {
+        if (startDate) params.set("startDate", startDate);
+        if (endDate) params.set("endDate", endDate);
+      }
+      const d = await adminFetch(`/activity?${params.toString()}`);
       setEvents(d.events || []);
+      setActivityMeta({ truncated: d.truncated, total: d.total, rangeStart: d.rangeStart, rangeEnd: d.rangeEnd });
     } catch (e) { notify(e.message, "error"); }
     finally { load("activity", false); }
-  }, []);
+  }, [activityRange, customStart, customEnd]);
+
+  const handleActivityRangeChange = useCallback((newRange) => {
+    setActivityRange(newRange);
+    if (newRange !== "custom") {
+      fetchActivity(newRange);
+    }
+    // for "custom" we wait for the admin to pick dates and hit Apply
+  }, [fetchActivity]);
+
+  const handleCustomApply = useCallback(() => {
+    if (!customStart || !customEnd) return;
+    fetchActivity("custom", customStart, customEnd);
+  }, [fetchActivity, customStart, customEnd]);
 
   const fetchRetention = useCallback(async () => {
     load("retention", true);
@@ -1508,54 +1686,68 @@ const fetchFeedback = useCallback(async () => {
         ))}
       </div>
 
-      {tab === "overview" && (
-        <OverviewTab metrics={metrics} insights={insights} loading={loading.metrics} onRefresh={fetchMetrics} />
-      )}
-      {tab === "Users" && (
-        <UsersTab
-          users={users}
-          usersTotal={usersTotal}
-          userPage={userPage}
-          loading={loading.users}
-          onPageChange={(p) => fetchUsers(p, sortBy, sortDir)}
-          onSortChange={handleSort}
-          sortBy={sortBy}
-          sortDir={sortDir}
-          onDelete={handleDelete}
-          onUserClick={openProfile}
-        />
-      )}
-      {tab === "analytics" && (
-        <AnalyticsTab funnel={funnel} features={features} loading={loading.analytics} />
-      )}
-      {tab === "activity" && (
-        <ActivityTab events={events} loading={loading.activity} onRefresh={fetchActivity} />
-      )}
-      {tab === "retention" && (
-        <RetentionTab retention={retention} cohort={cohort} churnList={churnList} loading={loading.retention} />
-      )}
-      {tab === "journey" && (
-        <JourneyTab journeyData={journeyData} loading={loading.journey} />
-      )}
-      {tab === "segments" && (
-        <SegmentsTab segments={segments} loading={loading.segments} />
-      )}
-      {tab === "discovery" && (
-        <DiscoveryTab discovery={discovery} loading={loading.discovery} />
-      )}
-      {tab === "insights" && (
-        <InsightsTab insights={insights} loading={loading.insights} />
-      )}
-      {tab === "feedback" && (
-        <FeedbackTab
-          stats={feedbackStats}
-          feedbackList={feedbackList}
-          loading={loading.feedback}
-          onRefresh={fetchFeedback}
-        />
-      )}
-      {tab === "study" && <AdminStudyAnalytics />}
-      {tab === "email" && <PowerUserEmailer />}
+      <TabErrorBoundary resetKey={tab}>
+        {tab === "overview" && (
+          <OverviewTab metrics={metrics} insights={insights} loading={loading.metrics} onRefresh={fetchMetrics} />
+        )}
+        {tab === "Users" && (
+          <UsersTab
+            users={users}
+            usersTotal={usersTotal}
+            userPage={userPage}
+            loading={loading.users}
+            onPageChange={(p) => fetchUsers(p, sortBy, sortDir)}
+            onSortChange={handleSort}
+            sortBy={sortBy}
+            sortDir={sortDir}
+            onDelete={handleDelete}
+            onUserClick={openProfile}
+          />
+        )}
+        {tab === "analytics" && (
+          <AnalyticsTab funnel={funnel} features={features} loading={loading.analytics} />
+        )}
+        {tab === "activity" && (
+          <ActivityTab
+            events={events}
+            meta={activityMeta}
+            range={activityRange}
+            customStart={customStart}
+            customEnd={customEnd}
+            onRangeChange={handleActivityRangeChange}
+            onCustomStartChange={setCustomStart}
+            onCustomEndChange={setCustomEnd}
+            onCustomApply={handleCustomApply}
+            loading={loading.activity}
+            onRefresh={() => fetchActivity()}
+          />
+        )}
+        {tab === "retention" && (
+          <RetentionTab retention={retention} cohort={cohort} churnList={churnList} loading={loading.retention} />
+        )}
+        {tab === "journey" && (
+          <JourneyTab journeyData={journeyData} loading={loading.journey} />
+        )}
+        {tab === "segments" && (
+          <SegmentsTab segments={segments} loading={loading.segments} />
+        )}
+        {tab === "discovery" && (
+          <DiscoveryTab discovery={discovery} loading={loading.discovery} />
+        )}
+        {tab === "insights" && (
+          <InsightsTab insights={insights} loading={loading.insights} />
+        )}
+        {tab === "feedback" && (
+          <FeedbackTab
+            stats={feedbackStats}
+            feedbackList={feedbackList}
+            loading={loading.feedback}
+            onRefresh={fetchFeedback}
+          />
+        )}
+        {tab === "study" && <AdminStudyAnalytics />}
+        {tab === "email" && <PowerUserEmailer />}
+      </TabErrorBoundary>
       {profileUserId && (
         <UserProfileModal userId={profileUserId} onClose={closeProfile} />
       )}
