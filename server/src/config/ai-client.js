@@ -69,12 +69,21 @@ function safeJSONParse(rawText) {
       console.log(rawText);
       console.log("=== END RESPONSE ===");
 
+      let reason = "unparseable JSON response from AI provider";
       if (
         cleanText.includes('"topper_answer"') &&
         !cleanText.includes('"priority_actions"')
       ) {
         console.warn("Output truncated");
+        reason = "AI response was truncated (likely hit the token limit) and could not be parsed as JSON";
       }
+
+      // IMPORTANT: never fall through and return undefined here. Doing so lets
+      // downstream code (e.g. normalizeEvaluation) call methods on `undefined`
+      // (crashing with a cryptic "Cannot read properties of undefined" 500),
+      // and it hides the failure from runWithProviders' fallback loop, which
+      // relies on a thrown error to move on to the next provider.
+      throw new Error(reason);
     }
   }
 }
@@ -421,6 +430,7 @@ async function runMentorChat(systemInstruction, history, message) {
 // (see evaluateAnswerImage below) - it's harmless and stays "" for typed
 // answers, so this one function safely serves both flows.
 function normalizeEvaluation(result) {
+  result = result || {};
   return {
     score: result.score ?? 0,
     score_rationale: result.score_rationale || result.feedback || "",

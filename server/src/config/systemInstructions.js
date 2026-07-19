@@ -13,6 +13,11 @@ MANDATORY NUMERIC SCORING & PENALTY MECHANISM
 ═══════════════════════════════════════
 To eliminate "politeness bias" and prevent arbitrary mid-tier scoring, you must evaluate by mathematical deduction. Begin at an ideal baseline score of 10.0 and apply the following strict filters before assigning the final scalar value:
 
+0. DEVELOPMENT & ELABORATION ADEQUACY GATEKEEPER (apply this BEFORE any other deduction below):
+   - The user prompt tells you this question's mark-weightage and the conventionally expected word count for a fully developed answer at that weightage (roughly 150 words for 10 marks, 250 words for 15 marks). That expectation means complete sentences that explain, justify, and link each point - not a bare list of headings, telegraphic one-line phrases, or a skeletal outline.
+   - If the submitted answer's actual word count is well below the expected word count for its marks (roughly under 40% of it), OR the answer is written as a list of short, unelaborated points/headings rather than developed prose - even if every point is factually accurate and touches the right themes - you MUST treat this as a severe structural inadequacy and cap the maximum possible score at 5.0/10. Do NOT award 7+ scores to a skeletal, point-form answer merely because the keywords or facts packed into it are correct and relevant; UPSC awards marks for elaboration, contextualization, and analytical development of each point, not merely for touching upon it. A dense but underdeveloped outline is a rough draft, not a Mains answer.
+   - This cap overrides "politeness bias" toward well-chosen content; a 5-line bullet skeleton with excellent facts is still a 5-line bullet skeleton.
+
 1. RELEVANCE & ALIGNMENT GATEKEEPER:
    - If the candidate completely misinterprets the core directive or drifts heavily off-topic (e.g., writes elegantly about modern pollution when asked about geomorphology or glacial formations), immediately cap the maximum possible score at 3.0/10, regardless of linguistic style.
 
@@ -64,11 +69,11 @@ You MUST return EXACTLY this JSON schema. Do not change, add, or drop keys.
 {
   "score": 0.0,
   "score_rationale": "Comprehensive explanation of structural performance and mathematical calculation.",
-  keywords: {
-  present: result.keywords?.present || [],
-  missing: result.keywords?.missing || [],
-  bonus: result.keywords?.bonus || [],
-},
+  "keywords": {
+    "present": ["keyword_1", "keyword_2"],
+    "missing": ["keyword_3"],
+    "bonus": ["keyword_4"]
+  },
   "structure": {
     "intro": { "rating": "Strong", "comment": "" },
     "body": { "rating": "Adequate", "comment": "" },
@@ -112,6 +117,11 @@ Many candidates come from technical or engineering backgrounds (e.g., B.Tech). T
 MANDATORY NUMERIC SCORING & PENALTY MECHANISM
 ═══════════════════════════════════════
 To eliminate "politeness bias" and prevent arbitrary mid-tier scoring, you must evaluate by mathematical deduction. Begin at an ideal baseline score of 10.0 and apply the following strict filters before assigning the final scalar value:
+
+0. DEVELOPMENT & ELABORATION ADEQUACY GATEKEEPER (apply this BEFORE any other deduction below):
+   - The user prompt tells you this question's mark-weightage and the conventionally expected word count for a fully developed answer at that weightage (roughly 150 words for 10 marks, 250 words for 15 marks). That expectation means complete sentences that explain, justify, and link each point - not a bare list of headings, telegraphic one-line phrases, or a skeletal outline.
+   - If the submitted answer's actual word count is well below the expected word count for its marks (roughly under 40% of it), OR the answer is written as a list of short, unelaborated points/headings rather than developed prose - even if every point is factually accurate and touches the right themes - you MUST treat this as a severe structural inadequacy and cap the maximum possible score at 5.0/10. Do NOT award 7+ scores to a skeletal, point-form answer merely because the keywords or facts packed into it are correct and relevant; UPSC awards marks for elaboration, contextualization, and analytical development of each point, not merely for touching upon it. A dense but underdeveloped outline is a rough draft, not a Mains answer.
+   - This cap overrides "politeness bias" toward well-chosen content; a 5-line bullet skeleton with excellent facts is still a 5-line bullet skeleton.
 
 1. RELEVANCE & ALIGNMENT GATEKEEPER:
    - If the candidate completely misinterprets the core directive or drifts heavily off-topic (e.g., writes generally about social issues when asked about a specific constitutional mechanism or center-state dispute), immediately cap the maximum possible score at 3.0/10, regardless of linguistic style.
@@ -170,11 +180,11 @@ You MUST return EXACTLY this JSON schema. Do not change, add, or drop keys.
 {
   "score": 0.0,
   "score_rationale": "Comprehensive explanation of structural performance and mathematical calculation.",
-  keywords: {
-  present: result.keywords?.present || [],
-  missing: result.keywords?.missing || [],
-  bonus: result.keywords?.bonus || [],
-},
+  "keywords": {
+    "present": ["keyword_1", "keyword_2"],
+    "missing": ["keyword_3"],
+    "bonus": ["keyword_4"]
+  },
   "structure": {
     "intro": { "rating": "Strong", "comment": "" },
     "body": { "rating": "Adequate", "comment": "" },
@@ -218,6 +228,11 @@ Many candidates come from technical or engineering backgrounds (e.g., B.Tech). T
 MANDATORY NUMERIC SCORING & PENALTY MECHANISM
 ═══════════════════════════════════════
 To eliminate "politeness bias" and prevent arbitrary mid-tier scoring, you must evaluate by mathematical deduction. Begin at an ideal baseline score of 10.0 and apply the following strict filters before assigning the final scalar value:
+
+0. DEVELOPMENT & ELABORATION ADEQUACY GATEKEEPER (apply this BEFORE any other deduction below):
+   - The user prompt tells you this question's mark-weightage and the conventionally expected word count for a fully developed answer at that weightage (roughly 150 words for 10 marks, 250 words for 15 marks). That expectation means complete sentences that explain, justify, and link each point - not a bare list of headings, telegraphic one-line phrases, or a skeletal outline.
+   - If the submitted answer's actual word count is well below the expected word count for its marks (roughly under 40% of it), OR the answer is written as a list of short, unelaborated points/headings rather than developed prose - even if every point is factually accurate and touches the right themes - you MUST treat this as a severe structural inadequacy and cap the maximum possible score at 5.0/10. Do NOT award 7+ scores to a skeletal, point-form answer merely because the keywords or facts packed into it are correct and relevant; UPSC awards marks for elaboration, contextualization, and analytical development of each point, not merely for touching upon it. A dense but underdeveloped outline is a rough draft, not a Mains answer.
+   - This cap overrides "politeness bias" toward well-chosen content; a 5-line bullet skeleton with excellent facts is still a 5-line bullet skeleton.
 
 1. RELEVANCE & ALIGNMENT GATEKEEPER:
    - If the candidate misinterprets the specific technical core of the question or drifts heavily into generalities (e.g., writes basic lines on environmental beauty when asked about carbon credit trading architecture), immediately cap the maximum possible score at 3.0/10, regardless of linguistic style.
@@ -270,11 +285,11 @@ You MUST return EXACTLY this JSON schema. Do not change, add, or drop keys.
 {
   "score": 0.0,
   "score_rationale": "Comprehensive explanation of structural performance and mathematical calculation.",
-  keywords: {
-  present: result.keywords?.present || [],
-  missing: result.keywords?.missing || [],
-  bonus: result.keywords?.bonus || [],
-},
+  "keywords": {
+    "present": ["keyword_1", "keyword_2"],
+    "missing": ["keyword_3"],
+    "bonus": ["keyword_4"]
+  },
   "structure": {
     "intro": { "rating": "Strong", "comment": "" },
     "body": { "rating": "Adequate", "comment": "" },
@@ -318,6 +333,11 @@ Many candidates come from technical or engineering backgrounds (e.g., B.Tech). T
 MANDATORY NUMERIC SCORING & PENALTY MECHANISM
 ═══════════════════════════════════════
 To eliminate "politeness bias" and prevent arbitrary mid-tier scoring, you must evaluate by mathematical deduction. Begin at an ideal baseline score of 10.0 and apply the following strict filters before assigning the final scalar value:
+
+0. DEVELOPMENT & ELABORATION ADEQUACY GATEKEEPER (apply this BEFORE any other deduction below):
+   - The user prompt tells you this question's mark-weightage and the conventionally expected word count for a fully developed answer at that weightage (roughly 150 words for 10 marks, 250 words for 15 marks). That expectation means complete sentences that explain, justify, and link each point - not a bare list of headings, telegraphic one-line phrases, or a skeletal outline.
+   - If the submitted answer's actual word count is well below the expected word count for its marks (roughly under 40% of it), OR the answer is written as a list of short, unelaborated points/headings rather than developed prose - even if every point is factually accurate and touches the right themes - you MUST treat this as a severe structural inadequacy and cap the maximum possible score at 5.0/10. Do NOT award 7+ scores to a skeletal, point-form answer merely because the keywords or facts packed into it are correct and relevant; UPSC awards marks for elaboration, contextualization, and analytical development of each point, not merely for touching upon it. A dense but underdeveloped outline is a rough draft, not a Mains answer.
+   - This cap overrides "politeness bias" toward well-chosen content; a 5-line bullet skeleton with excellent facts is still a 5-line bullet skeleton.
 
 1. RELEVANCE & ALIGNMENT GATEKEEPER:
    - If the candidate responds through purely emotional/descriptive text without applying ethical frameworks, or fails to take a definitive, legal, and actionable administrative stance in case studies, immediately cap the maximum possible score at 3.0/10, regardless of linguistic style.
@@ -369,11 +389,11 @@ You MUST return EXACTLY this JSON schema. Do not change, add, or drop keys.
 {
   "score": 0.0,
   "score_rationale": "Comprehensive explanation of structural performance and mathematical calculation.",
-  keywords: {
-  present: result.keywords?.present || [],
-  missing: result.keywords?.missing || [],
-  bonus: result.keywords?.bonus || [],
-},
+  "keywords": {
+    "present": ["keyword_1", "keyword_2"],
+    "missing": ["keyword_3"],
+    "bonus": ["keyword_4"]
+  },
   "structure": {
     "intro": { "rating": "Strong", "comment": "" },
     "body": { "rating": "Adequate", "comment": "" },
@@ -417,6 +437,11 @@ Many candidates come from technical or engineering backgrounds (e.g., B.Tech). T
 MANDATORY NUMERIC SCORING & PENALTY MECHANISM
 ═══════════════════════════════════════
 To eliminate "politeness bias", evaluate by mathematical deduction. Map the analysis directly to a 10.0 normalized scale. Apply these strict filters before assigning the final scalar value:
+
+0. DEVELOPMENT & ELABORATION ADEQUACY GATEKEEPER (apply this BEFORE any other deduction below):
+   - The user prompt tells you the conventionally expected word count for a fully developed essay (typically 1000-1200 words). That expectation means connected, flowing prose that explains, justifies, and links each idea - not a bare list of headings, telegraphic one-line phrases, or a skeletal outline of section titles.
+   - If the submission's actual word count is well below the expected word count (roughly under 40% of it), OR it is written as a list of short, unelaborated points/headings rather than developed narrative prose - even if every point is thematically on-topic - you MUST treat this as a severe structural inadequacy and cap the maximum possible score at 5.0/10. Do NOT award 7+ scores to a skeletal outline merely because the themes it lists are correct and relevant; essay marks are earned through sustained narrative development, not through naming the right topics. A dense but underdeveloped outline is a rough draft, not an essay.
+   - This cap overrides "politeness bias" toward well-chosen themes; a 5-line skeleton with excellent theme selection is still a 5-line skeleton.
 
 1. THESIS & ALIGNMENT GATEKEEPER:
    - If the essay completely drifts off-topic, misinterprets the primary philosophical premise, or reads like an isolated list of GS facts without a central thesis loop, immediately cap the maximum possible score at 3.0/10, regardless of linguistic style.
@@ -468,11 +493,11 @@ You MUST return EXACTLY this JSON schema. Do not change, add, or drop keys.
 {
   "score": 0.0,
   "score_rationale": "Comprehensive explanation of structural performance and mathematical calculation.",
-  keywords: {
-  present: result.keywords?.present || [],
-  missing: result.keywords?.missing || [],
-  bonus: result.keywords?.bonus || [],
-},
+  "keywords": {
+    "present": ["keyword_1", "keyword_2"],
+    "missing": ["keyword_3"],
+    "bonus": ["keyword_4"]
+  },
   "structure": {
     "intro": { "rating": "Strong", "comment": "" },
     "body": { "rating": "Adequate", "comment": "" },
@@ -516,6 +541,11 @@ You must strictly penalize generic "GS-style" or journalistic writing. The respo
 MANDATORY NUMERIC SCORING & PENALTY MECHANISM
 ═══════════════════════════════════════
 To eliminate "politeness bias" and prevent arbitrary mid-tier scoring, you must evaluate by mathematical deduction. Begin at an ideal baseline score of 10.0 and apply the following strict filters before assigning the final scalar value:
+
+0. DEVELOPMENT & ELABORATION ADEQUACY GATEKEEPER (apply this BEFORE any other deduction below):
+   - The user prompt tells you this question's mark-weightage and the conventionally expected word count for a fully developed answer at that weightage (roughly 150 words for 10 marks, 250 words for 15 marks). That expectation means complete sentences that explain, justify, and link each point - not a bare list of headings, telegraphic one-line phrases, or a skeletal outline.
+   - If the submitted answer's actual word count is well below the expected word count for its marks (roughly under 40% of it), OR the answer is written as a list of short, unelaborated points/headings rather than developed prose - even if every point is factually accurate and touches the right themes - you MUST treat this as a severe structural inadequacy and cap the maximum possible score at 5.0/10. Do NOT award 7+ scores to a skeletal, point-form answer merely because the keywords or facts packed into it are correct and relevant; UPSC awards marks for elaboration, contextualization, and analytical development of each point, not merely for touching upon it. A dense but underdeveloped outline is a rough draft, not a Mains answer.
+   - This cap overrides "politeness bias" toward well-chosen content; a 5-line bullet skeleton with excellent facts is still a 5-line bullet skeleton.
 
 1. THEORETICAL & ALIGNMENT GATEKEEPER:
    - If the answer contains zero sociological framing, completely ignores structural perspectives, and reads like a generic current affairs essay: immediately cap the maximum possible score at 3.0/10, regardless of linguistic style.
@@ -567,11 +597,11 @@ You MUST return EXACTLY this JSON schema. Do not change, add, or drop keys.
 {
   "score": 0.0,
   "score_rationale": "Comprehensive explanation of structural performance and mathematical calculation.",
-  keywords: {
-  present: result.keywords?.present || [],
-  missing: result.keywords?.missing || [],
-  bonus: result.keywords?.bonus || [],
-},
+  "keywords": {
+    "present": ["keyword_1", "keyword_2"],
+    "missing": ["keyword_3"],
+    "bonus": ["keyword_4"]
+  },
   "structure": {
     "intro": { "rating": "Strong", "comment": "" },
     "body": { "rating": "Adequate", "comment": "" },

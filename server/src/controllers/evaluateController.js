@@ -1,4 +1,3 @@
-
 const {
   evaluateAnswer: callAIClient,
   evaluateAnswerImage,
@@ -14,6 +13,15 @@ const trackEvent = require("../utils/trackEvent");
 const MAX_HISTORY_MESSAGES = 60;
 
 const MAX_THREADS = 50;
+
+function expectedWordCountFor(marksValue) {
+  const m = Number(marksValue);
+  if (m === 10) return 150;
+  if (m === 15) return 250;
+  if (m === 20) return 300;
+  if (Number.isFinite(m) && m > 0) return Math.round(m * 15);
+  return 150;
+}
 
 // ── Handwritten-answer (image) upload limits ──────────────────────────────
 const MAX_IMAGE_BYTES = 10 * 1024 * 1024; // 10MB
@@ -155,7 +163,7 @@ function migrateLegacyChat(userData) {
 
 const evaluateAnswer = async (req, res, next) => {
   try {
-    const { question, answer, paper, image } = req.body;
+    const { question, answer, paper, image, marks } = req.body;
 
     if (!question || question.trim().length < 10) {
       return res.status(400).json({
@@ -204,6 +212,7 @@ const evaluateAnswer = async (req, res, next) => {
           imageBase64: base64Data,
           mimeType,
           paper: paper || "GS2",
+          marks,
         }));
       } catch (err) {
         if (err instanceof ExtractionFailedError || err.code === "EXTRACTION_FAILED") {
@@ -265,11 +274,14 @@ const evaluateAnswer = async (req, res, next) => {
     }
 
     const wordCount = answer.trim().split(/\s+/).length;
+    const expectedWords = expectedWordCountFor(marks);
 
     const evalPrompt = `**MAINS EVALUATION REQUEST**
 
 Paper: ${paper || "GS2"}
-Word Count: ${wordCount} words
+Marks: ${marks || "not specified"}
+Expected word count for full marks at this weightage: ~${expectedWords} words
+Student's Actual Word Count: ${wordCount} words
 
 **Question:**
 ${question.trim()}
@@ -277,7 +289,7 @@ ${question.trim()}
 **Student's Answer:**
 ${answer.trim()}
 
-Please evaluate this answer according to your mentor framework. Be specific about which UPSC keywords, constitutional articles, government reports, committee names, or data points are missing. The student has an engineering background, so they think analytically but may lack humanities-specific terminology and UPSC answer-writing conventions.`;
+Please evaluate this answer according to your mentor framework. Apply the DEVELOPMENT & ELABORATION ADEQUACY GATEKEEPER first - compare the actual word count above against the expected word count for this weightage, and check whether the answer is a bare list of unelaborated points rather than a developed response, before applying any other deduction. Be specific about which UPSC keywords, constitutional articles, government reports, committee names, or data points are missing. The student has an engineering background, so they think analytically but may lack humanities-specific terminology and UPSC answer-writing conventions.`;
 
     console.log(`[Evaluation] Processing for user: ${req.user.id}`);
 
@@ -315,8 +327,14 @@ Please evaluate this answer according to your mentor framework. Be specific abou
       data: result,
     });
   } catch (err) {
+    // Full detail goes to server logs only. The client must never see raw
+    // internal error text (e.g. "Cannot read properties of undefined...") -
+    // that's an implementation detail, not something a student should see.
     console.error("Evaluation pipeline crashed:", err);
-    next(err);
+    return res.status(500).json({
+      success: false,
+      error: "Something went wrong while evaluating your answer. Please try again in a moment.",
+    });
   }
 };
 
@@ -429,7 +447,10 @@ const chat = async (req, res, next) => {
     });
   } catch (err) {
     console.error("Chat engine fault:", err);
-    next(err);
+    return res.status(500).json({
+      success: false,
+      error: "The mentor is having trouble responding right now. Please try again in a moment.",
+    });
   }
 };
 
@@ -554,7 +575,10 @@ const explainPrelimQuestion = async (req, res, next) => {
     });
   } catch (err) {
     console.error("[Prelim Explain] failed:", err.message);
-    next(err);
+    return res.status(500).json({
+      success: false,
+      error: "Couldn't generate an explanation right now. Please try again in a moment.",
+    });
   }
 };
 

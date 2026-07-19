@@ -11,28 +11,52 @@ import MatchTable from "../../components/ui/MatchTable";
 import ExplanationBox from "../../components/ui/ExplanationBox";
 import MainsQuestionCard from "../../components/ui/MainsQuestionCard";
 
-// ─── MAINS DATA IMPORTS (2025 + 2024) ─────────────────────────────────────────
-import mainsGS1Data from "../../data/Subjectwise/mains/2025/GS1";
-import mainsGS2Data from "../../data/Subjectwise/mains/2025/GS2";
-import mainsGS3Data from "../../data/Subjectwise/mains/2025/GS3";
-import mainsGS4Data from "../../data/Subjectwise/mains/2025/GS4";
-import mainsGS1Data24 from "../../data/Subjectwise/mains/2024/GS1";
-import mainsGS2Data24 from "../../data/Subjectwise/mains/2024/GS2";
-import mainsGS3Data24 from "../../data/Subjectwise/mains/2024/GS3";
-import mainsGS4Data24 from "../../data/Subjectwise/mains/2024/GS4";
+const mainsModules = import.meta.glob("../../data/Subjectwise/mains/*/*.js", { eager: true });
+
+const PAPER_KEY_ALIASES = {
+  GS1: "GS1",
+  GS2: "GS2",
+  GS3: "GS3",
+  GS4: "GS4",
+  ESSAY: "ESSAY",
+  ENGLIT: "ENG_LIT",
+  ENGLISHLIT: "ENG_LIT",
+  ENGLISH: "ENG_LIT",
+  HINDILIT: "HINDI_LIT",
+  HINDI: "HINDI_LIT",
+  OP1: "OP1",
+  OPTIONAL1: "OP1",
+  OP2: "OP2",
+  OPTIONAL2: "OP2",
+};
+
+function resolvePaperKey(fileBase) {
+  const clean = fileBase.replace(/[\s_-]/g, "").toUpperCase();
+  return PAPER_KEY_ALIASES[clean] || clean; // unrecognised files still get grouped under their own key
+}
+
+// { paperKey: [ ...questions from every year, tagged with their year ] }
+const dataByPaper = {};
+const discoveredYears = new Set();
+
+Object.entries(mainsModules).forEach(([path, mod]) => {
+  const match = path.match(/mains\/([^/]+)\/([^/]+)\.js$/i);
+  if (!match) return;
+  const [, year, fileBase] = match;
+  const paperKey = resolvePaperKey(fileBase);
+  const rows = Array.isArray(mod.default) ? mod.default : [];
+  if (!rows.length) return;
+
+  discoveredYears.add(year);
+  if (!dataByPaper[paperKey]) dataByPaper[paperKey] = [];
+  dataByPaper[paperKey].push(...rows.map(q => ({ ...q, year: q.year ?? Number(year) })));
+});
 
 // ─── UTILITIES ────────────────────────────────────────────────────────────────
-const combineData = (...arrays) => arrays.flat().filter(Boolean);
 const getYears = d => [...new Set((d || []).map(q => q.year))].sort((a, b) => b - a);
 const getTopics = d => [...new Set((d || []).map(q => q.topic).filter(Boolean))].sort();
 const getMarksOptions = d => [...new Set((d || []).map(q => q.marks).filter(Boolean))].sort((a, b) => b - a);
 const getDirectives = d => [...new Set((d || []).map(q => q.directive).filter(Boolean))].sort();
-
-// ─── COMBINED DATA ────────────────────────────────────────────────────────────
-const allGS1 = combineData(mainsGS1Data, mainsGS1Data24);
-const allGS2 = combineData(mainsGS2Data, mainsGS2Data24);
-const allGS3 = combineData(mainsGS3Data, mainsGS3Data24);
-const allGS4 = combineData(mainsGS4Data24, mainsGS4Data);
 
 // ─── SUBJECT COLOR MAPS ──────────────────────────────────────────────────────
 const GS1_SUBJECT_COLORS = {
@@ -73,7 +97,9 @@ const GS4_SUBJECT_COLORS = {
 function groupMainsDataBySubject(data, colorMap = {}) {
   const map = {};
   (data || []).forEach(q => {
-    const subj = q.subject || "General";
+    // GS papers use `subject`; Essay files may use `theme`, language papers
+    // may use `section` — fall back sensibly so every schema still groups.
+    const subj = q.subject || q.theme || q.section || "General";
     if (!map[subj]) {
       map[subj] = {
         label: subj,
@@ -88,32 +114,46 @@ function groupMainsDataBySubject(data, colorMap = {}) {
 }
 
 // ─── MAINS PAPERS DEFINITION ─────────────────────────────────────────────────
-const MAINS_PAPERS = {
-  GS1: {
-    label: "GS Paper I",
-    color: "#4F8EF7",
-    isMains: true,
-    subjects: groupMainsDataBySubject(allGS1, GS1_SUBJECT_COLORS),
-  },
-  GS2: {
-    label: "GS Paper II",
-    color: "#34d399",
-    isMains: true,
-    subjects: groupMainsDataBySubject(allGS2, GS2_SUBJECT_COLORS),
-  },
-  GS3: {
-    label: "GS Paper III",
-    color: "#f97316",
-    isMains: true,
-    subjects: groupMainsDataBySubject(allGS3, GS3_SUBJECT_COLORS),
-  },
-  GS4: {
-    label: "GS Paper IV",
-    color: "#a78bfa",
-    isMains: true,
-    subjects: groupMainsDataBySubject(allGS4, GS4_SUBJECT_COLORS),
-  },
+// Static metadata (label/color) per paper KEY — add one entry here the first
+// time a brand-new paper type shows up (e.g. a new optional subject); years
+// never need an entry, they're picked up automatically from the files found.
+const PAPER_META = {
+  GS1: { label: "GS Paper I", color: "#4F8EF7" },
+  GS2: { label: "GS Paper II", color: "#34d399" },
+  GS3: { label: "GS Paper III", color: "#f97316" },
+  GS4: { label: "GS Paper IV", color: "#a78bfa" },
+  ESSAY: { label: "Essay", color: "#fb7185" },
+  OP1: { label: "Optional Paper I", color: "#c084fc" },
+  OP2: { label: "Optional Paper II", color: "#e879f9" },
+  ENG_LIT: { label: "English (Qualifying)", color: "#38bdf8" },
+  HINDI_LIT: { label: "Hindi (Qualifying)", color: "#facc15" },
 };
+
+const SUBJECT_COLOR_MAPS = {
+  GS1: GS1_SUBJECT_COLORS,
+  GS2: GS2_SUBJECT_COLORS,
+  GS3: GS3_SUBJECT_COLORS,
+  GS4: GS4_SUBJECT_COLORS,
+};
+
+// Display order for known paper types; anything discovered that isn't in
+// this list (e.g. a newly-added optional subject) is simply appended after.
+const PAPER_ORDER = ["GS1", "GS2", "GS3", "GS4", "ESSAY", "OP1", "OP2", "ENG_LIT", "HINDI_LIT"];
+
+const MAINS_PAPERS = {};
+const orderedKeys = [...PAPER_ORDER, ...Object.keys(dataByPaper).filter(k => !PAPER_ORDER.includes(k))];
+
+orderedKeys.forEach(key => {
+  const rows = dataByPaper[key];
+  if (!rows || rows.length === 0) return; // no file for this paper (yet) — skip silently
+  const meta = PAPER_META[key] || { label: key, color: "#a1a1aa" };
+  MAINS_PAPERS[key] = {
+    label: meta.label,
+    color: meta.color,
+    isMains: true,
+    subjects: groupMainsDataBySubject(rows, SUBJECT_COLOR_MAPS[key] || {}),
+  };
+});
 
 // ─── STYLE / DIFF META ──────────────────────────────────────────────────────
 const STYLE_META = {
