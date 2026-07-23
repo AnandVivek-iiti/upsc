@@ -1272,11 +1272,11 @@ export default function MainsGrind({
   ];
 
   return (
-    <div className="h-full overflow-y-auto p-6 animate-fade-in">
+    <div className="tw-root tw-page h-full overflow-y-auto animate-fade-in">
       <GlobalStyles />
-      <div className="mx-auto flex max-w-7xl flex-col gap-6">
+      <div className="mx-auto flex max-w-7xl flex-col gap-4 sm:gap-6">
         {/* ── Header ── */}
-        <header className="rounded-3xl border border-bg-border bg-bg-surface/90 p-5 shadow-sm">
+        <header className="rounded-2xl sm:rounded-3xl border border-bg-border bg-bg-surface/90 p-4 sm:p-5 shadow-sm">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
               <p className="text-xs uppercase tracking-[0.25em] text-accent-gold">Mains Grind</p>
@@ -1296,7 +1296,7 @@ export default function MainsGrind({
         </header>
 
         {/* ── Tabs ── */}
-        <section className="rounded-3xl border border-bg-border bg-bg-surface/90 p-5 shadow-sm">
+        <section className="rounded-2xl sm:rounded-3xl border border-bg-border bg-bg-surface/90 p-4 sm:p-5 shadow-sm">
           <div className="flex flex-wrap gap-2">
             {[
               { id: "practice", label: "Practice", icon: Archive },
@@ -1342,9 +1342,6 @@ export default function MainsGrind({
                     </button>
                   ))}
                 </div>
-                <br/>
-                <br/>
-                <br/>
                 <span className="text-sm text-text-muted">
                   {allData.length} questions across {yearCount} years
                 </span>

@@ -846,7 +846,7 @@ function PdfVaultContent({ activeVaultSection, mainsPaper, setMainsPaper, yearFi
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {activeVaultSection === "prelims" && (
         <>
           {prelimsPaperOptions.map(paper => (
@@ -881,7 +881,7 @@ function PdfVaultContent({ activeVaultSection, mainsPaper, setMainsPaper, yearFi
         </>
       )}
       {activeVaultSection === "mains" && (
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6">
           <div className="flex flex-wrap gap-2">
             {mainsPaperOptions.map(paper => (
               <button key={paper.id} type="button" onClick={() => setMainsPaper(paper.id)} className={`rounded-full border px-4 py-1.5 text-xs font-semibold transition ${mainsPaper === paper.id ? "border-accent-gold/30 bg-accent-gold/10 text-accent-gold" : "border-bg-border bg-bg-surface text-text-secondary hover:border-accent-gold/20 hover:text-text-primary"}`}>
@@ -1004,9 +1004,9 @@ function PaperDetail({
   const lastVerified = examType === "prelims" ? PRELIMS_LAST_VERIFIED_DATE : MAINS_LAST_VERIFIED_DATE;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Header */}
-      <header className="rounded-3xl border border-bg-border bg-bg-surface/90 p-5 shadow-sm">
+      <header className="rounded-2xl sm:rounded-3xl border border-bg-border bg-bg-surface/90 p-4 sm:p-5 shadow-sm">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
             <p className="text-xs uppercase tracking-[0.25em] text-accent-gold">PYQ Vault</p>
@@ -1033,7 +1033,7 @@ function PaperDetail({
       </header>
 
       {/* Tabs */}
-      <section className="rounded-3xl border border-bg-border bg-bg-surface/90 p-5 shadow-sm">
+      <section className="rounded-2xl sm:rounded-3xl border border-bg-border bg-bg-surface/90 p-4 sm:p-5 shadow-sm">
         <div className="flex flex-wrap gap-2">
           {TABS.map(({ id, label, icon: Icon }) => (
             <button
@@ -1197,9 +1197,9 @@ export default function PyqVault({
 
   // Render
   return (
-    <div className="max-w-7xl mx-auto p-4 md:p-6 lg:p-8 space-y-6 font-sans text-text-primary animate-fade-in">
+    <div className="max-w-7xl mx-auto p-3 sm:p-4 md:p-6 lg:p-8 space-y-4 sm:space-y-6 font-sans text-text-primary animate-fade-in">
       {/* ── Header ── */}
-      <header className="rounded-3xl border border-bg-border bg-bg-surface/90 p-5 shadow-sm">
+      <header className="rounded-2xl sm:rounded-3xl border border-bg-border bg-bg-surface/90 p-4 sm:p-5 shadow-sm">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
             <p className="text-xs uppercase tracking-[0.25em] text-accent-gold">PYQ Vault</p>
@@ -1223,7 +1223,7 @@ export default function PyqVault({
       </header>
 
       {/* ── PRACTICE ── */}
-      <section className="rounded-3xl border border-bg-border bg-bg-surface/90 p-5 shadow-sm space-y-6">
+      <section className="rounded-2xl sm:rounded-3xl border border-bg-border bg-bg-surface/90 p-4 sm:p-5 shadow-sm space-y-4 sm:space-y-6">
           {/* Exam selector */}
           <div className="flex w-full border border-bg-border rounded-xl overflow-hidden shadow-sm">
             {[
