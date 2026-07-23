@@ -1,4 +1,3 @@
-
 import { useState, useCallback, useRef } from "react";
 import {
     Sparkles, Cpu, AlertTriangle, CheckCircle2, XCircle, Minus,
@@ -533,14 +532,14 @@ export default function AIEvaluatorPanel({ question, paper, answer, isLoggedIn, 
                             <button
                                 key={id}
                                 onClick={() => switchMode(id)}
-                                className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 text-xs font-mono uppercase tracking-wider rounded-lg transition-all duration-200 touch-manipulation ${mode === id
+                                className={`flex-1 min-w-0 flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1.5 py-2 sm:py-2.5 px-1 text-center text-[9px] sm:text-xs font-mono uppercase tracking-wide sm:tracking-wider leading-tight rounded-lg transition-all duration-200 touch-manipulation min-h-[44px] ${mode === id
                                     ? "text-text-inverse font-semibold shadow-sm"
                                     : "text-text-muted hover:text-text-primary"
                                     }`}
                                 style={mode === id ? { background: "var(--accent-gold)", color: "var(--text-inverse)" } : {}}
                             >
-                                <Icon size={12} />
-                                {label}
+                                <Icon size={12} className="shrink-0" />
+                                <span>{label}</span>
                             </button>
                         ))}
                     </div>
