@@ -1,10 +1,11 @@
-import { useState, useEffect, useCallback } from "react";
+﻿import { useState, useEffect, useCallback } from "react";
 import {
   User, Mail, Calendar, Clock, Target, Flame, Trophy,
   Edit3, Save, X, Loader2, CheckCircle2, AlertCircle,
-  TrendingUp, Shield, KeyRound, Eye, EyeOff, ArrowLeft, BookOpen,
+  TrendingUp, Shield, KeyRound, Eye, EyeOff, ArrowLeft, BookOpen, Crown,
 } from "lucide-react";
 import { UPSC_SUBJECTS, SUBJECT_COLORS, SUBJECT_ICONS } from "../../hooks/useSubjectTimer";
+import UpgradeModal from "./UpgradeModal";
 
 // ─── Avatar initials ──────────────────────────────────────────────────────────
 export function getInitials(name = "") {
@@ -223,6 +224,7 @@ export default function ProfilePage({ token, onBack, onProfileUpdate, userData =
   // form.preferred_subjects, which is just the in-progress edit draft.
   const [savedSubjects, setSavedSubjects] = useState([]);
   const [passForm, setPassForm] = useState({ current: "", next: "", confirm: "" });
+  const [showUpgrade, setShowUpgrade] = useState(false);
 
   // ── Today's study hours from daily_logs ──────────────────────────────────
   const todayStudyHours = userData
@@ -353,6 +355,13 @@ export default function ProfilePage({ token, onBack, onProfileUpdate, userData =
 
   const showToast = (msg) => { setToast(msg); setTimeout(() => setToast(""), 3500); };
 
+  // ── Called by UpgradeModal once /payments/verify confirms the payment ─────
+  const handleUpgraded = () => {
+    fetchProfile(); // pulls the fresh subscription block from /auth/me
+    onProfileUpdate?.();
+    showToast("saved");
+  };
+
   const cancelEdit = () => {
     setSection("view");
     setFieldErrs({});
@@ -477,6 +486,66 @@ export default function ProfilePage({ token, onBack, onProfileUpdate, userData =
               <StatPill icon={Clock}   label="Daily Target" value={`${p.daily_target_hours || 8}h/d`}  color="#60a5fa" />
               <StatPill icon={TrendingUp} label="Today"     value={`${todayStudyHours}h`}              color="#f59e0b" />
             </div>
+
+            {/* ── Membership card - plan status + upgrade entry point ── */}
+            {(() => {
+              const sub = profile?.subscription || { tier: "free", source: "none", isActive: false, expiresAt: null };
+              const isTrial = sub.source === "trial";
+              const isComp = sub.source === "admin_grant";
+              const daysLeft = sub.expiresAt
+                ? Math.max(0, Math.ceil((new Date(sub.expiresAt) - Date.now()) / 86_400_000))
+                : null;
+              return (
+                <div className="glass-panel p-5 sm:p-6 rounded-2xl">
+                  <div className="flex items-center gap-3 mb-4">
+                    <Crown size={16} className="text-accent-gold" />
+                    <h3 className="text-base sm:text-lg font-semibold text-text-primary">Membership</h3>
+                  </div>
+
+                  <div className="flex items-center justify-between gap-3 flex-wrap">
+                    <div>
+                      {sub.isActive ? (
+                        <span
+                          className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs sm:text-sm font-mono
+                            ${isTrial
+                              ? "text-accent-blue border border-accent-blue/30 bg-accent-blue/10"
+                              : isComp
+                                ? "text-purple-300 border border-purple-400/30 bg-purple-500/10"
+                                : "text-accent-gold border border-accent-gold/30 bg-accent-gold/10"}`}
+                        >
+                          <Crown size={12} /> {isTrial ? "Premium Trial" : isComp ? "Premium (Comp)" : "Premium"}
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center px-3 py-1.5 rounded-xl text-xs sm:text-sm font-mono text-text-muted border border-bg-border">
+                          Free Plan
+                        </span>
+                      )}
+                      {sub.isActive && sub.expiresAt && (
+                        <p className="text-xs font-mono text-text-muted mt-2">
+                          {isTrial
+                            ? `Trial ends in ${daysLeft} day${daysLeft === 1 ? "" : "s"} — `
+                            : isComp ? "Granted — " : "Renews/expires — "}
+                          {new Date(sub.expiresAt).toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" })}
+                        </p>
+                      )}
+                      {sub.isActive && !sub.expiresAt && (
+                        <p className="text-xs font-mono text-text-muted mt-2">No expiry</p>
+                      )}
+                    </div>
+
+                    {/* Never shown to trial/comped/paid-active users - only free (or expired-trial) users get the payment CTA. */}
+                    {!sub.isActive && (
+                      <button
+                        onClick={() => setShowUpgrade(true)}
+                        className="btn-primary flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all active:scale-95"
+                      >
+                        <Crown size={14} /> Upgrade
+                      </button>
+                    )}
+                  </div>
+                </div>
+              );
+            })()}
 
             {/* ── Study stats card - clean, essential metrics only ── */}
             <div className="glass-panel p-5 sm:p-6 rounded-2xl">
@@ -637,6 +706,15 @@ export default function ProfilePage({ token, onBack, onProfileUpdate, userData =
           </div>
         </div>
       </div>
+
+      {showUpgrade && (
+        <UpgradeModal
+          token={token}
+          user={profile}
+          onClose={() => setShowUpgrade(false)}
+          onUpgraded={handleUpgraded}
+        />
+      )}
     </div>
   );
 }

@@ -14,6 +14,7 @@ const {
   getSegments,
   getDiscovery,
   getInsights,
+  setPremium, 
 } = require("../controllers/adminController");
 
 // ← NEW: email controller
@@ -31,6 +32,7 @@ router.get("/activity", getActivity);
 router.get("/retention", getRetention);
 router.post("/events", recordEvent);
 router.delete("/users/:id", deleteUser);
+router.patch("/users/:id/premium",setPremium);
 router.get("/journey", getJourney);
 router.get("/sessions/:userId", getUserSessions);
 router.get("/segments", getSegments);

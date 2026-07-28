@@ -8,6 +8,14 @@ const signToken = (id) =>
     expiresIn: process.env.JWT_EXPIRES_IN || "7d",
   });
 
+const PREMIUM_TRIAL_DAYS = parseInt(process.env.PREMIUM_TRIAL_DAYS, 10) || 7;
+
+function trialExpiry(from = new Date()) {
+  const d = new Date(from);
+  d.setDate(d.getDate() + PREMIUM_TRIAL_DAYS);
+  return d;
+}
+
 // ─── Helper - shapes the user object returned in every auth response ──────────
 const formatUser = (user) => ({
   id: user.id,
@@ -23,6 +31,15 @@ const formatUser = (user) => ({
     streak: user.streak || 0,
     longest_streak: user.longest_streak || 0,
     examDate: user.exam_date ?? null,
+  },
+  subscription: {
+    tier: user.subscription_tier || "free",
+    source: user.subscription_source || "none",
+    expiresAt: user.subscription_expires_at ?? null,
+    isActive:
+      typeof user.hasActivePremium === "function"
+        ? user.hasActivePremium()
+        : false,
   },
 });
 
@@ -68,7 +85,7 @@ const register = async (req, res, next) => {
       });
     }
 
-    // ── Create user ───────────────────────────────────────────────────────────
+    // ── Create user - starts on a full-Premium trial, not the free tier ──────
     const user = await User.create({
       name: name.trim(),
       email: email.toLowerCase().trim(),
@@ -76,6 +93,9 @@ const register = async (req, res, next) => {
       target_year: target_year ? Number(target_year) : new Date().getFullYear() + 1,
       daily_target_hours: daily_target_hours ? Number(daily_target_hours) : 8,
       exam_date: examDate ? new Date(examDate) : null,
+      subscription_tier: "premium",
+      subscription_source: "trial",
+      subscription_expires_at: trialExpiry(),
     });
 
     // ── Seed UserData row for this user ───────────────────────────────────────
@@ -179,7 +199,8 @@ const googleAuth = async (req, res, next) => {
         if (!user.avatar && avatar) user.avatar = avatar;
         await user.save();
       } else {
-        // Brand new user via Google - create with sensible defaults
+        // Brand new user via Google - starts on the same Premium trial as
+        // email/password signups.
         user = await User.create({
           name: name || email.split("@")[0],
           email: email.toLowerCase(),
@@ -195,6 +216,9 @@ const googleAuth = async (req, res, next) => {
             d.setDate(1);
             return d;
           })(),
+          subscription_tier: "premium",
+          subscription_source: "trial",
+          subscription_expires_at: trialExpiry(),
         });
         // Seed UserData for new Google user
         await UserData.seedForUser(user.id);

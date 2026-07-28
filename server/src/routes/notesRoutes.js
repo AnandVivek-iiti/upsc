@@ -1,6 +1,6 @@
 const router = require("express").Router();
 const controller = require("../controllers/notesController");
-const { protect , adminOnly } = require("../middleware/authMiddleware");
+const { protect, adminOnly, requirePremium } = require("../middleware/authMiddleware");
 const { evaluateLimiter } = require("../middleware/rateLimiter");
 
 // ─── Note CRUD
@@ -14,6 +14,7 @@ router.post("/improve", protect, evaluateLimiter, controller.improveNotes);
 router.post("/mistakes", protect, evaluateLimiter, controller.findMistakes);
 router.post("/revision", protect, evaluateLimiter, controller.revisionNotes);
 router.post("/mains", protect, evaluateLimiter, controller.mainsFormat);
-router.post("/extract-image", protect, evaluateLimiter, controller.extractFromImage);
+
+router.post("/extract-image", protect, requirePremium, evaluateLimiter, controller.extractFromImage);
 
 module.exports = router;

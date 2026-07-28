@@ -6,7 +6,7 @@ import {
   Flame, Clock, BookOpen, Brain, FileText, Target,
   ArrowUp, ArrowDown, Minus, X, Calendar, UserCheck,
   GitBranch, Compass, Lightbulb, User, Zap, AlertTriangle, MessageCircle, Star, ThumbsUp,
-  Layers, Info, Mail,
+  Layers, Info, Mail, Crown,
 } from "lucide-react";
 import {
   downloadFullReport,
@@ -320,11 +320,45 @@ function OverviewTab({ metrics, insights, loading, onRefresh }) {
     </div>
   );
 }
+// ─── PlanBadge - Free / Trial / Premium (Comp) / Premium ──────────────────────
+function PlanBadge({ tier, source, expiresAt }) {
+  const active = tier === "premium" && (!expiresAt || new Date(expiresAt) > new Date());
 
+  if (!active) {
+    return (
+      <span className="text-[10px] font-mono px-2 py-0.5 rounded-full border border-bg-border text-text-muted w-fit inline-block">
+        Free
+      </span>
+    );
+  }
+
+  const isTrial = source === "trial";
+  const isComp = source === "admin_grant";
+  const daysLeft = expiresAt
+    ? Math.max(0, Math.ceil((new Date(expiresAt) - Date.now()) / 86_400_000))
+    : null;
+
+  const label = isTrial ? "Trial" : isComp ? "Premium · Comp" : "Premium";
+  const colorClass = isTrial
+    ? "border-accent-blue/30 bg-accent-blue/10 text-accent-blue"
+    : isComp
+      ? "border-purple-400/30 bg-purple-500/10 text-purple-300"
+      : "border-accent-gold/30 bg-accent-gold/10 text-accent-gold";
+
+  return (
+    <span
+      title={expiresAt ? `Expires ${new Date(expiresAt).toLocaleDateString("en-IN")}` : "No expiry"}
+      className={`text-[10px] font-mono px-2 py-0.5 rounded-full border flex items-center gap-1 w-fit ${colorClass}`}
+    >
+      <Crown size={9} /> {label}
+      {daysLeft !== null && <span className="opacity-70">· {daysLeft}d left</span>}
+    </span>
+  );
+}
 // ═══════════════════════════════════════════════════════════════════════════════
 // USERS TAB
 // ═══════════════════════════════════════════════════════════════════════════════
-function UsersTab({ users, usersTotal, userPage, loading, onPageChange, onSortChange, sortBy, sortDir, onDelete, onUserClick }) {
+function UsersTab({ users, usersTotal, userPage, loading, onPageChange, onSortChange, sortBy, sortDir, onDelete, onTogglePremium, onUserClick }) {
   const [showEmails, setShowEmails] = useState(false);
   const [pendingDelete, setPendingDelete] = useState(null);
   const [feedbackStats, setFeedbackStats] = useState(null);
@@ -352,6 +386,7 @@ function UsersTab({ users, usersTotal, userPage, loading, onPageChange, onSortCh
   const COLS = [
     { key: "name", label: "Name" },
     { key: "email", label: "Email" },
+    { key: "plan", label: "Plan" },
     { key: "streak", label: "Streak 🔥" },
     { key: "longest_streak", label: "Best Streak" },
     { key: "total_study_hours", label: "Study Hrs" },
@@ -403,6 +438,7 @@ function UsersTab({ users, usersTotal, userPage, loading, onPageChange, onSortCh
                   ))}
                   <th className="w-10 px-2 sm:px-3 py-2.5 sm:py-3" />
                   <th className="w-10 px-2 sm:px-3 py-2.5 sm:py-3" />
+                  <th className="w-10 px-2 sm:px-3 py-2.5 sm:py-3" />
                 </tr>
               </thead>
               <tbody>
@@ -416,6 +452,9 @@ function UsersTab({ users, usersTotal, userPage, loading, onPageChange, onSortCh
                     <td className="px-2 sm:px-3 py-2 font-medium text-text-primary whitespace-nowrap">{u.name || "—"}</td>
                     <td className="px-2 sm:px-3 py-2 text-text-secondary font-mono text-xs whitespace-nowrap">
                       {showEmails ? u.email : maskEmail(u.email)}
+                    </td>
+                    <td className="px-2 sm:px-3 py-2">
+                      <PlanBadge tier={u.subscription_tier} source={u.subscription_source} expiresAt={u.subscription_expires_at} />
                     </td>
                     <td className="px-2 sm:px-3 py-2 text-center">
                       {(u.streak || 0) > 0
@@ -482,6 +521,48 @@ function UsersTab({ users, usersTotal, userPage, loading, onPageChange, onSortCh
                         {emailingUserId === u.id
                           ? <Loader2 size={12} className="animate-spin text-accent-blue" />
                           : <Mail size={12} />}
+                      </button>
+                    </td>
+                    <td className="px-1 sm:px-2 py-2" onClick={(e) => e.stopPropagation()}>
+                      <button
+                        onClick={() => {
+                          // Expiry-aware: a lapsed trial/grant still has
+                          // subscription_tier === "premium" in the DB (lazy
+                          // expiry), so check the date too, not just the tier,
+                          // or a user whose trial just ended would get offered
+                          // "Revoke" instead of "Grant".
+                          const isActive = u.subscription_tier === "premium" &&
+                            (!u.subscription_expires_at || new Date(u.subscription_expires_at) > new Date());
+                          const makePremium = !isActive;
+
+                          if (!makePremium) {
+                            if (!window.confirm(`Revoke Premium access from ${u.name}?`)) return;
+                            onTogglePremium(u.id, false);
+                            return;
+                          }
+
+                          const daysInput = window.prompt(
+                            `Grant free Premium access to ${u.name} for how many days?\nLeave blank (or 0) for indefinite/lifetime.`,
+                            ""
+                          );
+                          if (daysInput === null) return; // cancelled
+                          const days = parseInt(daysInput, 10);
+                          let expiresAt = null;
+                          if (!isNaN(days) && days > 0) {
+                            const d = new Date();
+                            d.setDate(d.getDate() + days);
+                            expiresAt = d.toISOString();
+                          }
+                          onTogglePremium(u.id, true, expiresAt);
+                        }}
+                        title={u.subscription_tier === "premium" && (!u.subscription_expires_at || new Date(u.subscription_expires_at) > new Date())
+                          ? "Revoke Premium" : "Grant Premium (comp)"}
+                        className={`opacity-0 group-hover:opacity-100 flex items-center justify-center p-1 rounded transition-all
+                          ${u.subscription_tier === "premium" && (!u.subscription_expires_at || new Date(u.subscription_expires_at) > new Date())
+                            ? "hover:bg-accent-red/10 text-text-muted hover:text-accent-red"
+                            : "hover:bg-accent-gold/10 text-text-muted hover:text-accent-gold"}`}
+                      >
+                        <Crown size={12} />
                       </button>
                     </td>
                   </tr>
@@ -1594,6 +1675,27 @@ const fetchFeedback = useCallback(async () => {
     }
   }, []);
 
+  const handleTogglePremium = useCallback(async (userId, makePremium, expiresAt = null) => {
+    try {
+      const d = await adminFetch(`/users/${userId}/premium`, {
+        method: "PATCH",
+        body: JSON.stringify({ active: makePremium, expiresAt }),
+      });
+      setUsers(prev => prev.map(u => u.id === userId
+        ? {
+            ...u,
+            subscription_tier: d.user.subscription_tier,
+            subscription_source: d.user.subscription_source,
+            subscription_expires_at: d.user.subscription_expires_at,
+          }
+        : u
+      ));
+      notify(makePremium ? "User promoted to Premium." : "Premium access revoked.");
+    } catch (e) {
+      notify(e.message, "error");
+    }
+  }, []);
+
   const openProfile = useCallback((userId) => {
     setProfileUserId(userId);
   }, []);
@@ -1701,6 +1803,7 @@ const fetchFeedback = useCallback(async () => {
             sortBy={sortBy}
             sortDir={sortDir}
             onDelete={handleDelete}
+            onTogglePremium={handleTogglePremium}
             onUserClick={openProfile}
           />
         )}

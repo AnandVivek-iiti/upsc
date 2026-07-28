@@ -83,4 +83,33 @@ const adminOnly = (req, res, next) => {
   next();
 };
 
-module.exports = { protect, adminOnly };
+// ── requirePremium ─────────────────────────────────────────────────────────
+// Mount AFTER `protect`. Re-fetches the user fresh from the DB rather than
+// trusting req.user set earlier in the chain (or any JWT claim) — subscription
+// status must always reflect what's in Postgres right now, not a cached value.
+const requirePremium = async (req, res, next) => {
+  try {
+    if (!req.user?.id) {
+      return res.status(401).json({ success: false, error: "Not authorized." });
+    }
+
+    const user = await User.findByPk(req.user.id, {
+      attributes: { exclude: ["password"] },
+    });
+
+    if (!user || !user.hasActivePremium()) {
+      return res.status(403).json({
+        success: false,
+        error: "This feature requires an active Premium subscription.",
+        code: "PREMIUM_REQUIRED",
+      });
+    }
+
+    req.user = user; // refresh req.user with the latest subscription state
+    next();
+  } catch (err) {
+    next(err);
+  }
+};
+
+module.exports = { protect, adminOnly, requirePremium };

@@ -657,9 +657,13 @@ const listUsers = async (req, res, next) => {
       tests_attempted: "tests_attempted", days_active: "days_active",
       features_used: "features_used", last_active: "last_active",
       engagement_score: "engagement_score", sessions: "sessions",
+       plan: "u.subscription_tier",
     };
     const sortCol = SORTABLE[req.query.sort] || SORTABLE.engagement_score;
-
+const planFilter =
+      req.query.plan === "premium" ? `AND u.subscription_tier = 'premium'` :
+      req.query.plan === "free"    ? `AND u.subscription_tier = 'free'`    :
+      "";
     const rows = await sequelize.query(
       `WITH ${SESSIONIZED_CTE},
        session_counts AS (
@@ -671,7 +675,7 @@ const listUsers = async (req, res, next) => {
        )
        SELECT
          u.id, u.name, u.email, u.created_at AS registration_date,
-         u.streak, u.longest_streak,
+         u.streak, u.longest_streak, u.subscription_tier, u.subscription_expires_at, u.subscription_source,
          COALESCE(daily.total_hours, 0)::numeric(10,1)    AS total_study_hours,
          COALESCE(ev.answers_evaluated, 0)                AS answers_evaluated,
          COALESCE(ev.notes_audited, 0)                    AS notes_audited,
@@ -713,14 +717,15 @@ const listUsers = async (req, res, next) => {
        ) daily ON daily.user_id = u.id
        LEFT JOIN session_counts sc ON sc.user_id = u.id
        LEFT JOIN returners r ON r.user_id = u.id
-       WHERE u.role = 'user' AND ${EXCL_USER_COND}
+       WHERE u.role = 'user' AND ${EXCL_USER_COND} ${planFilter}
+
        ORDER BY ${sortCol} ${dir}
        LIMIT :limit OFFSET :offset`,
       { replacements: { limit, offset }, type: QueryTypes.SELECT }
     );
 
     const [{ total }] = await sequelize.query(
-      `SELECT COUNT(*) AS total FROM "users" WHERE role = 'user' AND ${EXCL_NAME_COND}`,
+      `SELECT COUNT(*) AS total FROM "users" WHERE role = 'user' AND ${EXCL_NAME_COND} ${planFilter}`,
       { type: QueryTypes.SELECT }
     );
 
@@ -1406,7 +1411,48 @@ const deleteUser = async (req, res, next) => {
     next(err);
   }
 };
+// ─── PATCH /api/admin/users/:id/premium ───────────────────────────────────────
+// Admin-only comp grant/revoke. Deliberately NEVER writes subscription_source
+// = "razorpay" — that value is reserved for the real payment flow, so a comped
+// user and a paying user are always distinguishable downstream (e.g. to decide
+// whether to show the upgrade/payment button on the frontend).
+const setPremium = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { active, expiresAt } = req.body; // active: boolean; expiresAt: ISO string | null | undefined
 
+    if (typeof active !== "boolean") {
+      return res.status(400).json({ success: false, error: "`active` (boolean) is required." });
+    }
+
+    const target = await User.findOne({ where: { id, role: "user" } });
+    if (!target) return res.status(404).json({ success: false, error: "User not found." });
+
+    if (active) {
+      target.subscription_tier = "premium";
+      target.subscription_source = "admin_grant";
+       target.subscription_expires_at = expiresAt ? new Date(expiresAt) : null;
+    } else {
+      target.subscription_tier = "free";
+      target.subscription_source = "none";
+      target.subscription_expires_at = null;
+    }
+
+    await target.save();
+
+    res.json({
+      success: true,
+      user: {
+        id: target.id,
+        subscription_tier: target.subscription_tier,
+        subscription_source: target.subscription_source,
+        subscription_expires_at: target.subscription_expires_at,
+      },
+    });
+  } catch (err) {
+    next(err);
+  }
+};
 const recordEvent = async (req, res, next) => {
   try {
     const { user_id, event_type, feature_name, metadata } = req.body;
@@ -1422,6 +1468,6 @@ const recordEvent = async (req, res, next) => {
 
 module.exports = {
   getMetrics, listUsers, getFunnel, getFeatureAnalytics,
-  getActivity, getRetention, recordEvent, deleteUser,
+  getActivity, getRetention, recordEvent, deleteUser, setPremium,
   getJourney, getUserSessions, getSegments, getDiscovery, getInsights,
 };

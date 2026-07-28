@@ -8,10 +8,13 @@ const {
   deleteChatThread,
   explainPrelimQuestion,
 } = require("../controllers/evaluateController");
-const { protect } = require("../middleware/authMiddleware");
+const { protect, requirePremium } = require("../middleware/authMiddleware");
 const { evaluateLimiter } = require("../middleware/rateLimiter");
-router.post("/answer", protect, evaluateLimiter, evaluateAnswer);
+
+router.post("/answer", protect, requirePremium, evaluateLimiter, evaluateAnswer);
+
 router.post("/prelim-explain", protect, evaluateLimiter, explainPrelimQuestion);
+
 router.post("/chat", protect, chat);
 router.get("/chat-threads", protect, listChatThreads);
 router.get("/chat-threads/:id", protect, getChatThread);

@@ -88,6 +88,26 @@ const User = sequelize.define(
       allowNull: true,
       defaultValue: null,
     },
+    subscription_tier: {
+      type: DataTypes.ENUM("free", "premium"),
+      defaultValue: "free",
+      allowNull: false,
+    },
+    subscription_source: {
+      type: DataTypes.ENUM("none", "admin_grant", "razorpay", "trial"),
+      defaultValue: "none",
+      allowNull: false,
+    },
+    subscription_expires_at: {
+      type: DataTypes.DATE,
+      allowNull: true,
+      defaultValue: null,
+    },
+    razorpay_customer_id: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      defaultValue: null,
+    },
   },
   {
     tableName: "users",
@@ -107,6 +127,12 @@ const User = sequelize.define(
 User.prototype.matchPassword = async function (enteredPassword) {
   if (!this.password) return false;
   return await bcrypt.compare(enteredPassword, this.password);
+};
+
+User.prototype.hasActivePremium = function () {
+  if (this.subscription_tier !== "premium") return false;
+  if (!this.subscription_expires_at) return true;
+  return new Date(this.subscription_expires_at) > new Date();
 };
 
 module.exports = User;

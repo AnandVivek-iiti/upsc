@@ -7,14 +7,13 @@ const cors = require("cors");
 const { connectDB } = require("./config/db");
 const VisitorLog = require("./models/VisitorLog");
 
-// ── Import all models so Sequelize registers them before sync ─────────────────
 require("./models/User");
 require("./models/UserData");
 require("./models/Note");
 require("./models/TestAttempt");
 require("./models/UserEvents");
 require("./models/DailyActiveUsers");
-
+require("./models/Payment"); 
 const { globalLimiter } = require("./middleware/rateLimiter");
 const { errorHandler, notFound } = require("./middleware/errorMiddleware");
 
@@ -26,6 +25,8 @@ const testRoutes      = require("./routes/testRoutes");
 const notesRoutes     = require("./routes/notesRoutes");
 const feedbackRoutes = require("./routes/feedbackRoutes");
 const subjectSessionRoutes = require("./routes/subjectSessionRoutes");
+const paymentRoutes   = require("./routes/paymentRoutes");
+const { webhook: razorpayWebhook } = require("./controllers/paymentController");
 const { initSocket } = require("./socket/socketManager");
 
 // ─── Build Express app ────────────────────────────────────────────────────────
@@ -58,6 +59,11 @@ app.use((req, res, next) => {
   res.setHeader("Cross-Origin-Embedder-Policy", "unsafe-none");
   next();
 });
+app.post(
+  "/api/payments/webhook",
+  express.raw({ type: "application/json", limit: "5mb" }),
+  razorpayWebhook
+);
 
 // ─── Body Parsing ─────────────────────────────────────────────────────────────
 app.use(express.json({ limit: "150mb" }));
@@ -96,17 +102,15 @@ app.use("/api/tests",     testRoutes);
 app.use("/api/notes",     notesRoutes);
 app.use("/api/feedback", feedbackRoutes);
  app.use("/api/subject-sessions",subjectSessionRoutes);
+app.use("/api/payments",  paymentRoutes);
 
 // ─── 404 & Error Handlers ─────────────────────────────────────────────────────
 app.use(notFound);
 app.use(errorHandler);
 
-// ─── Startup - DB must be fully synced before we accept traffic ───────────────
 async function start() {
   try {
-    // connectDB() awaits sequelize.authenticate() + sequelize.sync({ alter: true })
-    // All models must be require()'d above BEFORE this line so Sequelize knows
-    // about every table before it runs sync.
+
     await connectDB();
 
     const httpServer = http.createServer(app);

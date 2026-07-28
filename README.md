@@ -292,7 +292,7 @@ index.css / main.jsx
 │   │   ├── Dashboard.jsx        # Main dashboard with ActionHub
 │   │   ├── SubjectAnalyticsDashboard.jsx  # Per-subject charts + syllabus bridge
 │   │   ├── SubjectStudyTimer.jsx          # 12-subject study timer UI
-│   │   └── SyllabusSyncModal.jsx          # Post-session Prelims/Mains tabbed confirm checklist
+│   │   └── SyllabusSyncModal.jsx          # Post-session Prelims/Mains tabbed 
 │   ├── PYQs/
 │   │   ├── MainsGrind.jsx       # Mains answer evaluation workspace
 │   │   ├── PrelimsGrind.jsx     # Prelims PYQ drilling by subject

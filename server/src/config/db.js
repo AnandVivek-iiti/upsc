@@ -25,7 +25,37 @@ const MIGRATIONS = [
     id: "v2_user_data_note_audits",
     sql: `ALTER TABLE user_data ADD COLUMN IF NOT EXISTS note_audits JSONB NOT NULL DEFAULT '[]'::jsonb`,
   },
-  // ← append future migrations here
+  {
+    id: "v3_users_google_oauth",
+    sql: `
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS google_id VARCHAR(255);
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS avatar VARCHAR(255);
+      DO $$ BEGIN
+        IF NOT EXISTS (
+          SELECT 1 FROM pg_constraint WHERE conname = 'users_google_id_key'
+        ) THEN
+          ALTER TABLE users ADD CONSTRAINT users_google_id_key UNIQUE (google_id);
+        END IF;
+      END $$;
+    `,
+  },
+  {
+    id: "v4_users_subscription_and_payments",
+    sql: `
+      DO $$ BEGIN
+        CREATE TYPE enum_users_subscription_tier AS ENUM ('free', 'premium');
+      EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
+      DO $$ BEGIN
+        CREATE TYPE enum_users_subscription_source AS ENUM ('none', 'admin_grant', 'razorpay', 'trial');
+      EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS subscription_tier enum_users_subscription_tier NOT NULL DEFAULT 'free';
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS subscription_source enum_users_subscription_source NOT NULL DEFAULT 'none';
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS subscription_expires_at TIMESTAMPTZ DEFAULT NULL;
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS razorpay_customer_id VARCHAR(255) DEFAULT NULL;
+    `,
+  },
 ];
 
 async function runMigrations() {
@@ -43,7 +73,7 @@ async function runMigrations() {
 
   let applied = 0;
   for (const { id, sql } of MIGRATIONS) {
-    if (done.has(id)) continue; // already ran - skip
+    if (done.has(id)) continue;
     await sequelize.query(sql);
     await sequelize.query(`INSERT INTO _migrations (id) VALUES (:id)`, {
       replacements: { id },
