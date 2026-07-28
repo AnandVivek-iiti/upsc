@@ -114,6 +114,18 @@ export default function SyllabusSyncModal({
   const [submitting, setSubmitting] = useState(false);
   const [activeStage, setActiveStage] = useState("prelims");
 
+  // Lock background scroll while the sheet is open - without this, iOS Safari
+  // lets the Dashboard's own scroll container keep tracking touches behind the
+  // modal, which is what made the sheet feel broken/unresponsive on mobile.
+  useEffect(() => {
+    if (!open) return;
+    const original = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = original;
+    };
+  }, [open]);
+
   const { prelims, mains } = useMemo(
     () => (open ? buildGroups(subject, syllabusData) : { prelims: EMPTY_STAGE, mains: EMPTY_STAGE }),
     [open, subject, syllabusData]
@@ -180,13 +192,13 @@ export default function SyllabusSyncModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
-      <div className="glass-panel w-full sm:max-w-lg max-h-[85vh] flex flex-col rounded-t-2xl sm:rounded-2xl overflow-hidden">
+    <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-sm animate-fade-in overscroll-contain">
+      <div className="glass-panel w-full sm:max-w-lg max-h-[92dvh] sm:max-h-[85vh] flex flex-col rounded-t-2xl sm:rounded-2xl overflow-hidden">
         {/* Header */}
         <div className="flex items-start justify-between gap-3 p-4 sm:p-5 border-b border-bg-border/50">
-          <div className="flex items-start gap-2.5">
-            <span className="text-xl leading-none mt-0.5">{icon}</span>
-            <div>
+          <div className="flex items-start gap-2.5 min-w-0">
+            <span className="text-xl leading-none mt-0.5 shrink-0">{icon}</span>
+            <div className="min-w-0">
               <h3 className="text-sm sm:text-base font-display font-semibold text-text-primary">
                 What did you cover in {subject}?
               </h3>
@@ -237,7 +249,7 @@ export default function SyllabusSyncModal({
         </div>
 
         {/* Checklist - only the active stage's content is shown */}
-        <div className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-5">
+        <div className="flex-1 overflow-y-auto overscroll-contain p-4 sm:p-5 space-y-5">
           <StageSection
             stageLabel={activeStage === "prelims" ? "Prelims" : "Mains"}
             stageData={activeStage === "prelims" ? prelims : mains}
@@ -264,7 +276,10 @@ export default function SyllabusSyncModal({
         </div>
 
         {/* Footer */}
-        <div className="flex gap-2 p-4 sm:p-5 border-t border-bg-border/50">
+        <div
+          className="flex gap-2 p-4 sm:p-5 border-t border-bg-border/50"
+          style={{ paddingBottom: "max(1rem, calc(env(safe-area-inset-bottom) + 0.75rem))" }}
+        >
           <button
             onClick={onSkip}
             disabled={submitting}

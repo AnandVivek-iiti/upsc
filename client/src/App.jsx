@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
+import { Routes, Route } from "react-router-dom";
 import Sidebar from "./components/layout/Sidebar.jsx";
 import Dashboard from "./pages/Dashboard/Dashboard.jsx";
 import SyllabusTracker from "./pages/User/SyllabusTracker.jsx";
@@ -24,6 +25,11 @@ import MentorNotes from "./pages/User/MentorNotes.jsx";
 import TestSeriesPage from "./pages/User/Testseriespage";
 import FeedbackModal from "./components/FeedbackModal";
 import SetupWizard, { hasSeenSetupWizard } from "./pages/User/SetupWizard.jsx";
+import AboutPage from "./pages/Company/AboutPage.jsx";
+import PrivacyPolicy from "./pages/Company/PrivacyPolicy.jsx";
+import TermsOfService from "./pages/Company/TermsOfService.jsx";
+import ContactPage from "./pages/Company/ContactPage.jsx";
+import Disclaimer from "./pages/Company/Disclaimer.jsx";
 
 // ─── Splash Screen ────────────────────────────────────────────────────────────
 function SplashScreen() {
@@ -131,7 +137,10 @@ function ErrorBanner({ error }) {
   );
 }
 
-export default function App() {
+// ─── MainApp: everything the app used to be (sidebar, dashboard, views) ────
+// Unchanged behavior - only the function name changed (App -> MainApp) and
+// it's no longer the default export; the outer App below owns routing.
+function MainApp() {
   const { user, token, loading: authLoading, login, logout } = useAuth();
 
   const [activeView, setActiveView] = useState("dashboard");
@@ -198,11 +207,6 @@ export default function App() {
   // ─── Derived booleans ─────────────────────────────────────────────────────
   const isLoggedIn = !!user && !!token;
   const userId = user?.id || user?._id || null;
-
-  // One-time post-signup setup wizard. `setupJustCompleted` is a plain React
-  // state flag (not derived from localStorage on every render) so that once
-  // the wizard finishes, this component re-renders and stops showing it
-  // immediately - localStorage alone wouldn't trigger that re-render.
   const [setupJustCompleted, setSetupJustCompleted] = useState(false);
   const isPreExistingUser =
     !!(userData?.profile?.examDate || userData?.daily_logs?.length || (userData?.answers?.length ?? 0) > 0);
@@ -213,8 +217,6 @@ export default function App() {
     !isPreExistingUser &&
     !hasSeenSetupWizard(userId);
 
-  // Show LandingHero when: not logged in AND on the dashboard view.
-  // All other pages keep their own internal AuthGate gating.
   const showLandingHero = !isLoggedIn && activeView === "dashboard";
 
   if (authLoading) return <SplashScreen />;
@@ -236,10 +238,7 @@ export default function App() {
 
   const userName = userData?.profile?.name || user?.name || "";
   const isWorkspace = activeView === "ai-mentor" || activeView === "notes";
-
-  // ─── Full-page landing (unauthenticated dashboard) ────────────────────────
-  // Bypasses sidebar/bottom-nav shell so the landing owns the whole screen.
-  if (showLandingHero) {
+ if (showLandingHero) {
     return (
       <>
         <LandingHero
@@ -265,9 +264,7 @@ export default function App() {
       </>
     );
   }
-
-  // ─── Main app shell (authenticated, or non-dashboard views) ───────────────
-  return (
+return (
     <div className="min-h-[100dvh]">
       {/* ── Desktop Sidebar ── */}
       <div className="hidden lg:block fixed top-0 left-0 h-screen z-30" style={{ width: "var(--sidebar-width, 14rem)" }}>
@@ -418,5 +415,17 @@ export default function App() {
       />
       <FeedbackModal isLoggedIn={isLoggedIn} user={user} />
     </div>
+  );
+}
+export default function App() {
+  return (
+    <Routes>
+      <Route path="/about" element={<AboutPage />} />
+      <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+      <Route path="/terms" element={<TermsOfService />} />
+      <Route path="/contact" element={<ContactPage />} />
+      <Route path="/disclaimer" element={<Disclaimer />} />
+      <Route path="/*" element={<MainApp />} />
+    </Routes>
   );
 }

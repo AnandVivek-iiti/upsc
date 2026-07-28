@@ -1,6 +1,7 @@
-// main.jsx
+﻿// main.jsx
 import React from "react";
 import ReactDOM from "react-dom/client";
+import { BrowserRouter } from "react-router-dom";
 import App from "./App.jsx";
 import "./index.css";
 import { registerSW } from "virtual:pwa-register";
@@ -22,5 +23,7 @@ window.addEventListener("beforeinstallprompt", (e) => {
 });
 
 ReactDOM.createRoot(document.getElementById("root")).render(
-  <App /> 
+  <BrowserRouter>
+    <App />
+  </BrowserRouter>
 );

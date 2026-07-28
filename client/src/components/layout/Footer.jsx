@@ -1,3 +1,4 @@
+﻿import { Link } from "react-router-dom";
 import { ArrowUpRight, Heart } from "lucide-react";
 import {
   LAST_VERIFIED_DATE,
@@ -5,7 +6,7 @@ import {
   GOV_LINKS,
   REPORT_LINKS,
   LEARNING_LINKS,
-  NEWS_LINKS,
+  COMPANY_LINKS,
   OFFICIAL_UPSC_REFERENCE_LINKS,
 } from "../../data/upscLinks";
 
@@ -43,6 +44,17 @@ function LinkItem({ href, label, tag, tagColor = "gold" }) {
   );
 }
 
+function CompanyLinkItem({ to, label }) {
+  return (
+    <Link
+      to={to}
+      className="flex items-center gap-2 rounded-lg px-2.5 py-2 text-base text-text-secondary transition hover:bg-bg-muted hover:text-text-primary"
+    >
+      {label}
+    </Link>
+  );
+}
+
 function SectionHeading({ children }) {
   return (
     <p className="mb-2 font-mono text-[11px] uppercase tracking-widest text-text-muted">
@@ -56,7 +68,6 @@ const COLUMNS = [
   { heading: "Govt & Policy", links: GOV_LINKS, tag: "Gov", color: "blue" },
   { heading: "Reports & Data", links: REPORT_LINKS, tag: "Data", color: "purple" },
   { heading: "Free Learning", links: LEARNING_LINKS, tag: "Free", color: "green" },
-  { heading: "Current Affairs", links: NEWS_LINKS, tag: "News", color: "rose" },
 ];
 
 export default function Footer() {
@@ -64,7 +75,6 @@ export default function Footer() {
     <footer className="relative border-t border-bg-border bg-bg-surface/90 backdrop-blur pb-bottom-nav lg:pb-0">
       <div className="mx-auto w-full max-w-7xl px-6 py-8">
 
-        {/* bg image - pointer-events-none so it never blocks clicks */}
         <div className="absolute inset-0 -z-10 opacity-10 pointer-events-none">
           <img
             src="/assets/mt1.png"
@@ -73,7 +83,6 @@ export default function Footer() {
           />
         </div>
 
-        {/* ── Brand row ── */}
         <div className="mb-8 flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <p className="font-bold text-[25px] uppercase tracking-[0.15em] text-accent-gold">
@@ -86,7 +95,6 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* ── Link columns ── */}
         <div className="grid grid-cols-2 gap-x-6 gap-y-8 sm:grid-cols-3 lg:grid-cols-5">
           {COLUMNS.map(({ heading, links, tag, color }) => (
             <div key={heading}>
@@ -104,9 +112,17 @@ export default function Footer() {
               </div>
             </div>
           ))}
+
+          <div>
+            <SectionHeading>Company</SectionHeading>
+            <div className="flex flex-col">
+              {COMPANY_LINKS.map((link) => (
+                <CompanyLinkItem key={link.url} to={link.url} label={link.label} />
+              ))}
+            </div>
+          </div>
         </div>
 
-        {/* ── Bottom bar ── */}
         <div className="mt-8 flex flex-wrap items-center justify-between gap-3 border-t border-bg-border pt-5">
           <div className="flex flex-wrap gap-2">
             {OFFICIAL_UPSC_REFERENCE_LINKS.map((item) => (
@@ -127,7 +143,6 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* ── Copyright bar ── */}
         <div className="mt-5 flex flex-col sm:flex-row items-center justify-between gap-2 border-t border-bg-border pt-4">
           <p className="text-sm font-mono text-text-muted">
             © {new Date().getFullYear()} UPSC Mentor. All rights reserved.
