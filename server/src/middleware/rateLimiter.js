@@ -1,4 +1,4 @@
-﻿const rateLimit = require("express-rate-limit");
+const rateLimit = require("express-rate-limit");
 
 // ─── Generic App-Wide Limiter ─────────────────────────────────────────────────
 const globalLimiter = rateLimit({
@@ -24,7 +24,8 @@ const evaluateLimiter = rateLimit({
   },
   standardHeaders: true,
   legacyHeaders: false,
-  keyGenerator: (req) => `user_${req.user.id}`,
+  // key by user id when available, otherwise fallback to IP to avoid crashes
+  keyGenerator: (req) => `user_${req.user?.id ?? req.ip}`,
   skip: (req) => req.user?.role === "admin",
   message: (req) => {
     const premium = typeof req.user?.hasActivePremium === "function" && req.user.hasActivePremium();
@@ -65,7 +66,8 @@ const testAnalysisLimiter = rateLimit({
   },
   standardHeaders: true,
   legacyHeaders: false,
-  keyGenerator: (req) => `user_${req.user.id}`,
+  // key by user id when available, otherwise fallback to IP to avoid crashes
+  keyGenerator: (req) => `user_${req.user?.id ?? req.ip}`,
   skip: (req) => req.user?.role === "admin",
   message: (req) => {
     const premium = typeof req.user?.hasActivePremium === "function" && req.user.hasActivePremium();
