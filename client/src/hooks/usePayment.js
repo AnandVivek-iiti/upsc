@@ -7,6 +7,25 @@ function authHeaders(token) {
   return { "Content-Type": "application/json", Authorization: `Bearer ${token}` };
 }
 
+async function readApiResponse(res, fallbackMessage) {
+  const raw = await res.text();
+  let data = null;
+
+  if (raw) {
+    try {
+      data = JSON.parse(raw);
+    } catch {
+      data = null;
+    }
+  }
+
+  if (!res.ok || data?.success === false) {
+    throw new Error(data?.error || fallbackMessage || `Request failed (${res.status})`);
+  }
+
+  return data || {};
+}
+
 let checkoutScriptPromise = null;
 function loadRazorpayScript() {
   if (window.Razorpay) return Promise.resolve(true);
@@ -33,8 +52,7 @@ export function usePayment(token, { onSuccess } = {}) {
     if (!token) return null;
     try {
       const res = await fetch(`${BASE}/auth/me`, { headers: authHeaders(token) });
-      const data = await res.json();
-      if (!data.success) throw new Error(data.error || "Failed to load subscription status.");
+      const data = await readApiResponse(res, "Failed to load subscription status.");
       return data.user?.subscription || null;
     } catch (e) {
       setError(e.message);
@@ -54,10 +72,7 @@ export function usePayment(token, { onSuccess } = {}) {
           headers: authHeaders(token),
           body: JSON.stringify({ plan }),
         });
-        const orderData = await orderRes.json();
-        if (!orderRes.ok || !orderData.success) {
-          throw new Error(orderData.error || "Could not start checkout.");
-        }
+        const orderData = await readApiResponse(orderRes, "Could not start checkout.");
 
         const options = {
           key: orderData.key_id,
@@ -79,10 +94,10 @@ export function usePayment(token, { onSuccess } = {}) {
                   razorpay_signature: response.razorpay_signature,
                 }),
               });
-              const verifyData = await verifyRes.json();
-              if (!verifyRes.ok || !verifyData.success) {
-                throw new Error(verifyData.error || "Payment verification failed. Contact support if you were charged.");
-              }
+              const verifyData = await readApiResponse(
+                verifyRes,
+                "Payment verification failed. Contact support if you were charged.",
+              );
               onSuccess?.(verifyData.subscription);
             } catch (e) {
               setError(e.message);

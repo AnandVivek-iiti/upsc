@@ -184,6 +184,11 @@ GEMINI_API_KEY=your-gemini-key
 GROQ_API_KEY=your-groq-key
 OPENROUTER_API_KEY=your-openrouter-key
 
+# Razorpay payments
+RAZORPAY_KEY_ID=your-razorpay-key-id
+RAZORPAY_KEY_SECRET=your-razorpay-key-secret
+RAZORPAY_WEBHOOK_SECRET=your-razorpay-webhook-secret
+
 # Google OAuth (server-side token verification)
 GOOGLE_CLIENT_ID=your-google-oauth-client-id
 ```

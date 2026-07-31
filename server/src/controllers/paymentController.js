@@ -3,14 +3,40 @@ const Razorpay = require("razorpay");
 const User = require("../models/User");
 const Payment = require("../models/Payment");
 
-const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID,
-  key_secret: process.env.RAZORPAY_KEY_SECRET,
-});
 const PLANS = {
   monthly: { amount: 19900, label: "Premium Monthly", durationDays: 30 },
   yearly: { amount: 200000, label: "Premium Yearly", durationDays: 365 },
 };
+
+let razorpayClient = null;
+let razorpayClientKeyId = "";
+
+function getRazorpayConfig() {
+  const keyId = (process.env.RAZORPAY_KEY_ID || "").trim();
+  const keySecret = (process.env.RAZORPAY_KEY_SECRET || "").trim();
+  if (!keyId || !keySecret) return null;
+  return { keyId, keySecret };
+}
+
+function getRazorpayClient() {
+  const config = getRazorpayConfig();
+  if (!config) return null;
+
+  if (!razorpayClient || razorpayClientKeyId !== config.keyId) {
+    razorpayClient = new Razorpay({
+      key_id: config.keyId,
+      key_secret: config.keySecret,
+    });
+    razorpayClientKeyId = config.keyId;
+  }
+
+  return { client: razorpayClient, keyId: config.keyId };
+}
+
+function buildReceipt(userId) {
+  const userPart = String(userId || "user").replace(/-/g, "").slice(0, 10);
+  return `rcpt_${Date.now()}_${userPart}`.slice(0, 40);
+}
 
 function computeExpiry(plan, from = new Date()) {
   const days = PLANS[plan]?.durationDays || 30;
@@ -53,16 +79,20 @@ const createOrder = async (req, res, next) => {
       });
     }
 
-    // ── TEMP DEBUG: confirm keys are actually loaded (never logs the secret) ──
-    console.log("[createOrder] RAZORPAY_KEY_ID present:", !!process.env.RAZORPAY_KEY_ID);
-    console.log("[createOrder] RAZORPAY_KEY_ID prefix:", process.env.RAZORPAY_KEY_ID?.slice(0, 8));
-    console.log("[createOrder] RAZORPAY_KEY_SECRET present:", !!process.env.RAZORPAY_KEY_SECRET);
-    console.log("[createOrder] req.user.id:", req.user?.id);
+    const razorpay = getRazorpayClient();
+    if (!razorpay) {
+      console.error("[createOrder] Razorpay credentials are not configured.");
+      return res.status(503).json({
+        success: false,
+        code: "PAYMENT_CONFIG_MISSING",
+        error: "Payment gateway is not configured on the server.",
+      });
+    }
 
-    const order = await razorpay.orders.create({
+    const order = await razorpay.client.orders.create({
       amount: planConfig.amount,
       currency: "INR",
-      receipt: `user_${req.user.id}_${Date.now()}`,
+      receipt: buildReceipt(req.user.id),
       notes: { user_id: req.user.id, plan },
     });
 
@@ -81,15 +111,18 @@ const createOrder = async (req, res, next) => {
       order_id: order.id,
       amount: planConfig.amount,
       currency: "INR",
-      key_id: process.env.RAZORPAY_KEY_ID,
+      key_id: razorpay.keyId,
     });
   } catch (err) {
-    // ── TEMP DEBUG: surface the real error in Render logs ─────────────────────
     console.error("[createOrder] FAILED:", err.message);
     if (err.error) console.error("[createOrder] Razorpay error detail:", JSON.stringify(err.error));
     if (err.statusCode) console.error("[createOrder] Razorpay statusCode:", err.statusCode);
-    console.error("[createOrder] Full error object:", err);
-    next(err);
+
+    return res.status(err.statusCode >= 400 && err.statusCode < 500 ? 400 : 502).json({
+      success: false,
+      code: "PAYMENT_ORDER_FAILED",
+      error: "Could not create a payment order. Please try again in a moment.",
+    });
   }
 };
 const verifyPayment = async (req, res, next) => {
@@ -100,8 +133,18 @@ const verifyPayment = async (req, res, next) => {
       return res.status(400).json({ success: false, error: "Missing payment verification fields." });
     }
 
+    const config = getRazorpayConfig();
+    if (!config) {
+      console.error("[verifyPayment] Razorpay credentials are not configured.");
+      return res.status(503).json({
+        success: false,
+        code: "PAYMENT_CONFIG_MISSING",
+        error: "Payment gateway is not configured on the server.",
+      });
+    }
+
     const expectedSignature = crypto
-      .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
+      .createHmac("sha256", config.keySecret)
       .update(`${razorpay_order_id}|${razorpay_payment_id}`)
       .digest("hex");
 
@@ -143,8 +186,17 @@ const webhook = async (req, res) => {
       return res.status(400).json({ success: false, error: "Missing signature header." });
     }
 
+    const webhookSecret = (process.env.RAZORPAY_WEBHOOK_SECRET || "").trim();
+    if (!webhookSecret) {
+      console.error("[Razorpay webhook] RAZORPAY_WEBHOOK_SECRET is not configured.");
+      return res.status(503).json({
+        success: false,
+        code: "PAYMENT_CONFIG_MISSING",
+      });
+    }
+
     const expected = crypto
-      .createHmac("sha256", process.env.RAZORPAY_WEBHOOK_SECRET)
+      .createHmac("sha256", webhookSecret)
       .update(req.body) // raw Buffer
       .digest("hex");
 
