@@ -34,12 +34,12 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // ─── CORS ─────────────────────────────────────────────────────────────────────
-const allowedOrigins = [
-  "http://localhost:5173",
-  "https://upsc-by-iitian.onrender.com",
-  "https://upsc-by-iitians.onrender.com",
- "https://www.upscbyiitians.in",
-];
+const allowedOrigins = (process.env.ALLOWED_ORIGINS || "http://localhost:5173,https://upsc-by-iitian.onrender.com,https://upsc-by-iitians.onrender.com,https://www.upscbyiitians.in")
+  .split(",")
+  .map((s) => s.trim())
+  .filter(Boolean);
+
+console.log("Configured allowed CORS origins:", allowedOrigins);
 
 app.use(
   cors({
