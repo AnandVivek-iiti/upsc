@@ -56,6 +56,14 @@ const MIGRATIONS = [
       ALTER TABLE users ADD COLUMN IF NOT EXISTS razorpay_customer_id VARCHAR(255) DEFAULT NULL;
     `,
   },
+  {
+    id: "v5_user_data_mentor_chat_fields",
+    sql: `
+      ALTER TABLE user_data ADD COLUMN IF NOT EXISTS mentor_chat JSONB NOT NULL DEFAULT '[]'::jsonb;
+      ALTER TABLE user_data ADD COLUMN IF NOT EXISTS mentor_threads JSONB NOT NULL DEFAULT '[]'::jsonb;
+      ALTER TABLE user_data ADD COLUMN IF NOT EXISTS mentor_memory JSONB NOT NULL DEFAULT '[]'::jsonb;
+    `,
+  },
 ];
 
 async function runMigrations() {

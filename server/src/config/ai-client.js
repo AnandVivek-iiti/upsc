@@ -173,6 +173,24 @@ function toChatMessages(systemInstruction, history, message) {
   ];
 }
 
+function toGeminiHistory(history) {
+  const cleaned = [];
+  let expectedRole = "user";
+
+  for (const item of history || []) {
+    const content = typeof item?.content === "string" ? item.content.trim() : "";
+    if (!content) continue;
+
+    const role = item.role === "user" ? "user" : "model";
+    if (role !== expectedRole) continue;
+
+    cleaned.push({ role, parts: [{ text: content }] });
+    expectedRole = role === "user" ? "model" : "user";
+  }
+
+  return cleaned;
+}
+
 const providers = [
   {
     name: "Gemini",
@@ -203,10 +221,7 @@ const providers = [
         systemInstruction,
         generationConfig: { temperature: 0.5, maxOutputTokens: 8196 },
       });
-      const geminiHistory = (history || []).map((m) => ({
-        role: m.role === "user" ? "user" : "model",
-        parts: [{ text: m.content }],
-      }));
+      const geminiHistory = toGeminiHistory(history);
       const chatSession = model.startChat({ history: geminiHistory });
       const result = await chatSession.sendMessage(message);
       return result.response.text();

@@ -93,6 +93,10 @@ const requirePremium = async (req, res, next) => {
       return res.status(401).json({ success: false, error: "Not authorized." });
     }
 
+    if (req.user.role === "admin") {
+      return next();
+    }
+
     const user = await User.findByPk(req.user.id, {
       attributes: { exclude: ["password"] },
     });

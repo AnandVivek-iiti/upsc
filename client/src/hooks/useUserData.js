@@ -26,7 +26,11 @@ export function useUserData({ enabled = true, token = null } = {}) {
           answers:            res.answers            || [],
           daily_logs:         res.daily_logs         || [],
           spaced_repetition:  res.spaced_repetition  || { queue: [] },
+          revision_queue:     res.revision_queue     || res.spaced_repetition || [],
           question_attempts:  res.question_attempts  || [],
+          test_attempts:      res.test_attempts      || [],
+          note_audits:        res.note_audits        || [],
+          mentor_sessions:    res.mentor_sessions    || [],
         });
       } else {
         setData(buildFallback());
@@ -124,7 +128,11 @@ export function useUserData({ enabled = true, token = null } = {}) {
       answers:            [],
       daily_logs:         [],
       spaced_repetition:  { queue: [] },
+      revision_queue:     [],
       question_attempts:  [],
+      test_attempts:      [],
+      note_audits:        [],
+      mentor_sessions:    [],
     };
   }
 
