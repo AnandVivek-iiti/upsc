@@ -133,8 +133,8 @@ const verifyPayment = async (req, res, next) => {
       return res.status(400).json({ success: false, error: "Missing payment verification fields." });
     }
 
-    const config = getRazorpayConfig();
-    if (!config) {
+    const keySecret = (process.env.RAZORPAY_KEY_SECRET || "").trim();
+    if (!keySecret) {
       console.error("[verifyPayment] Razorpay credentials are not configured.");
       return res.status(503).json({
         success: false,
@@ -144,7 +144,7 @@ const verifyPayment = async (req, res, next) => {
     }
 
     const expectedSignature = crypto
-      .createHmac("sha256", config.keySecret)
+      .createHmac("sha256", keySecret)
       .update(`${razorpay_order_id}|${razorpay_payment_id}`)
       .digest("hex");
 
