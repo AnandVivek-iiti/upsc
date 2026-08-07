@@ -3,6 +3,7 @@ import {
   User, Mail, Calendar, Clock, Target, Flame, Trophy,
   Edit3, Save, X, Loader2, CheckCircle2, AlertCircle,
   TrendingUp, Shield, KeyRound, Eye, EyeOff, ArrowLeft, BookOpen, Crown,
+  Gift, Copy, Users,
 } from "lucide-react";
 import { UPSC_SUBJECTS, SUBJECT_COLORS, SUBJECT_ICONS } from "../../hooks/useSubjectTimer";
 import UpgradeModal from "./UpgradeModal";
@@ -51,6 +52,11 @@ export function AvatarCircle({ name = "", size = "md", onClick, className = "", 
 // ─── Constants ────────────────────────────────────────────────────────────────
 const BASE = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 const YEAR_OPTIONS = Array.from({ length: 11 }, (_, i) => 2025 + i);
+
+// The upscbyiitians.in custom domain is currently down, so referral links use
+// the Render URL directly instead of window.location.origin. Swap this back
+// once the domain is restored.
+const REFERRAL_LINK_BASE = "https://upsc-by-iitian.onrender.com";
 const HOUR_OPTIONS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 16, 18, 20];
 
 function authHeaders(token) {
@@ -225,6 +231,7 @@ export default function ProfilePage({ token, onBack, onProfileUpdate, userData =
   const [savedSubjects, setSavedSubjects] = useState([]);
   const [passForm, setPassForm] = useState({ current: "", next: "", confirm: "" });
   const [showUpgrade, setShowUpgrade] = useState(false);
+  const [refCopied, setRefCopied] = useState(false);
 
   // ── Today's study hours from daily_logs ──────────────────────────────────
   const todayStudyHours = userData
@@ -389,6 +396,19 @@ export default function ProfilePage({ token, onBack, onProfileUpdate, userData =
 
   // ── Derived values ────────────────────────────────────────────────────────
   const p = profile?.profile || {};
+
+  // Hide the "Refer & Earn" card from users who already have 1+ month of
+  // active premium left (or a no-expiry / lifetime grant) - the referral
+  // bonus is meant to get free/trial users onto premium, not to stack extra
+  // days onto someone who's already comfortably covered.
+  const subForReferralGate = profile?.subscription;
+  const subDaysLeftForGate = subForReferralGate?.expiresAt
+    ? Math.max(0, Math.ceil((new Date(subForReferralGate.expiresAt) - Date.now()) / 86_400_000))
+    : null;
+  const hasLongPremium =
+    !!subForReferralGate?.isActive &&
+    (subDaysLeftForGate === null /* no expiry = lifetime */ || subDaysLeftForGate >= 30);
+
   const memberSince = profile?.createdAt
     ? new Date(profile.createdAt).toLocaleDateString("en-IN", { month: "long", year: "numeric" })
     : "—";
@@ -492,6 +512,7 @@ export default function ProfilePage({ token, onBack, onProfileUpdate, userData =
               const sub = profile?.subscription || { tier: "free", source: "none", isActive: false, expiresAt: null };
               const isTrial = sub.source === "trial";
               const isComp = sub.source === "admin_grant";
+              const isReferral = sub.source === "referral";
               const daysLeft = sub.expiresAt
                 ? Math.max(0, Math.ceil((new Date(sub.expiresAt) - Date.now()) / 86_400_000))
                 : null;
@@ -511,9 +532,11 @@ export default function ProfilePage({ token, onBack, onProfileUpdate, userData =
                               ? "text-accent-blue border border-accent-blue/30 bg-accent-blue/10"
                               : isComp
                                 ? "text-purple-300 border border-purple-400/30 bg-purple-500/10"
-                                : "text-accent-gold border border-accent-gold/30 bg-accent-gold/10"}`}
+                                : isReferral
+                                  ? "text-accent-green border border-accent-green/30 bg-accent-green/10"
+                                  : "text-accent-gold border border-accent-gold/30 bg-accent-gold/10"}`}
                         >
-                          <Crown size={12} /> {isTrial ? "Premium Trial" : isComp ? "Premium (Comp)" : "Premium"}
+                          <Crown size={12} /> {isTrial ? "Premium Trial" : isComp ? "Premium (Comp)" : isReferral ? "Premium (Referral)" : "Premium"}
                         </span>
                       ) : (
                         <span className="inline-flex items-center px-3 py-1.5 rounded-xl text-xs sm:text-sm font-mono text-text-muted border border-bg-border">
@@ -524,7 +547,7 @@ export default function ProfilePage({ token, onBack, onProfileUpdate, userData =
                         <p className="text-xs font-mono text-text-muted mt-2">
                           {isTrial
                             ? `Trial ends in ${daysLeft} day${daysLeft === 1 ? "" : "s"} — `
-                            : isComp ? "Granted — " : "Renews/expires — "}
+                            : isComp ? "Granted — " : isReferral ? "Referral bonus — " : "Renews/expires — "}
                           {new Date(sub.expiresAt).toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" })}
                         </p>
                       )}
@@ -546,6 +569,54 @@ export default function ProfilePage({ token, onBack, onProfileUpdate, userData =
                 </div>
               );
             })()}
+
+            {/* ── Refer & Earn card ── */}
+            {/* Not shown to users with 1+ month of active premium left (or a
+                no-expiry grant) - see hasLongPremium above. */}
+            {profile?.referral?.code && !hasLongPremium && (
+              <div className="glass-panel p-5 sm:p-6 rounded-2xl">
+                <div className="flex items-center gap-3 mb-4">
+                  <Gift size={16} className="text-accent-green" />
+                  <h3 className="text-base sm:text-lg font-semibold text-text-primary">Refer &amp; Earn</h3>
+                </div>
+                <p className="text-xs sm:text-sm text-text-muted font-mono mb-4 leading-relaxed">
+                  Share your link. Every friend who signs up with it gives you{" "}
+                  <span className="text-accent-green">bonus days of Premium</span>, instantly.
+                  {/* Exact day count comes from REFERRAL_BONUS_DAYS on the backend (authController.js) -
+                      kept generic here so this copy never drifts out of sync with that env var. */}
+                </p>
+                {/* Hardcoded to the Render URL, not window.location.origin - the
+                    upscbyiitians.in custom domain is currently down, and links
+                    generated from it would 404 for whoever receives them. */}
+
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="flex-1 min-w-0 px-3.5 py-3 rounded-xl bg-bg-muted border border-bg-border font-mono text-sm text-text-primary truncate">
+                    {`${REFERRAL_LINK_BASE}/?ref=${profile.referral.code}`}
+                  </div>
+                  <button
+                    onClick={async () => {
+                      const link = `${REFERRAL_LINK_BASE}/?ref=${profile.referral.code}`;
+                      try {
+                        await navigator.clipboard.writeText(link);
+                      } catch {
+                        /* clipboard API unavailable - code is still visible to copy by hand */
+                      }
+                      setRefCopied(true);
+                      setTimeout(() => setRefCopied(false), 2000);
+                    }}
+                    className="btn-outline shrink-0 flex items-center gap-1.5 px-3.5 py-3 rounded-xl text-xs sm:text-sm touch-manipulation"
+                  >
+                    {refCopied ? <CheckCircle2 size={14} className="text-accent-green" /> : <Copy size={14} />}
+                    {refCopied ? "Copied" : "Copy"}
+                  </button>
+                </div>
+
+                <div className="flex items-center gap-1.5 text-xs font-mono text-text-muted">
+                  <Users size={12} />
+                  {profile.referral.referredCount || 0} friend{profile.referral.referredCount === 1 ? "" : "s"} referred so far
+                </div>
+              </div>
+            )}
 
             {/* ── Study stats card - clean, essential metrics only ── */}
             <div className="glass-panel p-5 sm:p-6 rounded-2xl">

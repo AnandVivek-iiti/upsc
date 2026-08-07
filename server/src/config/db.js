@@ -64,6 +64,38 @@ const MIGRATIONS = [
       ALTER TABLE user_data ADD COLUMN IF NOT EXISTS mentor_memory JSONB NOT NULL DEFAULT '[]'::jsonb;
     `,
   },
+  {
+    // Adding a value to an existing Postgres enum type must run on its own -
+    // it cannot be safely batched in the same multi-statement call as other
+    // DDL/DML that might use the new value, so it gets its own migration id.
+    id: "v6_users_subscription_source_referral",
+    sql: `
+      ALTER TYPE enum_users_subscription_source ADD VALUE IF NOT EXISTS 'referral';
+    `,
+  },
+  {
+    id: "v7_users_referrals",
+    sql: `
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS referral_code VARCHAR(12);
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS referred_by UUID REFERENCES users(id);
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS referral_count INTEGER NOT NULL DEFAULT 0;
+
+      -- Backfill existing rows so every pre-existing user has a shareable code
+      -- immediately, derived deterministically from their own id (no pgcrypto
+      -- extension required).
+      UPDATE users
+      SET referral_code = UPPER(SUBSTRING(REPLACE(id::text, '-', '') FROM 1 FOR 10))
+      WHERE referral_code IS NULL;
+
+      DO $$ BEGIN
+        IF NOT EXISTS (
+          SELECT 1 FROM pg_constraint WHERE conname = 'users_referral_code_key'
+        ) THEN
+          ALTER TABLE users ADD CONSTRAINT users_referral_code_key UNIQUE (referral_code);
+        END IF;
+      END $$;
+    `,
+  },
 ];
 
 async function runMigrations() {

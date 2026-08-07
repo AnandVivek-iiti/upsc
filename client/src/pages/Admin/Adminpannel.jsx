@@ -1,12 +1,12 @@
 import { useState, useEffect, useCallback, useRef, Component } from "react";
 import {
   Users, BarChart2, Shield, RefreshCw, Download,
-  ChevronLeft, ChevronRight, Eye, EyeOff, Activity,
+  ChevronLeft, ChevronRight, ChevronDown, ChevronUp, Eye, EyeOff, Activity,
   AlertCircle, Trash2, CheckCircle2, Loader2, TrendingUp, TrendingDown,
   Flame, Clock, BookOpen, Brain, FileText, Target,
   ArrowUp, ArrowDown, Minus, X, Calendar, UserCheck,
   GitBranch, Compass, Lightbulb, User, Zap, AlertTriangle, MessageCircle, Star, ThumbsUp,
-  Layers, Info, Mail, Crown,
+  Layers, Info, Mail, Crown, Search, SlidersHorizontal, Gift,
 } from "lucide-react";
 import {
   downloadFullReport,
@@ -358,12 +358,23 @@ function PlanBadge({ tier, source, expiresAt }) {
 // ═══════════════════════════════════════════════════════════════════════════════
 // USERS TAB
 // ═══════════════════════════════════════════════════════════════════════════════
-function UsersTab({ users, usersTotal, userPage, loading, onPageChange, onSortChange, sortBy, sortDir, onDelete, onTogglePremium, onUserClick }) {
+function UsersTab({ users, usersTotal, userPage, loading, onPageChange, onSortChange, sortBy, sortDir, onDelete, onTogglePremium, onUserClick, filters, onFiltersChange }) {
   const [showEmails, setShowEmails] = useState(false);
   const [pendingDelete, setPendingDelete] = useState(null);
-  const [feedbackStats, setFeedbackStats] = useState(null);
-  const [feedbackList, setFeedbackList] = useState([]);
   const [emailingUserId, setEmailingUserId] = useState(null);
+  const [showFilters, setShowFilters] = useState(false);
+  const [searchDraft, setSearchDraft] = useState(filters.search || "");
+
+  // Debounce the search box so we don't hit the server on every keystroke.
+  useEffect(() => {
+    const t = setTimeout(() => {
+      if (searchDraft !== filters.search) {
+        onFiltersChange({ ...filters, search: searchDraft });
+      }
+    }, 400);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchDraft]);
 
   const handleSendDirectEmail = async (e, user) => {
     e.stopPropagation();
@@ -407,15 +418,114 @@ function UsersTab({ users, usersTotal, userPage, loading, onPageChange, onSortCh
 
   const totalPages = Math.ceil(usersTotal / 20);
 
+  const activeFilterCount =
+    (filters.plan !== "all" ? 1 : 0) +
+    (filters.minStudyHours ? 1 : 0) +
+    (filters.activeWithin !== "any" ? 1 : 0);
+
+  const updateFilter = (patch) => onFiltersChange({ ...filters, ...patch });
+
+  const clearFilters = () => {
+    setSearchDraft("");
+    onFiltersChange({ search: "", plan: "all", minStudyHours: "", activeWithin: "any" });
+  };
+
+  const hasActiveFilters = activeFilterCount > 0 || !!filters.search;
+
   return (
     <div>
       <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
         <SectionHead title={`Users (${usersTotal})`} />
-        <button onClick={() => setShowEmails(v => !v)}
-          className="flex items-center gap-1.5 text-xs text-text-muted hover:text-text-primary font-mono transition-colors shrink-0">
-          {showEmails ? <EyeOff size={12} /> : <Eye size={12} />}
-          <span className="hidden xs:inline">{showEmails ? "Mask emails" : "Show emails"}</span>
-        </button>
+        <div className="flex items-center gap-2">
+          <button onClick={() => setShowEmails(v => !v)}
+            className="flex items-center gap-1.5 text-xs text-text-muted hover:text-text-primary font-mono transition-colors shrink-0">
+            {showEmails ? <EyeOff size={12} /> : <Eye size={12} />}
+            <span className="hidden xs:inline">{showEmails ? "Mask emails" : "Show emails"}</span>
+          </button>
+        </div>
+      </div>
+
+      {/* ── Search + filter bar ── */}
+      <div className="mb-4 space-y-2">
+        <div className="flex items-center gap-2 flex-wrap">
+          <div className="relative flex-1 min-w-[200px]">
+            <Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-text-muted" />
+            <input
+              type="text"
+              value={searchDraft}
+              onChange={(e) => setSearchDraft(e.target.value)}
+              placeholder="Search by name or email…"
+              className="w-full bg-bg-surface border border-bg-border rounded-xl pl-8 pr-3 py-2 text-xs font-mono text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent-gold/50"
+            />
+          </div>
+          <button
+            onClick={() => setShowFilters(v => !v)}
+            className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-mono border transition-colors shrink-0
+              ${showFilters || activeFilterCount > 0
+                ? "border-accent-gold/40 bg-accent-gold/10 text-accent-gold"
+                : "border-bg-border text-text-muted hover:text-text-primary"}`}
+          >
+            <SlidersHorizontal size={12} />
+            Filters
+            {activeFilterCount > 0 && (
+              <span className="text-[9px] font-bold bg-accent-gold/20 text-accent-gold rounded-full w-4 h-4 flex items-center justify-center">
+                {activeFilterCount}
+              </span>
+            )}
+          </button>
+          {hasActiveFilters && (
+            <button
+              onClick={clearFilters}
+              className="flex items-center gap-1 px-2.5 py-2 rounded-xl text-xs font-mono text-text-muted hover:text-accent-red transition-colors shrink-0"
+            >
+              <X size={12} /> Clear
+            </button>
+          )}
+        </div>
+
+        {showFilters && (
+          <div className="bg-bg-surface border border-bg-border rounded-xl p-3 flex flex-wrap items-end gap-3">
+            <div>
+              <label className="block text-[10px] font-mono text-text-muted uppercase tracking-wide mb-1">Plan</label>
+              <select
+                value={filters.plan}
+                onChange={(e) => updateFilter({ plan: e.target.value })}
+                className="bg-bg-muted border border-bg-border rounded-lg px-2.5 py-1.5 text-xs font-mono text-text-primary focus:outline-none"
+              >
+                <option value="all">All</option>
+                <option value="premium">Premium</option>
+                <option value="free">Free</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-[10px] font-mono text-text-muted uppercase tracking-wide mb-1">Min study hours</label>
+              <input
+                type="number"
+                min="0"
+                value={filters.minStudyHours}
+                onChange={(e) => updateFilter({ minStudyHours: e.target.value })}
+                placeholder="e.g. 10"
+                className="w-28 bg-bg-muted border border-bg-border rounded-lg px-2.5 py-1.5 text-xs font-mono text-text-primary placeholder:text-text-muted focus:outline-none"
+              />
+            </div>
+            <div>
+              <label className="block text-[10px] font-mono text-text-muted uppercase tracking-wide mb-1">Last active</label>
+              <select
+                value={filters.activeWithin}
+                onChange={(e) => updateFilter({ activeWithin: e.target.value })}
+                className="bg-bg-muted border border-bg-border rounded-lg px-2.5 py-1.5 text-xs font-mono text-text-primary focus:outline-none"
+              >
+                <option value="any">Any time</option>
+                <option value="1">Last 24h</option>
+                <option value="7">Last 7 days</option>
+                <option value="30">Last 30 days</option>
+                <option value="90">Last 90 days</option>
+                <option value="stale7">Inactive 7+ days</option>
+                <option value="stale30">Inactive 30+ days</option>
+              </select>
+            </div>
+          </div>
+        )}
       </div>
 
       {loading && users.length === 0 ? <LoadSpinner /> : (
@@ -568,7 +678,7 @@ function UsersTab({ users, usersTotal, userPage, loading, onPageChange, onSortCh
                   </tr>
                 ))}
                 {users.length === 0 && (
-                  <tr><td colSpan={COLS.length} className="px-4 py-10 text-center text-text-muted text-sm">No users found.</td></tr>
+                  <tr><td colSpan={COLS.length} className="px-4 py-10 text-center text-text-muted text-sm">No users found{hasActiveFilters ? " matching your search/filters." : "."}</td></tr>
                 )}
               </tbody>
             </table>
@@ -1246,12 +1356,99 @@ function InsightsTab({ insights, loading }) {
     </div>
   );
 }
+// ─── Feedback text formatter ────────────────────────────────────────────────
+// Some feedback comes in as several short observations joined with commas
+// (multi-point answers) rather than one sentence — that renders as an ugly
+// comma-jammed blob. Detect that shape and render it as a clean bullet list;
+// anything that reads like normal prose (sentence punctuation, long clauses,
+// or just a couple of commas) is left as a plain paragraph, untouched.
+function formatFeedbackText(text) {
+  const clean = (text || "").trim();
+  if (!clean) return { type: "empty" };
+
+  const parts = clean.split(",").map((p) => p.trim()).filter(Boolean);
+  const looksLikeList =
+    parts.length >= 3 && !/[.!?]/.test(clean) && parts.every((p) => p.length <= 60);
+
+  return looksLikeList ? { type: "list", items: parts } : { type: "paragraph", text: clean };
+}
+
+function FeedbackText({ text }) {
+  const parsed = formatFeedbackText(text);
+  if (parsed.type === "empty") {
+    return <p className="text-sm text-text-muted italic">No text</p>;
+  }
+  if (parsed.type === "list") {
+    return (
+      <ul className="text-sm text-text-secondary space-y-1 list-disc list-inside">
+        {parsed.items.map((item, i) => (
+          <li key={i} className="break-words">{item}</li>
+        ))}
+      </ul>
+    );
+  }
+  return (
+    <p className="text-sm text-text-secondary whitespace-pre-wrap break-words leading-relaxed">
+      {parsed.text}
+    </p>
+  );
+}
+
+// ─── Group feedback entries per user ────────────────────────────────────────
+function groupFeedbackByUser(feedbackList) {
+  const groups = new Map();
+  for (const fb of feedbackList) {
+    const key = fb.User?.id || fb.userId || fb.userEmail || `anon-${fb.id}`;
+    if (!groups.has(key)) {
+      groups.set(key, {
+        key,
+        name: fb.User?.name || null,
+        email: fb.User?.email || fb.userEmail || null,
+        entries: [],
+      });
+    }
+    groups.get(key).entries.push(fb);
+  }
+  const list = Array.from(groups.values()).map((g) => ({
+    ...g,
+    entries: g.entries.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)),
+  }));
+  list.sort((a, b) => new Date(b.entries[0]?.createdAt || 0) - new Date(a.entries[0]?.createdAt || 0));
+  return list;
+}
+
 // ─── FEEDBACK TAB ──────────────────────────────────────────────────────────
-function FeedbackTab({ stats, feedbackList, loading, onRefresh, onExport }) {
+function FeedbackTab({ stats, feedbackList, loading, onRefresh, onDelete }) {
+  const [expandedUsers, setExpandedUsers] = useState(new Set());
+  const [deletingIds, setDeletingIds]     = useState(new Set());
+
   if (loading && !stats) return <LoadSpinner />;
   if (!stats) return <p className="text-sm text-text-muted py-8 text-center">No feedback data yet.</p>;
 
   const { total, avgRating, recommendRate, featureStats, mostRequested } = stats;
+  const grouped = groupFeedbackByUser(feedbackList || []);
+
+  function toggleUser(key) {
+    setExpandedUsers((prev) => {
+      const next = new Set(prev);
+      next.has(key) ? next.delete(key) : next.add(key);
+      return next;
+    });
+  }
+
+  async function handleDelete(fb) {
+    if (!window.confirm("Delete this feedback entry? This can't be undone.")) return;
+    setDeletingIds((prev) => new Set(prev).add(fb.id));
+    try {
+      await onDelete(fb.id);
+    } finally {
+      setDeletingIds((prev) => {
+        const next = new Set(prev);
+        next.delete(fb.id);
+        return next;
+      });
+    }
+  }
 
   return (
     <div className="space-y-6">
@@ -1329,41 +1526,208 @@ function FeedbackTab({ stats, feedbackList, loading, onRefresh, onExport }) {
 
       <div>
         <SectionHead title="Recent Feedback" />
-        <div className="bg-bg-surface border border-bg-border rounded-2xl divide-y divide-bg-border/50 max-h-96 overflow-y-auto">
-          {feedbackList?.length ? (
-            feedbackList.map((fb) => (
-              <div key={fb.id} className="px-3 sm:px-4 py-2.5 sm:py-3 hover:bg-bg-muted/20 transition-colors">
-                <div className="flex items-start justify-between gap-2">
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <span className="font-mono text-xs text-accent-gold">
-                        {fb.rating ? "★".repeat(fb.rating) : "—"}
+        <div className="space-y-2">
+          {grouped.length ? (
+            grouped.map((g) => {
+              const isOpen = expandedUsers.has(g.key) || grouped.length === 1;
+              const ratedEntries = g.entries.filter((e) => e.rating);
+              const avgForUser = ratedEntries.length
+                ? (ratedEntries.reduce((s, e) => s + e.rating, 0) / ratedEntries.length).toFixed(1)
+                : null;
+
+              return (
+                <div key={g.key} className="bg-bg-surface border border-bg-border rounded-2xl overflow-hidden">
+                  <button
+                    onClick={() => toggleUser(g.key)}
+                    className="w-full flex items-center justify-between gap-2 px-3 sm:px-4 py-2.5 sm:py-3 hover:bg-bg-muted/20 transition-colors text-left"
+                  >
+                    <div className="flex items-center gap-2 min-w-0 flex-wrap">
+                      <User size={14} className="text-text-muted shrink-0" />
+                      <span className="text-sm font-medium text-text-primary truncate max-w-[160px]">
+                        {g.name || g.email || "Anonymous"}
                       </span>
-                      <span className="text-xs font-mono text-text-muted bg-bg-muted px-1.5 py-0.5 rounded">
-                        {fb.feature}
-                      </span>
-                      <span className="text-xs text-text-muted truncate max-w-[80px]">
-                        {fb.User?.name || "Anonymous"}
-                      </span>
-                      {fb.wouldRecommend !== null && (
-                        <span className={`text-xs font-mono ${fb.wouldRecommend ? "text-accent-green" : "text-accent-red"}`}>
-                          {fb.wouldRecommend ? "👍" : "👎"}
+                      {g.name && g.email && (
+                        <span className="text-xs text-text-muted truncate hidden sm:inline max-w-[180px]">
+                          {g.email}
                         </span>
                       )}
+                      <span className="text-[11px] font-mono text-text-muted bg-bg-muted px-1.5 py-0.5 rounded shrink-0">
+                        {g.entries.length} {g.entries.length === 1 ? "entry" : "entries"}
+                      </span>
+                      {avgForUser && (
+                        <span className="text-[11px] font-mono text-accent-gold shrink-0">{avgForUser} ★ avg</span>
+                      )}
                     </div>
-                    <p className="text-sm text-text-secondary mt-1 line-clamp-2 break-words">
-                      {fb.feedbackText?.slice(0, 180) || "No text"}
-                    </p>
-                  </div>
-                  <span className="text-[11px] font-mono text-text-muted shrink-0">
-                    {relTime(fb.createdAt)}
-                  </span>
+                    {isOpen
+                      ? <ChevronUp size={14} className="text-text-muted shrink-0" />
+                      : <ChevronDown size={14} className="text-text-muted shrink-0" />}
+                  </button>
+
+                  {isOpen && (
+                    <div className="divide-y divide-bg-border/50 border-t border-bg-border">
+                      {g.entries.map((fb) => (
+                        <div key={fb.id} className="px-3 sm:px-4 py-3 hover:bg-bg-muted/10 transition-colors">
+                          <div className="flex items-start justify-between gap-2">
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2 flex-wrap mb-1.5">
+                                <span className="font-mono text-xs text-accent-gold">
+                                  {fb.rating ? "★".repeat(fb.rating) : "—"}
+                                </span>
+                                <span className="text-xs font-mono text-text-muted bg-bg-muted px-1.5 py-0.5 rounded">
+                                  {fb.feature}
+                                </span>
+                                {fb.wouldRecommend !== null && (
+                                  <span className={`text-xs font-mono ${fb.wouldRecommend ? "text-accent-green" : "text-accent-red"}`}>
+                                    {fb.wouldRecommend ? "👍" : "👎"}
+                                  </span>
+                                )}
+                                <span className="text-[11px] font-mono text-text-muted">
+                                  {relTime(fb.createdAt)}
+                                </span>
+                              </div>
+                              <FeedbackText text={fb.feedbackText} />
+                            </div>
+                            <button
+                              onClick={() => handleDelete(fb)}
+                              disabled={deletingIds.has(fb.id)}
+                              className="text-text-muted hover:text-accent-red transition-colors p-1 shrink-0 disabled:opacity-50"
+                              title="Delete feedback"
+                            >
+                              {deletingIds.has(fb.id)
+                                ? <Loader2 size={13} className="animate-spin" />
+                                : <Trash2 size={13} />}
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
-              </div>
-            ))
+              );
+            })
           ) : (
-            <div className="py-10 text-center text-text-muted">No feedback yet.</div>
+            <div className="py-10 text-center text-text-muted bg-bg-surface border border-bg-border rounded-2xl">
+              No feedback yet.
+            </div>
           )}
+        </div>
+      </div>
+    </div>
+  );
+}
+// ═══════════════════════════════════════════════════════════════════════════════
+// PREMIUM TAB
+// ═══════════════════════════════════════════════════════════════════════════════
+// Estimated pricing used purely for revenue projection in this panel — not a
+// live billing figure. Keep in sync with the actual Razorpay plan price.
+const ANNUAL_PLAN_PRICE_INR = 2000;
+
+function PremiumTab({ premiumUsers, premiumTotal, loading, onRefresh, onTogglePremium }) {
+  const [q, setQ] = useState("");
+
+  if (loading && !premiumUsers) return <LoadSpinner />;
+
+  const users = premiumUsers || [];
+  const filtered = q.trim()
+    ? users.filter(
+        (u) =>
+          u.name?.toLowerCase().includes(q.toLowerCase()) ||
+          u.email?.toLowerCase().includes(q.toLowerCase())
+      )
+    : users;
+
+  const now = Date.now();
+  const active = users.filter((u) => !u.subscription_expires_at || new Date(u.subscription_expires_at) > now);
+  const paid = active.filter((u) => u.subscription_source !== "trial" && u.subscription_source !== "admin_grant");
+  const trial = active.filter((u) => u.subscription_source === "trial");
+  const comp = active.filter((u) => u.subscription_source === "admin_grant");
+  const expiringSoon = active.filter((u) => {
+    if (!u.subscription_expires_at) return false;
+    const daysLeft = (new Date(u.subscription_expires_at) - now) / 86_400_000;
+    return daysLeft <= 7;
+  });
+
+  const estRevenue = paid.length * ANNUAL_PLAN_PRICE_INR;
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between flex-wrap gap-2">
+        <SectionHead title={`Premium Users (${premiumTotal ?? users.length})`} />
+        <button onClick={onRefresh} disabled={loading}
+          className="flex items-center gap-1.5 text-xs text-text-muted hover:text-text-primary font-mono transition-colors shrink-0">
+          <RefreshCw size={12} className={loading ? "animate-spin" : ""} />
+          <span className="hidden xs:inline">Refresh</span>
+        </button>
+      </div>
+
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3">
+        <MetricCard icon={Crown} label="Active Premium" value={active.length} iconColor="#c9a84c" accent />
+        <MetricCard icon={Zap} label="Paid" value={paid.length} iconColor="#4ade80" sub="Razorpay subscriptions" />
+        <MetricCard icon={Gift} label="Trial / Comp" value={trial.length + comp.length} iconColor="#a78bfa" sub={`${trial.length} trial · ${comp.length} comp`} />
+        <MetricCard icon={AlertTriangle} label="Expiring ≤7d" value={expiringSoon.length} iconColor="#f59e0b" />
+      </div>
+
+      <div className="bg-bg-surface border border-accent-gold/20 rounded-2xl p-4 flex items-center justify-between flex-wrap gap-2">
+        <div>
+          <p className="text-[10px] font-mono text-text-muted uppercase tracking-wider">Estimated Paid Revenue</p>
+          <p className="text-2xl font-display font-bold text-accent-gold mt-0.5">₹{fmtNum(estRevenue)}</p>
+          <p className="text-[10px] text-text-muted mt-0.5">{paid.length} paid subscriber{paid.length !== 1 ? "s" : ""} × ₹{ANNUAL_PLAN_PRICE_INR}/yr (estimate)</p>
+        </div>
+      </div>
+
+      <div>
+        <SectionHead title="Premium User List" />
+        <div className="relative mb-3 max-w-sm">
+          <Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-text-muted" />
+          <input
+            type="text"
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            placeholder="Search premium users…"
+            className="w-full bg-bg-surface border border-bg-border rounded-xl pl-8 pr-3 py-2 text-xs font-mono text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent-gold/50"
+          />
+        </div>
+        <div className="bg-bg-surface border border-bg-border rounded-2xl overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm min-w-[600px]">
+              <thead>
+                <tr className="border-b border-bg-border bg-bg-muted/40">
+                  {["Name", "Email", "Plan", "Expires", "Last Active"].map((h) => (
+                    <th key={h} className="text-left px-3 sm:px-4 py-2.5 sm:py-3 text-[10px] font-mono text-text-muted uppercase tracking-wider">{h}</th>
+                  ))}
+                  <th className="w-10" />
+                </tr>
+              </thead>
+              <tbody>
+                {filtered.map((u) => (
+                  <tr key={u.id} className="group border-b border-bg-border/40 hover:bg-bg-muted/20 transition-colors">
+                    <td className="px-3 sm:px-4 py-2 font-medium text-text-primary">{u.name}</td>
+                    <td className="px-3 sm:px-4 py-2 font-mono text-xs text-text-secondary">{u.email}</td>
+                    <td className="px-3 sm:px-4 py-2"><PlanBadge tier={u.subscription_tier} source={u.subscription_source} expiresAt={u.subscription_expires_at} /></td>
+                    <td className="px-3 sm:px-4 py-2 font-mono text-xs text-text-muted">
+                      {u.subscription_expires_at ? new Date(u.subscription_expires_at).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "2-digit" }) : "No expiry"}
+                    </td>
+                    <td className="px-3 sm:px-4 py-2 font-mono text-xs text-text-muted">{relTime(u.last_active)}</td>
+                    <td className="px-2 py-2" onClick={(e) => e.stopPropagation()}>
+                      <button
+                        onClick={() => {
+                          if (!window.confirm(`Revoke Premium access from ${u.name}?`)) return;
+                          onTogglePremium(u.id, false);
+                        }}
+                        title="Revoke Premium"
+                        className="opacity-0 group-hover:opacity-100 flex items-center justify-center p-1 rounded hover:bg-accent-red/10 text-text-muted hover:text-accent-red transition-all"
+                      >
+                        <Crown size={12} />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+                {filtered.length === 0 && (
+                  <tr><td colSpan={6} className="px-4 py-10 text-center text-text-muted text-sm">No premium users {q ? "match your search." : "yet."}</td></tr>
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>
@@ -1483,6 +1847,7 @@ export default function AdminPanel() {
   const [userPage, setUserPage] = useState(1);
   const [sortBy, setSortBy] = useState("engagement_score");
   const [sortDir, setSortDir] = useState("desc");
+  const [userFilters, setUserFilters] = useState({ search: "", plan: "all", minStudyHours: "", activeWithin: "any" });
   const [funnel, setFunnel] = useState(null);
   const [features, setFeatures] = useState(null);
   const [events, setEvents] = useState(null);
@@ -1502,6 +1867,9 @@ export default function AdminPanel() {
   const [feedbackList, setFeedbackList] = useState([]);
   const [profileUserId, setProfileUserId] = useState(null);
 
+  const [premiumUsers, setPremiumUsers] = useState(null);
+  const [premiumTotal, setPremiumTotal] = useState(0);
+
   const [loading, setLoading] = useState({});
   const [toast, setToast] = useState(null);
 
@@ -1518,16 +1886,30 @@ export default function AdminPanel() {
     finally { load("metrics", false); }
   }, []);
 
-  const fetchUsers = useCallback(async (page = 1, sb = sortBy, sd = sortDir) => {
+  // fetchUsers now accepts an optional filters object (search / plan /
+  // minStudyHours / activeWithin) that's forwarded to the backend as query
+  // params, so search & filtering work across ALL users, not just the
+  // currently-loaded page.
+  const fetchUsers = useCallback(async (page = 1, sb = sortBy, sd = sortDir, fl = userFilters) => {
     load("users", true);
     try {
-      const d = await adminFetch(`/users?page=${page}&limit=20&sort=${sb}&dir=${sd}`);
+      const params = new URLSearchParams({ page, limit: 20, sort: sb, dir: sd });
+      if (fl.search?.trim()) params.set("search", fl.search.trim());
+      if (fl.plan && fl.plan !== "all") params.set("plan", fl.plan);
+      if (fl.minStudyHours) params.set("minStudyHours", fl.minStudyHours);
+      if (fl.activeWithin && fl.activeWithin !== "any") params.set("activeWithin", fl.activeWithin);
+      const d = await adminFetch(`/users?${params.toString()}`);
       setUsers(d.users || []);
       setUsersTotal(d.total || 0);
       setUserPage(page);
     } catch (e) { notify(e.message, "error"); }
     finally { load("users", false); }
-  }, [sortBy, sortDir]);
+  }, [sortBy, sortDir, userFilters]);
+
+  const handleUserFiltersChange = useCallback((next) => {
+    setUserFilters(next);
+    fetchUsers(1, sortBy, sortDir, next);
+  }, [fetchUsers, sortBy, sortDir]);
 
   const fetchAnalytics = useCallback(async () => {
     load("analytics", true);
@@ -1637,6 +2019,38 @@ const fetchFeedback = useCallback(async () => {
   } catch (e) { notify(e.message, "error"); }
   finally { load("feedback", false); }
 }, []);
+
+const handleDeleteFeedback = useCallback(async (feedbackId) => {
+  const token = localStorage.getItem("upsc_token");
+  const headers = {
+    "Content-Type": "application/json",
+    Authorization: token ? `Bearer ${token}` : "",
+  };
+  try {
+    const res = await fetch(`${BASE}/feedback/admin/${feedbackId}`, { method: "DELETE", headers });
+    const data = await res.json();
+    if (!res.ok || !data.success) throw new Error(data.error || `HTTP ${res.status}`);
+    setFeedbackList((prev) => prev.filter((fb) => fb.id !== feedbackId));
+    setFeedbackStats((prev) => (prev ? { ...prev, total: Math.max(0, (prev.total || 1) - 1) } : prev));
+    notify("Feedback deleted.");
+  } catch (e) {
+    notify(e.message, "error");
+  }
+}, []);
+
+  // Premium tab: reuses /admin/users with plan=premium (no separate backend
+  // endpoint needed) — pulled at a high limit since premium users are
+  // typically a small slice of the base.
+  const fetchPremium = useCallback(async () => {
+    load("premium", true);
+    try {
+      const d = await adminFetch("/users?page=1&limit=500&sort=engagement_score&dir=desc&plan=premium");
+      setPremiumUsers(d.users || []);
+      setPremiumTotal(d.total || 0);
+    } catch (e) { notify(e.message, "error"); }
+    finally { load("premium", false); }
+  }, []);
+
   // ── Tab-driven lazy loading ────────────────────────────────────────────────
   useEffect(() => {
     fetchMetrics();
@@ -1652,6 +2066,7 @@ const fetchFeedback = useCallback(async () => {
     if (tab === "segments" && segments === null) fetchSegments();
     if (tab === "discovery" && discovery === null) fetchDiscovery();
     if (tab === "feedback" && feedbackStats === null) fetchFeedback();
+    if (tab === "premium" && premiumUsers === null) fetchPremium();
     // insights already loaded
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tab]);
@@ -1661,8 +2076,8 @@ const fetchFeedback = useCallback(async () => {
     const newDir = sortBy === col && sortDir === "desc" ? "asc" : "desc";
     setSortBy(col);
     setSortDir(newDir);
-    fetchUsers(1, col, newDir);
-  }, [sortBy, sortDir, fetchUsers]);
+    fetchUsers(1, col, newDir, userFilters);
+  }, [sortBy, sortDir, fetchUsers, userFilters]);
 
   const handleDelete = useCallback(async (userId) => {
     try {
@@ -1690,6 +2105,11 @@ const fetchFeedback = useCallback(async () => {
           }
         : u
       ));
+      setPremiumUsers(prev => prev
+        ? (makePremium
+            ? prev.map(u => u.id === userId ? { ...u, ...d.user } : u)
+            : prev.filter(u => u.id !== userId))
+        : prev);
       notify(makePremium ? "User promoted to Premium." : "Premium access revoked.");
     } catch (e) {
       notify(e.message, "error");
@@ -1735,6 +2155,7 @@ const fetchFeedback = useCallback(async () => {
     { id: "feedback", label: "Feedback", icon: MessageCircle },
     { id: "study",    label: "Study",    icon: BookOpen },
     { id: "email",    label: "Email",    icon: Mail },
+    { id: "premium",  label: "Premium",  icon: Crown },
   ];
 
   return (
@@ -1798,13 +2219,15 @@ const fetchFeedback = useCallback(async () => {
             usersTotal={usersTotal}
             userPage={userPage}
             loading={loading.users}
-            onPageChange={(p) => fetchUsers(p, sortBy, sortDir)}
+            onPageChange={(p) => fetchUsers(p, sortBy, sortDir, userFilters)}
             onSortChange={handleSort}
             sortBy={sortBy}
             sortDir={sortDir}
             onDelete={handleDelete}
             onTogglePremium={handleTogglePremium}
             onUserClick={openProfile}
+            filters={userFilters}
+            onFiltersChange={handleUserFiltersChange}
           />
         )}
         {tab === "analytics" && (
@@ -1846,10 +2269,20 @@ const fetchFeedback = useCallback(async () => {
             feedbackList={feedbackList}
             loading={loading.feedback}
             onRefresh={fetchFeedback}
+            onDelete={handleDeleteFeedback}
           />
         )}
         {tab === "study" && <AdminStudyAnalytics />}
         {tab === "email" && <PowerUserEmailer />}
+        {tab === "premium" && (
+          <PremiumTab
+            premiumUsers={premiumUsers}
+            premiumTotal={premiumTotal}
+            loading={loading.premium}
+            onRefresh={fetchPremium}
+            onTogglePremium={handleTogglePremium}
+          />
+        )}
       </TabErrorBoundary>
       {profileUserId && (
         <UserProfileModal userId={profileUserId} onClose={closeProfile} />

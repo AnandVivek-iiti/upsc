@@ -9,6 +9,7 @@ const signToken = (id) =>
   });
 
 const PREMIUM_TRIAL_DAYS = parseInt(process.env.PREMIUM_TRIAL_DAYS, 10) || 7;
+const REFERRAL_BONUS_DAYS = parseInt(process.env.REFERRAL_BONUS_DAYS, 10) || 7;
 
 function trialExpiry(from = new Date()) {
   const d = new Date(from);
@@ -16,7 +17,38 @@ function trialExpiry(from = new Date()) {
   return d;
 }
 
-// ─── Helper - shapes the user object returned in every auth response ──────────
+async function applyReferralBonus(rawCode, newUser) {
+  if (!rawCode || typeof rawCode !== "string") return { applied: false };
+
+  const code = rawCode.trim().toUpperCase();
+  if (!code) return { applied: false };
+
+  const referrer = await User.findOne({ where: { referral_code: code } });
+
+  if (!referrer || referrer.id === newUser.id) return { applied: false };
+
+  const isActive = referrer.hasActivePremium();
+  const isPaying = isActive && (referrer.subscription_source === "razorpay" || referrer.subscription_source === "admin_grant");
+
+  const base = isActive && referrer.subscription_expires_at
+    ? new Date(referrer.subscription_expires_at)
+    : new Date();
+  const newExpiry = new Date(base);
+  newExpiry.setDate(newExpiry.getDate() + REFERRAL_BONUS_DAYS);
+
+  referrer.subscription_expires_at = newExpiry;
+  if (!isPaying) {
+    referrer.subscription_tier = "premium";
+    referrer.subscription_source = "referral";
+  }
+  referrer.referral_count = (referrer.referral_count || 0) + 1;
+  await referrer.save();
+
+  newUser.referred_by = referrer.id;
+  await newUser.save();
+
+  return { applied: true };
+}
 const formatUser = (user) => ({
   id: user.id,
   name: user.name,
@@ -41,12 +73,16 @@ const formatUser = (user) => ({
         ? user.hasActivePremium()
         : false,
   },
+  referral: {
+    code: user.referral_code || null,
+    referredCount: user.referral_count || 0,
+  },
 });
 
 // ─── POST /api/auth/register ──────────────────────────────────────────────────
 const register = async (req, res, next) => {
   try {
-    const { name, email, password, target_year, daily_target_hours, examDate } = req.body;
+    const { name, email, password, target_year, daily_target_hours, examDate, referral_code } = req.body;
 
     const errors = {};
     if (!name?.trim())  errors.name     = "Name is required.";
@@ -101,6 +137,11 @@ const register = async (req, res, next) => {
     // ── Seed UserData row for this user ───────────────────────────────────────
     await UserData.seedForUser(user.id);
     trackEvent(user.id, "day_return").catch(() => {}); // day-0 engagement signal
+
+    // ── Referral bonus - best-effort, never blocks account creation ──────────
+    await applyReferralBonus(referral_code, user).catch((e) => {
+      console.warn("[register] referral bonus failed:", e.message);
+    });
 
     const token = signToken(user.id);
     res.status(201).json({ success: true, token, user: formatUser(user) });
@@ -159,7 +200,7 @@ const login = async (req, res, next) => {
 // Verifies it with Google's tokeninfo endpoint - no extra npm package needed.
 const googleAuth = async (req, res, next) => {
   try {
-    const { id_token } = req.body;
+    const { id_token, referral_code } = req.body;
     if (!id_token) {
       return res.status(400).json({ success: false, error: "Google id_token is required." });
     }
@@ -223,6 +264,12 @@ const googleAuth = async (req, res, next) => {
         // Seed UserData for new Google user
         await UserData.seedForUser(user.id);
         trackEvent(user.id, "day_return").catch(() => {}); // day-0 engagement signal
+
+        // ── Referral bonus - only applies to brand-new accounts, never to an
+        // existing user just linking/logging in via Google ────────────────────
+        await applyReferralBonus(referral_code, user).catch((e) => {
+          console.warn("[googleAuth] referral bonus failed:", e.message);
+        });
       }
     } else if (!user.avatar && avatar) {
       // Update avatar if missing
@@ -325,7 +372,7 @@ const changePassword = async (req, res, next) => {
       });
     }
 
-    user.password = newPassword; // beforeSave hook hashes it
+    user.password = newPassword;
     await user.save();
 
     res.json({ success: true, message: "Password updated successfully." });

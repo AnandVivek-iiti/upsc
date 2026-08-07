@@ -664,6 +664,38 @@ const planFilter =
       req.query.plan === "premium" ? `AND u.subscription_tier = 'premium'` :
       req.query.plan === "free"    ? `AND u.subscription_tier = 'free'`    :
       "";
+
+    // ── Search (name / email) ─────────────────────────────────────────────
+    // Uses a bound replacement (:search) rather than string interpolation to
+    // avoid SQL injection via the search box.
+    const searchTerm = (req.query.search || "").trim();
+    const searchFilter = searchTerm ? `AND (u.name ILIKE :search OR u.email ILIKE :search)` : "";
+
+    // ── Min study hours ────────────────────────────────────────────────────
+    const minStudyHoursRaw = parseFloat(req.query.minStudyHours);
+    const minStudyHoursFilter = !isNaN(minStudyHoursRaw) && minStudyHoursRaw > 0
+      ? `AND COALESCE(daily.total_hours, 0) >= :minStudyHours`
+      : "";
+
+    // ── Last active filter ────────────────────────────────────────────────
+    // Either "recently active within N days" (activeWithin=N) or
+    // "inactive for N+ days" (activeWithin=staleN), e.g. "stale7", "stale30".
+    let activeWithinFilter = "";
+    const activeWithinRaw = req.query.activeWithin;
+    if (activeWithinRaw) {
+      if (activeWithinRaw.startsWith("stale")) {
+        const staleDays = parseInt(activeWithinRaw.replace("stale", ""), 10);
+        if (!isNaN(staleDays) && staleDays > 0) {
+          activeWithinFilter = `AND (ev.last_active IS NULL OR ev.last_active < NOW() - INTERVAL '${staleDays} days')`;
+        }
+      } else {
+        const recentDays = parseInt(activeWithinRaw, 10);
+        if (!isNaN(recentDays) && recentDays > 0) {
+          activeWithinFilter = `AND ev.last_active >= NOW() - INTERVAL '${recentDays} days'`;
+        }
+      }
+    }
+
     const rows = await sequelize.query(
       `WITH ${SESSIONIZED_CTE},
        session_counts AS (
@@ -693,7 +725,8 @@ const planFilter =
            LEAST(COALESCE(ev.features_used,0) / ${ALL_FEATURES.length}.0, 1) * 100 * 0.15 +
            LEAST(COALESCE(sc.sessions,0) / 20.0, 1) * 100 * 0.10 +
            LEAST(COALESCE(ev.answers_evaluated,0) / 20.0, 1) * 100 * 0.10
-         )::numeric(10,2) AS engagement_score
+         )::numeric(10,2) AS engagement_score,
+         COUNT(*) OVER()                                  AS full_count
        FROM "users" u
        LEFT JOIN (
          SELECT
@@ -717,19 +750,27 @@ const planFilter =
        ) daily ON daily.user_id = u.id
        LEFT JOIN session_counts sc ON sc.user_id = u.id
        LEFT JOIN returners r ON r.user_id = u.id
-       WHERE u.role = 'user' AND ${EXCL_USER_COND} ${planFilter}
+       WHERE u.role = 'user' AND ${EXCL_USER_COND} ${planFilter} ${searchFilter} ${minStudyHoursFilter} ${activeWithinFilter}
 
        ORDER BY ${sortCol} ${dir}
        LIMIT :limit OFFSET :offset`,
-      { replacements: { limit, offset }, type: QueryTypes.SELECT }
+      {
+        replacements: {
+          limit, offset,
+          ...(searchTerm ? { search: `%${searchTerm}%` } : {}),
+          ...(minStudyHoursFilter ? { minStudyHours: minStudyHoursRaw } : {}),
+        },
+        type: QueryTypes.SELECT,
+      }
     );
 
-    const [{ total }] = await sequelize.query(
-      `SELECT COUNT(*) AS total FROM "users" WHERE role = 'user' AND ${EXCL_NAME_COND} ${planFilter}`,
-      { type: QueryTypes.SELECT }
-    );
+    // full_count comes back on every row (window function) — pull it from
+    // the first row rather than firing a second COUNT(*) query, so the
+    // total always matches exactly what was filtered above.
+    const total = rows.length > 0 ? parseInt(rows[0].full_count, 10) : 0;
+    const users = rows.map(({ full_count, ...rest }) => rest);
 
-    res.json({ success: true, total: parseInt(total), page, pages: Math.ceil(parseInt(total) / limit), users: rows });
+    res.json({ success: true, total, page, pages: Math.ceil(total / limit), users });
   } catch (err) {
     next(err);
   }

@@ -21,7 +21,7 @@ const PLANS = [
     perks: [
       "Everything in Monthly",
       "Works out to ~₹167/month",
-      "2 months free vs. paying monthly",
+    
     ],
     bestValue: true,
   },

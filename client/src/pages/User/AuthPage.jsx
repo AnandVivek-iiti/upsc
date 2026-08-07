@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import {
   Eye, EyeOff, ArrowRight, Loader2, AlertCircle,
-  CheckCircle2, User, Mail, Lock, Target, Clock,
+  CheckCircle2, User, Mail, Lock, Target, Clock, Gift,
 } from "lucide-react";
 
 // ─── Google Icon SVG ──────────────────────────────────────────────────────────
@@ -180,7 +180,24 @@ export default function AuthPage({ onAuthSuccess, onBack }) {
     target_year: String(new Date().getFullYear() + 1),
     daily_target_hours: "8",
     examDate: "",
+    referralCode: "",
   });
+
+  // ── Referral code prefill ────────────────────────────────────────────────
+  // Someone landing on /?ref=CODE (a shared referral link) gets it auto-filled
+  // and switched straight into the signup tab; they can still edit or clear it.
+  useEffect(() => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const ref = params.get("ref");
+      if (ref) {
+        setSignupForm((f) => ({ ...f, referralCode: ref.trim().toUpperCase() }));
+        setMode("signup");
+      }
+    } catch {
+      /* URLSearchParams unavailable - ignore, referral field just stays empty */
+    }
+  }, []);
 
   const BASE = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
   const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || "";
@@ -200,7 +217,12 @@ export default function AuthPage({ onAuthSuccess, onBack }) {
       const res = await fetch(`${BASE}/auth/google`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id_token: response.credential }),
+        body: JSON.stringify({
+          id_token: response.credential,
+          // Harmless to send even during login/an existing account - the
+          // backend only ever applies it when creating a brand-new user.
+          ...(signupForm.referralCode.trim() ? { referral_code: signupForm.referralCode.trim() } : {}),
+        }),
       });
       const data = await res.json();
       if (!res.ok || !data.success) throw new Error(data.error || "Google sign-in failed");
@@ -345,6 +367,7 @@ export default function AuthPage({ onAuthSuccess, onBack }) {
           target_year: Number(signupForm.target_year),
           daily_target_hours: Number(signupForm.daily_target_hours),
           examDate: signupForm.examDate,
+          ...(signupForm.referralCode.trim() ? { referral_code: signupForm.referralCode.trim() } : {}),
         }),
       });
       const data = await res.json();
@@ -560,6 +583,14 @@ export default function AuthPage({ onAuthSuccess, onBack }) {
             <Field label="Confirm password" type="password" value={signupForm.confirmPassword}
               onChange={sf("confirmPassword")} error={fieldErrors.confirmPassword}
               icon={Lock} autoComplete="new-password" />
+
+            <Field
+              label="Referral code (optional)"
+              value={signupForm.referralCode}
+              onChange={(e) => setSignupForm((f) => ({ ...f, referralCode: e.target.value.toUpperCase() }))}
+              icon={Gift}
+              hint={signupForm.referralCode ? "Applied at signup - thanks for the invite!" : "Got one from a friend? Enter it here"}
+            />
 
             <button onClick={handleSignupNext}
               className="btn-primary w-full flex items-center justify-center gap-2 mt-2 touch-manipulation">

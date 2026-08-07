@@ -61,13 +61,11 @@ exports.getAdminStats = async (req, res) => {
       order: [[sequelize.fn("AVG", sequelize.col("rating")), "DESC"]],
       raw: true,
     });
-  const mostRequested = [
-      { feature: "Daily Revision Reminders", count: 12 },
-      { feature: "Voice Notes", count: 8 },
-      { feature: "More PYQs", count: 7 },
-      { feature: "Offline Mode", count: 5 },
-      { feature: "Mobile App", count: 4 },
-    ]; // this could be computed later
+    // "Most requested features" has no dedicated field to aggregate yet —
+    // feature requests currently live inside free-text feedbackText, not a
+    // structured column. Returning an empty list (rather than fabricated
+    // numbers) until there's a real field/tagging step to compute this from.
+    const mostRequested = [];
 
     res.json({
       success: true,
@@ -86,7 +84,24 @@ exports.getAdminStats = async (req, res) => {
   }
 };
 
-// ─── Admin list (with filters) ─────────────────────────────────────────────
+// ─── Admin delete ───────────────────────────────────────────────────────────
+exports.deleteFeedback = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const feedback = await Feedback.findByPk(id);
+    if (!feedback) {
+      return res.status(404).json({ success: false, error: "Feedback not found." });
+    }
+
+    await feedback.destroy();
+
+    res.json({ success: true, id });
+  } catch (error) {
+    console.error("Admin feedback delete error:", error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
 exports.getAdminList = async (req, res) => {
   try {
     const { page = 1, limit = 20, feature, rating, sort = "createdAt:desc" } = req.query;

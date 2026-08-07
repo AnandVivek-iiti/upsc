@@ -72,6 +72,17 @@ function getPDFAttachment() {
   return null;
 }
 
+// ─── Referral links ──────────────────────────────────────────────────────────
+// Mirrors REFERRAL_BONUS_DAYS in authController.js and REFERRAL_LINK_BASE in
+// ProfilePage.jsx — keep all three in sync if either changes.
+const REFERRAL_BONUS_DAYS = parseInt(process.env.REFERRAL_BONUS_DAYS, 10) || 7;
+const REFERRAL_LINK_BASE  = "https://upsc-by-iitian.onrender.com";
+function buildReferralLink(code) {
+  return code ? `${REFERRAL_LINK_BASE}/?ref=${code}` : null;
+}
+// Segments whose email includes the recipient's personal referral link.
+const REFERRAL_LINK_SEGMENTS = new Set(["new", "referral"]);
+
 // ─── Segment copy ──────────────────────────────────────────────────────────────
 const SEGMENT_COPY = {
   new: {
@@ -143,6 +154,23 @@ const SEGMENT_COPY = {
     closing2: "Thank you for being part of this.",
     signOff: "Regards,",
   },
+
+  referral: {
+    subject: "You automatically get free Premium for referrals",
+    accent: "#B4740E",
+    accentBg: "#FCEFDA",
+    eyebrow: "Refer & Earn",
+    greetingLine: "Quick one — if you know other UPSC aspirants, you can automatically get free Premium just by sharing your link.",
+    intro: "No milestones to hit and nothing to claim — the moment someone signs up with your link, you get it. Here's how it works:",
+    steps: [
+      { title: "Share your link", body: "Send your personal referral link below to friends, classmates, or your prep group — WhatsApp, Telegram, wherever your fellow aspirants hang out." },
+      { title: "They sign up", body: "As soon as they create their account using your link, it's counted — no extra steps for either of you." },
+      { title: `You automatically get ${REFERRAL_BONUS_DAYS} days of Premium`, body: "Every single referral instantly adds Premium days to your account — AI Mentor, unlimited evaluations, everything. No cap on how many friends you invite." },
+    ],
+    closing: "Every referral counts right away — there's no waiting for a milestone.",
+    closing2: "The more aspirants studying smart together, the better this gets for everyone — thank you for helping spread the word.",
+    signOff: "Cheering you on,",
+  },
 };
 
 const VALID_SEGMENTS = Object.keys(SEGMENT_COPY);
@@ -153,10 +181,13 @@ function resolveSegment(segment) {
 
 // ─── HTML builder ──────────────────────────────────────────────────────────────
 // logoSrc: base64 data URI (Resend) | "cid:upsclogo@mentor" (Nodemailer) | null
-function buildEmailHTML(userName, segment = "power", logoSrc = null) {
+// referralLink: the recipient's personal referral link, or null - only rendered
+// for segments in REFERRAL_LINK_SEGMENTS (see buildReferralBoxHTML below).
+function buildEmailHTML(userName, segment = "power", logoSrc = null, referralLink = null) {
   const firstName = (userName || "").split(" ")[0] || "there";
   const name = firstName.charAt(0).toUpperCase() + firstName.slice(1);
-  const c = SEGMENT_COPY[resolveSegment(segment)];
+  const resolvedSeg = resolveSegment(segment);
+  const c = SEGMENT_COPY[resolvedSeg];
 
   const logoImg = logoSrc
     ? `<img src="${logoSrc}" alt="UPSC Mentor" width="56" height="56"
@@ -170,6 +201,16 @@ function buildEmailHTML(userName, segment = "power", logoSrc = null) {
         <p style="margin:0 0 14px;font-size:13px;color:#374151;line-height:1.7;">${s.body}</p>`,
     )
     .join("");
+
+  const referralBoxHTML =
+    referralLink && REFERRAL_LINK_SEGMENTS.has(resolvedSeg)
+      ? `
+              <div style="background:#FCEFDA;border:1px solid #B4740E33;border-radius:12px;padding:18px 20px;margin-bottom:24px;text-align:center;">
+                <p style="margin:0 0 6px;font-size:11px;font-weight:700;color:#B4740E;text-transform:uppercase;letter-spacing:1px;">Your referral link</p>
+                <p style="margin:0 0 8px;font-size:12px;color:#374151;line-height:1.6;">You automatically get ${REFERRAL_BONUS_DAYS} days of Premium the moment someone signs up with it — no milestones.</p>
+                <a href="${referralLink}" target="_blank" style="font-size:13px;color:#0f2044;font-weight:600;word-break:break-all;text-decoration:underline;">${referralLink}</a>
+              </div>`
+      : "";
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -208,12 +249,13 @@ function buildEmailHTML(userName, segment = "power", logoSrc = null) {
               <div style="background:${c.accentBg};border:1px solid ${c.accent}22;border-radius:12px;padding:20px 24px;margin-bottom:24px;">
                 ${stepsHTML}
               </div>
+              ${referralBoxHTML}
 
               <p style="margin:0 0 12px;font-size:14px;color:#374151;line-height:1.8;">${c.closing}</p>
               ${c.closing2 ? `<p style="margin:0 0 24px;font-size:14px;color:#374151;line-height:1.8;">${c.closing2}</p>` : ""}
 
               <div style="text-align:center;margin:8px 0 8px;">
-                <a href="https://www.upscbyiitians.in" target="_blank"
+                <a href="https://upsc-by-iitian.onrender.com" target="_blank"
                   style="display:inline-block;background:linear-gradient(135deg,#c9a227,#e8c96d);color:#0f2044;
                          font-size:13px;font-weight:700;padding:11px 28px;border-radius:8px;
                          text-decoration:none;letter-spacing:0.4px;">
@@ -232,7 +274,7 @@ function buildEmailHTML(userName, segment = "power", logoSrc = null) {
               <p style="margin:0 0 2px;font-size:12px;color:#6b7280;">Third Year | Mechanical Engineering</p>
               <p style="margin:0 0 2px;font-size:12px;color:#6b7280;">Indian Institute of Technology Indore</p>
               <p style="margin:0 0 8px;font-size:12px;color:#6b7280;">📞 9675109428</p>
-              <a href="https://www.upscbyiitians.in" style="font-size:12px;color:#c9a227;text-decoration:none;">🔗 upscbyiitians.in</a>
+              <a href="https://upsc-by-iitian.onrender.com" style="font-size:12px;color:#c9a227;text-decoration:none;">🔗 upsc-by-iitian.onrender.com</a>
             </td>
           </tr>
 
@@ -255,11 +297,16 @@ function buildEmailHTML(userName, segment = "power", logoSrc = null) {
 }
 
 // ─── Plain-text fallback ───────────────────────────────────────────────────────
-function buildEmailText(userName, segment = "power") {
+function buildEmailText(userName, segment = "power", referralLink = null) {
   const firstName = (userName || "").split(" ")[0] || "there";
   const name = firstName.charAt(0).toUpperCase() + firstName.slice(1);
-  const c = SEGMENT_COPY[resolveSegment(segment)];
+  const resolvedSeg = resolveSegment(segment);
+  const c = SEGMENT_COPY[resolvedSeg];
   const stepsText = c.steps.map((s) => `→ ${s.title}\n   ${s.body}`).join("\n\n");
+  const referralText =
+    referralLink && REFERRAL_LINK_SEGMENTS.has(resolvedSeg)
+      ? `\nYour referral link (you automatically get ${REFERRAL_BONUS_DAYS} days of Premium per signup): ${referralLink}\n`
+      : "";
 
   return `Hi ${name},
 
@@ -268,7 +315,7 @@ ${c.greetingLine}
 ${c.intro}
 
 ${stepsText}
-
+${referralText}
 ${c.closing}
 ${c.closing2 ? `\n${c.closing2}\n` : ""}
 ${c.signOff}
@@ -277,7 +324,7 @@ Roll No.: 240003006
 Third Year | Mechanical Engineering
 Indian Institute of Technology Indore
 📞 9675109428
-🔗 https://www.upscbyiitians.in`;
+🔗 https://upsc-by-iitian.onrender.com`;
 }
 
 // ─── Console logger ────────────────────────────────────────────────────────────
@@ -302,9 +349,10 @@ function logSend({ provider, status, segment, name, email, error }) {
 //                   Only works after Resend verifies your domain in their dashboard.
 //   SENDER_EMAIL  → real Gmail used for SMTP auth in Nodemailer (e.g. me240003006@iiti.ac.in)
 //                   Must stay a Gmail address — never set to a custom domain.
-async function sendEmail({ toEmail, toName, subject, segment }) {
-  const resolvedSeg = resolveSegment(segment);
-  const text        = buildEmailText(toName, resolvedSeg);
+async function sendEmail({ toEmail, toName, subject, segment, referralCode = null }) {
+  const resolvedSeg   = resolveSegment(segment);
+  const referralLink  = buildReferralLink(referralCode);
+  const text          = buildEmailText(toName, resolvedSeg, referralLink);
 
   // Resend uses the verified custom domain address.
   const resendFrom    = process.env.RESEND_FROM   || "anand@send.upscbyiitians.in";
@@ -322,7 +370,7 @@ async function sendEmail({ toEmail, toName, subject, segment }) {
   if (process.env.RESEND_API_KEY) {
     try {
       const logoDataURI = getLogoBase64DataURI();
-      const html = buildEmailHTML(toName, resolvedSeg, logoDataURI);
+      const html = buildEmailHTML(toName, resolvedSeg, logoDataURI, referralLink);
 
       // PDF_ATTACH: build Resend attachments array — remove the block below to drop the PDF.
       const attachments = pdfAttachment
@@ -354,7 +402,7 @@ async function sendEmail({ toEmail, toName, subject, segment }) {
 
   // ── Attempt 2: Nodemailer (Gmail SMTP fallback) ────────────────────────────
   const logoAttachment = getLogoAttachment();
-  const html = buildEmailHTML(toName, resolvedSeg, logoAttachment ? "cid:upsclogo@mentor" : null);
+  const html = buildEmailHTML(toName, resolvedSeg, logoAttachment ? "cid:upsclogo@mentor" : null, referralLink);
 
   // PDF_ATTACH: build Nodemailer attachments array — remove the pdfAttachment spread below to drop the PDF.
   const nmAttachments = [
@@ -408,8 +456,9 @@ async function sendBulkEmails(targets, resolvedSeg, subject) {
     const resendLabel   = `"Anand Vivek | UPSC Mentor" <${resendFrom}>`;
 
     const buildPayload = (user) => {
-      const html        = buildEmailHTML(user.name, resolvedSeg, logoDataURI);
-      const text        = buildEmailText(user.name, resolvedSeg);
+      const referralLink = buildReferralLink(user.referral_code);
+      const html        = buildEmailHTML(user.name, resolvedSeg, logoDataURI, referralLink);
+      const text        = buildEmailText(user.name, resolvedSeg, referralLink);
       const attachments = pdfAttachment
         ? [{ filename: pdfAttachment.filename, content: fs.readFileSync(pdfAttachment.path) }]
         : [];
@@ -467,8 +516,9 @@ async function sendBulkEmails(targets, resolvedSeg, subject) {
 
   const CONCURRENCY = 5; // safe ceiling for Gmail SMTP
   const settled = await runConcurrent(nmTargets, CONCURRENCY, async (user) => {
-    const html = buildEmailHTML(user.name, resolvedSeg, logoAttachment ? "cid:upsclogo@mentor" : null);
-    const text = buildEmailText(user.name, resolvedSeg);
+    const referralLink = buildReferralLink(user.referral_code);
+    const html = buildEmailHTML(user.name, resolvedSeg, logoAttachment ? "cid:upsclogo@mentor" : null, referralLink);
+    const text = buildEmailText(user.name, resolvedSeg, referralLink);
     try {
       await transporter.sendMail({
         from: gmailLabel,
@@ -499,10 +549,19 @@ async function sendBulkEmails(targets, resolvedSeg, subject) {
 const EXCL_NAMES = ["admin", "anand vivek"];
 const EXCL_SQL   = EXCL_NAMES.map((n) => `'${n}'`).join(", ");
 
+// ─── Segment thresholds ─────────────────────────────────────────────────────
+// All windows in days. Tune here rather than hunting through the SQL below.
+const NEW_USER_WINDOW_DAYS   = 7;   // "new" segment: signed up this recently
+const IDLE_MIN_AGE_DAYS      = 14;  // "idle" segment: account must be at least this old...
+const IDLE_INACTIVE_DAYS     = 14;  // ...and have no UserEvents in this recent a window
+const FEATURE_MIN_DISTINCT   = 3;   // "feature" segment: used at least this many distinct features
+const REFERRAL_TENURE_DAYS   = 30;  // "referral" segment: "new user plus 1-month-ago users"
+
 // ─── Helper: fetch power users from DB ────────────────────────────────────────
+// >=3 distinct active days AND active within the last 7 days.
 async function fetchPowerUsers() {
   return sequelize.query(
-    `SELECT u.id, u.name, u.email
+    `SELECT u.id, u.name, u.email, u.referral_code
      FROM "users" u
      WHERE u.role = 'user'
        AND LOWER(u.name) NOT IN (${EXCL_SQL})
@@ -521,11 +580,79 @@ async function fetchPowerUsers() {
   );
 }
 
-// ─── GET /api/admin/email/power-users ─────────────────────────────────────────
+// ─── Helper: fetch brand-new users (matches the "new" welcome-email copy) ────
+async function fetchNewUsers() {
+  return sequelize.query(
+    `SELECT u.id, u.name, u.email, u.referral_code
+     FROM "users" u
+     WHERE u.role = 'user'
+       AND LOWER(u.name) NOT IN (${EXCL_SQL})
+       AND u.created_at >= NOW() - INTERVAL '${NEW_USER_WINDOW_DAYS} days'
+     ORDER BY u.created_at DESC`,
+    { type: QueryTypes.SELECT },
+  );
+}
+async function fetchIdleUsers() {
+  return sequelize.query(
+    `SELECT u.id, u.name, u.email, u.referral_code
+     FROM "users" u
+     WHERE u.role = 'user'
+       AND LOWER(u.name) NOT IN (${EXCL_SQL})
+       AND u.created_at <= NOW() - INTERVAL '${IDLE_MIN_AGE_DAYS} days'
+       AND u.id NOT IN (
+         SELECT user_id FROM "UserEvents"
+         WHERE created_at >= NOW() - INTERVAL '${IDLE_INACTIVE_DAYS} days'
+       )
+     ORDER BY u.created_at ASC`,
+    { type: QueryTypes.SELECT },
+  );
+}
+async function fetchFeatureUsers() {
+  return sequelize.query(
+    `SELECT u.id, u.name, u.email, u.referral_code
+     FROM "users" u
+     WHERE u.role = 'user'
+       AND LOWER(u.name) NOT IN (${EXCL_SQL})
+       AND u.id IN (
+         SELECT user_id FROM "UserEvents"
+         WHERE feature_name IS NOT NULL
+         GROUP BY user_id
+         HAVING COUNT(DISTINCT feature_name) >= ${FEATURE_MIN_DISTINCT}
+       )
+     ORDER BY u.name`,
+    { type: QueryTypes.SELECT },
+  );
+}
+async function fetchReferralCandidates() {
+  return sequelize.query(
+    `SELECT u.id, u.name, u.email, u.referral_code
+     FROM "users" u
+     WHERE u.role = 'user'
+       AND LOWER(u.name) NOT IN (${EXCL_SQL})
+       AND (
+         u.created_at >= NOW() - INTERVAL '${NEW_USER_WINDOW_DAYS} days'
+         OR u.created_at <= NOW() - INTERVAL '${REFERRAL_TENURE_DAYS} days'
+       )
+     ORDER BY u.created_at DESC`,
+    { type: QueryTypes.SELECT },
+  );
+}
+async function fetchTargetsForSegment(segment) {
+  switch (resolveSegment(segment)) {
+    case "new":      return fetchNewUsers();
+    case "power":    return fetchPowerUsers();
+    case "idle":     return fetchIdleUsers();
+    case "feature":  return fetchFeatureUsers();
+    case "referral": return fetchReferralCandidates();
+    default:         return fetchPowerUsers();
+  }
+}
+
 const getEmailTargets = async (req, res, next) => {
   try {
-    const users = await fetchPowerUsers();
-    res.json({ success: true, users, count: users.length });
+    const segment = resolveSegment(req.query.segment);
+    const users   = await fetchTargetsForSegment(segment);
+    res.json({ success: true, segment, users, count: users.length });
   } catch (err) {
     next(err);
   }
@@ -541,7 +668,7 @@ const sendPowerUserEmails = async (req, res, next) => {
     let targets;
     if (Array.isArray(user_ids) && user_ids.length > 0) {
       targets = await sequelize.query(
-        `SELECT u.id, u.name, u.email
+        `SELECT u.id, u.name, u.email, u.referral_code
          FROM "users" u
          WHERE u.id IN (:ids)
            AND u.role = 'user'
@@ -550,7 +677,9 @@ const sendPowerUserEmails = async (req, res, next) => {
         { type: QueryTypes.SELECT, replacements: { ids: user_ids } },
       );
     } else {
-      targets = await fetchPowerUsers();
+      // Same segment-aware dispatcher as the GET preview above, so what the
+      // admin previewed is exactly who gets emailed.
+      targets = await fetchTargetsForSegment(resolvedSeg);
     }
 
     if (targets.length === 0) {
@@ -585,7 +714,7 @@ const sendSingleUserEmail = async (req, res, next) => {
     const subject     = SEGMENT_COPY[resolvedSeg].subject;
 
     const rows = await sequelize.query(
-      `SELECT u.id, u.name, u.email
+      `SELECT u.id, u.name, u.email, u.referral_code
        FROM "users" u
        WHERE u.id = :uid
          AND u.role = 'user'
@@ -598,7 +727,13 @@ const sendSingleUserEmail = async (req, res, next) => {
     }
 
     const user = rows[0];
-    const { provider } = await sendEmail({ toEmail: user.email, toName: user.name, subject, segment: resolvedSeg });
+    const { provider } = await sendEmail({
+      toEmail: user.email,
+      toName: user.name,
+      subject,
+      segment: resolvedSeg,
+      referralCode: user.referral_code,
+    });
 
     res.json({
       success: true,

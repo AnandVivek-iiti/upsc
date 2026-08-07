@@ -7,7 +7,7 @@ import {
   Mail, Send, Users, CheckCircle2, XCircle,
   Loader2, RefreshCw, Eye, ChevronDown, ChevronUp,
   AlertCircle, UserCheck, X, Sparkles, Flame, Clock, Map,
-  Monitor, Server, Zap,
+  Monitor, Server, Zap, Gift,
 } from "lucide-react";
 
 const BASE = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
@@ -26,6 +26,13 @@ async function adminFetch(path, options = {}) {
   if (!res.ok || !data.success) throw new Error(data.error || `HTTP ${res.status}`);
   return data;
 }
+
+// Mirrors REFERRAL_BONUS_DAYS / REFERRAL_LINK_BASE in emailController.js —
+// keep these two in sync with the backend if either changes.
+const REFERRAL_BONUS_DAYS = 7;
+const REFERRAL_LINK_BASE  = "https://upsc-by-iitian.onrender.com";
+// Segments whose preview/email includes the recipient's referral link.
+const REFERRAL_LINK_SEGMENTS = new Set(["new", "referral"]);
 
 const SEGMENTS = {
   new: {
@@ -103,6 +110,25 @@ const SEGMENTS = {
     closing: "Even a short reply makes a real difference.",
     closing2: "Thank you for being part of this.",
   },
+  referral: {
+    label: "Refer & Earn",
+    icon: Gift,
+    accent: "#B4740E",
+    accentBg: "#FCEFDA",
+    eyebrow: "Refer & Earn",
+    desc: `Referral program announcement. Every signup through a personal link instantly credits ${REFERRAL_BONUS_DAYS} days of Premium — no milestones to hit. Sent to brand-new users and users tenured 30+ days.`,
+    subject: "You automatically get free Premium for referrals",
+    signOff: "Cheering you on,",
+    greetingLine: "Quick one — if you know other UPSC aspirants, you can automatically get free Premium just by sharing your link.",
+    intro: "No milestones to hit and nothing to claim — the moment someone signs up with your link, you get it. Here's how it works:",
+    steps: [
+      { title: "Share your link", body: "Send your personal referral link below to friends, classmates, or your prep group — WhatsApp, Telegram, wherever your fellow aspirants hang out." },
+      { title: "They sign up", body: "As soon as they create their account using your link, it's counted — no extra steps for either of you." },
+      { title: `You automatically get ${REFERRAL_BONUS_DAYS} days of Premium`, body: "Every single referral instantly adds Premium days to your account — AI Mentor, unlimited evaluations, everything. No cap on how many friends you invite." },
+    ],
+    closing: "Every referral counts right away — there's no waiting for a milestone.",
+    closing2: "The more aspirants studying smart together, the better this gets for everyone — thank you for helping spread the word.",
+  },
 };
 
 // ─── Build preview HTML (mirrors emailController.js) ─────────────────────────
@@ -118,6 +144,19 @@ function buildPreviewHTML(seg, previewName = "User") {
       <p style="margin:0 0 14px;font-size:13px;color:#374151;line-height:1.7;">${s.body}</p>`
     )
     .join("");
+
+  // Mock code — real sends use the recipient's actual referral_code from the DB.
+  // Only rendered for segments in REFERRAL_LINK_SEGMENTS, same as the backend.
+  const mockCode = (firstName.slice(0, 4) || "demo").toUpperCase() + "7F2";
+  const referralLink = `${REFERRAL_LINK_BASE}/?ref=${mockCode}`;
+  const referralBoxHTML = REFERRAL_LINK_SEGMENTS.has(seg)
+    ? `
+            <div style="background:#FCEFDA;border:1px solid #B4740E33;border-radius:12px;padding:18px 20px;margin-bottom:24px;text-align:center;">
+              <p style="margin:0 0 6px;font-size:11px;font-weight:700;color:#B4740E;text-transform:uppercase;letter-spacing:1px;">Your referral link</p>
+              <p style="margin:0 0 8px;font-size:12px;color:#374151;line-height:1.6;">You automatically get ${REFERRAL_BONUS_DAYS} days of Premium the moment someone signs up with it — no milestones.</p>
+              <a href="${referralLink}" target="_blank" style="font-size:13px;color:#0f2044;font-weight:600;word-break:break-all;text-decoration:underline;">${referralLink}</a>
+            </div>`
+    : "";
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -147,6 +186,7 @@ function buildPreviewHTML(seg, previewName = "User") {
             <div style="background:${c.accentBg};border:1px solid ${c.accent}22;border-radius:12px;padding:18px 20px;margin-bottom:20px;">
               ${stepsHTML}
             </div>
+            ${referralBoxHTML}
             <p style="margin:0 0 10px;font-size:13px;color:#374151;line-height:1.8;">${c.closing}</p>
             ${c.closing2 ? `<p style="margin:0 0 20px;font-size:13px;color:#374151;line-height:1.8;">${c.closing2}</p>` : ""}
             <div style="text-align:center;margin:12px 0 6px;">
@@ -352,7 +392,7 @@ function MiniPreview({ seg, accent, accentBg }) {
 // ─── Main component ───────────────────────────────────────────────────────────
 export default function PowerUserEmailer() {
   const [activeSeg, setActiveSeg]           = useState("new");
-  const [allUsers, setAllUsers]             = useState([]);
+  const [segmentUsers, setSegmentUsers]             = useState([]);
   const [selected, setSelected]             = useState(new Set());
   const [loadingTargets, setLoadingTargets] = useState(false);
   const [sending, setSending]               = useState(false);
@@ -365,31 +405,40 @@ export default function PowerUserEmailer() {
   const [providerToast, setProviderToast]   = useState(null);
 
   const filteredUsers = searchQ.trim()
-    ? allUsers.filter(
+    ? segmentUsers.filter(
         (u) =>
           u.name.toLowerCase().includes(searchQ.toLowerCase()) ||
           u.email.toLowerCase().includes(searchQ.toLowerCase())
       )
-    : allUsers;
+    : segmentUsers;
 
-  // ── Load ALL users once ───────────────────────────────────────────────────
-  const loadAllUsers = useCallback(async () => {
+  // ── Load users for the ACTIVE segment only ────────────────────────────────
+  // Each tab shows just its own eligible recipients (new signups in "new",
+  // 3+ study-day users in "power", new + 30-day-tenured users in "referral",
+  // etc.) via the same segment-aware endpoint the backend uses to decide who
+  // actually gets emailed — so the list an admin sees always matches who a
+  // send will reach, instead of showing every user under every tab.
+  const loadSegmentUsers = useCallback(async (seg) => {
     setLoadingTargets(true);
     setError("");
     try {
-      const data = await adminFetch("/users?page=1&limit=500&sort=name&dir=asc");
-      const users = (data.users || []).map((u) => ({ id: u.id, name: u.name, email: u.email }));
-      setAllUsers(users);
+      const data = await adminFetch(`/email/power-users?segment=${seg}`);
+      const users = (data.users || []).map((u) => ({
+        id: u.id, name: u.name, email: u.email, referral_code: u.referral_code,
+      }));
+      setSegmentUsers(users);
       setSelected(new Set(users.map((u) => u.id)));
       setResults(null);
     } catch (err) {
       setError(err.message);
+      setSegmentUsers([]);
+      setSelected(new Set());
     } finally {
       setLoadingTargets(false);
     }
   }, []);
 
-  useEffect(() => { loadAllUsers(); }, [loadAllUsers]);
+  useEffect(() => { loadSegmentUsers(activeSeg); }, [activeSeg, loadSegmentUsers]);
 
   // ── Segment switch ────────────────────────────────────────────────────────
   function switchSeg(seg) {
@@ -397,7 +446,7 @@ export default function PowerUserEmailer() {
     setSearchQ("");
     setResults(null);
     setError("");
-    setSelected(new Set(allUsers.map((u) => u.id)));
+    // user list + selection reload automatically via the effect above
   }
 
   function toggleUser(id) {
@@ -491,9 +540,9 @@ export default function PowerUserEmailer() {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            {allUsers.length > 0 && (
+            {segmentUsers.length > 0 && (
               <span className="text-[11px] font-mono px-2 py-0.5 rounded-full bg-[#c9a84c]/10 text-[#c9a84c] border border-[#c9a84c]/20">
-                {allUsers.length} users
+                {segmentUsers.length} users
               </span>
             )}
             {expanded ? <ChevronUp size={14} className="text-text-muted" /> : <ChevronDown size={14} className="text-text-muted" />}
@@ -548,10 +597,10 @@ export default function PowerUserEmailer() {
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="text-[11px] text-text-muted font-mono">
-                        {selected.size} / {allUsers.length} selected
+                        {selected.size} / {segmentUsers.length} selected
                       </span>
                       <button
-                        onClick={(e) => { e.stopPropagation(); loadAllUsers(); }}
+                        onClick={(e) => { e.stopPropagation(); loadSegmentUsers(activeSeg); }}
                         disabled={loadingTargets}
                         className="text-text-muted hover:text-text-primary transition-colors p-0.5 rounded"
                         title="Refresh"
