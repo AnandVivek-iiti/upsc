@@ -116,18 +116,18 @@ const SEGMENTS = {
     accent: "#B4740E",
     accentBg: "#FCEFDA",
     eyebrow: "Refer & Earn",
-    desc: `Referral program announcement. Every signup through a personal link instantly credits ${REFERRAL_BONUS_DAYS} days of Premium — no milestones to hit. Sent to brand-new users and users tenured 30+ days.`,
+    desc: `Referral program announcement. Every signup through a personal link instantly credits ${REFERRAL_BONUS_DAYS} days of Premium  - no milestones to hit. Sent to brand-new users and users tenured 30+ days.`,
     subject: "You automatically get free Premium for referrals",
     signOff: "Cheering you on,",
-    greetingLine: "Quick one — if you know other UPSC aspirants, you can automatically get free Premium just by sharing your link.",
-    intro: "No milestones to hit and nothing to claim — the moment someone signs up with your link, you get it. Here's how it works:",
+    greetingLine: "Quick one  - if you know other UPSC aspirants, you can automatically get free Premium just by sharing your link.",
+    intro: "No milestones to hit and nothing to claim  - the moment someone signs up with your link, you get it. Here's how it works:",
     steps: [
-      { title: "Share your link", body: "Send your personal referral link below to friends, classmates, or your prep group — WhatsApp, Telegram, wherever your fellow aspirants hang out." },
-      { title: "They sign up", body: "As soon as they create their account using your link, it's counted — no extra steps for either of you." },
-      { title: `You automatically get ${REFERRAL_BONUS_DAYS} days of Premium`, body: "Every single referral instantly adds Premium days to your account — AI Mentor, unlimited evaluations, everything. No cap on how many friends you invite." },
+      { title: "Share your link", body: "Send your personal referral link below to friends, classmates, or your prep group  - WhatsApp, Telegram, wherever your fellow aspirants hang out." },
+      { title: "They sign up", body: "As soon as they create their account using your link, it's counted  - no extra steps for either of you." },
+      { title: `You automatically get ${REFERRAL_BONUS_DAYS} days of Premium`, body: "Every single referral instantly adds Premium days to your account  - AI Mentor, unlimited evaluations, everything. No cap on how many friends you invite." },
     ],
-    closing: "Every referral counts right away — there's no waiting for a milestone.",
-    closing2: "The more aspirants studying smart together, the better this gets for everyone — thank you for helping spread the word.",
+    closing: "Every referral counts right away  - there's no waiting for a milestone.",
+    closing2: "The more aspirants studying smart together, the better this gets for everyone  - thank you for helping spread the word.",
   },
 };
 
@@ -145,7 +145,7 @@ function buildPreviewHTML(seg, previewName = "User") {
     )
     .join("");
 
-  // Mock code — real sends use the recipient's actual referral_code from the DB.
+  // Mock code  - real sends use the recipient's actual referral_code from the DB.
   // Only rendered for segments in REFERRAL_LINK_SEGMENTS, same as the backend.
   const mockCode = (firstName.slice(0, 4) || "demo").toUpperCase() + "7F2";
   const referralLink = `${REFERRAL_LINK_BASE}/?ref=${mockCode}`;
@@ -153,7 +153,7 @@ function buildPreviewHTML(seg, previewName = "User") {
     ? `
             <div style="background:#FCEFDA;border:1px solid #B4740E33;border-radius:12px;padding:18px 20px;margin-bottom:24px;text-align:center;">
               <p style="margin:0 0 6px;font-size:11px;font-weight:700;color:#B4740E;text-transform:uppercase;letter-spacing:1px;">Your referral link</p>
-              <p style="margin:0 0 8px;font-size:12px;color:#374151;line-height:1.6;">You automatically get ${REFERRAL_BONUS_DAYS} days of Premium the moment someone signs up with it — no milestones.</p>
+              <p style="margin:0 0 8px;font-size:12px;color:#374151;line-height:1.6;">You automatically get ${REFERRAL_BONUS_DAYS} days of Premium the moment someone signs up with it  - no milestones.</p>
               <a href="${referralLink}" target="_blank" style="font-size:13px;color:#0f2044;font-weight:600;word-break:break-all;text-decoration:underline;">${referralLink}</a>
             </div>`
     : "";
@@ -416,7 +416,7 @@ export default function PowerUserEmailer() {
   // Each tab shows just its own eligible recipients (new signups in "new",
   // 3+ study-day users in "power", new + 30-day-tenured users in "referral",
   // etc.) via the same segment-aware endpoint the backend uses to decide who
-  // actually gets emailed — so the list an admin sees always matches who a
+  // actually gets emailed  - so the list an admin sees always matches who a
   // send will reach, instead of showing every user under every tab.
   const loadSegmentUsers = useCallback(async (seg) => {
     setLoadingTargets(true);
@@ -508,7 +508,7 @@ export default function PowerUserEmailer() {
         <HtmlPreviewModal seg={activeSeg} onClose={() => setPreviewOpen(false)} />
       )}
 
-      {/* Provider toast — shows after send completes */}
+      {/* Provider toast  - shows after send completes */}
       {providerToast && (
         <ProviderToast
           sent={providerToast.sent}
@@ -765,7 +765,7 @@ export default function PowerUserEmailer() {
                       {results.failed === 0 ? <CheckCircle2 size={13} className="shrink-0" /> : <AlertCircle size={13} className="shrink-0" />}
                       <span>
                         {results.sent} sent successfully
-                        {results.failed > 0 ? `, ${results.failed} failed` : " — all done!"}
+                        {results.failed > 0 ? `, ${results.failed} failed` : "  - all done!"}
                       </span>
                     </div>
                     {/* Provider indicator inside result summary */}

@@ -546,8 +546,8 @@ export default function ProfilePage({ token, onBack, onProfileUpdate, userData =
                       {sub.isActive && sub.expiresAt && (
                         <p className="text-xs font-mono text-text-muted mt-2">
                           {isTrial
-                            ? `Trial ends in ${daysLeft} day${daysLeft === 1 ? "" : "s"} — `
-                            : isComp ? "Granted — " : isReferral ? "Referral bonus — " : "Renews/expires — "}
+                            ? `Trial ends in ${daysLeft} day${daysLeft === 1 ? "" : "s"}  - `
+                            : isComp ? "Granted  - " : isReferral ? "Referral bonus  - " : "Renews/expires  - "}
                           {new Date(sub.expiresAt).toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" })}
                         </p>
                       )}

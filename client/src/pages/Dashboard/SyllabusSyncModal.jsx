@@ -205,7 +205,7 @@ export default function SyllabusSyncModal({
               <p className="text-xs text-text-muted mt-1 leading-relaxed">
                 You studied <span style={{ color }} className="font-mono font-semibold">{subject}</span> for{" "}
                 <span className="font-mono font-semibold text-text-secondary">{fmtDuration(durationSeconds)}</span>.
-                Pick what you actually covered so your tracker stays accurate — nothing updates until you confirm.
+                Pick what you actually covered so your tracker stays accurate  - nothing updates until you confirm.
               </p>
             </div>
           </div>

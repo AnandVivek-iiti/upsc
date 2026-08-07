@@ -333,7 +333,7 @@ Conclusion: Vivekananda's teaching remains deeply relevant as a guide for naviga
     directive: "Give reasons",
     wordLimit: 150,
     questionText:
-      '"What really matters for success, character, happiness and lifelong achievements is a definite set of emotional skills — your E.Q. — not just purely cognitive abilities that are measured by conventional I.Q. tests." Do you agree with this view? Give reasons in support of your answer.',
+      '"What really matters for success, character, happiness and lifelong achievements is a definite set of emotional skills  - your E.Q.  - not just purely cognitive abilities that are measured by conventional I.Q. tests." Do you agree with this view? Give reasons in support of your answer.',
     keyPoints: [
       "EQ (Emotional Intelligence): self-awareness, self-regulation, motivation, empathy, social skills (Daniel Goleman framework)",
       "IQ: cognitive/analytical problem-solving capacity, largely fixed and narrowly predictive of academic performance",

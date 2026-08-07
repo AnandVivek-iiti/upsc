@@ -485,7 +485,7 @@ function PrelimQuestionCard({ q, index, accentColor, revQueue, subjectMeta, onCo
               {aiExplanation}
             </div>
           ) : aiError && q.explanation ? (
-            /* silent static fallback — only shown when AI fails and static text exists */
+            /* silent static fallback  - only shown when AI fails and static text exists */
             <div className="text-sm bg-bg-muted p-3 rounded-lg text-text-secondary leading-relaxed">
               {q.explanation}
             </div>

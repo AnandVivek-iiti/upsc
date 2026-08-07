@@ -827,7 +827,7 @@ function ActivityTab({
 }) {
   const autoRef = useRef(null);
 
-  // Auto-refresh only for the default "today"/"week" live views — never while
+  // Auto-refresh only for the default "today"/"week" live views  - never while
   // the admin is looking at a custom historical range (or "month", which is
   // still bounded but less "live" in spirit; keeping it to today/week per spec).
   useEffect(() => {
@@ -1358,7 +1358,7 @@ function InsightsTab({ insights, loading }) {
 }
 // ─── Feedback text formatter ────────────────────────────────────────────────
 // Some feedback comes in as several short observations joined with commas
-// (multi-point answers) rather than one sentence — that renders as an ugly
+// (multi-point answers) rather than one sentence  - that renders as an ugly
 // comma-jammed blob. Detect that shape and render it as a clean bullet list;
 // anything that reads like normal prose (sentence punctuation, long clauses,
 // or just a couple of commas) is left as a plain paragraph, untouched.
@@ -1618,7 +1618,7 @@ function FeedbackTab({ stats, feedbackList, loading, onRefresh, onDelete }) {
 // ═══════════════════════════════════════════════════════════════════════════════
 // PREMIUM TAB
 // ═══════════════════════════════════════════════════════════════════════════════
-// Estimated pricing used purely for revenue projection in this panel — not a
+// Estimated pricing used purely for revenue projection in this panel  - not a
 // live billing figure. Keep in sync with the actual Razorpay plan price.
 const ANNUAL_PLAN_PRICE_INR = 2000;
 
@@ -2039,7 +2039,7 @@ const handleDeleteFeedback = useCallback(async (feedbackId) => {
 }, []);
 
   // Premium tab: reuses /admin/users with plan=premium (no separate backend
-  // endpoint needed) — pulled at a high limit since premium users are
+  // endpoint needed)  - pulled at a high limit since premium users are
   // typically a small slice of the base.
   const fetchPremium = useCallback(async () => {
     load("premium", true);

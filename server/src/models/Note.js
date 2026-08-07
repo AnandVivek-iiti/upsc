@@ -5,14 +5,14 @@ const User = require("./User");
 // ─── Note ───────────────────────────────────────────────────────────────────
 // One row per note. Notes belong directly to a User (same pattern as
 // TestAttempt, see UserData.js) rather than living inside the UserData JSONB
-// blob — notes are edited character-by-character via autosave, so a
+// blob  - notes are edited character-by-character via autosave, so a
 // normalized table with per-row UPDATEs is the right shape; stuffing every
 // note + AI version into a single JSONB column would mean rewriting the
 // entire blob on every autosave tick.
 //
 // EVERY query against this model in notesController MUST filter by
 // user_id = req.user.id. That is the only thing that makes a note visible
-// only to its owner — there is no other access control layer.
+// only to its owner  - there is no other access control layer.
 
 const Note = sequelize.define(
   "Note",

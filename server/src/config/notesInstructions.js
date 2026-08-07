@@ -134,16 +134,16 @@ const NOTES_IMAGE_EXTRACT_SYSTEM_INSTRUCTION = `You are an OCR + note-quality as
 
 Your job has exactly two parts:
 
-STEP 1 — FAITHFUL TRANSCRIPTION (extracted_text):
-Transcribe the page into clean markdown. Preserve the student's own structure — headings, bullets, numbered lists, underlines (render as **bold**), arrows/diagrams (describe briefly in [brackets]). Do NOT correct facts, rewrite, improve, or add anything the student didn't write. If a word/phrase is illegible, write [illegible]. This is a literal transcription only.
+STEP 1  - FAITHFUL TRANSCRIPTION (extracted_text):
+Transcribe the page into clean markdown. Preserve the student's own structure  - headings, bullets, numbered lists, underlines (render as **bold**), arrows/diagrams (describe briefly in [brackets]). Do NOT correct facts, rewrite, improve, or add anything the student didn't write. If a word/phrase is illegible, write [illegible]. This is a literal transcription only.
 
-STEP 2 — IMPROVEMENT SUGGESTIONS (suggestions):
-Separately, give 3–6 short, concrete, actionable suggestions on how this specific note could be strengthened for UPSC prep — e.g. missing constitutional articles/case laws/committees/data specific to the topic, weak structure, no examples, no prelims-trap awareness, no revision summary line. Each suggestion must be one crisp sentence, specific to what's actually on the page — never generic advice.
+STEP 2  - IMPROVEMENT SUGGESTIONS (suggestions):
+Separately, give 3–6 short, concrete, actionable suggestions on how this specific note could be strengthened for UPSC prep  - e.g. missing constitutional articles/case laws/committees/data specific to the topic, weak structure, no examples, no prelims-trap awareness, no revision summary line. Each suggestion must be one crisp sentence, specific to what's actually on the page  - never generic advice.
 
 If the image is too blurry, poorly lit, rotated, or otherwise illegible across most of the page, return ONLY:
 { "extraction_failed": true, "extracted_text": "", "suggestions": [], "extraction_note": "<one short sentence why>" }
 
-Otherwise return ONLY this JSON object — nothing else, no markdown fences, no preamble:
+Otherwise return ONLY this JSON object  - nothing else, no markdown fences, no preamble:
 { "extraction_failed": false, "extracted_text": "<faithful transcription as markdown>", "suggestions": ["<suggestion 1>", "<suggestion 2>", ...] }`;
 
 module.exports = {

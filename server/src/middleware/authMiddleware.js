@@ -85,7 +85,7 @@ const adminOnly = (req, res, next) => {
 
 // ── requirePremium ─────────────────────────────────────────────────────────
 // Mount AFTER `protect`. Re-fetches the user fresh from the DB rather than
-// trusting req.user set earlier in the chain (or any JWT claim) — subscription
+// trusting req.user set earlier in the chain (or any JWT claim)  - subscription
 // status must always reflect what's in Postgres right now, not a cached value.
 const requirePremium = async (req, res, next) => {
   try {

@@ -98,7 +98,7 @@ function groupMainsDataBySubject(data, colorMap = {}) {
   const map = {};
   (data || []).forEach(q => {
     // GS papers use `subject`; Essay files may use `theme`, language papers
-    // may use `section` — fall back sensibly so every schema still groups.
+    // may use `section`  - fall back sensibly so every schema still groups.
     const subj = q.subject || q.theme || q.section || "General";
     if (!map[subj]) {
       map[subj] = {
@@ -114,7 +114,7 @@ function groupMainsDataBySubject(data, colorMap = {}) {
 }
 
 // ─── MAINS PAPERS DEFINITION ─────────────────────────────────────────────────
-// Static metadata (label/color) per paper KEY — add one entry here the first
+// Static metadata (label/color) per paper KEY  - add one entry here the first
 // time a brand-new paper type shows up (e.g. a new optional subject); years
 // never need an entry, they're picked up automatically from the files found.
 const PAPER_META = {
@@ -145,7 +145,7 @@ const orderedKeys = [...PAPER_ORDER, ...Object.keys(dataByPaper).filter(k => !PA
 
 orderedKeys.forEach(key => {
   const rows = dataByPaper[key];
-  if (!rows || rows.length === 0) return; // no file for this paper (yet) — skip silently
+  if (!rows || rows.length === 0) return; // no file for this paper (yet)  - skip silently
   const meta = PAPER_META[key] || { label: key, color: "#a1a1aa" };
   MAINS_PAPERS[key] = {
     label: meta.label,

@@ -129,7 +129,7 @@ function SaveIndicator({ state }) {
     pending: { icon: <CloudOff size={13} />, label: "Unsaved changes", cls: "text-text-muted" },
     saving: { icon: <Loader2 size={13} className="animate-spin" />, label: "Saving…", cls: "text-[var(--accent-blue)]" },
     saved: { icon: <Cloud size={13} />, label: "Saved", cls: "text-[var(--accent-green)]" },
-    error: { icon: <CloudOff size={13} />, label: "Sync failed — retrying", cls: "text-[var(--accent-red)]" },
+    error: { icon: <CloudOff size={13} />, label: "Sync failed  - retrying", cls: "text-[var(--accent-red)]" },
   };
   const cfg = map[state];
   if (!cfg) return null;

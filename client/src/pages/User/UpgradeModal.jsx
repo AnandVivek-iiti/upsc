@@ -21,7 +21,7 @@ const PLANS = [
     perks: [
       "Everything in Monthly",
       "Works out to ~₹167/month",
-    
+
     ],
     bestValue: true,
   },
@@ -106,11 +106,11 @@ export default function UpgradeModal({ token, user, onClose, onUpgraded }) {
           {loading ? <Loader2 size={16} className="animate-spin" /> : <Crown size={16} />}
           {loading
             ? "Opening secure checkout…"
-            : `Pay with Razorpay — ${selectedPlan.price}${selectedPlan.period}`}
+            : `Pay with Razorpay  - ${selectedPlan.price}${selectedPlan.period}`}
         </button>
 
         <p className="text-[10px] font-mono text-text-muted text-center mt-3">
-          Secured by Razorpay. One-time payment per period — no auto-renewal.
+          Secured by Razorpay. One-time payment per period  - no auto-renewal.
         </p>
       </div>
     </div>

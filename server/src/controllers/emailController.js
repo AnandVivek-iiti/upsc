@@ -11,9 +11,9 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 
 // ─── Nodemailer transporter (fallback) ────────────────────────────────────────
 // SENDER_EMAIL must be the real Gmail address used for SMTP auth.
-// Never set it to a custom domain — Gmail SMTP will reject it.
+// Never set it to a custom domain  - Gmail SMTP will reject it.
 // pool=true reuses SMTP connections for bulk sends instead of opening a new
-// TCP handshake for every message — dramatically faster for large recipient lists.
+// TCP handshake for every message  - dramatically faster for large recipient lists.
 function createTransporter({ pool = false } = {}) {
   return nodemailer.createTransport({
     host: "smtp.gmail.com",
@@ -33,7 +33,7 @@ function createTransporter({ pool = false } = {}) {
 }
 
 // ─── Logo helpers ──────────────────────────────────────────────────────────────
-// Resend doesn't support CID attachments — embed logo as base64 data URI instead.
+// Resend doesn't support CID attachments  - embed logo as base64 data URI instead.
 function getLogoBase64DataURI() {
   const logoPath = path.join(__dirname, "../assets/upsc-logo.png");
   if (fs.existsSync(logoPath)) {
@@ -67,14 +67,14 @@ function getPDFAttachment() {
       contentType: "application/pdf",
     };
   }
-  // If file not found, warn once and skip silently — never block the send.
-  console.warn("[Email] PDF not found at assets/UPSC_Mentor_Report.pdf — skipping attachment.");
+  // If file not found, warn once and skip silently  - never block the send.
+  console.warn("[Email] PDF not found at assets/UPSC_Mentor_Report.pdf  - skipping attachment.");
   return null;
 }
 
 // ─── Referral links ──────────────────────────────────────────────────────────
 // Mirrors REFERRAL_BONUS_DAYS in authController.js and REFERRAL_LINK_BASE in
-// ProfilePage.jsx — keep all three in sync if either changes.
+// ProfilePage.jsx  - keep all three in sync if either changes.
 const REFERRAL_BONUS_DAYS = parseInt(process.env.REFERRAL_BONUS_DAYS, 10) || 7;
 const REFERRAL_LINK_BASE  = "https://upsc-by-iitian.onrender.com";
 function buildReferralLink(code) {
@@ -86,21 +86,21 @@ const REFERRAL_LINK_SEGMENTS = new Set(["new", "referral"]);
 // ─── Segment copy ──────────────────────────────────────────────────────────────
 const SEGMENT_COPY = {
   new: {
-    subject: "Welcome to UPSC Mentor — here's where to start",
+    subject: "Welcome to UPSC Mentor  - here's where to start",
     accent: "#3B6D11",
     accentBg: "#EAF3DE",
     eyebrow: "Welcome",
     greetingLine:
-      "Welcome to UPSC Mentor. I'm Anand Vivek, a third-year Mechanical Engineering student at IIT Indore — and the person building this platform.",
+      "Welcome to UPSC Mentor. I'm Anand Vivek, a third-year Mechanical Engineering student at IIT Indore  - and the person building this platform.",
     intro:
       "Really happy to have you here. Here are three things that'll get you the most value from day one:",
     steps: [
       { title: "Set your exam date", body: "Open your Profile and lock in your Prelims target year. The countdown is surprisingly motivating." },
-      { title: "Mark your syllabus", body: "Go to the Syllabus Tracker and mark the topics you're currently studying. All 48 modules are already loaded — you don't have to build anything." },
+      { title: "Mark your syllabus", body: "Go to the Syllabus Tracker and mark the topics you're currently studying. All 48 modules are already loaded  - you don't have to build anything." },
       { title: "Start the Study Timer", body: "Hit the timer from your dashboard before your next session. It tracks daily hours automatically and syncs across devices." },
     ],
     closing: "That's all you need to begin. No pressure to explore every feature on day one.",
-    closing2: "If you have questions or suggestions, just reply to this email — I personally read every message.",
+    closing2: "If you have questions or suggestions, just reply to this email  - I personally read every message.",
     signOff: "Happy studying,",
   },
 
@@ -113,11 +113,11 @@ const SEGMENT_COPY = {
       "I wanted to reach out personally. Seeing users like you study consistently is what keeps me building.",
     intro: "You're in the top tier of our early community. A few features you might not have tried yet:",
     steps: [
-      { title: "AI Mentor Workspace", body: "Run separate threads for different subjects — GS4, Economy, Polity. Your mentor carries context across sessions, so it already knows your weak areas going in." },
-      { title: "AI Answer Evaluation", body: "Upload typed or handwritten Mains answers and get detailed feedback in seconds — useful for replicating actual exam conditions." },
+      { title: "AI Mentor Workspace", body: "Run separate threads for different subjects  - GS4, Economy, Polity. Your mentor carries context across sessions, so it already knows your weak areas going in." },
+      { title: "AI Answer Evaluation", body: "Upload typed or handwritten Mains answers and get detailed feedback in seconds  - useful for replicating actual exam conditions." },
       { title: "Personalised Study Plan", body: "After every mock test, the AI generates a targeted recovery plan for your exact weak topics. Worth trying after your next attempt." },
     ],
-    closing: "Your feedback matters a lot — you're actually using the platform regularly, which means you see what's working and what's not.",
+    closing: "Your feedback matters a lot  - you're actually using the platform regularly, which means you see what's working and what's not.",
     closing2: "If you find something confusing or have a suggestion, just reply. I'll personally read it.",
     signOff: "Thank you,",
   },
@@ -127,11 +127,11 @@ const SEGMENT_COPY = {
     accent: "#993C1D",
     accentBg: "#FAECE7",
     eyebrow: "Quick check-in",
-    greetingLine: "You signed up for UPSC Mentor a while back — I just wanted to check in.",
+    greetingLine: "You signed up for UPSC Mentor a while back  - I just wanted to check in.",
     intro: "If the platform felt overwhelming at first, that's fair. Here's the simplest possible entry point: one subject, one timer, 30 minutes.",
     steps: [
       { title: "Start a 30-minute session", body: "Open the dashboard, pick one subject from the Study Timer (Polity is a popular start), and run one focused session. That single action unlocks the analytics that make everything else useful." },
-      { title: "Your syllabus is already there", body: "All 48 modules are loaded and mapped to the official UPSC notification. You don't have to build anything — just start marking what you're studying." },
+      { title: "Your syllabus is already there", body: "All 48 modules are loaded and mapped to the official UPSC notification. You don't have to build anything  - just start marking what you're studying." },
     ],
     closing: "If something on the platform confused you or stopped you from using it, please do write back.",
     closing2: "Your feedback helps me improve UPSC Mentor for everyone.",
@@ -143,7 +143,7 @@ const SEGMENT_COPY = {
     accent: "#3C3489",
     accentBg: "#EEEDFE",
     eyebrow: "Thank you",
-    greetingLine: "I noticed you've explored several areas of UPSC Mentor — the syllabus tracker, mock tests, AI mentor, and more.",
+    greetingLine: "I noticed you've explored several areas of UPSC Mentor  - the syllabus tracker, mock tests, AI mentor, and more.",
     intro: "That kind of usage tells me you're using the platform as it was designed. Users like you help shape what gets built next. A few things it would be great to hear from you on:",
     steps: [
       { title: "What's been most useful?", body: "Which feature has made the biggest difference in your preparation? Even a one-line reply helps me understand where to invest next." },
@@ -160,15 +160,15 @@ const SEGMENT_COPY = {
     accent: "#B4740E",
     accentBg: "#FCEFDA",
     eyebrow: "Refer & Earn",
-    greetingLine: "Quick one — if you know other UPSC aspirants, you can automatically get free Premium just by sharing your link.",
-    intro: "No milestones to hit and nothing to claim — the moment someone signs up with your link, you get it. Here's how it works:",
+    greetingLine: "Quick one  - if you know other UPSC aspirants, you can automatically get free Premium just by sharing your link.",
+    intro: "No milestones to hit and nothing to claim  - the moment someone signs up with your link, you get it. Here's how it works:",
     steps: [
-      { title: "Share your link", body: "Send your personal referral link below to friends, classmates, or your prep group — WhatsApp, Telegram, wherever your fellow aspirants hang out." },
-      { title: "They sign up", body: "As soon as they create their account using your link, it's counted — no extra steps for either of you." },
-      { title: `You automatically get ${REFERRAL_BONUS_DAYS} days of Premium`, body: "Every single referral instantly adds Premium days to your account — AI Mentor, unlimited evaluations, everything. No cap on how many friends you invite." },
+      { title: "Share your link", body: "Send your personal referral link below to friends, classmates, or your prep group  - WhatsApp, Telegram, wherever your fellow aspirants hang out." },
+      { title: "They sign up", body: "As soon as they create their account using your link, it's counted  - no extra steps for either of you." },
+      { title: `You automatically get ${REFERRAL_BONUS_DAYS} days of Premium`, body: "Every single referral instantly adds Premium days to your account  - AI Mentor, unlimited evaluations, everything. No cap on how many friends you invite." },
     ],
-    closing: "Every referral counts right away — there's no waiting for a milestone.",
-    closing2: "The more aspirants studying smart together, the better this gets for everyone — thank you for helping spread the word.",
+    closing: "Every referral counts right away  - there's no waiting for a milestone.",
+    closing2: "The more aspirants studying smart together, the better this gets for everyone  - thank you for helping spread the word.",
     signOff: "Cheering you on,",
   },
 };
@@ -207,7 +207,7 @@ function buildEmailHTML(userName, segment = "power", logoSrc = null, referralLin
       ? `
               <div style="background:#FCEFDA;border:1px solid #B4740E33;border-radius:12px;padding:18px 20px;margin-bottom:24px;text-align:center;">
                 <p style="margin:0 0 6px;font-size:11px;font-weight:700;color:#B4740E;text-transform:uppercase;letter-spacing:1px;">Your referral link</p>
-                <p style="margin:0 0 8px;font-size:12px;color:#374151;line-height:1.6;">You automatically get ${REFERRAL_BONUS_DAYS} days of Premium the moment someone signs up with it — no milestones.</p>
+                <p style="margin:0 0 8px;font-size:12px;color:#374151;line-height:1.6;">You automatically get ${REFERRAL_BONUS_DAYS} days of Premium the moment someone signs up with it  - no milestones.</p>
                 <a href="${referralLink}" target="_blank" style="font-size:13px;color:#0f2044;font-weight:600;word-break:break-all;text-decoration:underline;">${referralLink}</a>
               </div>`
       : "";
@@ -348,7 +348,7 @@ function logSend({ provider, status, segment, name, email, error }) {
 //   RESEND_FROM   → custom domain address shown to recipients (e.g. anand@send.upscbyiitians.in)
 //                   Only works after Resend verifies your domain in their dashboard.
 //   SENDER_EMAIL  → real Gmail used for SMTP auth in Nodemailer (e.g. me240003006@iiti.ac.in)
-//                   Must stay a Gmail address — never set to a custom domain.
+//                   Must stay a Gmail address  - never set to a custom domain.
 async function sendEmail({ toEmail, toName, subject, segment, referralCode = null }) {
   const resolvedSeg   = resolveSegment(segment);
   const referralLink  = buildReferralLink(referralCode);
@@ -372,7 +372,7 @@ async function sendEmail({ toEmail, toName, subject, segment, referralCode = nul
       const logoDataURI = getLogoBase64DataURI();
       const html = buildEmailHTML(toName, resolvedSeg, logoDataURI, referralLink);
 
-      // PDF_ATTACH: build Resend attachments array — remove the block below to drop the PDF.
+      // PDF_ATTACH: build Resend attachments array  - remove the block below to drop the PDF.
       const attachments = pdfAttachment
         ? [{ filename: pdfAttachment.filename, content: fs.readFileSync(pdfAttachment.path) }]
         : [];
@@ -391,20 +391,20 @@ async function sendEmail({ toEmail, toName, subject, segment, referralCode = nul
         return { provider: "resend" };
       }
 
-      // Resend returned an API-level error — fall through to Nodemailer.
+      // Resend returned an API-level error  - fall through to Nodemailer.
       console.warn(`[Email] Resend API error for ${toEmail}:`, error.message ?? error);
     } catch (resendErr) {
       console.warn(`[Email] Resend exception for ${toEmail}:`, resendErr.message);
     }
   } else {
-    console.warn("[Email] RESEND_API_KEY not set — skipping Resend, trying Nodemailer.");
+    console.warn("[Email] RESEND_API_KEY not set  - skipping Resend, trying Nodemailer.");
   }
 
   // ── Attempt 2: Nodemailer (Gmail SMTP fallback) ────────────────────────────
   const logoAttachment = getLogoAttachment();
   const html = buildEmailHTML(toName, resolvedSeg, logoAttachment ? "cid:upsclogo@mentor" : null, referralLink);
 
-  // PDF_ATTACH: build Nodemailer attachments array — remove the pdfAttachment spread below to drop the PDF.
+  // PDF_ATTACH: build Nodemailer attachments array  - remove the pdfAttachment spread below to drop the PDF.
   const nmAttachments = [
     ...(logoAttachment ? [logoAttachment] : []),
     ...(pdfAttachment  ? [pdfAttachment]  : []), // PDF_ATTACH
@@ -426,7 +426,7 @@ async function sendEmail({ toEmail, toName, subject, segment, referralCode = nul
 
 // ─── Concurrency helper ────────────────────────────────────────────────────────
 // Processes items in chunks of `limit`, running fn concurrently within each chunk
-// via Promise.allSettled — a slow/failed item never blocks the rest.
+// via Promise.allSettled  - a slow/failed item never blocks the rest.
 // Returns a flat PromiseSettledResult[] in the same order as items.
 async function runConcurrent(items, limit, fn) {
   const results = [];
@@ -441,9 +441,9 @@ async function runConcurrent(items, limit, fn) {
 // ─── Bulk send: Resend batch primary, concurrent Nodemailer fallback ───────────
 // Replaces the old sequential for-loop + 800 ms delay in sendPowerUserEmails.
 //
-// Path A — resend.batch.send(): up to 100 recipients per API call (one round-trip).
+// Path A  - resend.batch.send(): up to 100 recipients per API call (one round-trip).
 //           Falls back per-chunk when Resend returns an error (e.g. domain not verified).
-// Path B — Nodemailer pool: CONCURRENCY sends in parallel over reused SMTP connections.
+// Path B  - Nodemailer pool: CONCURRENCY sends in parallel over reused SMTP connections.
 async function sendBulkEmails(targets, resolvedSeg, subject) {
   const allResults = [];
   let   nmTargets  = [];
@@ -497,13 +497,13 @@ async function sendBulkEmails(targets, resolvedSeg, subject) {
       console.warn(`[Email] ${nmTargets.length} recipient(s) falling back Resend → Nodemailer`);
     }
   } else {
-    console.warn("[Email] RESEND_API_KEY not set — routing all to Nodemailer.");
+    console.warn("[Email] RESEND_API_KEY not set  - routing all to Nodemailer.");
     nmTargets = targets;
   }
 
   if (nmTargets.length === 0) return allResults;
 
-  // ── Path B: Nodemailer — concurrent sends via pooled transporter ─────────────
+  // ── Path B: Nodemailer  - concurrent sends via pooled transporter ─────────────
   const transporter    = createTransporter({ pool: true });
   const logoAttachment = getLogoAttachment();
   const pdfAttachment  = getPDFAttachment();
@@ -686,14 +686,14 @@ const sendPowerUserEmails = async (req, res, next) => {
       return res.json({ success: true, sent: 0, failed: 0, results: [], message: "No eligible users found." });
     }
 
-    console.log(`[Email] Starting bulk send — segment: ${resolvedSeg}, recipients: ${targets.length}`);
+    console.log(`[Email] Starting bulk send  - segment: ${resolvedSeg}, recipients: ${targets.length}`);
 
     // sendBulkEmails: Resend batch.send() → concurrent Nodemailer fallback (no serial loop)
     const results   = await sendBulkEmails(targets, resolvedSeg, subject);
     const sent      = results.filter((r) => r.status === "sent").length;
     const failed    = results.filter((r) => r.status === "failed").length;
     const providers = [...new Set(results.filter((r) => r.provider).map((r) => r.provider))];
-    console.log(`[Email] Bulk done — sent: ${sent}, failed: ${failed}, provider(s): ${providers.join(", ")}`);
+    console.log(`[Email] Bulk done  - sent: ${sent}, failed: ${failed}, provider(s): ${providers.join(", ")}`);
 
     res.json({ success: true, sent, failed, results, providers });
   } catch (err) {

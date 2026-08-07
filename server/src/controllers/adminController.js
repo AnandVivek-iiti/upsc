@@ -764,7 +764,7 @@ const planFilter =
       }
     );
 
-    // full_count comes back on every row (window function) — pull it from
+    // full_count comes back on every row (window function)  - pull it from
     // the first row rather than firing a second COUNT(*) query, so the
     // total always matches exactly what was filtered above.
     const total = rows.length > 0 ? parseInt(rows[0].full_count, 10) : 0;
@@ -1055,7 +1055,7 @@ const getJourney = async (req, res, next) => {
       feature: name, count: firstMap[name] || 0, pct: pct(firstMap[name] || 0, totalWithFirst),
     })).sort((a, b) => b.count - a.count);
 
-    // ── Overall feature adoption — real usage across ALL users, not just "who tried this first" ──
+    // ── Overall feature adoption  - real usage across ALL users, not just "who tried this first" ──
     const featureUsageRows = await sequelize.query(
       `SELECT feature_name, COUNT(DISTINCT user_id) AS cnt
        FROM "UserEvents"
@@ -1317,7 +1317,7 @@ const getInsights = async (req, res, next) => {
       insights.push({
         id: "highest_retention_feature", type: "positive",
         title: `${top.feature} has the highest retention`,
-        body: `${top.rate}% of users who use ${top.feature} return the next day — the strongest retention driver in the product.`,
+        body: `${top.rate}% of users who use ${top.feature} return the next day  - the strongest retention driver in the product.`,
         feature: top.feature,
       });
     }
@@ -1342,7 +1342,7 @@ const getInsights = async (req, res, next) => {
       insights.push({
         id: "most_common_first_feature", type: "neutral",
         title: `${firstFeatureRow[0].feature_name} is the most common first feature`,
-        body: `${firstFeatureRow[0].feature_name} is the first feature new users try most often — it's effectively your onboarding path.`,
+        body: `${firstFeatureRow[0].feature_name} is the first feature new users try most often  - it's effectively your onboarding path.`,
         feature: firstFeatureRow[0].feature_name,
       });
     }
@@ -1454,7 +1454,7 @@ const deleteUser = async (req, res, next) => {
 };
 // ─── PATCH /api/admin/users/:id/premium ───────────────────────────────────────
 // Admin-only comp grant/revoke. Deliberately NEVER writes subscription_source
-// = "razorpay" — that value is reserved for the real payment flow, so a comped
+// = "razorpay"  - that value is reserved for the real payment flow, so a comped
 // user and a paying user are always distinguishable downstream (e.g. to decide
 // whether to show the upgrade/payment button on the frontend).
 const setPremium = async (req, res, next) => {

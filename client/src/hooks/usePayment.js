@@ -80,7 +80,7 @@ export function usePayment(token, { onSuccess } = {}) {
           currency: orderData.currency,
           order_id: orderData.order_id,
           name: "UPSC Mentor",
-          description: plan === "yearly" ? "Premium — Yearly" : "Premium — Monthly",
+          description: plan === "yearly" ? "Premium  - Yearly" : "Premium  - Monthly",
           prefill: { name: user?.name || "", email: user?.email || "" },
           theme: { color: "#f59e0b" },
           handler: async (response) => {

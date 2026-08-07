@@ -524,7 +524,7 @@ const deleteChatThread = async (req, res, next) => {
 
 
 // ─── PRELIMS EXPLANATION SYSTEM INSTRUCTION ──────────────────────────────────────────────
-const PRELIM_EXPLAIN_SYSTEM_INSTRUCTION = `You are an expert UPSC Prelims tutor. When given an MCQ, explain clearly and concisely why the correct answer is right and briefly why the other options are wrong. Keep the explanation factually precise, exam-relevant, and 3–5 sentences long. Do not add any preamble, heading, or markdown — output plain explanation text only.`;
+const PRELIM_EXPLAIN_SYSTEM_INSTRUCTION = `You are an expert UPSC Prelims tutor. When given an MCQ, explain clearly and concisely why the correct answer is right and briefly why the other options are wrong. Keep the explanation factually precise, exam-relevant, and 3–5 sentences long. Do not add any preamble, heading, or markdown  - output plain explanation text only.`;
 
 /**
  * POST /api/evaluate/prelim-explain

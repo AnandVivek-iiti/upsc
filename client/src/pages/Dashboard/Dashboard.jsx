@@ -958,7 +958,7 @@ export default function Dashboard({
   const userId = user?.id || user?._id || null;
 
   // NOTE: all hooks must run unconditionally, on every render, in the same
-  // order — regardless of whether `user` is present. Previously the
+  // order  - regardless of whether `user` is present. Previously the
   // `!user` early-return sat above these hooks, so Dashboard called a
   // different number of hooks depending on auth state. That's a Rules-of-
   // Hooks violation: if `user` ever flips from null -> truthy while this
