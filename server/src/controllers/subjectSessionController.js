@@ -273,15 +273,29 @@ const getTodaySessions = async (req, res, next) => {
     }
     timeline.sort((a, b) => a.time - b.time);
 
-    const totalSeconds = sessions.reduce((acc, s) => acc + (s.duration_seconds || 0), 0);
+    // Only sessions with a recorded duration count as "completed" - this must
+    // match getAnalytics' `duration_seconds: { [Op.not]: null }` filter, or
+    // the "(N)" badge here and the SESSIONS count on the analytics widget
+    // will disagree (e.g. this showed 7 - including a still-open session -
+    // while analytics correctly showed 6).
+    const completedSessions = sessions.filter((s) => s.end_time && s.duration_seconds != null);
+    const activeSession = sessions.find((s) => !s.end_time) || null;
+
+    const totalSeconds = completedSessions.reduce((acc, s) => acc + (s.duration_seconds || 0), 0);
 
     return res.json({
       success: true,
-      sessions: sessions.map((s) => ({
+      sessions: completedSessions.map((s) => ({
         ...s.toJSON(),
         display: fmtDisplay(s.duration_seconds),
         started_at: s.start_time,
       })),
+      // Exposed separately so the UI can still show "in progress" state
+      // without it being counted as a finished session (and without the
+      // "0m" duration it would otherwise render as).
+      active_session: activeSession
+        ? { ...activeSession.toJSON(), started_at: activeSession.start_time }
+        : null,
       timeline,
       total_seconds: totalSeconds,
       total_display: fmtDisplay(totalSeconds),
