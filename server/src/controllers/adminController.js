@@ -20,10 +20,13 @@ function daysAgo(n) {
   d.setDate(d.getDate() - n);
   return d;
 }
+
+const IST_OFFSET_MS = 5.5 * 60 * 60 * 1000;
+
 function startOfDay(date = new Date()) {
-  const d = new Date(date);
-  d.setHours(0, 0, 0, 0);
-  return d;
+  const istShifted = new Date(date.getTime() + IST_OFFSET_MS);
+  istShifted.setUTCHours(0, 0, 0, 0);
+  return new Date(istShifted.getTime() - IST_OFFSET_MS);
 }
 
 function pct(numerator, denominator, decimals = 1) {
@@ -50,7 +53,7 @@ const ALL_FEATURES = [
 // activation = one meaningful session: 20+ min timer, AI Mentor, Notes Audit, or Answer Evaluation
 const STUDY_TIMER_QUALIFYING_MINUTES = 20;
 const AI_INTERACTION_EVENT_TYPES = ["mentor_open", "answer_evaluated"];
-const REVISION_FEATURE_NAME = "Topic Practice"; // proxy until a dedicated revision event exists
+const REVISION_FEATURE_NAME = "Topic Practice";
 const DAILY_LOG_DATE_EXPR = `COALESCE(log->>'date', log->>'day')`;
 
 const EXCL_NAMES     = ["admin", "anand vivek"];
@@ -59,7 +62,7 @@ const EXCL_USER_COND = `LOWER(u.name) NOT IN (${EXCL_SQL})`;
 const EXCL_NAME_COND = `LOWER(name) NOT IN (${EXCL_SQL})`;
 const EXCL_UID_COND  = `user_id NOT IN (SELECT id FROM "users" WHERE LOWER(name) IN (${EXCL_SQL}))`;
 
-const SESSION_GAP_SECONDS = 1800; // 30 min inactivity = new session
+const SESSION_GAP_SECONDS = 1800; 
 
 // ── Activity tab: date-range resolution + row cap ─────────────────────────
 const ACTIVITY_ROW_CAP = 500;

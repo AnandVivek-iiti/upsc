@@ -1,8 +1,8 @@
-import { useState, useRef, useEffect, useMemo } from "react";
+﻿import { useState, useRef, useEffect, useMemo } from "react";
 import {
   LayoutDashboard, BookOpen, PenTool, PenLine,
   Library, MoreHorizontal, X, Moon, Sun, LogOut, LogIn,
-  User, Flame, Shield, Sparkles, NotebookPen, Archive,TrendingUp,
+  User, Flame, Shield, Sparkles, NotebookPen, Archive,TrendingUp, Trophy, Crown,
 } from "lucide-react";
 import { AvatarCircle } from "../../pages/User/ProfilePage";
 
@@ -17,7 +17,8 @@ const PRIMARY_NAV = [
 
 const MORE_NAV = [
   { id: "pyq-vault", label: "PYQS", icon: Archive },
-
+  { id: "leaderboard", label: "Leaderboard", icon: Trophy },
+  { id: "premium", label: "Premium", icon: Crown },
   { id: "resources", label: "Resources", icon: Library },
 ];
 
@@ -27,6 +28,7 @@ export default function BottomNav({
   user,
   userData,
   isLoggedIn,
+  isPremium = false,
   theme,
   onToggleTheme,
   onLogout,
@@ -49,6 +51,12 @@ export default function BottomNav({
   }, [moreOpen]);
 
   const streak = userData?.profile?.streak || 0;
+
+  const visibleMoreNav = useMemo(
+    () => MORE_NAV.filter((item) => item.id !== "premium" || !isPremium),
+    [isPremium]
+  );
+
   const isAdmin = useMemo(() => {
     if (user?.role === "admin") return true;
     try {
@@ -65,7 +73,7 @@ export default function BottomNav({
   };
 
   const isMoreActive =
-    MORE_NAV.some((n) => n.id === activeView) ||
+    visibleMoreNav.some((n) => n.id === activeView) ||
     ["admin", "profile"].includes(activeView);
 
   return (
@@ -110,7 +118,7 @@ export default function BottomNav({
           </div>
 
           <div className="grid grid-cols-2 gap-2 mb-4">
-            {MORE_NAV.map(({ id, label, icon: Icon }) => {
+            {visibleMoreNav.map(({ id, label, icon: Icon }) => {
               const active = activeView === id;
               return (
                 <button

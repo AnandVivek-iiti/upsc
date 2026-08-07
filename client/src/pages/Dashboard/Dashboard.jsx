@@ -1,4 +1,4 @@
-import {
+﻿import {
   Clock,
   TrendingUp,
   CheckCircle,
@@ -22,7 +22,7 @@ import {
   MessageSquarePlus,
   Award,
 } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { SYLLABUS, PAPER_ORDER, getPct } from "../../data/PYQs/syllabusData";
 import AuthGate from "../../components/ui/AuthGate";
 import timerStore from "../../hooks/timerStore";
@@ -33,6 +33,7 @@ import SubjectStudyTimer from "./SubjectStudyTimer";
 import SubjectAnalyticsDashboard from "./SubjectAnalyticsDashboard";
 import { getISTDateString, getISTDay } from "../../utils/dateUtils";
 import DashboardOnboardingCards from "./DashboardOnboardingCards";
+import RevisionReminderToast from "./RevisionReminderToast";
 
 // ─── Tiny helpers ──────────────────────────────────────────────────────────────
 function todayKey() {
@@ -97,9 +98,25 @@ function CollapsibleSection({ title, icon: Icon, children, defaultOpen = true, t
   );
 }
 
+// ─── Shared revision-due helper ──────────────────────────────────────────────
+// `userData.spaced_repetition` is shaped `{ queue: [...] }` (see useUserData.js),
+// not a bare array - unwrap it defensively so this never breaks if the shape
+// of either field changes again. Used by both TodaysMission and the toast/badge.
+function getDueRevisions(userData) {
+  const rawRevisionSource = userData?.revision_queue ?? userData?.spaced_repetition ?? [];
+  const revisionQueue = Array.isArray(rawRevisionSource)
+    ? rawRevisionSource
+    : (rawRevisionSource.queue || []);
+  return revisionQueue.filter((item) => !item.reviewed && item.status !== "done");
+}
+
+function revisionToastKey(userId) {
+  return `upsc_revision_toast_${userId || "anon"}_${getISTDateString()}`;
+}
+
 // ─── TodaysMission ─────────────────────────────────────────────────────────────
 // Derives today's mission items from live data - no new API calls.
-function TodaysMission({ userData, todayHours = 0, overallProgress = 0, onNavigate }) {
+function TodaysMission({ userData, todayHours = 0, overallProgress = 0, onNavigate, revisionBadge = false, onRevisionVisit }) {
   const [grown, setGrown] = useState(false);
   useEffect(() => {
     const t = setTimeout(() => setGrown(true), 100);
@@ -109,14 +126,7 @@ function TodaysMission({ userData, todayHours = 0, overallProgress = 0, onNaviga
   const targetHours    = userData?.profile?.daily_target_hours || 4;
   const studyDone      = todayHours >= targetHours;
 
-  // `userData.spaced_repetition` is shaped `{ queue: [...] }` (see useUserData.js),
-  // not a bare array - unwrap it defensively so this never breaks if the shape
-  // of either field changes again.
-  const rawRevisionSource = userData?.revision_queue ?? userData?.spaced_repetition ?? [];
-  const revisionQueue = Array.isArray(rawRevisionSource)
-    ? rawRevisionSource
-    : (rawRevisionSource.queue || []);
-  const dueRevisions   = revisionQueue.filter((item) => !item.reviewed && item.status !== "done");
+  const dueRevisions = getDueRevisions(userData);
 
   const today = new Date().toISOString().split("T")[0];
   const attemptsToday  = (userData?.question_attempts || []).filter(
@@ -240,9 +250,15 @@ function TodaysMission({ userData, todayHours = 0, overallProgress = 0, onNaviga
               key={item.id}
               role={item.done ? "presentation" : "button"}
               tabIndex={item.done ? -1 : 0}
-              onClick={() => !item.done && onNavigate?.(item.view)}
+              onClick={() => {
+                if (item.done) return;
+                if (item.id === "revision") onRevisionVisit?.();
+                onNavigate?.(item.view);
+              }}
               onKeyDown={(e) => {
-                if (!item.done && (e.key === "Enter" || e.key === " ")) onNavigate?.(item.view);
+                if (item.done || (e.key !== "Enter" && e.key !== " ")) return;
+                if (item.id === "revision") onRevisionVisit?.();
+                onNavigate?.(item.view);
               }}
               className={`relative rounded-xl p-3.5 border transition-all duration-200 ${
                 item.done ? "" : "cursor-pointer active:scale-[0.98]"
@@ -290,6 +306,14 @@ function TodaysMission({ userData, todayHours = 0, overallProgress = 0, onNaviga
                 </div>
                 {!item.done && (
                   <ChevronRight size={14} className="text-text-muted shrink-0 mt-1" />
+                )}
+                {item.id === "revision" && !item.done && revisionBadge && (
+                  <span
+                    className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] px-1 rounded-full flex items-center justify-center text-[10px] font-mono font-bold"
+                    style={{ background: "var(--accent-red)", color: "#fff" }}
+                  >
+                    {dueRevisions.length}
+                  </span>
                 )}
               </div>
 
@@ -967,6 +991,9 @@ export default function Dashboard({
   const [timerHours, setTimerHours] = useState(0);
   const [isMobile, setIsMobile]     = useState(false);
   const [progressGrown, setProgressGrown] = useState(false);
+  const [showRevisionToast, setShowRevisionToast] = useState(false);
+  const [revisionBadge, setRevisionBadge] = useState(false);
+  const revisionCheckedRef = useRef(false);
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
@@ -979,6 +1006,33 @@ export default function Dashboard({
     const t = setTimeout(() => setProgressGrown(true), 200);
     return () => clearTimeout(t);
   }, []);
+
+  useEffect(() => {
+    if (revisionCheckedRef.current) return;
+    if (!userData || !userId) return;
+    revisionCheckedRef.current = true;
+    const due = getDueRevisions(userData);
+    if (due.length === 0) return;
+    const alreadyShown = typeof window !== "undefined" && localStorage.getItem(revisionToastKey(userId));
+    if (alreadyShown) {
+      setRevisionBadge(true);
+    } else {
+      setShowRevisionToast(true);
+    }
+  }, [userData, userId]);
+
+  const handleDismissRevisionToast = useCallback(() => {
+    setShowRevisionToast(false);
+    setRevisionBadge(true);
+    if (userId) localStorage.setItem(revisionToastKey(userId), "1");
+  }, [userId]);
+
+  const handleRevisionVisit = useCallback(() => {
+    setShowRevisionToast(false);
+    setRevisionBadge(false);
+    if (userId) localStorage.setItem(revisionToastKey(userId), "1");
+    document.getElementById("ai-revision-queue-section")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, [userId]);
 
   if (!user) return <AuthGate feature="Dashboard" onNavigateAuth={onNavigateAuth} />;
 
@@ -1059,6 +1113,8 @@ export default function Dashboard({
         todayHours={todayHours}
         overallProgress={overallProgress}
         onNavigate={onNavigate}
+        revisionBadge={revisionBadge}
+        onRevisionVisit={handleRevisionVisit}
       />
 
       {/* ── Preparation Journey (onboarding milestones) ── */}
@@ -1089,6 +1145,7 @@ export default function Dashboard({
         serverHours={serverHoursNum}
         dataReady={!!userData}
         userId={userId}
+        userName={userName}
         syllabusData={syllabusData}
         onBulkUpdateSyllabus={onBulkUpdateSyllabus}
       />
@@ -1132,13 +1189,15 @@ export default function Dashboard({
       </div>
 
       {/* ── AI Spaced Repetition ── */}
-      {isMobile ? (
-        <CollapsibleSection title="AI Revision Queue" icon={Brain} defaultOpen={false}>
-          <AIRevisionPanel onNavigate={onNavigate} isLoggedIn={isLoggedIn} compact={true} />
-        </CollapsibleSection>
-      ) : (
-        <AIRevisionPanel onNavigate={onNavigate} isLoggedIn={isLoggedIn} />
-      )}
+      <div id="ai-revision-queue-section">
+        {isMobile ? (
+          <CollapsibleSection title="AI Revision Queue" icon={Brain} defaultOpen={false}>
+            <AIRevisionPanel onNavigate={onNavigate} isLoggedIn={isLoggedIn} compact={true} />
+          </CollapsibleSection>
+        ) : (
+          <AIRevisionPanel onNavigate={onNavigate} isLoggedIn={isLoggedIn} />
+        )}
+      </div>
 
       {/* ── Question Statistics ── */}
       {isMobile ? (
@@ -1163,6 +1222,13 @@ export default function Dashboard({
           Feedback
         </button>
       </div>
+
+      <RevisionReminderToast
+        open={showRevisionToast}
+        count={getDueRevisions(userData).length}
+        onDismiss={handleDismissRevisionToast}
+        onView={handleRevisionVisit}
+      />
 
     </div>
   );

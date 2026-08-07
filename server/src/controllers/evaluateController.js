@@ -90,7 +90,12 @@ function buildStudentContext(user, userData, currentMessage) {
             typeof a.evaluation === "string"
               ? JSON.parse(a.evaluation)
               : a.evaluation;
-          return typeof ev?.score === "number" ? ev.score : null;
+          if (typeof ev?.score !== "number") return null;
+          const maxMarks =
+            typeof ev?.max_marks === "number" && ev.max_marks > 0
+              ? ev.max_marks
+              : 10;
+          return (ev.score / maxMarks) * 100;
         } catch {
           return null;
         }
@@ -101,7 +106,7 @@ function buildStudentContext(user, userData, currentMessage) {
         1,
       );
       lines.push(
-        `Mains answers evaluated so far: ${answers.length} (average score ${avg}/10)`,
+        `Mains answers evaluated so far: ${answers.length} (average score ${avg}%)`,
       );
     }
   }
@@ -293,7 +298,7 @@ Please evaluate this answer according to your mentor framework. Apply the DEVELO
 
     console.log(`[Evaluation] Processing for user: ${req.user.id}`);
 
-    const { result, provider } = await callAIClient(evalPrompt, paper || "GS2");
+    const { result, provider } = await callAIClient(evalPrompt, paper || "GS2", marks);
       const userData = await UserData.findOne({
       where: { user_id: req.user.id },
     });

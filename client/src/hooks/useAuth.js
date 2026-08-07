@@ -1,11 +1,18 @@
 import { useState, useEffect, useCallback } from "react";
-import { setAuthToken, clearAuthToken } from "../utils/api";
+import { setAuthToken, clearAuthToken, getProfile } from "../utils/api";
 import timerStore from "./timerStore";
 
 export function useAuth() {
   const [user,    setUser]    = useState(null);
   const [token,   setToken]   = useState(null);
   const [loading, setLoading] = useState(true);
+  const [subscription, setSubscription] = useState(null);
+
+  const fetchSubscription = useCallback(() => {
+    return getProfile()
+      .then((d) => { setSubscription(d?.user?.subscription || null); return d; })
+      .catch(() => {}); 
+  }, []);
 
   useEffect(() => {
     try {
@@ -31,7 +38,7 @@ export function useAuth() {
           return;
         }
 
-        setAuthToken(storedToken);   // ← inject into api module
+        setAuthToken(storedToken);
         setToken(storedToken);
         setUser(JSON.parse(storedUser));
       }
@@ -44,10 +51,15 @@ export function useAuth() {
     }
   }, []);
 
+  useEffect(() => {
+    if (token) fetchSubscription();
+    else setSubscription(null);
+  }, [token, fetchSubscription]);
+
   const login = useCallback((newUser, newToken) => {
     localStorage.setItem("upsc_token", newToken);
     localStorage.setItem("upsc_user", JSON.stringify(newUser));
-    setAuthToken(newToken);   // ← inject into api module
+    setAuthToken(newToken);
     setToken(newToken);
     setUser(newUser);
   }, []);
@@ -55,11 +67,17 @@ export function useAuth() {
   const logout = useCallback(() => {
     localStorage.removeItem("upsc_token");
     localStorage.removeItem("upsc_user");
-    clearAuthToken();         // ← clear from api module
-    timerStore.setUser(null); // ← clear user-specific timer
+    clearAuthToken();
+    timerStore.setUser(null);
     setToken(null);
     setUser(null);
+    setSubscription(null);
   }, []);
 
-  return { user, token, loading, login, logout };
+  return {
+    user, token, loading, login, logout,
+    subscription,
+    isPremium: !!subscription?.isActive,
+    refetchSubscription: fetchSubscription,
+  };
 }

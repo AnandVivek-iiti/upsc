@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+﻿import { useState, useEffect, useCallback, useRef } from "react";
 import {
   Play, Pause, RotateCcw, Timer, Cloud, CloudOff,
   BookOpen, ChevronDown, ChevronUp, Clock, Edit3, Link2,
@@ -7,6 +7,9 @@ import timerStore from "../../hooks/timerStore";
 import { useSubjectTimer, UPSC_SUBJECTS, SUBJECT_COLORS, SUBJECT_ICONS, SUBJECT_SYLLABUS_MAP } from "../../hooks/useSubjectTimer";
 import UserTimeline from "../../components/ui/UserTimeline";
 import SyllabusSyncModal from "./SyllabusSyncModal";
+import GoalModal from "./GoalModal";
+
+const GOAL_MET_EPSILON_HOURS = 0.0028;
 
 // ─── Formatters ───────────────────────────────────────────────────────────────
 function fmtTime(secs) {
@@ -100,6 +103,7 @@ export default function SubjectStudyTimer({
   serverHours = 0,
   dataReady = false,
   userId = null,
+  userName = "",
   syllabusData = null,        // data.syllabus from useUserData - needed to build the sync modal's topic checklist
   onBulkUpdateSyllabus = null, // bulkUpdateProgress from useUserData
 }) {
@@ -110,6 +114,7 @@ export default function SubjectStudyTimer({
   const [isCompact, setIsCompact] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
   const [showSyllabusSync, setShowSyllabusSync] = useState(false);
+  const [goalModal, setGoalModal] = useState(null);
 
   const subjectTimer = useSubjectTimer({
     userId, onLogHours, onSynced, targetHours, serverHours, dataReady,
@@ -133,6 +138,27 @@ export default function SubjectStudyTimer({
     }
     showSubjectPicker();
   }, [phase, pauseStudy, showSubjectPicker]);
+
+  // ── Explicit "stop for the day" action (the Pause & Save button only) ────
+  // Distinct from openPicker's internal pauseStudy() call (switching subject
+  // or editing today's topic), which should never trigger a goal popup.
+  const handleStopForToday = useCallback(async () => {
+    await pauseStudy();
+    const hoursToday = timerStore.elapsed / 3600;
+    const diff = hoursToday - targetHours;
+    if (diff < 0) {
+      setGoalModal({ variant: "short", hoursToday, targetHours });
+    } else if (diff > GOAL_MET_EPSILON_HOURS) {
+      setGoalModal({ variant: "exceeded", hoursToday, targetHours });
+    } else {
+      setGoalModal({ variant: "met", hoursToday, targetHours });
+    }
+  }, [pauseStudy, targetHours]);
+
+  const handleContinueStudying = useCallback(async () => {
+    setGoalModal(null);
+    await resumeStudy();
+  }, [resumeStudy]);
 
   // ── Mirror timerStore ────────────────────────────────────────────────────
   useEffect(() => {
@@ -354,7 +380,7 @@ export default function SubjectStudyTimer({
                 </>
               ) : (
                 <>
-                  <button onClick={pauseStudy} className="flex items-center gap-1.5 flex-1 justify-center px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-medium bg-accent-gold/15 text-accent-gold border border-accent-gold/30 hover:bg-accent-gold/25 transition-colors">
+                  <button onClick={handleStopForToday} className="flex items-center gap-1.5 flex-1 justify-center px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-medium bg-accent-gold/15 text-accent-gold border border-accent-gold/30 hover:bg-accent-gold/25 transition-colors">
                     <Pause size={13} fill="currentColor" /> Pause &amp; Save
                   </button>
                   {syncTarget && (
@@ -395,6 +421,15 @@ export default function SubjectStudyTimer({
         syllabusData={syllabusData}
         onConfirm={handleSyncConfirm}
         onSkip={() => setShowSyllabusSync(false)}
+      />
+      <GoalModal
+        open={!!goalModal}
+        variant={goalModal?.variant}
+        name={userName}
+        targetHours={goalModal?.targetHours || targetHours}
+        hoursToday={goalModal?.hoursToday || 0}
+        onContinue={handleContinueStudying}
+        onClose={() => setGoalModal(null)}
       />
     </div>
   );

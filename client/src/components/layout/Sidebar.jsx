@@ -1,23 +1,25 @@
-import {
+﻿import {
   LayoutDashboard, BookOpen, NotebookPen, PenLine, PenTool, Flame, Archive,TrendingUp,
-  ChevronRight, Moon, Sun, LogOut, LogIn, Shield, Library, User,
+  ChevronRight, Moon, Sun, LogOut, LogIn, Shield, Library, User, Trophy, Crown,
 } from "lucide-react";
 import { AvatarCircle } from "../../pages/User/ProfilePage";
 
 const NAV_ITEMS = [
-  { id: "dashboard",  label: "Dashboard",       icon: LayoutDashboard },
-  { id: "syllabus",   label: "Syllabus Tracker", icon: TrendingUp, },
-  { id: "notes",      label: "Notes",            icon: NotebookPen },
-  { id: "mains",      label: "Mains Drill",      icon: PenTool },
-  { id: "pre",        label: "Prelims Grind",    icon: PenLine },
-  { id: "pyq-vault",  label: "PYQ Vault",        icon: Archive },
-  { id: "resources",  label: "Resources",        icon: Library },
+  { id: "dashboard",   label: "Dashboard",       icon: LayoutDashboard },
+  { id: "syllabus",    label: "Syllabus Tracker", icon: TrendingUp, },
+  { id: "notes",       label: "Notes",            icon: NotebookPen },
+  { id: "mains",       label: "Mains Drill",      icon: PenTool },
+  { id: "pre",         label: "Prelims Grind",    icon: PenLine },
+  { id: "pyq-vault",   label: "PYQ Vault",        icon: Archive },
+  { id: "leaderboard", label: "Leaderboard",      icon: Trophy },
+  { id: "premium",     label: "Premium Plans",    icon: Crown },
+  { id: "resources",   label: "Resources",        icon: Library },
 ];
 
 export default function Sidebar({
   activeView, onViewChange, userData, theme, onToggleTheme,
   onClose, onLogout, isLoggedIn, onLoginClick,
-  userName, onNavigateProfile,
+  userName, onNavigateProfile, isPremium = false,
 }) {
   const streak = userData?.profile?.streak || 0;
   const targetYear = userData?.profile?.target_year || 2027;
@@ -40,9 +42,10 @@ export default function Sidebar({
   const storedUser = (() => {
     try { return JSON.parse(localStorage.getItem("upsc_user") || "{}"); } catch { return {}; }
   })();
+  const baseItems = NAV_ITEMS.filter((item) => item.id !== "premium" || !isPremium);
   const visibleItems = storedUser?.role === "admin"
-    ? [...NAV_ITEMS, { id: "admin", label: "Admin Panel", icon: Shield }]
-    : NAV_ITEMS;
+    ? [...baseItems, { id: "admin", label: "Admin Panel", icon: Shield }]
+    : baseItems;
 
   return (
     <aside className="h-full flex flex-col border-r border-bg-border bg-bg-surface" style={{ width: "var(--sidebar-width, 14rem)" }}>

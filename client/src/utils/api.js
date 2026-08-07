@@ -1,4 +1,4 @@
-const BASE =
+﻿const BASE =
   import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
 // ─── Module-level token (set after login, used for all ongoing requests) ─────
@@ -174,4 +174,12 @@ export function openNote(note) {
 }
 export async function submitFeedback(payload) {
   return apiFetch("/feedback", { method: "POST", body: JSON.stringify(payload) });
+}
+
+// ─── Leaderboard ──────────────────────────────────────────────────────────────
+// sortBy: "streak" | "hours" | "mains" | "accuracy" | "composite"
+// year: a target_year (e.g. 2026) to filter to, or omit/"all" for everyone
+export async function getLeaderboard({ sortBy = "composite", year = "all", page = 1, limit = 25 } = {}) {
+  const params = new URLSearchParams({ sort: sortBy, year: String(year), page: String(page), limit: String(limit) });
+  return apiFetch(`/leaderboard?${params.toString()}`);
 }

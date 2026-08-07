@@ -44,6 +44,15 @@ function getSystemInstruction(paper) {
 }
 
 
+function expectedWordCountForMarks(marksValue) {
+  const m = Number(marksValue);
+  if (m === 10) return 150;
+  if (m === 15) return 250;
+  if (m === 20) return 300;
+  if (Number.isFinite(m) && m > 0) return Math.round(m * 15);
+  return 150;
+}
+
 function safeJSONParse(rawText) {
   let cleanText = rawText.trim();
 
@@ -444,10 +453,15 @@ async function runMentorChat(systemInstruction, history, message) {
 // `extracted_answer` is only ever populated for handwritten/image submissions
 // (see evaluateAnswerImage below) - it's harmless and stays "" for typed
 // answers, so this one function safely serves both flows.
-function normalizeEvaluation(result) {
+function normalizeEvaluation(result, marks) {
   result = result || {};
+  const rawScore = typeof result.score === "number" ? result.score : 0;
+  const numericMarks = Number(marks);
+  const maxMarks = Number.isFinite(numericMarks) && numericMarks > 0 ? numericMarks : 10;
+  const scaledScore = maxMarks === 10 ? rawScore : Math.round((rawScore / 10) * maxMarks * 10) / 10;
   return {
-    score: result.score ?? 0,
+    score: scaledScore,
+    max_marks: maxMarks,
     score_rationale: result.score_rationale || result.feedback || "",
     strengths: result.strengths || [],
     weaknesses: result.weaknesses || [],
@@ -461,13 +475,13 @@ function normalizeEvaluation(result) {
   };
 }
 
-async function evaluateAnswer(userPrompt, paper) {
+async function evaluateAnswer(userPrompt, paper, marks) {
   const systemInstruction = getSystemInstruction(paper);
   const { result, provider } = await runWithProviders(userPrompt, systemInstruction, {
     label: "AI Client",
   });
   console.log("[AI RAW RESULT]", JSON.stringify(result, null, 2));
-  return { result: normalizeEvaluation(result), provider };
+  return { result: normalizeEvaluation(result, marks), provider };
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -516,11 +530,15 @@ If transcription succeeded, evaluate the transcribed text exactly as you would a
 Return ONLY ONE final JSON object - either the extraction-failure object above, or the full evaluation schema plus the two additional keys. Never wrap it in markdown, and never return the two steps as separate objects.`;
 }
 
-function buildImageEvalPrompt({ question, paper }) {
+function buildImageEvalPrompt({ question, paper, marks }) {
+  const expectedWords = expectedWordCountForMarks(marks);
+  const marksLine = marks
+    ? `Marks: ${marks}\nExpected word count for full marks at this weightage: ~${expectedWords} words\n`
+    : "";
   return `**MAINS EVALUATION REQUEST - HANDWRITTEN ANSWER (IMAGE)**
 
 Paper: ${paper || "GS2"}
-
+${marksLine}
 **Question:**
 ${question.trim()}
 
@@ -538,7 +556,7 @@ The student's answer is handwritten and attached as an image. Follow STEP 1 (tra
  *   `extracted_answer` field.
  * @throws {ExtractionFailedError} when the handwriting can't be read reliably.
  */
-async function evaluateAnswerImage({ question, imageBase64, mimeType, paper }) {
+async function evaluateAnswerImage({ question, imageBase64, mimeType, paper, marks }) {
   if (!process.env.GEMINI_API_KEY) {
     throw new Error(
       "Handwriting evaluation requires Gemini Vision, which is not configured on this server.",
@@ -552,7 +570,7 @@ async function evaluateAnswerImage({ question, imageBase64, mimeType, paper }) {
   }
 
   const systemInstruction = getSystemInstruction(paper) + buildVisionAddendum();
-  const userPrompt = buildImageEvalPrompt({ question, paper });
+  const userPrompt = buildImageEvalPrompt({ question, paper, marks });
 
   const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
   const model = genAI.getGenerativeModel({
@@ -599,7 +617,7 @@ async function evaluateAnswerImage({ question, imageBase64, mimeType, paper }) {
   }
 
   console.log("[AI RAW RESULT:Image]", JSON.stringify(parsed, null, 2));
-  const normalized = normalizeEvaluation(parsed);
+  const normalized = normalizeEvaluation(parsed, marks);
   normalized.extracted_answer = extractedAnswer;
 
   return { result: normalized, provider: "Gemini Vision" };

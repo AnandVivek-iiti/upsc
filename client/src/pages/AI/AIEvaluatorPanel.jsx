@@ -9,10 +9,11 @@ import { evaluateAnswer, evaluateAnswerImage } from "../../hooks/useAI";
 
 // ─── sub-components ───────────────────────────────────────────────────────────
 
-function ScoreRing({ score }) {
+function ScoreRing({ score, maxMarks = 10 }) {
     const r = 34, circ = 2 * Math.PI * r;
-    const dash = (score / 10) * circ;
-    const color = score >= 7 ? "var(--accent-green)" : score >= 5 ? "var(--accent-gold)" : "var(--accent-red)";
+    const pct = maxMarks > 0 ? score / maxMarks : 0;
+    const dash = pct * circ;
+    const color = pct >= 0.7 ? "var(--accent-green)" : pct >= 0.5 ? "var(--accent-gold)" : "var(--accent-red)";
     return (
         <div className="relative w-[76px] h-[76px] shrink-0">
             <svg viewBox="0 0 76 76" className="w-full h-full -rotate-90">
@@ -23,7 +24,7 @@ function ScoreRing({ score }) {
             </svg>
             <div className="absolute inset-0 flex flex-col items-center justify-center">
                 <span className="font-bold text-xl leading-none" style={{ color }}>{score}</span>
-                <span className="text-[10px] font-mono text-text-muted">/10</span>
+                <span className="text-[10px] font-mono text-text-muted">/{maxMarks}</span>
             </div>
         </div>
     );
@@ -131,7 +132,7 @@ function EvalResult({ data, provider }) {
 
             {/* Score + rationale */}
             <div className="glass-panel p-4 flex items-center gap-4">
-                <ScoreRing score={data.score} />
+                <ScoreRing score={data.score} maxMarks={data.max_marks || 10} />
                 <div className="flex-1 min-w-0">
                     <p className="text-[10px] font-mono text-text-muted uppercase tracking-wider mb-1">Examiner Score</p>
                     <p className="text-sm text-text-primary leading-relaxed">{data.score_rationale}</p>

@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from "react";
+﻿﻿import { useEffect, useState } from "react";
 import { Routes, Route } from "react-router-dom";
 import Sidebar from "./components/layout/Sidebar.jsx";
 import Dashboard from "./pages/Dashboard/Dashboard.jsx";
@@ -16,6 +16,8 @@ import { useAuth } from "./hooks/useAuth";
 import Adminpannel from "./pages/Admin/Adminpannel.jsx";
 import ResourceLibrary from "./pages/User/ResourceLibrary.jsx";
 import ProfilePage from "./pages/User/ProfilePage.jsx";
+import Leaderboard from "./pages/User/Leaderboard.jsx";
+import PremiumPlans from "./pages/User/PremiumPlans.jsx";
 import PWAInstallPrompt from "./components/PWAInstallPrompt";
 import timerStore from "./hooks/timerStore";
 import BottomNav from "./components/layout/BottomNav.jsx";
@@ -141,7 +143,7 @@ function ErrorBanner({ error }) {
 // Unchanged behavior - only the function name changed (App -> MainApp) and
 // it's no longer the default export; the outer App below owns routing.
 function MainApp() {
-  const { user, token, loading: authLoading, login, logout } = useAuth();
+  const { user, token, loading: authLoading, login, logout, isPremium, refetchSubscription } = useAuth();
 
   const [activeView, setActiveView] = useState("dashboard");
   const [workspaceQuestion, setWorkspaceQuestion] = useState(null);
@@ -254,6 +256,7 @@ function MainApp() {
           user={user}
           userData={userData}
           isLoggedIn={isLoggedIn}
+          isPremium={isPremium}
           theme={theme}
           onToggleTheme={() => setTheme((p) => (p === "light" ? "dark" : "light"))}
           onLogout={logout}
@@ -276,6 +279,7 @@ return (
           onToggleTheme={() => setTheme((p) => (p === "light" ? "dark" : "light"))}
           onLogout={logout}
           isLoggedIn={isLoggedIn}
+          isPremium={isPremium}
           onLoginClick={() => setActiveView("auth")}
           userName={userName}
           onNavigateProfile={handleNavigateProfile}
@@ -332,6 +336,16 @@ return (
               {activeView === "pre" && <PrelimsGrind isLoggedIn={isLoggedIn} />}
               {activeView === "pyq-vault" && (
                 <PyqVault isLoggedIn={isLoggedIn} />
+              )}
+              {activeView === "leaderboard" && (
+                <Leaderboard user={user} />
+              )}
+              {activeView === "premium" && (
+                <PremiumPlans
+                  token={token}
+                  user={user}
+                  onUpgraded={() => { handleProfileUpdate(); refetchSubscription(); }}
+                />
               )}
               {activeView === "admin" && <Adminpannel />}
               {activeView === "resources" && (
@@ -406,6 +420,7 @@ return (
         user={user}
         userData={userData}
         isLoggedIn={isLoggedIn}
+        isPremium={isPremium}
         theme={theme}
         onToggleTheme={() => setTheme((p) => (p === "light" ? "dark" : "light"))}
         onLogout={logout}

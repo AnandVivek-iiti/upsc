@@ -13,10 +13,10 @@ require("./models/Note");
 require("./models/TestAttempt");
 require("./models/UserEvents");
 require("./models/DailyActiveUsers");
-require("./models/Payment"); 
+require("./models/Payment");
 const { globalLimiter } = require("./middleware/rateLimiter");
 const { errorHandler, notFound } = require("./middleware/errorMiddleware");
-
+const leaderboardRoutes = require("./routes/leaderboardRoutes");
 const authRoutes      = require("./routes/authRoutes");
 const dashboardRoutes = require("./routes/dashboardRoutes");
 const evaluateRoutes  = require("./routes/evaluateRoutes");
@@ -103,7 +103,7 @@ app.use("/api/notes",     notesRoutes);
 app.use("/api/feedback", feedbackRoutes);
  app.use("/api/subject-sessions",subjectSessionRoutes);
 app.use("/api/payments",  paymentRoutes);
-
+app.use("/api/leaderboard", leaderboardRoutes);
 // ─── 404 & Error Handlers ─────────────────────────────────────────────────────
 app.use(notFound);
 app.use(errorHandler);
