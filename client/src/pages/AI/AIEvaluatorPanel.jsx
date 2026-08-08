@@ -351,9 +351,10 @@ function EvalResult({ data, provider }) {
 // ─── Image upload sub-components (handwritten mode) ──────────────────────────
 
 const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
-const MAX_IMAGE_BYTES = 10 * 1024 * 1024; // 10MB
+const MAX_IMAGE_BYTES = 10 * 1024 * 1024; // 10MB per page
+const MAX_IMAGES = 5; // max pages per submission
 
-function ImageDropzone({ onFile }) {
+function ImageDropzone({ onFiles, hasImages }) {
     const inputRef = useRef(null);
     return (
         <div
@@ -366,19 +367,20 @@ function ImageDropzone({ onFile }) {
                 <UploadCloud size={20} className="text-accent-gold" />
             </div>
             <p className="text-sm font-semibold text-text-primary text-center">
-                Tap to take a photo or choose a file
+                {hasImages ? "Tap to add another page" : "Tap to take a photo or choose files"}
             </p>
             <p className="text-[11px] font-mono text-text-muted text-center">
-                JPG · JPEG · PNG · WEBP - up to 10MB
+                JPG · JPEG · PNG · WEBP - up to 10MB each, up to {MAX_IMAGES} pages
             </p>
             <input
                 ref={inputRef}
                 type="file"
                 accept="image/jpeg,image/jpg,image/png,image/webp"
+                multiple
                 className="hidden"
                 onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    if (file) onFile(file);
+                    const files = Array.from(e.target.files || []);
+                    if (files.length) onFiles(files);
                     e.target.value = "";
                 }}
             />
@@ -386,22 +388,52 @@ function ImageDropzone({ onFile }) {
     );
 }
 
-function ImagePreview({ src, onReplace, onRemove }) {
+function ImageGrid({ pages, onRemove, onAddMore }) {
+    const inputRef = useRef(null);
+    const atLimit = pages.length >= MAX_IMAGES;
     return (
         <div>
-            <div className="relative rounded-xl overflow-hidden border" style={{ borderColor: "var(--bg-border)" }}>
-                <img src={src} alt="Handwritten answer preview" className="w-full max-h-72 object-contain" style={{ background: "var(--bg-muted)" }} />
-                <button
-                    onClick={onRemove}
-                    aria-label="Remove image"
-                    className="absolute top-2 right-2 p-1.5 rounded-full bg-black/60 text-white hover:bg-black/80 transition-colors touch-manipulation"
-                >
-                    <X size={14} />
-                </button>
+            <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+                {pages.map((page, i) => (
+                    <div key={page.id} className="relative rounded-lg overflow-hidden border aspect-[3/4]"
+                        style={{ borderColor: "var(--bg-border)" }}>
+                        <img src={page.previewUrl} alt={`Page ${i + 1} preview`}
+                            className="w-full h-full object-cover" style={{ background: "var(--bg-muted)" }} />
+                        <span className="absolute bottom-1 left-1 text-[10px] font-mono px-1.5 py-0.5 rounded bg-black/60 text-white">
+                            Page {i + 1}
+                        </span>
+                        <button
+                            onClick={() => onRemove(page.id)}
+                            aria-label={`Remove page ${i + 1}`}
+                            className="absolute top-1 right-1 p-1 rounded-full bg-black/60 text-white hover:bg-black/80 transition-colors touch-manipulation"
+                        >
+                            <X size={12} />
+                        </button>
+                    </div>
+                ))}
             </div>
-            <button onClick={onReplace} className="btn-ghost flex items-center gap-1.5 text-xs mt-2 mx-auto">
-                <Camera size={12} /> Replace photo
-            </button>
+            <div className="flex items-center justify-between mt-2">
+                <p className="text-[11px] font-mono text-text-muted">
+                    {pages.length} of {MAX_IMAGES} page{pages.length === 1 ? "" : "s"} added
+                </p>
+                {!atLimit && (
+                    <button onClick={() => inputRef.current?.click()} className="btn-ghost flex items-center gap-1.5 text-xs">
+                        <Camera size={12} /> Add page
+                    </button>
+                )}
+            </div>
+            <input
+                ref={inputRef}
+                type="file"
+                accept="image/jpeg,image/jpg,image/png,image/webp"
+                multiple
+                className="hidden"
+                onChange={(e) => {
+                    const files = Array.from(e.target.files || []);
+                    if (files.length) onAddMore(files);
+                    e.target.value = "";
+                }}
+            />
         </div>
     );
 }
@@ -415,39 +447,77 @@ export default function AIEvaluatorPanel({ question, paper, answer, isLoggedIn, 
     const [error, setError] = useState(null);
     const [unreadable, setUnreadable] = useState(false);
 
-    const [imageDataUri, setImageDataUri] = useState(null);
-    const [previewUrl, setPreviewUrl] = useState(null);
-    const imageInputRef = useRef(null);
+    const [pages, setPages] = useState([]); // [{ id, dataUri, previewUrl }], in page order
 
     const wordCount = (answer || "").trim().split(/\s+/).filter(Boolean).length;
 
     const clearImage = useCallback(() => {
-        setImageDataUri(null);
-        setPreviewUrl(null);
+        setPages([]);
         setUnreadable(false);
         setError(null);
     }, []);
 
-    const handleFile = useCallback((file) => {
+    const handleFiles = useCallback((files) => {
         setError(null);
         setUnreadable(false);
 
-        if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
-            setError("Unsupported file type. Please upload a JPG, JPEG, PNG, or WEBP image.");
-            return;
-        }
-        if (file.size > MAX_IMAGE_BYTES) {
-            setError("Image is too large. Maximum size is 10MB.");
-            return;
-        }
+        setPages((prev) => {
+            const room = MAX_IMAGES - prev.length;
+            if (room <= 0) {
+                setError(`You can upload at most ${MAX_IMAGES} pages. Remove one first.`);
+                return prev;
+            }
 
-        const reader = new FileReader();
-        reader.onload = () => {
-            setImageDataUri(reader.result);
-            setPreviewUrl(reader.result);
-        };
-        reader.onerror = () => setError("Could not read the selected file. Please try again.");
-        reader.readAsDataURL(file);
+            const accepted = [];
+            let rejectedType = false;
+            let rejectedSize = false;
+
+            for (const file of files) {
+                if (accepted.length >= room) break;
+                if (!ALLOWED_IMAGE_TYPES.includes(file.type)) { rejectedType = true; continue; }
+                if (file.size > MAX_IMAGE_BYTES) { rejectedSize = true; continue; }
+                accepted.push(file);
+            }
+
+            if (files.length > room && accepted.length === room) {
+                setError(`Only ${MAX_IMAGES} pages allowed - added the first ${room}.`);
+            } else if (rejectedType) {
+                setError("Some files were skipped - only JPG, JPEG, PNG, or WEBP images are supported.");
+            } else if (rejectedSize) {
+                setError("Some images were skipped - maximum size is 10MB each.");
+            }
+
+            if (accepted.length > 0) {
+                // Read in original selection order, then append together in one
+                // update, so page order can't get shuffled by onload race conditions.
+                Promise.all(
+                    accepted.map(
+                        (file) =>
+                            new Promise((resolve, reject) => {
+                                const reader = new FileReader();
+                                reader.onload = () => resolve(reader.result);
+                                reader.onerror = () => reject(new Error("read failed"));
+                                reader.readAsDataURL(file);
+                            }),
+                    ),
+                )
+                    .then((dataUris) => {
+                        const newPages = dataUris.map((dataUri) => ({
+                            id: `${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+                            dataUri,
+                            previewUrl: dataUri,
+                        }));
+                        setPages((curr) => [...curr, ...newPages]);
+                    })
+                    .catch(() => setError("Could not read one of the selected files. Please try again."));
+            }
+
+            return prev;
+        });
+    }, []);
+
+    const removePage = useCallback((id) => {
+        setPages((prev) => prev.filter((p) => p.id !== id));
     }, []);
 
     const switchMode = useCallback((m) => {
@@ -474,11 +544,16 @@ export default function AIEvaluatorPanel({ question, paper, answer, isLoggedIn, 
 
     const handleEvaluateImage = useCallback(async () => {
         if (!question?.trim()) { setError("No question loaded."); return; }
-        if (!imageDataUri) { setError("Please upload a photo of your handwritten answer first."); return; }
+        if (pages.length === 0) { setError("Please upload at least one photo of your handwritten answer first."); return; }
 
         setError(null); setResult(null); setUnreadable(false); setLoading(true);
         try {
-            const res = await evaluateAnswerImage({ question, paper: paper || "GS2", image: imageDataUri, marks });
+            const res = await evaluateAnswerImage({
+                question,
+                paper: paper || "GS2",
+                images: pages.map((p) => p.dataUri),
+                marks,
+            });
             setResult(res.data);
             setProvider(res.provider_used);
         } catch (e) {
@@ -487,7 +562,7 @@ export default function AIEvaluatorPanel({ question, paper, answer, isLoggedIn, 
         } finally {
             setLoading(false);
         }
-    }, [question, paper, imageDataUri, marks]);
+    }, [question, paper, pages, marks]);
 
     const reset = () => {
         setResult(null);
@@ -583,34 +658,17 @@ export default function AIEvaluatorPanel({ question, paper, answer, isLoggedIn, 
                     {/* ── Upload Handwritten mode ── */}
                     {mode === "image" && (
                         <>
-                            {!previewUrl ? (
-                                <ImageDropzone onFile={handleFile} />
+                            {pages.length === 0 ? (
+                                <ImageDropzone onFiles={handleFiles} hasImages={false} />
                             ) : (
-                                <ImagePreview
-                                    src={previewUrl}
-                                    onReplace={() => imageInputRef.current?.click()}
-                                    onRemove={clearImage}
-                                />
+                                <ImageGrid pages={pages} onRemove={removePage} onAddMore={handleFiles} />
                             )}
-                            {/* Hidden input used by "Replace photo" so it can re-trigger the
-                                native camera/gallery picker without re-rendering the dropzone */}
-                            <input
-                                ref={imageInputRef}
-                                type="file"
-                                accept="image/jpeg,image/jpg,image/png,image/webp"
-                                className="hidden"
-                                onChange={(e) => {
-                                    const file = e.target.files?.[0];
-                                    if (file) handleFile(file);
-                                    e.target.value = "";
-                                }}
-                            />
-                            <button onClick={handleEvaluateImage} disabled={!imageDataUri}
+                            <button onClick={handleEvaluateImage} disabled={pages.length === 0}
                                 className="btn-primary flex items-center justify-center gap-2 w-full mt-3 touch-manipulation">
                                 <Sparkles size={13} /> Evaluate Handwritten Answer
                             </button>
                             <p className="text-[10px] font-mono text-text-muted text-center mt-1.5">
-                                Gemini Vision reads your handwriting, then evaluates it like any typed answer
+                                Gemini Vision reads your handwriting across all pages, then evaluates it like any typed answer
                             </p>
                         </>
                     )}
@@ -648,4 +706,4 @@ export default function AIEvaluatorPanel({ question, paper, answer, isLoggedIn, 
             )}
         </div>
     );
-}
+                                                                      }
