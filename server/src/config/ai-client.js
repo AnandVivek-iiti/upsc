@@ -496,7 +496,6 @@ async function evaluateAnswer(userPrompt, paper, marks) {
 // Only Gemini supports multimodal (image) input in this provider chain, so
 // this intentionally does NOT go through runWithProviders' OpenRouter/Groq
 // fallback - those providers only ever receive plain text in this codebase.
-
 const EXTRACTION_FAILURE_MESSAGE =
   "Unable to confidently read the answer. Please upload a clearer image.";
 
@@ -508,19 +507,24 @@ class ExtractionFailedError extends Error {
   }
 }
 
-function buildVisionAddendum() {
+function buildVisionAddendum(pageCount = 1) {
+  const pageLine =
+    pageCount > 1
+      ? `You have been given ${pageCount} photographs of a handwritten UPSC Mains answer, attached in order as separate images (page 1, page 2, ... page ${pageCount}). Treat them as one continuous answer written across multiple pages - do not evaluate them as separate answers.`
+      : `You have been given a photograph of a handwritten UPSC Mains answer (a single page, or a cropped section).`;
+
   return `
 
 ═══════════════════════════════════════
 HANDWRITTEN ANSWER MODE (IMAGE INPUT)
 ═══════════════════════════════════════
-You have been given a photograph of a handwritten UPSC Mains answer (a single page, a cropped section, or multiple pages stitched into one image). Before evaluating anything, you must:
+${pageLine} Before evaluating anything, you must:
 
 STEP 1 - FAITHFUL TRANSCRIPTION:
-Carefully transcribe the handwritten content into clean digital text. Preserve the candidate's own structure - headings, numbered points, bullet points, underlines (render as **bold**), diagrams or flowcharts (describe them briefly in words, e.g. "[diagram: flowchart showing X leading to Y leading to Z]"). Do NOT correct grammar, improve wording, or fill gaps - transcribe exactly what the candidate wrote, including their own mistakes. If a specific word or short phrase is illegible, write [illegible] in its place rather than guessing.
+Carefully transcribe the handwritten content into clean digital text${pageCount > 1 ? ", reading the pages in the order given and joining them into a single continuous transcription (do not label or separate pages in the output)" : ""}. Preserve the candidate's own structure - headings, numbered points, bullet points, underlines (render as **bold**), diagrams or flowcharts (describe them briefly in words, e.g. "[diagram: flowchart showing X leading to Y leading to Z]"). Do NOT correct grammar, improve wording, or fill gaps - transcribe exactly what the candidate wrote, including their own mistakes. If a specific word or short phrase is illegible, write [illegible] in its place rather than guessing.
 
-If the image is too blurry, poorly lit, rotated or cropped beyond use, or the handwriting is illegible across most of the answer such that you cannot responsibly produce a faithful transcription, STOP immediately and return ONLY this JSON object (nothing else, no other keys):
-{ "extraction_failed": true, "extracted_answer": "", "extraction_note": "<one short sentence explaining why, e.g. 'Image too blurry to read reliably' or 'Most of the handwriting is illegible'>" }
+If ${pageCount > 1 ? "any of the images are" : "the image is"} too blurry, poorly lit, rotated or cropped beyond use, or the handwriting is illegible across most of the answer such that you cannot responsibly produce a faithful transcription, STOP immediately and return ONLY this JSON object (nothing else, no other keys):
+{ "extraction_failed": true, "extracted_answer": "", "extraction_note": "<one short sentence explaining why, e.g. 'Image too blurry to read reliably', 'Most of the handwriting is illegible', or 'Page 2 is unreadable'>" }
 
 STEP 2 - EVALUATION:
 If transcription succeeded, evaluate the transcribed text exactly as you would a typed answer - apply every scoring rule, deduction, and the JSON schema defined above with NO changes to the evaluation logic itself. Then return the standard JSON schema from above with two additional top-level keys merged in:
@@ -530,11 +534,15 @@ If transcription succeeded, evaluate the transcribed text exactly as you would a
 Return ONLY ONE final JSON object - either the extraction-failure object above, or the full evaluation schema plus the two additional keys. Never wrap it in markdown, and never return the two steps as separate objects.`;
 }
 
-function buildImageEvalPrompt({ question, paper, marks }) {
+function buildImageEvalPrompt({ question, paper, marks, pageCount = 1 }) {
   const expectedWords = expectedWordCountForMarks(marks);
   const marksLine = marks
     ? `Marks: ${marks}\nExpected word count for full marks at this weightage: ~${expectedWords} words\n`
     : "";
+  const attachedLine =
+    pageCount > 1
+      ? `The student's answer is handwritten across ${pageCount} pages, attached as ${pageCount} images in order.`
+      : `The student's answer is handwritten and attached as an image.`;
   return `**MAINS EVALUATION REQUEST - HANDWRITTEN ANSWER (IMAGE)**
 
 Paper: ${paper || "GS2"}
@@ -542,21 +550,22 @@ ${marksLine}
 **Question:**
 ${question.trim()}
 
-The student's answer is handwritten and attached as an image. Follow STEP 1 (transcription) and STEP 2 (evaluation) exactly as instructed in your system prompt above. The student has an engineering background, so they think analytically but may lack humanities-specific terminology and UPSC answer-writing conventions - evaluate accordingly, exactly as you would for a typed submission.`;
+${attachedLine} Follow STEP 1 (transcription) and STEP 2 (evaluation) exactly as instructed in your system prompt above. The student has an engineering background, so they think analytically but may lack humanities-specific terminology and UPSC answer-writing conventions - evaluate accordingly, exactly as you would for a typed submission.`;
 }
 
 /**
  * evaluateAnswerImage - handwritten-answer counterpart to evaluateAnswer().
- * One Gemini Vision call: transcribes the photo, then grades the transcription
- * with the same per-paper rubric used for typed answers.
+ * One Gemini Vision call: transcribes the photo(s), then grades the
+ * transcription with the same per-paper rubric used for typed answers.
  *
- * @param {{ question: string, imageBase64: string, mimeType: string, paper?: string }} args
+ * @param {{ question: string, images: Array<{imageBase64: string, mimeType: string}>, paper?: string, marks?: string|number }} args
+ *   `images` holds one entry per page, in the order they should be read.
  * @returns {Promise<{ result: object, provider: string }>} result is shaped
  *   identically to evaluateAnswer()'s output, plus a populated
  *   `extracted_answer` field.
  * @throws {ExtractionFailedError} when the handwriting can't be read reliably.
  */
-async function evaluateAnswerImage({ question, imageBase64, mimeType, paper, marks }) {
+async function evaluateAnswerImage({ question, images, paper, marks }) {
   if (!process.env.GEMINI_API_KEY) {
     throw new Error(
       "Handwriting evaluation requires Gemini Vision, which is not configured on this server.",
@@ -565,12 +574,13 @@ async function evaluateAnswerImage({ question, imageBase64, mimeType, paper, mar
   if (!question || !question.trim()) {
     throw new Error("Question text is required.");
   }
-  if (!imageBase64 || !mimeType) {
+  const pages = Array.isArray(images) ? images.filter((img) => img?.imageBase64 && img?.mimeType) : [];
+  if (pages.length === 0) {
     throw new Error("No image was provided to evaluate.");
   }
 
-  const systemInstruction = getSystemInstruction(paper) + buildVisionAddendum();
-  const userPrompt = buildImageEvalPrompt({ question, paper, marks });
+  const systemInstruction = getSystemInstruction(paper) + buildVisionAddendum(pages.length);
+  const userPrompt = buildImageEvalPrompt({ question, paper, marks, pageCount: pages.length });
 
   const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
   const model = genAI.getGenerativeModel({
@@ -585,11 +595,11 @@ async function evaluateAnswerImage({ question, imageBase64, mimeType, paper, mar
 
   let rawText;
   try {
-    console.log("[Evaluation:Image] Trying provider: Gemini Vision...");
-    const result = await model.generateContent([
-      { inlineData: { mimeType, data: imageBase64 } },
-      { text: userPrompt },
-    ]);
+    console.log(`[Evaluation:Image] Trying provider: Gemini Vision... (${pages.length} page${pages.length > 1 ? "s" : ""})`);
+    const imageParts = pages.map((img) => ({
+      inlineData: { mimeType: img.mimeType, data: img.imageBase64 },
+    }));
+    const result = await model.generateContent([...imageParts, { text: userPrompt }]);
     rawText = result.response.text();
     console.log("[Evaluation:Image] Success with: Gemini Vision");
   } catch (err) {
