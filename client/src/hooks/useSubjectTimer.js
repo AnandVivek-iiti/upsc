@@ -1,15 +1,3 @@
-/**
- * useSubjectTimer.js
- * ─────────────────────────────────────────────────────────────────────────────
- * Bridges timerStore with subject-session API. Includes detailed logging.
- *
- * "Today's Topic" = { subject, chapter } chosen once via the subject picker
- * before the timer is allowed to start. It is persisted to localStorage
- * (date-keyed, same pattern as TodayPlanner's `upsc-tasks-${date}` key) so
- * the topic shown to the student and the subject the timer is logging
- * against can never drift apart - even across reloads, pauses, and tab
- * switches. Picking a topic and starting the timer happen as one step.
- */
 
 import { useState, useCallback, useRef, useEffect } from "react";
 import timerStore from "./timerStore";
@@ -37,22 +25,6 @@ export const SUBJECT_ICONS = {
   Optional: "📖", "Current Affairs": "📰", Other: "📚",
 };
 
-// ─── Subject → Syllabus module mapping ───────────────────────────────────────
-// Mirrors server/src/controllers/subjectSessionController.js's
-// SUBJECT_SYLLABUS_MAP exactly (stage/paper/module keys must match
-// src/data/PYQs/syllabusData.js). This is the single source of truth the
-// syllabus-sync confirm modal uses to know which modules - and therefore
-// which real topics[] - a given subject's study session maps to.
-//
-// Deliberately exhaustive per subject/paper (not a curated shortlist): every
-// module in syllabusData.js that genuinely belongs to a subject is listed,
-// for BOTH prelims and mains independently, so nothing studied is left
-// unreachable in the checklist. Modules with no clean 1:1 subject (e.g.
-// "Indian Society & Diversity", "Internal Security", "International
-// Relations") are intentionally left out of every list rather than forced
-// into one - they don't map to any of the 12 subjects in UPSC_SUBJECTS.
-// Current Affairs / Other stay absent for the same reason: cross-cutting,
-// no single syllabus module to attach them to.
 export const SUBJECT_SYLLABUS_MAP = {
   History: [
     { stage: "prelims", paper: "GS1", module: "History of India & Indian National Movement" },
@@ -158,11 +130,6 @@ function clearTodayTopic() {
   }
 }
 
-// ─── Preferred Subjects persistence ──────────────────────────────────────────
-// Exported (not local to one file) so ProfilePage.jsx's editor and this
-// timer's subject picker read/write the exact same storage key - a student's
-// saved preferences and what the picker offers first can never drift apart.
-// Keyed by user, not by date: a study-subject preference isn't a daily thing.
 export function preferredSubjectsKey(uid) {
   return `upsc_preferred_subjects_${uid || "anon"}`;
 }
@@ -202,46 +169,34 @@ export function useSubjectTimer({
   const [error, setError] = useState(null);
   const startedAtRef = useRef(null);
 
-  // ── Per-session duration tracking (for the syllabus-sync modal) ──────────
-  // timerStore.elapsed is the day's cumulative total, not this session's
-  // duration, so it's tracked separately here: snapshot elapsed at
-  // startStudy(), diff it at pauseStudy() to know this session's real length.
   const sessionStartElapsedRef = useRef(0);
   const [lastSession, setLastSession] = useState(null); // { id, subject, chapter, durationSeconds } | null
 
-  // Restore session + today's topic across reloads
+
   useEffect(() => {
     const savedId = sessionStorage.getItem(ACTIVE_SESSION_KEY);
     const savedSubject = sessionStorage.getItem(ACTIVE_SUBJECT_KEY);
     const savedTopic = loadTodayTopic();
 
-    if (savedId && savedSubject && timerStore.elapsed > 0) {
-      // A live, server-tracked session survived the reload - restore it exactly.
+    if (savedId && savedSubject) {
+
       setActiveId(savedId);
       setSubject(savedSubject);
       setChapter(savedTopic?.chapter || "");
-      setPhase(timerStore.running ? "running" : "paused");
-    } else {
-      if (savedId && timerStore.elapsed === 0) {
-        sessionStorage.removeItem(ACTIVE_SESSION_KEY);
-        sessionStorage.removeItem(ACTIVE_SUBJECT_KEY);
-      }
-      // No live session to restore - but the student may already have picked
-      // today's topic earlier (e.g. paused, then reloaded the page). Surface
-      // it anyway so what's shown never falls out of sync with what's logged.
-      if (savedTopic?.subject) {
-        setSubject(savedTopic.subject);
-        setChapter(savedTopic.chapter || "");
-        setPhase(timerStore.elapsed > 0 ? "paused" : "idle");
-      }
+      setPhase("paused");
+    } else if (savedTopic?.subject) {
+      
+      setSubject(savedTopic.subject);
+      setChapter(savedTopic.chapter || "");
+      setPhase("idle");
     }
   }, []);
 
-  // Fetch today's sessions & analytics on mount
   useEffect(() => {
     if (userId) {
       fetchTodaySessions();
       fetchAnalytics("lifetime");
+      retryPendingEnd();
     }
   }, [userId]);
 
@@ -330,6 +285,8 @@ export function useSubjectTimer({
     const currentId = activeId;
     if (!currentId || !userId) return;
 
+
+    let endedOnServer = false;
     try {
       const res = await fetch(`${BASE}/subject-sessions/${currentId}/end`, {
         method: "PATCH",
@@ -338,6 +295,7 @@ export function useSubjectTimer({
       const json = await res.json();
       console.log("⏹️ End session response:", json);
       if (json.success) {
+        endedOnServer = true;
         const totalHours = timerStore.elapsed / 3600;
         if (onLogHours) {
           const note = chapter ? `${subject} - ${chapter} session` : `${subject} session`;
@@ -350,15 +308,49 @@ export function useSubjectTimer({
         setLastSession({ id: currentId, subject, chapter, durationSeconds });
         await fetchTodaySessions();
         await fetchAnalytics("lifetime");
+      } else {
+        console.error("❌ End session error:", json.error);
+        setError("Couldn't save this session - will retry. Don't force-close the app yet.");
       }
     } catch (err) {
-      console.error("❌ End session error:", err);
+      console.error("❌ End session network error:", err);
+      setError("Couldn't save this session (network issue) - will retry when back online.");
     }
 
-    setActiveId(null);
-    sessionStorage.removeItem(ACTIVE_SESSION_KEY);
-    sessionStorage.removeItem(ACTIVE_SUBJECT_KEY);
+    if (endedOnServer) {
+      setActiveId(null);
+      sessionStorage.removeItem(ACTIVE_SESSION_KEY);
+      sessionStorage.removeItem(ACTIVE_SUBJECT_KEY);
+    }
+    // If it didn't end on the server, activeId/sessionStorage are deliberately
+    // left in place so a retry (see retryPendingEnd) can still close it out.
   }, [activeId, userId, subject, chapter, onLogHours, onSynced, fetchTodaySessions, fetchAnalytics]);
+
+  // ─── Retry a session that failed to close on the server ──────────────────
+  // Call this on mount/reconnect: if sessionStorage still has an activeId
+  // (meaning the last pause's PATCH /end never actually succeeded), try again
+  // instead of leaving it to rot until the next startSession() stale-sweep.
+  const retryPendingEnd = useCallback(async () => {
+    const pendingId = sessionStorage.getItem(ACTIVE_SESSION_KEY);
+    if (!pendingId || !userId || timerStore.running) return;
+    try {
+      const res = await fetch(`${BASE}/subject-sessions/${pendingId}/end`, {
+        method: "PATCH",
+        headers: authHeaders(),
+      });
+      const json = await res.json();
+      if (json.success || json.error === "Session already closed.") {
+        setActiveId(null);
+        sessionStorage.removeItem(ACTIVE_SESSION_KEY);
+        sessionStorage.removeItem(ACTIVE_SUBJECT_KEY);
+        setError(null);
+        await fetchTodaySessions();
+        await fetchAnalytics("lifetime");
+      }
+    } catch (err) {
+      console.error("❌ retryPendingEnd error:", err);
+    }
+  }, [userId, fetchTodaySessions, fetchAnalytics]);
 
   // ── Attach a free-text note to a session after the fact ──────────────────
   // Used by the syllabus-sync modal's "didn't cover any of these?" fallback.
@@ -433,5 +425,6 @@ export function useSubjectTimer({
     lastSession,               // { id, subject, chapter, durationSeconds } for the most recently *ended* session
     sessionStartElapsedRef,    // .current = timerStore.elapsed snapshot at start, so callers can derive a live running-session duration
     addSessionNote,
+    retryPendingEnd,           // manual retry hook, e.g. a "Sync" button, in case the automatic mount-time retry also hit a network error
   };
 }
