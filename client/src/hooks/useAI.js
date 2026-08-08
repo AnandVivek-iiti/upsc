@@ -62,14 +62,16 @@ export async function evaluateAnswer({ question, answer, paper }) {
   });
 }
 
-export async function evaluateAnswerImage({ question, paper, image }) {
+// `images` is an array of data URIs (one per page, in reading order).
+export async function evaluateAnswerImage({ question, paper, images, marks }) {
   return request(`${BASE}/evaluate/answer`, {
     method: "POST",
     headers: authHeaders(),
     body: JSON.stringify({
       question,
       paper,
-      image: { data: image },
+      marks,
+      images: (images || []).map((data) => ({ data })),
     }),
   });
 }
@@ -259,4 +261,4 @@ export async function syncAttempts(attempts) {
     headers: authHeaders(),
     body: JSON.stringify({ attempts }),
   });
-}
+      }
