@@ -10,6 +10,9 @@ const EXCL_NAMES = ["admin", "anand vivek"];
 const EXCL_SQL = EXCL_NAMES.map((n) => `'${n}'`).join(", ");
 const EXCL_UID_COND = `user_id NOT IN (SELECT id FROM "users" WHERE LOWER(name) IN (${EXCL_SQL}))`;
 const MAX_SESSION_SECONDS = 4 * 60 * 60;
+// Past this, an open session isn't a real continuous study block anymore -
+// it's the client having lost track of it. See startSession's stale sweep.
+const STALE_GRACE_SECONDS = 20 * 60;
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 function fmtDisplay(secs) {
@@ -157,14 +160,32 @@ const startSession = async (req, res, next) => {
 
     const now = Date.now();
     const dateStr = getISTDateString();
-  const staleOpen = await SubjectSession.findAll({ where: { user_id: req.user.id, end_time: null } });
+    const staleOpen = await SubjectSession.findAll({ where: { user_id: req.user.id, end_time: null } });
     for (const stale of staleOpen) {
       const rawSeconds = Math.max(0, Math.round((now - Number(stale.start_time)) / 1000));
-      const duration_seconds = Math.min(rawSeconds, MAX_SESSION_SECONDS);
+      // A session that's still open when the user starts a *different* one is
+      // almost never a genuine multi-hour study block - it's the client
+      // having lost track of it (app closed/killed, a failed PATCH .../end,
+      // etc). Crediting it up to MAX_SESSION_SECONDS blended fake hours
+      // straight into real stats with no way to tell them apart. Instead:
+      // small gaps (browser hiccup, a missed beat) get credited as before;
+      // anything past STALE_GRACE_SECONDS is treated as abandoned and
+      // discarded, and flagged so it's visibly distinguishable if surfaced.
+      const isAbandoned = rawSeconds > STALE_GRACE_SECONDS;
+      const duration_seconds = isAbandoned ? 0 : Math.min(rawSeconds, MAX_SESSION_SECONDS);
       stale.end_time = now;
       stale.duration_seconds = duration_seconds;
+      // NOTE: if you add an `auto_closed` boolean column to SubjectSession
+      // (migration required), set `stale.auto_closed = true` here too - it's
+      // a cleaner signal than parsing the notes tag below.
+      stale.notes = [stale.notes, isAbandoned
+        ? `[auto-closed: abandoned session, ${Math.round(rawSeconds / 60)}m open, discarded]`
+        : `[auto-closed: ${Math.round(rawSeconds / 60)}m]`]
+        .filter(Boolean).join(" ");
       await stale.save();
-      addSubjectSessionToDailyLog(req.user.id, stale.date, duration_seconds).catch(() => {});
+      if (duration_seconds > 0) {
+        addSubjectSessionToDailyLog(req.user.id, stale.date, duration_seconds).catch(() => {});
+      }
     }
 
     const session = await SubjectSession.create({
@@ -498,7 +519,7 @@ const adminUserBreakdown = async (req, res, next) => {
       });
     }
 
-    const result = aggRows.map((r) => {
+ const result = aggRows.map((r) => {
       const subs = (subjectByUser[r.user_id] || []).sort((a, b) => b.seconds - a.seconds);
       return {
         user_id: r.user_id,
@@ -665,3 +686,4 @@ module.exports = {
   adminGlobalInsights,
   SUBJECT_SYLLABUS_MAP,
 };
+    
