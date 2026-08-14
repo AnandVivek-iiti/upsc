@@ -52,6 +52,26 @@ async function request(url, options = {}) {
 
   return json;
 }
+export function isLimitReachedError(err) {
+  if (!err) return false;
+  if (err.limit_reached || err.daily_limit_reached || err.quota_exceeded || err.upgrade_required) {
+    return true;
+  }
+  const msg = err.message || "";
+  return /limit/i.test(msg) && /(day|daily|reached|exceeded|upgrade|premium)/i.test(msg);
+}
+
+// Distinct from isLimitReachedError: this is the "you don't have Premium at
+// all" case (requirePremium, 403, code: "PREMIUM_REQUIRED"), not the "you
+// used up today's free quota" case (evaluateLimiter, 429). The two need
+// different copy in the UI, so keep them as separate checks rather than
+// folding this into isLimitReachedError.
+export function isPremiumRequiredError(err) {
+  if (!err) return false;
+  if (err.code === "PREMIUM_REQUIRED") return true;
+  const msg = err.message || "";
+  return /premium subscription/i.test(msg);
+}
 
 // ─── POST /api/evaluate/answer ────────────────────────────────────────────────
 export async function evaluateAnswer({ question, answer, paper }) {
@@ -63,8 +83,13 @@ export async function evaluateAnswer({ question, answer, paper }) {
 }
 
 // `images` is an array of data URIs (one per page, in reading order).
+//
+// The backend returns `extracted_answer` as a sibling of `data`, not nested
+// inside it - merge it in here so every caller that reads `res.data` (e.g.
+// to feed straight into an <EvalResult data={...} /> component) gets the
+// transcription for free instead of silently losing it.
 export async function evaluateAnswerImage({ question, paper, images, marks }) {
-  return request(`${BASE}/evaluate/answer`, {
+  const res = await request(`${BASE}/evaluate/answer`, {
     method: "POST",
     headers: authHeaders(),
     body: JSON.stringify({
@@ -74,6 +99,10 @@ export async function evaluateAnswerImage({ question, paper, images, marks }) {
       images: (images || []).map((data) => ({ data })),
     }),
   });
+  return {
+    ...res,
+    data: res.data ? { ...res.data, extracted_answer: res.extracted_answer } : res.data,
+  };
 }
 export async function chatWithMentor({ message, contextHint = "", threadId = null }) {
   return request(`${BASE}/evaluate/chat`, {
@@ -251,6 +280,14 @@ export async function addToRevisionQueue({ topic, paper, difficulty }) {
     method: "POST",
     headers: authHeaders(),
     body: JSON.stringify({ topic, paper, difficulty }),
+  });
+}
+
+// ─── DELETE /api/dashboard/spaced-repetition/:id ─────────────────────────────
+export async function deleteRevisionItem(id) {
+  return request(`${BASE}/dashboard/spaced-repetition/${id}`, {
+    method: "DELETE",
+    headers: authHeaders(),
   });
 }
 

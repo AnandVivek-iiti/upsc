@@ -1,5 +1,52 @@
-﻿const { QueryTypes } = require("sequelize");
+﻿const { QueryTypes, Op, fn, col } = require("sequelize");
 const { sequelize } = require("../config/db");
+const SubjectSession = require("../models/SubjectSession");
+function fmtDisplay(secs) {
+  if (!secs) return "0m";
+  const h = Math.floor(secs / 3600);
+  const m = Math.floor((secs % 3600) / 60);
+  if (h === 0) return `${m}m`;
+  return m === 0 ? `${h}h` : `${h}h ${m}m`;
+}
+function toHours(secs) {
+  return Math.round((secs / 3600) * 100) / 100;
+}
+async function getSubjectBreakdownForUsers(userIds) {
+  if (!userIds.length) return {};
+
+  const rows = await SubjectSession.findAll({
+    where: {
+      user_id: { [Op.in]: userIds },
+      duration_seconds: { [Op.not]: null },
+    },
+    attributes: [
+      "user_id",
+      "subject",
+      [fn("SUM", col("duration_seconds")), "total_seconds"],
+      [fn("COUNT", col("id")), "session_count"],
+    ],
+    group: ["user_id", "subject"],
+    raw: true,
+  });
+
+  const byUser = {};
+  for (const r of rows) {
+    const seconds = Number(r.total_seconds) || 0;
+    if (!byUser[r.user_id]) byUser[r.user_id] = [];
+    byUser[r.user_id].push({
+      subject: r.subject,
+      hours: toHours(seconds),
+      sessions: Number(r.session_count),
+      display: fmtDisplay(seconds),
+      _seconds: seconds,
+    });
+  }
+  for (const uid of Object.keys(byUser)) {
+    byUser[uid].sort((a, b) => b._seconds - a._seconds);
+    byUser[uid].forEach((s) => delete s._seconds);
+  }
+  return byUser;
+}
 
 const getLeaderboard = async (req, res, next) => {
   try {
@@ -44,6 +91,7 @@ const getLeaderboard = async (req, res, next) => {
          SELECT
            u.id,
            u.name,
+           u.avatar,
            u.target_year,
            u.streak,
            u.longest_streak,
@@ -85,19 +133,32 @@ const getLeaderboard = async (req, res, next) => {
 
     const meRow = req.user?.id ? rows.find((r) => r.id === req.user.id) : null;
 
-    const shape = (r) => ({
-      id: r.id,
-      name: r.name,
-      target_year: r.target_year,
-      rank: parseInt(r.rank, 10),
-      streak: r.streak,
-      longest_streak: r.longest_streak,
-      total_study_hours: parseFloat(r.total_study_hours),
-      mains_evaluations: parseInt(r.mains_evaluations, 10),
-      tests_attempted: parseInt(r.tests_attempted, 10),
-      avg_test_accuracy: parseFloat(r.avg_test_accuracy),
-      composite_score: parseFloat(r.composite_score),
-    });
+    // Subject breakdown is only fetched for the rows actually being returned
+    // (current page + "me", deduped) - never the whole leaderboard.
+    const idsNeeded = Array.from(
+      new Set([...pageRows.map((r) => r.id), ...(meRow ? [meRow.id] : [])])
+    );
+    const subjectBreakdownByUser = await getSubjectBreakdownForUsers(idsNeeded);
+
+    const shape = (r) => {
+      const subjects = subjectBreakdownByUser[r.id] || [];
+      return {
+        id: r.id,
+        name: r.name,
+        avatar: r.avatar || null,
+        target_year: r.target_year,
+        rank: parseInt(r.rank, 10),
+        streak: r.streak,
+        longest_streak: r.longest_streak,
+        total_study_hours: parseFloat(r.total_study_hours),
+        mains_evaluations: parseInt(r.mains_evaluations, 10),
+        tests_attempted: parseInt(r.tests_attempted, 10),
+        avg_test_accuracy: parseFloat(r.avg_test_accuracy),
+        composite_score: parseFloat(r.composite_score),
+        top_subject: subjects[0]?.subject || null,
+        subject_breakdown: subjects,
+      };
+    };
 
     // Only years that actually have at least one student, for the filter dropdown.
     const yearRows = await sequelize.query(

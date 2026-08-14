@@ -175,11 +175,8 @@ export function openNote(note) {
 export async function submitFeedback(payload) {
   return apiFetch("/feedback", { method: "POST", body: JSON.stringify(payload) });
 }
-
-// ─── Leaderboard ──────────────────────────────────────────────────────────────
-// sortBy: "streak" | "hours" | "mains" | "accuracy" | "composite"
-// year: a target_year (e.g. 2026) to filter to, or omit/"all" for everyone
-export async function getLeaderboard({ sortBy = "composite", year = "all", page = 1, limit = 25 } = {}) {
+export async function getLeaderboard({ sortBy = "composite", year = "all", page = 1, limit = 25, search = "" } = {}) {
   const params = new URLSearchParams({ sort: sortBy, year: String(year), page: String(page), limit: String(limit) });
+  if (search) params.set("search", search);
   return apiFetch(`/leaderboard?${params.toString()}`);
 }

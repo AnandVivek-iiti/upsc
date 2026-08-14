@@ -9,6 +9,7 @@ const {
   syncQuestionAttempts,
   getSpacedRepetition,
   addSpacedRepetition,
+  deleteSpacedRepetition
 } = require("../controllers/dashboardController");
 const { protect } = require("../middleware/authMiddleware");
 
@@ -30,5 +31,6 @@ router.post("/question-attempts", syncQuestionAttempts);
 // Spaced repetition
 router.get("/spaced-repetition", getSpacedRepetition);
 router.post("/spaced-repetition", addSpacedRepetition);
+router.delete("/spaced-repetition/:id", deleteSpacedRepetition);
 
 module.exports = router;

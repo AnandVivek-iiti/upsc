@@ -2,15 +2,70 @@ const { runNotesAction, extractNoteFromImage, ExtractionFailedError } = require(
 const trackEvent = require("../utils/trackEvent");
 const { UserData } = require("../models/UserData");
 const Note = require("../models/Note");
-
-// ─── Photo upload limits 
-const MAX_IMAGE_BYTES = 10 * 1024 * 1024; // 10MB
+const MAX_IMAGE_BYTES = 10 * 1024 * 1024; // 10MB per page
+const MAX_IMAGES = 5; // pages per upload
 const ALLOWED_IMAGE_MIME = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
 const DATA_URI_PATTERN = /^data:(image\/[a-zA-Z0-9.+-]+);base64,([\s\S]+)$/;
 function parseImageDataUri(dataUri) {
   const match = typeof dataUri === "string" ? dataUri.match(DATA_URI_PATTERN) : null;
   if (!match) return null;
   return { mimeType: match[1].toLowerCase(), base64Data: match[2] };
+}
+
+function parseAndValidateImages(body) {
+  const raw = Array.isArray(body.images)
+    ? body.images
+    : body.image
+    ? [body.image]
+    : [];
+
+  if (raw.length === 0) return { images: [] };
+
+  if (raw.length > MAX_IMAGES) {
+    return { error: `Too many pages. Maximum allowed is ${MAX_IMAGES} per upload.` };
+  }
+
+  const images = [];
+  for (let i = 0; i < raw.length; i++) {
+    const entry = raw[i];
+    const parsed = parseImageDataUri(entry?.data);
+    if (!parsed) {
+      return { error: `Invalid image data on page ${i + 1}. Please re-upload the photo.` };
+    }
+    if (!ALLOWED_IMAGE_MIME.includes(parsed.mimeType)) {
+      return {
+        error: `Unsupported image format on page ${i + 1}. Please upload a JPG, PNG, or WEBP file.`,
+      };
+    }
+    const byteSize = Buffer.byteLength(parsed.base64Data, "base64");
+    if (byteSize > MAX_IMAGE_BYTES) {
+      return { error: `Page ${i + 1} is too large. Maximum allowed size is 10MB per page.` };
+    }
+    images.push({ mimeType: parsed.mimeType, base64Data: parsed.base64Data, byteSize });
+  }
+
+  return { images };
+}
+const MAX_PDF_BYTES = 10 * 1024 * 1024; // 10MB
+const PDF_DATA_URI_PATTERN = /^data:application\/pdf;base64,([\s\S]+)$/i;
+
+function parsePdfDataUri(dataUri) {
+  const match = typeof dataUri === "string" ? dataUri.match(PDF_DATA_URI_PATTERN) : null;
+  if (!match) return null;
+  return { mimeType: "application/pdf", base64Data: match[1] };
+}
+
+
+function parseAndValidatePdf(body) {
+  const parsed = parsePdfDataUri(body?.pdf?.data);
+  if (!parsed) {
+    return { error: "Invalid PDF data. Please re-upload the file." };
+  }
+  const byteSize = Buffer.byteLength(parsed.base64Data, "base64");
+  if (byteSize > MAX_PDF_BYTES) {
+    return { error: "PDF is too large. Maximum allowed size is 10MB." };
+  }
+  return { file: { mimeType: parsed.mimeType, base64Data: parsed.base64Data, byteSize } };
 }
 
 
@@ -63,37 +118,50 @@ exports.revisionNotes = makeNotesHandler("revision");
 exports.mainsFormat = makeNotesHandler("mains");
 
 // ─── POST /api/notes/extract-image
+// Body accepts `images: [{ data }, ...]` (up to MAX_IMAGES pages), the
+// legacy single `image: { data }` shape, or a single `pdf: { data }` (up to
+// 10MB) - not both image(s) and pdf in the same request.
 exports.extractFromImage = async (req, res, next) => {
   try {
-    const { image } = req.body;
-    if (!image || !image.data) {
+    const { image, images: imagesInput, pdf } = req.body;
+    const hasImagePayload = (Array.isArray(imagesInput) && imagesInput.length > 0) || !!image?.data;
+    const hasPdfPayload = !!pdf?.data;
+
+    if (hasImagePayload && hasPdfPayload) {
+      return res.status(400).json({
+        success: false,
+        error: "Please upload either photo pages or a single PDF, not both.",
+      });
+    }
+    if (!hasImagePayload && !hasPdfPayload) {
       return res.status(400).json({ success: false, error: "No image provided." });
     }
 
-    const parsedImage = parseImageDataUri(image.data);
-    if (!parsedImage) {
-      return res.status(400).json({ success: false, error: "Invalid image data. Please re-upload the photo." });
+    let images, inputMode;
+    if (hasPdfPayload) {
+      const { file, error } = parseAndValidatePdf(req.body);
+      if (error) {
+        return res.status(400).json({ success: false, error });
+      }
+      images = [file];
+      inputMode = "pdf";
+    } else {
+      const { images: parsedImages, error } = parseAndValidateImages(req.body);
+      if (error) {
+        return res.status(400).json({ success: false, error });
+      }
+      images = parsedImages;
+      inputMode = "image";
     }
-    const { mimeType, base64Data } = parsedImage;
 
-    if (!ALLOWED_IMAGE_MIME.includes(mimeType)) {
-      return res.status(400).json({
-        success: false,
-        error: "Unsupported image format. Please upload a JPG, PNG, or WEBP file.",
-      });
-    }
-    const byteSize = Buffer.byteLength(base64Data, "base64");
-    if (byteSize > MAX_IMAGE_BYTES) {
-      return res.status(400).json({ success: false, error: "Image is too large. Maximum allowed size is 10MB." });
-    }
-
+    const totalBytes = images.reduce((sum, img) => sum + img.byteSize, 0);
     console.log(
-      `[Notes:Image] Processing for user: ${req.user.id} (${(byteSize / (1024 * 1024)).toFixed(2)}MB, ${mimeType})`,
+      `[Notes:${inputMode === "pdf" ? "PDF" : "Image"}] Processing for user: ${req.user.id} (${images.length} attachment(s), ${(totalBytes / (1024 * 1024)).toFixed(2)}MB total)`,
     );
 
     let result, provider;
     try {
-      ({ result, provider } = await extractNoteFromImage({ imageBase64: base64Data, mimeType }));
+      ({ result, provider } = await extractNoteFromImage({ images }));
     } catch (err) {
       if (err instanceof ExtractionFailedError || err.code === "EXTRACTION_FAILED") {
         return res.status(422).json({ success: false, error: err.message, extraction_failed: true });
@@ -101,7 +169,9 @@ exports.extractFromImage = async (req, res, next) => {
       throw err;
     }
 
-    trackEvent(req.user.id, "notes_photo_upload", "Notes Photo Upload").catch(() => {});
+    trackEvent(req.user.id, "notes_photo_upload", "Notes Photo Upload", {
+      input_mode: inputMode,
+    }).catch(() => {});
 
     return res.status(200).json({
       success: true,

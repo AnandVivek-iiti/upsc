@@ -30,6 +30,7 @@ const PLANS = [
   },
 ];
 
+// ── Feature comparison rows - Free vs Premium ────────────────────────────────
 const FEATURES = [
   { icon: ScanEye,     label: "Handwritten (Vision) Mains evaluation", free: false, premium: true },
   { icon: Gauge,       label: "Daily Mains evaluations",               free: "10/day", premium: "Higher limit" },
@@ -49,6 +50,7 @@ export default function PremiumPlans({ token, user, onUpgraded }) {
   const [selected, setSelected] = useState("yearly");
   const [profile, setProfile] = useState(null);
 
+  // subscription lives on GET /auth/me, not the useUserData() dashboard payload
   const fetchProfile = useCallback(() => {
     if (!token) return;
     getProfile()

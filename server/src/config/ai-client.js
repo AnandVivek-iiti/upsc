@@ -86,24 +86,11 @@ function safeJSONParse(rawText) {
         console.warn("Output truncated");
         reason = "AI response was truncated (likely hit the token limit) and could not be parsed as JSON";
       }
-
-      // IMPORTANT: never fall through and return undefined here. Doing so lets
-      // downstream code (e.g. normalizeEvaluation) call methods on `undefined`
-      // (crashing with a cryptic "Cannot read properties of undefined" 500),
-      // and it hides the failure from runWithProviders' fallback loop, which
-      // relies on a thrown error to move on to the next provider.
-      throw new Error(reason);
+     throw new Error(reason);
     }
   }
 }
 
-/**
- * Background memory extraction - given the student's current durable-memory
- * list and the text of the latest chat turn, asks Gemini for a refreshed,
- * merged list. Deliberately low-stakes: any failure just returns the memory
- * unchanged rather than throwing, since this should never block or break the
- * actual chat response.
- */
 async function extractMemory(existingMemory, turnText) {
   const current = Array.isArray(existingMemory) ? existingMemory : [];
   if (!process.env.GEMINI_API_KEY) return current;
@@ -415,13 +402,7 @@ async function runWithProviders(userPrompt, systemInstruction, { mode = "json", 
 }
 
 /**
- * runMentorChat - same provider chain and fallback philosophy as
- * runWithProviders, but for multi-turn conversational chat (the mentor chat
- * feature). Each provider exposes its own chatCall() because Gemini's SDK
- * wants history in its own {role, parts} shape via startChat(), while
- * OpenRouter/Groq just want a flat OpenAI-style messages array - this
- * function hides that difference from the caller.
- *
+
  * @param {string} systemInstruction
  * @param {{role: string, content: string}[]} history - prior turns in the thread
  * @param {string} message - the new user message
@@ -449,10 +430,6 @@ async function runMentorChat(systemInstruction, history, message) {
   throw new Error(`All AI providers failed. ${errors.join(" | ")}`);
 }
 
-// Normalizes the raw evaluator JSON into the exact shape the frontend expects.
-// `extracted_answer` is only ever populated for handwritten/image submissions
-// (see evaluateAnswerImage below) - it's harmless and stays "" for typed
-// answers, so this one function safely serves both flows.
 function normalizeEvaluation(result, marks) {
   result = result || {};
   const rawScore = typeof result.score === "number" ? result.score : 0;
@@ -484,18 +461,6 @@ async function evaluateAnswer(userPrompt, paper, marks) {
   return { result: normalizeEvaluation(result, marks), provider };
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
-// HANDWRITTEN ANSWER (IMAGE) EVALUATION - Gemini Vision
-// ═══════════════════════════════════════════════════════════════════════════
-// Reuses the exact same per-paper system instruction + JSON schema as the
-// typed-answer flow above (getSystemInstruction / normalizeEvaluation) - we
-// only append a transcription addendum so one Gemini Vision call does BOTH
-// the handwriting extraction and the full UPSC evaluation in a single pass.
-// No separate OCR service, no duplicated grading logic.
-//
-// Only Gemini supports multimodal (image) input in this provider chain, so
-// this intentionally does NOT go through runWithProviders' OpenRouter/Groq
-// fallback - those providers only ever receive plain text in this codebase.
 const EXTRACTION_FAILURE_MESSAGE =
   "Unable to confidently read the answer. Please upload a clearer image.";
 
@@ -507,24 +472,32 @@ class ExtractionFailedError extends Error {
   }
 }
 
-function buildVisionAddendum(pageCount = 1) {
-  const pageLine =
-    pageCount > 1
-      ? `You have been given ${pageCount} photographs of a handwritten UPSC Mains answer, attached in order as separate images (page 1, page 2, ... page ${pageCount}). Treat them as one continuous answer written across multiple pages - do not evaluate them as separate answers.`
-      : `You have been given a photograph of a handwritten UPSC Mains answer (a single page, or a cropped section).`;
+function buildVisionAddendum(pageCount = 1, sourceKind = "image") {
+  let multiPageNote;
+  if (sourceKind === "pdf") {
+    multiPageNote = `You have been given a single PDF document, attached - it contains the full handwritten or typed UPSC Mains answer. The PDF may itself span multiple pages; treat every page inside it as one continuous answer, in order.`;
+  } else if (pageCount > 1) {
+    multiPageNote = `You have been given ${pageCount} photographs, attached in order - they are sequential pages of ONE single handwritten UPSC Mains answer (e.g. an essay or a long GS answer that spans several sheets). Treat them as one continuous answer in the order attached, not as separate answers.`;
+  } else {
+    multiPageNote = `You have been given a photograph of a handwritten UPSC Mains answer (a single page, or a cropped section).`;
+  }
+
+  const stitchNote = sourceKind === "pdf" || pageCount > 1
+    ? ", stitching all pages together into one continuous transcription in the order they appear"
+    : "";
 
   return `
 
 ═══════════════════════════════════════
-HANDWRITTEN ANSWER MODE (IMAGE INPUT)
+HANDWRITTEN ANSWER MODE (IMAGE/PDF INPUT)
 ═══════════════════════════════════════
-${pageLine} Before evaluating anything, you must:
+${multiPageNote} Before evaluating anything, you must:
 
 STEP 1 - FAITHFUL TRANSCRIPTION:
-Carefully transcribe the handwritten content into clean digital text${pageCount > 1 ? ", reading the pages in the order given and joining them into a single continuous transcription (do not label or separate pages in the output)" : ""}. Preserve the candidate's own structure - headings, numbered points, bullet points, underlines (render as **bold**), diagrams or flowcharts (describe them briefly in words, e.g. "[diagram: flowchart showing X leading to Y leading to Z]"). Do NOT correct grammar, improve wording, or fill gaps - transcribe exactly what the candidate wrote, including their own mistakes. If a specific word or short phrase is illegible, write [illegible] in its place rather than guessing.
+Carefully transcribe the content into clean digital text${stitchNote}. Preserve the candidate's own structure - headings, numbered points, bullet points, underlines (render as **bold**), diagrams or flowcharts (describe them briefly in words, e.g. "[diagram: flowchart showing X leading to Y leading to Z]"). Do NOT correct grammar, improve wording, or fill gaps - transcribe exactly what the candidate wrote, including their own mistakes. If a specific word or short phrase is illegible, write [illegible] in its place rather than guessing.
 
-If ${pageCount > 1 ? "any of the images are" : "the image is"} too blurry, poorly lit, rotated or cropped beyond use, or the handwriting is illegible across most of the answer such that you cannot responsibly produce a faithful transcription, STOP immediately and return ONLY this JSON object (nothing else, no other keys):
-{ "extraction_failed": true, "extracted_answer": "", "extraction_note": "<one short sentence explaining why, e.g. 'Image too blurry to read reliably', 'Most of the handwriting is illegible', or 'Page 2 is unreadable'>" }
+If the attachment is too blurry, poorly lit, rotated, corrupted, or cropped beyond use, or the handwriting is illegible across most of the answer such that you cannot responsibly produce a faithful transcription, STOP immediately and return ONLY this JSON object (nothing else, no other keys):
+{ "extraction_failed": true, "extracted_answer": "", "extraction_note": "<one short sentence explaining why, e.g. 'Image too blurry to read reliably' or 'Most of the handwriting is illegible'>" }
 
 STEP 2 - EVALUATION:
 If transcription succeeded, evaluate the transcribed text exactly as you would a typed answer - apply every scoring rule, deduction, and the JSON schema defined above with NO changes to the evaluation logic itself. Then return the standard JSON schema from above with two additional top-level keys merged in:
@@ -534,36 +507,37 @@ If transcription succeeded, evaluate the transcribed text exactly as you would a
 Return ONLY ONE final JSON object - either the extraction-failure object above, or the full evaluation schema plus the two additional keys. Never wrap it in markdown, and never return the two steps as separate objects.`;
 }
 
-function buildImageEvalPrompt({ question, paper, marks, pageCount = 1 }) {
+function buildImageEvalPrompt({ question, paper, marks, pageCount = 1, sourceKind = "image" }) {
   const expectedWords = expectedWordCountForMarks(marks);
   const marksLine = marks
     ? `Marks: ${marks}\nExpected word count for full marks at this weightage: ~${expectedWords} words\n`
     : "";
-  const attachedLine =
-    pageCount > 1
-      ? `The student's answer is handwritten across ${pageCount} pages, attached as ${pageCount} images in order.`
-      : `The student's answer is handwritten and attached as an image.`;
-  return `**MAINS EVALUATION REQUEST - HANDWRITTEN ANSWER (IMAGE)**
+  let pageLine;
+  if (sourceKind === "pdf") {
+    pageLine = `The student's answer is attached as a single PDF document (which may itself contain multiple pages of the same answer).`;
+  } else if (pageCount > 1) {
+    pageLine = `The student's answer is handwritten and attached as ${pageCount} images, in order, representing consecutive pages of the SAME answer.`;
+  } else {
+    pageLine = `The student's answer is handwritten and attached as an image.`;
+  }
+  return `**MAINS EVALUATION REQUEST - HANDWRITTEN ANSWER (${sourceKind === "pdf" ? "PDF" : "IMAGE"})**
 
 Paper: ${paper || "GS2"}
 ${marksLine}
 **Question:**
 ${question.trim()}
 
-${attachedLine} Follow STEP 1 (transcription) and STEP 2 (evaluation) exactly as instructed in your system prompt above. The student has an engineering background, so they think analytically but may lack humanities-specific terminology and UPSC answer-writing conventions - evaluate accordingly, exactly as you would for a typed submission.`;
+${pageLine} Follow STEP 1 (transcription) and STEP 2 (evaluation) exactly as instructed in your system prompt above. The student has an engineering background, so they think analytically but may lack humanities-specific terminology and UPSC answer-writing conventions - evaluate accordingly, exactly as you would for a typed submission.`;
 }
 
 /**
- * evaluateAnswerImage - handwritten-answer counterpart to evaluateAnswer().
- * One Gemini Vision call: transcribes the photo(s), then grades the
- * transcription with the same per-paper rubric used for typed answers.
- *
- * @param {{ question: string, images: Array<{imageBase64: string, mimeType: string}>, paper?: string, marks?: string|number }} args
- *   `images` holds one entry per page, in the order they should be read.
+
+ * @param {{ question: string, images: Array<{ base64Data: string, mimeType: string }>, paper?: string, marks?: number|string }} args
+ *   `images` holds either N image attachments, or a single application/pdf attachment.
  * @returns {Promise<{ result: object, provider: string }>} result is shaped
  *   identically to evaluateAnswer()'s output, plus a populated
  *   `extracted_answer` field.
- * @throws {ExtractionFailedError} when the handwriting can't be read reliably.
+ * @throws {ExtractionFailedError} when the content can't be read reliably.
  */
 async function evaluateAnswerImage({ question, images, paper, marks }) {
   if (!process.env.GEMINI_API_KEY) {
@@ -574,13 +548,15 @@ async function evaluateAnswerImage({ question, images, paper, marks }) {
   if (!question || !question.trim()) {
     throw new Error("Question text is required.");
   }
-  const pages = Array.isArray(images) ? images.filter((img) => img?.imageBase64 && img?.mimeType) : [];
-  if (pages.length === 0) {
-    throw new Error("No image was provided to evaluate.");
+  const imageList = Array.isArray(images) ? images.filter((img) => img?.base64Data && img?.mimeType) : [];
+  if (imageList.length === 0) {
+    throw new Error("No image or PDF was provided to evaluate.");
   }
 
-  const systemInstruction = getSystemInstruction(paper) + buildVisionAddendum(pages.length);
-  const userPrompt = buildImageEvalPrompt({ question, paper, marks, pageCount: pages.length });
+  const sourceKind = imageList.some((img) => img.mimeType === "application/pdf") ? "pdf" : "image";
+  const pageCount = imageList.length;
+  const systemInstruction = getSystemInstruction(paper) + buildVisionAddendum(pageCount, sourceKind);
+  const userPrompt = buildImageEvalPrompt({ question, paper, marks, pageCount, sourceKind });
 
   const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
   const model = genAI.getGenerativeModel({
@@ -595,11 +571,11 @@ async function evaluateAnswerImage({ question, images, paper, marks }) {
 
   let rawText;
   try {
-    console.log(`[Evaluation:Image] Trying provider: Gemini Vision... (${pages.length} page${pages.length > 1 ? "s" : ""})`);
-    const imageParts = pages.map((img) => ({
-      inlineData: { mimeType: img.mimeType, data: img.imageBase64 },
-    }));
-    const result = await model.generateContent([...imageParts, { text: userPrompt }]);
+    console.log(`[Evaluation:${sourceKind === "pdf" ? "PDF" : "Image"}] Trying provider: Gemini Vision... (${pageCount} attachment${pageCount > 1 ? "s" : ""})`);
+    const result = await model.generateContent([
+      ...imageList.map((img) => ({ inlineData: { mimeType: img.mimeType, data: img.base64Data } })),
+      { text: userPrompt },
+    ]);
     rawText = result.response.text();
     console.log("[Evaluation:Image] Success with: Gemini Vision");
   } catch (err) {
@@ -728,10 +704,22 @@ Analyze this performance. Identify genuine strengths, diagnose weak topics with 
 const NOTES_EXTRACTION_FAILURE_MESSAGE =
   "Unable to confidently read the photo. Please upload a clearer image.";
 
-function buildNotesVisionPrompt() {
-  return `You are given a photograph of handwritten or printed study notes (UPSC Civil Services prep). Transcribe the content faithfully into clean markdown - preserve headings, bullets, and structure as written. Do NOT rephrase, correct, or enrich the content itself.
+function buildNotesVisionPrompt(pageCount = 1, sourceKind = "image") {
+  let multiPageNote;
+  if (sourceKind === "pdf") {
+    multiPageNote = `You are given a single PDF document, attached - it contains a set of handwritten or printed study notes (UPSC Civil Services prep). The PDF may itself span multiple pages; treat every page inside it as one continuous note, in order.`;
+  } else if (pageCount > 1) {
+    multiPageNote = `You are given ${pageCount} photographs, attached in order - they are sequential pages of ONE set of handwritten or printed study notes (UPSC Civil Services prep). Treat them as one continuous note in the order attached, not as separate notes.`;
+  } else {
+    multiPageNote = `You are given a photograph of handwritten or printed study notes (UPSC Civil Services prep).`;
+  }
+  const stitchNote = sourceKind === "pdf" || pageCount > 1
+    ? ", stitching all pages together into one continuous transcription in the order they appear"
+    : "";
 
-If the image is too blurry, poorly lit, rotated, or illegible across most of the note, return ONLY this JSON:
+  return `${multiPageNote} Transcribe the content faithfully into clean markdown${stitchNote} - preserve headings, bullets, and structure as written. Do NOT rephrase, correct, or enrich the content itself.
+
+If the attachment is too blurry, poorly lit, rotated, corrupted, or illegible across most of the note, return ONLY this JSON:
 { "extraction_failed": true, "extracted_text": "", "suggestions": [] }
 
 Otherwise return ONLY this JSON:
@@ -741,32 +729,42 @@ Give 3-5 suggestions (missing dimensions, articles/cases/data worth adding, stru
 }
 
 /**
- * extractNoteFromImage - OCR + improvement-suggestions for the Notes photo
- * upload flow. One Gemini Vision call, no grading.
- * @param {{ imageBase64: string, mimeType: string }} args
+ * @param {{ images: Array<{ base64Data: string, mimeType: string }> }} args
+ *   `images` holds either N image attachments, or a single application/pdf attachment.
  * @returns {Promise<{ result: { extracted_text: string, suggestions: string[] }, provider: string }>}
- * @throws {ExtractionFailedError} when the photo can't be read reliably.
+ * @throws {ExtractionFailedError} when the content can't be read reliably.
  */
-async function extractNoteFromImage({ imageBase64, mimeType }) {
+async function extractNoteFromImage({ images }) {
   if (!process.env.GEMINI_API_KEY) {
     throw new Error("Photo-to-notes requires Gemini Vision, which is not configured on this server.");
   }
-  if (!imageBase64 || !mimeType) {
-    throw new Error("No image was provided.");
+  const imageList = Array.isArray(images) ? images.filter((img) => img?.base64Data && img?.mimeType) : [];
+  if (imageList.length === 0) {
+    throw new Error("No image or PDF was provided.");
   }
 
+  const sourceKind = imageList.some((img) => img.mimeType === "application/pdf") ? "pdf" : "image";
+  const pageCount = imageList.length;
   const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
   const model = genAI.getGenerativeModel({
     model: "gemini-2.5-flash",
-    generationConfig: { temperature: 0.3, maxOutputTokens: 4096, responseMimeType: "application/json" },
+    // maxOutputTokens scales with page count - a single page of notes fits
+    // comfortably in 4096 tokens, but up to 5 stitched pages (or a
+    // multi-page PDF) need more room for both the transcription and the
+    // suggestions before truncating.
+    generationConfig: {
+      temperature: 0.3,
+      maxOutputTokens: Math.min(4096 + (pageCount - 1) * 1500, 8192),
+      responseMimeType: "application/json",
+    },
   });
 
   let rawText;
   try {
-    console.log("[Notes:Image] Trying provider: Gemini Vision...");
+    console.log(`[Notes:${sourceKind === "pdf" ? "PDF" : "Image"}] Trying provider: Gemini Vision... (${pageCount} attachment${pageCount > 1 ? "s" : ""})`);
     const result = await model.generateContent([
-      { inlineData: { mimeType, data: imageBase64 } },
-      { text: buildNotesVisionPrompt() },
+      ...imageList.map((img) => ({ inlineData: { mimeType: img.mimeType, data: img.base64Data } })),
+      { text: buildNotesVisionPrompt(pageCount, sourceKind) },
     ]);
     rawText = result.response.text();
     console.log("[Notes:Image] Success with: Gemini Vision");

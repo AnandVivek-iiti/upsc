@@ -1,19 +1,15 @@
-
-
 import { useEffect, useRef, useState } from "react";
 import {
   BookOpen, Brain, BarChart2, Clock, ArrowRight, CheckCircle2, Sun, Moon,
   Zap, Target, Calendar, PenLine, ClipboardList, TrendingUp,
   RotateCcw, GraduationCap, Users, Layers, AlarmClock, Award,
-  Flame, MapPin, Command, Activity, FileSearch, Rocket, BookOpenCheck,
-  FlaskConical, ChevronRight, Play,
+  Flame, Command, Activity, ChevronRight, Play,
 } from "lucide-react";
 const SS = {
   commandCenter:    "/assets/Screenshots/screenshot-command-center.png",
   studyAnalytics:   "/assets/Screenshots/screenshot-study-analytics.png",
   practiceAnalytics:"/assets/Screenshots/screenshot-practice-analytics.png",
   revisionQueue:    "/assets/Screenshots/screenshot-revision-queue.png",
-  startStudying:    "/assets/Screenshots/screenshot-start-studying.png",
   syllabusTracker:  "/assets/Screenshots/screenshot-syllabus-tracker.png",
   answerEval:       "/assets/Screenshots/screenshot-answer-eval.png",
   subjectPerf:      "/assets/Screenshots/screenshot-subject-perf.png"
@@ -160,12 +156,13 @@ const WORKSPACE_SECTIONS = [
     eyebrow: "Command Center",
     title: "Your daily preparation overview. Every morning.",
     description:
-      "Open UPSC Mentor and know exactly where you stand in under 3 seconds. Exam countdown, streak, syllabus coverage, daily target, and 7-day average - all in one glance.",
+      "Open UPSC Mentor and know exactly where you stand in under 3 seconds. Exam countdown, streak, syllabus coverage, daily target, and 7-day average - all in one glance. Add or remove everything past the essentials from your Profile, so the dashboard only shows what you actually use.",
     bullets: [
       { label: "Exam Countdown", text: "Days to Prelims and Mains, always visible." },
       { label: "Study Streak", text: "Daily habit tracking to keep you consistent." },
       { label: "Coverage %", text: "Syllabus completion across all GS papers." },
       { label: "Daily Target", text: "Progress toward today's hour goal." },
+      { label: "Your Layout", text: "Command Center, timer and study hours are always on - add any other widget from your Profile, or leave it lean." },
     ],
     screenshot: SS.commandCenter,
     ssAlt: "Command Center - daily preparation overview",
@@ -267,7 +264,7 @@ const SHOWCASE_SCREENS = [
   { src: SS.studyAnalytics,    alt: "Study Analytics",      caption: "Subject hours + weekly chart" },
   { src: SS.practiceAnalytics, alt: "Practice Analytics",   caption: "Accuracy, difficulty, year-wise" },
   { src: SS.revisionQueue,     alt: "Revision Queue",       caption: "Spaced revision, auto-scheduled" },
-  { src: SS.startStudying,     alt: "Start Studying",       caption: "One-click access to every tool" },
+  { src: SS.subjectPerf,       alt: "Subject Study Hours",  caption: "Always-on breakdown of where your time goes" },
   { src: SS.syllabusTracker,   alt: "Syllabus Tracker",     caption: "Full Prelims + Mains coverage map" },
 ];
 

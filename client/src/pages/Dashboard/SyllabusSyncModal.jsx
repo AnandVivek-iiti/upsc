@@ -85,7 +85,7 @@ function StageSection({ stageLabel, stageData, subject, color, checked, onToggle
                         type="checkbox"
                         checked={isChecked}
                         onChange={() => onToggle(g.key, topic)}
-                        className="mt-0.5 shrink-0 accent-current"
+                        className="mt-0.5 shrink-0 w-4 h-4 accent-current"
                         style={{ accentColor: color }}
                       />
                       <span className="text-xs sm:text-sm text-text-secondary leading-snug">{topic}</span>
@@ -195,27 +195,34 @@ export default function SyllabusSyncModal({
     <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-sm animate-fade-in overscroll-contain">
       <div className="glass-panel w-full sm:max-w-lg max-h-[92dvh] sm:max-h-[85vh] flex flex-col rounded-t-2xl sm:rounded-2xl overflow-hidden">
         {/* Header */}
-        <div className="flex items-start justify-between gap-3 p-4 sm:p-5 border-b border-bg-border/50">
-          <div className="flex items-start gap-2.5 min-w-0">
-            <span className="text-xl leading-none mt-0.5 shrink-0">{icon}</span>
+        <div className="flex items-start justify-between gap-2 sm:gap-3 p-3.5 sm:p-5 border-b border-bg-border/50">
+          <div className="flex items-start gap-2 sm:gap-2.5 min-w-0">
+            <span className="text-lg sm:text-xl leading-none mt-0.5 shrink-0">{icon}</span>
             <div className="min-w-0">
-              <h3 className="text-sm sm:text-base font-display font-semibold text-text-primary">
+              <h3 className="text-sm sm:text-base font-display font-semibold text-text-primary break-words">
                 What did you cover in {subject}?
               </h3>
-              <p className="text-xs text-text-muted mt-1 leading-relaxed">
+              <p className="text-[11px] sm:text-xs text-text-muted mt-1 leading-relaxed break-words">
                 You studied <span style={{ color }} className="font-mono font-semibold">{subject}</span> for{" "}
                 <span className="font-mono font-semibold text-text-secondary">{fmtDuration(durationSeconds)}</span>.
                 Pick what you actually covered so your tracker stays accurate  - nothing updates until you confirm.
               </p>
             </div>
           </div>
-          <button onClick={onSkip} className="p-1 rounded-lg hover:bg-bg-muted text-text-muted hover:text-text-primary transition-colors shrink-0" title="Close">
+          <button
+            onClick={onSkip}
+            className="p-2 -m-1 rounded-lg hover:bg-bg-muted text-text-muted hover:text-text-primary transition-colors shrink-0"
+            title="Close"
+            aria-label="Close"
+          >
             <X size={16} />
           </button>
         </div>
 
-        {/* Stage tabs - Prelims / Mains switched, not stacked */}
-        <div className="flex gap-1 px-4 sm:px-5 pt-3 border-b border-bg-border/50">
+        {/* Stage tabs - Prelims / Mains switched, not stacked. Each tab fills
+            half the width on mobile so both are easy, equally-sized tap
+            targets instead of small left-aligned buttons with dead space. */}
+        <div className="flex gap-1 px-3.5 sm:px-5 pt-3 border-b border-bg-border/50">
           {[
             { key: "prelims", label: "Prelims", data: prelims },
             { key: "mains", label: "Mains", data: mains },
@@ -227,7 +234,7 @@ export default function SyllabusSyncModal({
                 key={tab.key}
                 type="button"
                 onClick={() => setActiveStage(tab.key)}
-                className={`flex items-center gap-1.5 px-3 py-2 text-xs sm:text-sm font-display font-semibold border-b-2 transition-colors ${
+                className={`flex-1 sm:flex-none flex items-center justify-center sm:justify-start gap-1.5 px-3 py-2.5 sm:py-2 text-xs sm:text-sm font-display font-semibold border-b-2 transition-colors touch-manipulation ${
                   isActive
                     ? "text-text-primary"
                     : "text-text-muted border-transparent hover:text-text-secondary"
@@ -249,7 +256,7 @@ export default function SyllabusSyncModal({
         </div>
 
         {/* Checklist - only the active stage's content is shown */}
-        <div className="flex-1 overflow-y-auto overscroll-contain p-4 sm:p-5 space-y-5">
+        <div className="flex-1 overflow-y-auto overscroll-contain p-3.5 sm:p-5 space-y-5">
           <StageSection
             stageLabel={activeStage === "prelims" ? "Prelims" : "Mains"}
             stageData={activeStage === "prelims" ? prelims : mains}
@@ -270,27 +277,32 @@ export default function SyllabusSyncModal({
               placeholder="e.g. Revised previous year's Ethics case studies"
               maxLength={500}
               rows={2}
-              className="w-full bg-bg-muted border border-bg-border rounded-lg px-3 py-2 text-xs sm:text-sm text-text-primary placeholder:text-text-muted/50 focus:outline-none focus:border-accent-gold/50 transition-colors resize-none"
+              // text-base (16px) on mobile stops iOS Safari from auto-zooming
+              // the page in when the textarea gets focus; shrinks back down
+              // on larger screens where that zoom bug doesn't apply.
+              className="w-full bg-bg-muted border border-bg-border rounded-lg px-3 py-2 text-base sm:text-sm text-text-primary placeholder:text-text-muted/50 focus:outline-none focus:border-accent-gold/50 transition-colors resize-none"
             />
           </div>
         </div>
 
-        {/* Footer */}
+        {/* Footer - stacked full-width buttons on mobile (primary action on
+            top) so neither label gets squeezed on narrow phones; side-by-side
+            from sm: up where there's room. */}
         <div
-          className="flex gap-2 p-4 sm:p-5 border-t border-bg-border/50"
+          className="flex flex-col-reverse sm:flex-row gap-2 p-3.5 sm:p-5 border-t border-bg-border/50"
           style={{ paddingBottom: "max(1rem, calc(env(safe-area-inset-bottom) + 0.75rem))" }}
         >
           <button
             onClick={onSkip}
             disabled={submitting}
-            className="flex-1 py-2.5 rounded-lg text-xs sm:text-sm font-medium bg-bg-muted border border-bg-border text-text-muted hover:text-text-primary transition-colors disabled:opacity-50"
+            className="flex-1 py-3 sm:py-2.5 rounded-lg text-xs sm:text-sm font-medium bg-bg-muted border border-bg-border text-text-muted hover:text-text-primary transition-colors disabled:opacity-50 touch-manipulation"
           >
             Skip this time
           </button>
           <button
             onClick={handleConfirm}
             disabled={!hasAnything || submitting}
-            className="flex-1 btn-primary py-2.5 text-xs sm:text-sm disabled:opacity-40 disabled:cursor-not-allowed"
+            className="flex-1 btn-primary py-3 sm:py-2.5 text-xs sm:text-sm disabled:opacity-40 disabled:cursor-not-allowed touch-manipulation"
           >
             {submitting ? "Updating…" : "Update Tracker →"}
           </button>

@@ -1,7 +1,6 @@
-
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useQuestionAttempts } from "../../hooks/useQuestionAttempts";
-import { submitTestResult } from "../../hooks/useAI";
+import { submitTestResult, isLimitReachedError } from "../../hooks/useAI";
 
 import {
   Clock,
@@ -23,6 +22,7 @@ import {
   CalendarDays,
   RefreshCw,
   BookMarked,
+  Crown,
 } from "lucide-react";
 const TEST_MODULES = import.meta.glob("../../data/Test/Testseries_t*_data.js", { eager: true });
 
@@ -325,8 +325,37 @@ function QuestionCard({ question, selectedAnswer, onAnswer, showResult, qIndex, 
 // field. Three states: loading (skeleton), ready (full report), error (quiet
 // fallback note - the stats above already told the user their score, so a
 // failed AI call is a soft miss, not a broken page).
-function AIAnalysisSection({ aiState, aiAnalysis, isMobile }) {
+function AIAnalysisSection({ aiState, aiAnalysis, isMobile, onNavigate }) {
   const priorityColor = { high: "var(--accent-red)", medium: "var(--accent-gold)", low: "var(--text-muted)" };
+
+  if (aiState === "limit_reached") {
+    return (
+      <div style={{
+        background: "var(--accent-gold-dim)", borderRadius: 14, border: "1px solid rgba(245,158,11,.25)",
+        padding: isMobile ? "18px 16px" : "22px 20px", marginBottom: isMobile ? 18 : 24,
+        display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", gap: 10,
+      }}>
+        <Crown size={18} color="var(--accent-gold)" />
+        <div style={{ fontSize: 13, fontWeight: 600, color: "var(--text-primary)", fontFamily: "'DM Sans', sans-serif" }}>
+          You've used today's free AI diagnostics
+        </div>
+        <p style={{ fontSize: 12, color: "var(--text-secondary)", margin: 0, maxWidth: 320 }}>
+          Your score and topic breakdown above are still accurate - upgrade to Premium for a higher daily limit on AI analysis.
+        </p>
+        <button
+          type="button"
+          onClick={() => onNavigate?.("premium")}
+          style={{
+            display: "flex", alignItems: "center", gap: 6, marginTop: 4,
+            padding: "8px 16px", borderRadius: 10, fontSize: 13, fontFamily: "'DM Mono', monospace",
+            background: "var(--accent-gold)", color: "var(--bg-base)", border: "none",
+          }}
+        >
+          <Crown size={13} /> Upgrade to Premium
+        </button>
+      </div>
+    );
+  }
 
   if (aiState === "loading") {
     return (
@@ -524,15 +553,10 @@ function AIAnalysisSection({ aiState, aiAnalysis, isMobile }) {
 }
 
 // ─── Results Screen ───────────────────────────────────────────────────────────
-function ResultsScreen({ test, answers, onRetry, onReview, recordAttempt, isMobile }) {
+function ResultsScreen({ test, answers, onRetry, onReview, recordAttempt, isMobile, onNavigate }) {
   const stats = calcScore(answers, test.questions, test.markPerQuestion, test.negativeFraction);
   const maxScore = test.totalQuestions * test.markPerQuestion;
   const scorePct = maxScore > 0 ? Math.max(0, (stats.score / maxScore) * 100).toFixed(1) : "0.0";
-
-  // ── AI analysis state ────────────────────────────────────────────────────
-  // "idle" | "loading" | "ready" | "error". Stats above render instantly from
-  // local data regardless of this - the AI section is an enhancement layered
-  // on top, never a blocker for seeing your score.
   const [aiState, setAiState] = useState("idle");
   const [aiAnalysis, setAiAnalysis] = useState(null);
   const submittedRef = useRef(false);
@@ -566,10 +590,6 @@ function ResultsScreen({ test, answers, onRetry, onReview, recordAttempt, isMobi
       });
     }
   }, []);
-
-  // ── Submit to backend for server-side scoring + AI diagnostic analysis ───
-  // Runs once per results view. Builds the topic_breakdown the backend needs
-  // for weak-topic detection, in the exact shape testController.js expects.
   useEffect(() => {
     if (submittedRef.current || !test) return;
     submittedRef.current = true;
@@ -603,13 +623,19 @@ function ResultsScreen({ test, answers, onRetry, onReview, recordAttempt, isMobi
         if (res.ai_analysis && res.ai_analysis_status === "ready") {
           setAiAnalysis(res.ai_analysis);
           setAiState("ready");
+        } else if (res.ai_analysis_status === "limit_reached") {
+          // NOTE: "limit_reached" is a best guess at what your backend sends
+          // when the free-tier daily diagnostics cap is hit, matching the
+          // existing "ready" status convention. Adjust this string if your
+          // backend uses a different value.
+          setAiState("limit_reached");
         } else {
           setAiState("error");
         }
       })
       .catch((err) => {
         console.warn("[Test Series] AI analysis unavailable:", err.message);
-        setAiState("error");
+        setAiState(isLimitReachedError(err) ? "limit_reached" : "error");
       });
   }, []);
 
@@ -689,7 +715,7 @@ function ResultsScreen({ test, answers, onRetry, onReview, recordAttempt, isMobi
       </div>
 
       {/* AI performance analysis: summary, strong/weak topics, study plan, revision push */}
-      <AIAnalysisSection aiState={aiState} aiAnalysis={aiAnalysis} isMobile={isMobile} />
+      <AIAnalysisSection aiState={aiState} aiAnalysis={aiAnalysis} isMobile={isMobile} onNavigate={onNavigate} />
 
       {/* Topic breakdown */}
       <div style={{
@@ -1124,7 +1150,7 @@ function TestCard({ test, onStart, isMobile }) {
 }
 
 // ─── Main Page ─────────────────────────────────────────────────────────────────
-export default function TestSeriesPage({ user = null, onSyllabusUpdate = null, onBulkSyllabusUpdate = null, serverAttempts = [] }) {
+export default function TestSeriesPage({ user = null, onSyllabusUpdate = null, onBulkSyllabusUpdate = null, serverAttempts = [], onNavigate = null }) {
   const [mode,         setMode]         = useState("list");
   const [activeTest,   setActiveTest]   = useState(null);
   const [finalAnswers, setFinalAnswers] = useState({});
@@ -1307,6 +1333,7 @@ export default function TestSeriesPage({ user = null, onSyllabusUpdate = null, o
             onReview={handleReview}
             recordAttempt={recordAttempt}
             isMobile={isMobile}
+            onNavigate={onNavigate}
           />
         )}
 

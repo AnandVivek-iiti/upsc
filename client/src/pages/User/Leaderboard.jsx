@@ -1,18 +1,31 @@
 ﻿import { useState, useEffect, useCallback, useMemo } from "react";
 import {
   Trophy, Flame, Clock, PenTool, Target, Crown,
-  ChevronLeft, ChevronRight, Loader2, AlertCircle, Medal, X, BarChart3,
-  Search, List as ListIcon, Table2, Sparkles,
+  ChevronLeft, ChevronRight, ChevronDown, ChevronUp, Loader2, AlertCircle, Medal, BarChart3,
+  Search, List as ListIcon, Table2, Sparkles, Layers, ArrowLeft, BookOpen, CalendarCheck,
 } from "lucide-react";
 import { getLeaderboard } from "../../utils/api";
 import { AvatarCircle } from "./ProfilePage";
+import { SUBJECT_COLORS, SUBJECT_ICONS } from "../../hooks/useSubjectTimer";
+
+const BRAND_GREEN = "var(--accent-green)";
+const BRAND_GREEN_DEEP = "#059669";
+
+function withAlpha(color, alphaPercent) {
+  if (!color) return color;
+  if (color.startsWith("var(")) {
+    return `color-mix(in srgb, ${color} ${alphaPercent}%, transparent)`;
+  }
+  const hex = Math.round((alphaPercent / 100) * 255).toString(16).padStart(2, "0");
+  return `${color}${hex}`;
+}
 
 const TABS = [
   {
     id: "composite",
     label: "Overall",
     icon: Trophy,
-    color: "var(--accent-gold)",
+    color: BRAND_GREEN_DEEP,
     statLabel: "Score",
     statValue: (r) => r.composite_score.toFixed(1),
   },
@@ -44,7 +57,7 @@ const TABS = [
     id: "accuracy",
     label: "Test Accuracy",
     icon: Target,
-    color: "var(--accent-green)",
+    color: "var(--accent-pink)",
     statLabel: "Accuracy",
     statValue: (r) => `${r.avg_test_accuracy}%`,
   },
@@ -70,96 +83,200 @@ function RankBadge({ rank, size = "md" }) {
   );
 }
 
-function PublicProfileModal({ entry, onClose }) {
-  if (!entry) return null;
-  const stats = [
-    { label: "Current Streak", value: `${entry.streak}d`, color: "#fb923c", icon: Flame },
-    { label: "Best Streak", value: `${entry.longest_streak}d`, color: "#fbbf24", icon: Trophy },
-    { label: "Study Hours", value: `${entry.total_study_hours}h`, color: "var(--accent-blue)", icon: Clock },
-    { label: "Mains Answers", value: entry.mains_evaluations, color: "var(--accent-purple)", icon: PenTool },
-    { label: "Tests Attempted", value: entry.tests_attempted, color: "var(--accent-green)", icon: BarChart3 },
-    { label: "Avg Test Accuracy", value: `${entry.avg_test_accuracy}%`, color: "var(--accent-green)", icon: Target },
-  ];
+// ─── Per-subject mini breakdown ──────────────────────────────────────────────
+// Renders a compact, ranked list of a student's subjects with a proportional
+// bar + hours, reusing the same colour/icon map as the admin study-analytics
+// panel so the visual language stays consistent across the app.
+function SubjectBreakdownList({ subjects, dense = false }) {
+  if (!subjects?.length) return null;
+  const maxHours = Math.max(...subjects.map((s) => s.hours || 0), 1);
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in"
-      onClick={onClose}
-    >
-      <div
-        className="glass-panel w-full max-w-sm relative z-10 p-6 animate-rise"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <button
-          onClick={onClose}
-          aria-label="Close"
-          className="absolute top-4 right-4 w-8 h-8 rounded-xl flex items-center justify-center bg-bg-muted border border-bg-border text-text-muted hover:text-text-primary transition-all active:scale-95"
-        >
-          <X size={16} />
-        </button>
-
-        <div className="flex flex-col items-center text-center mb-5">
-          <AvatarCircle name={entry.name} size="xl" as="div" className="mb-3" />
-          <p className="text-lg font-display font-semibold text-text-primary">{entry.name}</p>
-          <p className="text-xs font-mono text-text-muted">CSE {entry.target_year} · Rank #{entry.rank}</p>
-        </div>
-
-        <div className="grid grid-cols-2 gap-2.5">
-          {stats.map(({ label, value, color, icon: Icon }) => (
-            <div key={label} className="muted-panel p-3 flex flex-col items-center gap-1 text-center">
-              <Icon size={14} style={{ color }} />
-              <span className="text-base font-bold text-text-primary">{value}</span>
-              <span className="text-[10px] font-mono uppercase tracking-wide text-text-muted">{label}</span>
+    <div className={dense ? "space-y-1.5" : "space-y-2"}>
+      {subjects.map((s) => {
+        const color = SUBJECT_COLORS[s.subject] || "#10B981";
+        const icon = SUBJECT_ICONS[s.subject] || "📚";
+        const pct = maxHours > 0 ? ((s.hours || 0) / maxHours) * 100 : 0;
+        return (
+          <div key={s.subject} className="flex items-center gap-2">
+            <span className={dense ? "text-xs w-4 shrink-0 text-center" : "text-sm w-5 shrink-0 text-center"}>{icon}</span>
+            <span className={`${dense ? "text-[11px]" : "text-xs"} text-text-secondary flex-1 truncate`}>{s.subject}</span>
+            <div className={`${dense ? "w-16 sm:w-24 h-1.5" : "w-20 sm:w-28 h-2"} bg-bg-muted rounded-full overflow-hidden hidden xs:block`}>
+              <div
+                className="h-full rounded-full transition-all duration-700 ease-out"
+                style={{ width: `${pct}%`, background: `linear-gradient(90deg, ${withAlpha(color, 70)}, ${color})` }}
+              />
             </div>
-          ))}
+            <span className={`${dense ? "text-[11px]" : "text-xs"} font-mono font-bold w-12 text-right shrink-0`} style={{ color }}>
+              {s.display || `${s.hours}h`}
+            </span>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function StudentAnalyticsPage({ entry, onBack }) {
+  const subjects = entry.subject_breakdown || [];
+  const totalSubjectHours = subjects.reduce((sum, s) => sum + (s.hours || 0), 0);
+  const topSubject = entry.top_subject || subjects[0]?.subject;
+
+  const behaviorStats = [
+    { label: "Current Streak", value: `${entry.streak ?? 0}d`, color: "#fb923c", icon: Flame },
+    { label: "Best Streak", value: `${entry.longest_streak ?? 0}d`, color: "#fbbf24", icon: Trophy },
+    { label: "Total Study Hours", value: `${entry.total_study_hours ?? 0}h`, color: "var(--accent-blue)", icon: Clock },
+    { label: "Mains Answers Practiced", value: entry.mains_evaluations ?? 0, color: "var(--accent-purple)", icon: PenTool },
+    { label: "Tests Attempted", value: entry.tests_attempted ?? 0, color: "var(--accent-green)", icon: BarChart3 },
+    { label: "Study Days Logged", value: entry.study_days ?? "—", color: "var(--accent-green)", icon: CalendarCheck },
+  ];
+
+  return (
+    <div className="animate-fade-in">
+      {/* Back bar */}
+      <button
+        onClick={onBack}
+        className="flex items-center gap-1.5 text-sm font-medium text-text-secondary hover:text-accent-green transition-colors mb-4 active:scale-95"
+      >
+        <ArrowLeft size={16} /> Back to leaderboard
+      </button>
+
+      {/* Student header */}
+      <div
+        className="relative overflow-hidden rounded-2xl p-5 sm:p-6 mb-5"
+        style={{
+          background: "linear-gradient(135deg, var(--accent-green-dim) 0%, var(--bg-surface) 70%)",
+          border: "1px solid var(--bg-border)",
+        }}
+      >
+        <div className="relative flex items-center gap-4">
+          <div className="relative shrink-0">
+            <AvatarCircle name={entry.name} src={entry.avatar} size="xl" as="div" />
+            <div
+              className="absolute -inset-1 rounded-full pointer-events-none"
+              style={{ border: "1.5px solid var(--accent-green)", opacity: 0.55 }}
+            />
+          </div>
+          <div className="min-w-0">
+            <p className="text-lg sm:text-xl font-display font-semibold text-text-primary truncate">{entry.name}</p>
+            <p className="text-xs sm:text-sm font-mono text-text-muted">
+              CSE {entry.target_year} · Rank #{entry.rank}
+              {topSubject && (
+                <span> · {SUBJECT_ICONS[topSubject] || "📚"} Most studied: {topSubject}</span>
+              )}
+            </p>
+          </div>
         </div>
+      </div>
+
+      {/* Study behaviour stats */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 sm:gap-3 mb-5">
+        {behaviorStats.map(({ label, value, color, icon: Icon }) => (
+          <div key={label} className="muted-panel p-3.5 flex flex-col items-center gap-1.5 text-center">
+            <Icon size={16} style={{ color }} />
+            <span className="text-lg font-display font-bold text-text-primary">{value}</span>
+            <span className="text-[10px] font-mono uppercase tracking-wide text-text-muted leading-tight">{label}</span>
+          </div>
+        ))}
+      </div>
+
+      {/* Subject-wise study analytics */}
+      <div className="glass-panel p-4 sm:p-5">
+        <div className="flex items-center justify-between mb-4">
+          <p className="flex items-center gap-1.5 text-[11px] font-mono uppercase tracking-wide text-text-muted">
+            <Layers size={12} className="text-accent-green" /> Study time by subject
+          </p>
+          {totalSubjectHours > 0 && (
+            <span className="text-[11px] font-mono text-text-muted">{totalSubjectHours.toFixed(1)}h tracked</span>
+          )}
+        </div>
+        {subjects.length > 0 ? (
+          <SubjectBreakdownList subjects={subjects} />
+        ) : (
+          <div className="flex flex-col items-center text-center py-8 text-text-muted">
+            <BookOpen size={20} className="mb-2 opacity-60" />
+            <p className="text-sm">No subject-wise data available for this student yet.</p>
+          </div>
+        )}
       </div>
     </div>
   );
 }
 
 function LeaderboardRow({ entry, tab, isMe, onClick }) {
-  const isTop3 = entry.rank <= 3;
+  const [expanded, setExpanded] = useState(false);
   const ringColor = entry.rank === 1 ? "#FFD700" : entry.rank === 2 ? "#C0C0C0" : entry.rank === 3 ? "#CD7F32" : null;
+  const subjects = entry.subject_breakdown || [];
+  const topSubject = entry.top_subject || subjects[0]?.subject;
+  const hasSubjects = subjects.length > 0;
+
   return (
     <div
-      onClick={onClick}
-      role="button"
-      tabIndex={0}
-      className={`group flex items-center gap-3 sm:gap-4 px-3 sm:px-4 py-3 rounded-xl border transition-all cursor-pointer ${
-        isMe ? "border-accent-gold/40" : "border-transparent hover:border-bg-border hover:bg-bg-muted/60"
+      className={`rounded-xl border transition-all ${
+        isMe ? "border-accent-green/40" : "border-transparent hover:border-bg-border hover:bg-bg-muted/60"
       }`}
-      style={isMe ? { background: "var(--accent-gold-dim)" } : {}}
+      style={isMe ? { background: "var(--accent-green-dim)" } : {}}
     >
-      <RankBadge rank={entry.rank} />
-      <div className="relative shrink-0">
-        <AvatarCircle name={entry.name} size="sm" as="div" />
-        {ringColor && (
-          <div
-            className="absolute -inset-0.5 rounded-full pointer-events-none"
-            style={{ border: `1.5px solid ${ringColor}` }}
-          />
+      <div
+        onClick={onClick}
+        role="button"
+        tabIndex={0}
+        className="group flex items-center gap-3 sm:gap-4 px-3 sm:px-4 py-3 cursor-pointer"
+      >
+        <RankBadge rank={entry.rank} />
+        <div className="relative shrink-0">
+          <AvatarCircle name={entry.name} src={entry.avatar} size="sm" as="div" />
+          {ringColor && (
+            <div
+              className="absolute -inset-0.5 rounded-full pointer-events-none"
+              style={{ border: `1.5px solid ${ringColor}` }}
+            />
+          )}
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="text-sm sm:text-base font-semibold text-text-primary truncate flex items-center gap-2">
+            {entry.name}
+            {isMe && (
+              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded-full text-accent-green border border-accent-green/30 bg-accent-green/10 shrink-0">
+                YOU
+              </span>
+            )}
+          </p>
+          <p className="text-[11px] sm:text-xs font-mono text-text-muted truncate">
+            CSE {entry.target_year}
+            {topSubject && (
+              <span className="text-text-muted">
+                {" "}· {SUBJECT_ICONS[topSubject] || "📚"} {topSubject}
+              </span>
+            )}
+          </p>
+        </div>
+        <div className="text-right shrink-0">
+          <p
+            className="text-base sm:text-lg font-display font-bold transition-transform group-hover:scale-105"
+            style={{ color: tab.color }}
+          >
+            {tab.statValue(entry)}
+          </p>
+          <p className="text-[10px] font-mono text-text-muted uppercase tracking-wide">{tab.statLabel}</p>
+        </div>
+        {hasSubjects && (
+          <button
+            onClick={(e) => { e.stopPropagation(); setExpanded((v) => !v); }}
+            aria-label="Toggle subject breakdown"
+            className="shrink-0 w-7 h-7 rounded-lg flex items-center justify-center text-text-muted hover:text-accent-green hover:bg-accent-green/10 transition-all"
+          >
+            {expanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+          </button>
         )}
       </div>
-      <div className="flex-1 min-w-0">
-        <p className="text-sm sm:text-base font-semibold text-text-primary truncate flex items-center gap-2">
-          {entry.name}
-          {isMe && (
-            <span className="text-[10px] font-mono px-1.5 py-0.5 rounded-full text-accent-gold border border-accent-gold/30 bg-accent-gold/10 shrink-0">
-              YOU
-            </span>
-          )}
-        </p>
-        <p className="text-[11px] sm:text-xs font-mono text-text-muted">CSE {entry.target_year}</p>
-      </div>
-      <div className="text-right shrink-0">
-        <p
-          className="text-base sm:text-lg font-display font-bold transition-transform group-hover:scale-105"
-          style={{ color: tab.color }}
-        >
-          {tab.statValue(entry)}
-        </p>
-        <p className="text-[10px] font-mono text-text-muted uppercase tracking-wide">{tab.statLabel}</p>
-      </div>
+
+      {expanded && hasSubjects && (
+        <div className="px-3 sm:px-4 pb-3 pt-0.5 animate-slide-up">
+          <div className="pl-11 sm:pl-[52px]">
+            <SubjectBreakdownList subjects={subjects} dense />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -176,14 +293,14 @@ function PodiumCard({ entry, place, onClick }) {
       onClick={onClick}
       role="button"
       tabIndex={0}
-      className={`flex flex-col items-center text-center ${cfg.h} ${cfg.order} ${cfg.scale} cursor-pointer transition-transform hover:-translate-y-1`}
+      className={`flex flex-col items-center text-center ${cfg.h} ${cfg.order} ${cfg.scale} cursor-pointer transition-transform hover:-translate-y-1.5`}
     >
-      {place === 1 && <Crown size={18} className="mb-1" style={{ color: cfg.color }} />}
-      <div className="relative">
-        <AvatarCircle name={entry.name} size={place === 1 ? "xl" : "sm"} as="div" />
+      {place === 1 && <Crown size={18} className="mb-1 animate-pulse-soft" style={{ color: cfg.color }} />}
+      <div className={`relative ${place === 1 ? "animate-float" : ""}`}>
+        <AvatarCircle name={entry.name} src={entry.avatar} size={place === 1 ? "xl" : "sm"} as="div" />
         <div
           className="absolute -inset-1 rounded-full pointer-events-none"
-          style={{ border: `2px solid ${cfg.color}` }}
+          style={{ border: `2px solid ${cfg.color}`, boxShadow: place === 1 ? `0 0 16px ${cfg.color}55` : "none" }}
         />
         <div
           className="absolute -bottom-1.5 -right-1.5 w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-mono font-bold"
@@ -196,7 +313,7 @@ function PodiumCard({ entry, place, onClick }) {
         {entry.name}
       </p>
       <p className="text-[11px] font-mono text-text-muted">CSE {entry.target_year}</p>
-      <p className="text-sm font-bold mt-0.5" style={{ color: cfg.color }}>
+      <p className="text-sm font-bold mt-0.5" style={{ color: "var(--accent-green)" }}>
         {entry.composite_score.toFixed(1)}
       </p>
     </div>
@@ -211,6 +328,7 @@ function LeaderboardTable({ entries, me, onSelect, activeTabId }) {
           <tr className="border-b border-bg-border">
             <th className="text-left text-[11px] font-mono uppercase tracking-wide text-text-muted px-3 py-2.5 w-14">#</th>
             <th className="text-left text-[11px] font-mono uppercase tracking-wide text-text-muted px-3 py-2.5">Student</th>
+            <th className="text-left text-[11px] font-mono uppercase tracking-wide text-text-muted px-3 py-2.5 hidden md:table-cell">Top Subject</th>
             {TABS.map((t) => (
               <th
                 key={t.id}
@@ -225,6 +343,7 @@ function LeaderboardTable({ entries, me, onSelect, activeTabId }) {
         <tbody>
           {entries.map((entry, i) => {
             const isMe = me?.id === entry.id;
+            const topSubject = entry.top_subject || entry.subject_breakdown?.[0]?.subject;
             return (
               <tr
                 key={entry.id}
@@ -232,17 +351,17 @@ function LeaderboardTable({ entries, me, onSelect, activeTabId }) {
                 className={`cursor-pointer transition-colors border-b border-bg-border/60 last:border-0 hover:bg-bg-muted/60 ${
                   i % 2 === 1 ? "bg-bg-muted/25" : ""
                 }`}
-                style={isMe ? { background: "var(--accent-gold-dim)" } : {}}
+                style={isMe ? { background: "var(--accent-green-dim)" } : {}}
               >
                 <td className="px-3 py-2.5"><RankBadge rank={entry.rank} size="sm" /></td>
                 <td className="px-3 py-2.5">
                   <div className="flex items-center gap-2.5 min-w-0">
-                    <AvatarCircle name={entry.name} size="sm" as="div" />
+                    <AvatarCircle name={entry.name} src={entry.avatar} size="sm" as="div" />
                     <div className="min-w-0">
                       <p className="text-sm font-semibold text-text-primary truncate flex items-center gap-1.5">
                         {entry.name}
                         {isMe && (
-                          <span className="text-[9px] font-mono px-1.5 py-0.5 rounded-full text-accent-gold border border-accent-gold/30 bg-accent-gold/10 shrink-0">
+                          <span className="text-[9px] font-mono px-1.5 py-0.5 rounded-full text-accent-green border border-accent-green/30 bg-accent-green/10 shrink-0">
                             YOU
                           </span>
                         )}
@@ -250,6 +369,21 @@ function LeaderboardTable({ entries, me, onSelect, activeTabId }) {
                       <p className="text-[10px] font-mono text-text-muted">CSE {entry.target_year}</p>
                     </div>
                   </div>
+                </td>
+                <td className="px-3 py-2.5 hidden md:table-cell">
+                  {topSubject ? (
+                    <span
+                      className="text-[11px] font-mono px-2 py-1 rounded-lg inline-flex items-center gap-1.5"
+                      style={{
+                        color: SUBJECT_COLORS[topSubject] || "#10B981",
+                        background: withAlpha(SUBJECT_COLORS[topSubject] || "#10B981", 8),
+                      }}
+                    >
+                      {SUBJECT_ICONS[topSubject] || "📚"} {topSubject}
+                    </span>
+                  ) : (
+                    <span className="text-[11px] text-text-muted">—</span>
+                  )}
                 </td>
                 {TABS.map((t) => (
                   <td
@@ -320,19 +454,41 @@ export default function Leaderboard({ user }) {
   );
   const restEntries = showPodium ? entries.filter((e) => !podiumIds.has(e.id)) : entries;
 
+  // Viewing a student swaps the whole panel for a full analytics page
+  // instead of a small popup card.
+  if (viewingEntry) {
+    return (
+      <div className="w-full px-4 sm:px-8 md:px-10 lg:px-14 py-6 sm:py-8 max-w-4xl mx-auto">
+        <StudentAnalyticsPage entry={viewingEntry} onBack={() => setViewingEntry(null)} />
+      </div>
+    );
+  }
+
   return (
     <div className="w-full px-4 sm:px-8 md:px-10 lg:px-14 py-6 sm:py-8 max-w-4xl mx-auto">
       {/* Header */}
-      <div className="flex items-center gap-3 mb-6">
+      <div
+        className="relative overflow-hidden rounded-2xl mb-6 p-5 sm:p-6"
+        style={{
+          background: "linear-gradient(135deg, var(--accent-green-dim) 0%, var(--bg-surface) 65%)",
+          border: "1px solid var(--bg-border)",
+        }}
+      >
         <div
-          className="w-11 h-11 rounded-2xl flex items-center justify-center shrink-0"
-          style={{ background: "var(--accent-gold-dim)" }}
-        >
-          <Trophy size={20} className="text-accent-gold" />
-        </div>
-        <div>
-          <h1 className="font-display text-xl sm:text-2xl font-semibold text-text-primary leading-tight">Leaderboard</h1>
-          <p className="text-xs sm:text-sm text-text-muted">See how your prep stacks up against other aspirants</p>
+          className="absolute -top-10 -right-10 w-40 h-40 rounded-full pointer-events-none animate-pulse-soft"
+          style={{ background: "radial-gradient(circle, var(--accent-green) 0%, transparent 70%)", opacity: 0.15 }}
+        />
+        <div className="relative flex items-center gap-3">
+          <div
+            className="w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 animate-float"
+            style={{ background: "var(--accent-green-dim)", border: "1px solid rgba(16, 185, 129, 0.3)" }}
+          >
+            <Trophy size={20} className="text-accent-green" />
+          </div>
+          <div>
+            <h1 className="font-display text-xl sm:text-2xl font-semibold text-text-primary leading-tight">Leaderboard</h1>
+            <p className="text-xs sm:text-sm text-text-muted">See how your prep stacks up against other aspirants</p>
+          </div>
         </div>
       </div>
 
@@ -347,7 +503,7 @@ export default function Leaderboard({ user }) {
               onClick={() => setTabId(t.id)}
               className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-medium whitespace-nowrap transition-all border shrink-0 active:scale-95"
               style={active
-                ? { background: `${t.color}18`, color: t.color, borderColor: `${t.color}55` }
+                ? { background: withAlpha(t.color, 10), color: t.color, borderColor: withAlpha(t.color, 35), boxShadow: `0 0 0 1px ${withAlpha(t.color, 15)}` }
                 : { color: "var(--text-secondary)", borderColor: "var(--bg-border)" }}
             >
               <Icon size={14} /> {t.label}
@@ -365,7 +521,7 @@ export default function Leaderboard({ user }) {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search by name..."
-            className="w-full rounded-xl pl-9 pr-3 py-2 text-sm bg-bg-muted text-text-primary border border-bg-border focus:outline-none focus:ring-2 focus:ring-accent-gold/40 placeholder:text-text-muted"
+            className="w-full rounded-xl pl-9 pr-3 py-2 text-sm bg-bg-muted text-text-primary border border-bg-border focus:outline-none focus:ring-2 focus:ring-accent-green/40 placeholder:text-text-muted"
           />
         </div>
 
@@ -373,7 +529,7 @@ export default function Leaderboard({ user }) {
           <select
             value={year}
             onChange={(e) => setYear(e.target.value)}
-            className="rounded-xl px-3 py-2 text-sm bg-bg-muted text-text-primary border border-bg-border focus:outline-none focus:ring-2 focus:ring-accent-gold/40"
+            className="rounded-xl px-3 py-2 text-sm bg-bg-muted text-text-primary border border-bg-border focus:outline-none focus:ring-2 focus:ring-accent-green/40"
           >
             <option value="all">All years</option>
             {availableYears.map((y) => <option key={y} value={y}>CSE {y}</option>)}
@@ -385,7 +541,7 @@ export default function Leaderboard({ user }) {
               aria-label="List view"
               className="w-8 h-8 rounded-[10px] flex items-center justify-center transition-all"
               style={view === "list"
-                ? { background: "var(--bg-surface)", color: "var(--accent-gold)", boxShadow: "var(--shadow-sm)" }
+                ? { background: "var(--bg-surface)", color: "var(--accent-green)", boxShadow: "var(--shadow-sm)" }
                 : { color: "var(--text-muted)" }}
             >
               <ListIcon size={15} />
@@ -395,7 +551,7 @@ export default function Leaderboard({ user }) {
               aria-label="Table view"
               className="w-8 h-8 rounded-[10px] flex items-center justify-center transition-all"
               style={view === "table"
-                ? { background: "var(--bg-surface)", color: "var(--accent-gold)", boxShadow: "var(--shadow-sm)" }
+                ? { background: "var(--bg-surface)", color: "var(--accent-green)", boxShadow: "var(--shadow-sm)" }
                 : { color: "var(--text-muted)" }}
             >
               <Table2 size={15} />
@@ -414,9 +570,12 @@ export default function Leaderboard({ user }) {
 
       {/* Podium (page 1, composite tab context, no active search) */}
       {!loading && !error && showPodium && (
-        <div className="glass-panel p-5 sm:p-6 mb-4">
+        <div
+          className="glass-panel p-5 sm:p-6 mb-4 relative overflow-hidden"
+          style={{ boxShadow: "var(--shadow-md), 0 0 24px rgba(16, 185, 129, 0.12)" }}
+        >
           <p className="flex items-center gap-1.5 text-[11px] font-mono uppercase tracking-wide text-text-muted mb-4">
-            <Sparkles size={12} className="text-accent-gold" /> Top performers
+            <Sparkles size={12} className="text-accent-green" /> Top performers
           </p>
           <div className="flex items-end justify-center gap-5 sm:gap-8">
             <PodiumCard entry={entries[1]} place={2} onClick={() => setViewingEntry(entries[1])} />
@@ -430,7 +589,7 @@ export default function Leaderboard({ user }) {
       <div className="glass-panel p-2 sm:p-3">
         {loading ? (
           <div className="flex items-center justify-center py-14 text-text-muted">
-            <Loader2 size={20} className="animate-spin" />
+            <Loader2 size={20} className="animate-spin text-accent-green" />
           </div>
         ) : error ? (
           <div className="flex items-center gap-2 py-10 px-4 text-sm font-mono text-red-400">
@@ -442,14 +601,15 @@ export default function Leaderboard({ user }) {
           <LeaderboardTable entries={entries} me={me} onSelect={setViewingEntry} activeTabId={tabId} />
         ) : (
           <div className="space-y-1">
-            {restEntries.map((entry) => (
-              <LeaderboardRow
-                key={entry.id}
-                entry={entry}
-                tab={tab}
-                isMe={me?.id === entry.id}
-                onClick={() => setViewingEntry(entry)}
-              />
+            {restEntries.map((entry, i) => (
+              <div key={entry.id} className={`animate-rise ${i < 6 ? `stagger-${i + 1}` : ""}`}>
+                <LeaderboardRow
+                  entry={entry}
+                  tab={tab}
+                  isMe={me?.id === entry.id}
+                  onClick={() => setViewingEntry(entry)}
+                />
+              </div>
             ))}
           </div>
         )}
@@ -476,10 +636,6 @@ export default function Leaderboard({ user }) {
             Next <ChevronRight size={14} />
           </button>
         </div>
-      )}
-
-      {viewingEntry && (
-        <PublicProfileModal entry={viewingEntry} onClose={() => setViewingEntry(null)} />
       )}
     </div>
   );

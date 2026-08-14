@@ -6,7 +6,9 @@ import {
   Gift, Copy, Users,
 } from "lucide-react";
 import { UPSC_SUBJECTS, SUBJECT_COLORS, SUBJECT_ICONS } from "../../hooks/useSubjectTimer";
+import { DASHBOARD_WIDGETS, loadEnabledWidgets, saveEnabledWidgets } from "../../hooks/useDashboardWidgets";
 import UpgradeModal from "./UpgradeModal";
+import { LayoutGrid, Check } from "lucide-react";
 
 // ─── Avatar initials ──────────────────────────────────────────────────────────
 export function getInitials(name = "") {
@@ -16,8 +18,12 @@ export function getInitials(name = "") {
   return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
 }
 
-// ─── AvatarCircle - exported so Sidebar / topbar can reuse it ────────────────
-export function AvatarCircle({ name = "", size = "md", onClick, className = "", as: Tag = "button" }) {
+// ─── AvatarCircle - exported so Sidebar / topbar / Leaderboard can reuse it ──
+// Pass `src` (e.g. a Google account photo URL) to show a real profile
+// picture; falls back to the initials badge if `src` is missing, or if the
+// image fails to load (broken/expired Google photo URL, offline, etc).
+export function AvatarCircle({ name = "", src = null, size = "md", onClick, className = "", as: Tag = "button" }) {
+  const [imgFailed, setImgFailed] = useState(false);
   const initials = getInitials(name);
   const sizeMap = {
     sm: "w-8  h-8  text-xs",
@@ -25,6 +31,15 @@ export function AvatarCircle({ name = "", size = "md", onClick, className = "", 
     lg: "w-14 h-14 text-lg",
     xl: "w-20 h-20 text-2xl",
   };
+  const showImage = !!src && !imgFailed;
+
+  // Reset the failure flag if a new (valid-looking) src comes in later -
+  // otherwise a stale avatar URL would permanently pin this instance to
+  // the initials fallback even after the user reconnects Google.
+  useEffect(() => {
+    setImgFailed(false);
+  }, [src]);
+
   return (
     <Tag
       onClick={onClick}
@@ -32,19 +47,29 @@ export function AvatarCircle({ name = "", size = "md", onClick, className = "", 
       aria-label="Open profile"
       className={`
         ${sizeMap[size]} rounded-full flex items-center justify-center
-        font-bold shrink-0 select-none transition-all duration-200
+        font-bold shrink-0 select-none transition-all duration-200 overflow-hidden
         hover:ring-2 hover:ring-offset-2 hover:ring-amber-400/60 active:scale-95
         ${className}
       `}
       style={{
-        background: "linear-gradient(135deg, #f59e0b 0%, #d97706 100%)",
+        background: showImage ? "var(--bg-muted)" : "linear-gradient(135deg, #f59e0b 0%, #d97706 100%)",
         color: "#1a1a1a",
         border: "2px solid rgba(245,158,11,0.4)",
         boxShadow: "0 4px 12px rgba(245,158,11,0.3)",
         fontFamily: "inherit",
       }}
     >
-      {initials}
+      {showImage ? (
+        <img
+          src={src}
+          alt={name || "Profile"}
+          referrerPolicy="no-referrer"
+          className="w-full h-full object-cover"
+          onError={() => setImgFailed(true)}
+        />
+      ) : (
+        initials
+      )}
     </Tag>
   );
 }
@@ -182,6 +207,65 @@ function SubjectChipGrid({ selected = [], onToggle, hint }) {
         })}
       </div>
       {hint && <p className="text-xs font-mono text-text-muted/70">{hint}</p>}
+    </div>
+  );
+}
+
+// ─── DashboardWidgetsCard - lets the user pick which optional sections show
+// on the Dashboard. Command Center, the Study Timer, and Subject Study Hours
+// are mandatory and always shown, so they aren't listed here. Toggles save
+// instantly (no separate "Save Changes" step) since this isn't part of the
+// profile edit form. ───────────────────────────────────────────────────────
+function DashboardWidgetsCard({ uid }) {
+  const [enabled, setEnabled] = useState(() => loadEnabledWidgets(uid));
+
+  useEffect(() => {
+    setEnabled(loadEnabledWidgets(uid));
+  }, [uid]);
+
+  const toggle = (id) => {
+    const next = enabled.includes(id) ? enabled.filter((x) => x !== id) : [...enabled, id];
+    setEnabled(saveEnabledWidgets(uid, next));
+  };
+
+  return (
+    <div className="glass-panel p-5 sm:p-6 rounded-2xl">
+      <div className="flex items-center gap-2.5 mb-2">
+        <LayoutGrid size={16} className="text-accent-gold" />
+        <h3 className="text-base sm:text-lg font-semibold text-text-primary">Dashboard Widgets</h3>
+      </div>
+      <p className="text-xs sm:text-sm font-mono text-text-muted mb-4 leading-relaxed">
+        Command Center, Study Timer, and Subject Study Hours are always on your Dashboard.
+        Turn on anything else you'd like to see there too - everything starts off by default.
+      </p>
+      <div className="space-y-1">
+        {DASHBOARD_WIDGETS.map((w) => {
+          const isOn = enabled.includes(w.id);
+          return (
+            <div key={w.id} className="flex items-center justify-between gap-3 py-2.5 border-b border-bg-border last:border-0">
+              <div className="min-w-0">
+                <p className="text-sm font-medium text-text-primary">{w.label}</p>
+                <p className="text-[11px] sm:text-xs text-text-muted mt-0.5 leading-snug">{w.description}</p>
+              </div>
+              <button
+                type="button"
+                role="switch"
+                aria-checked={isOn}
+                onClick={() => toggle(w.id)}
+                className="relative w-11 h-6 rounded-full shrink-0 transition-colors duration-200 active:scale-95"
+                style={{ background: isOn ? "var(--accent-gold)" : "var(--bg-muted)", border: "1px solid var(--bg-border,#333)" }}
+              >
+                <span
+                  className="absolute top-0.5 w-4.5 h-4.5 rounded-full bg-white shadow transition-all duration-200 flex items-center justify-center"
+                  style={{ left: isOn ? "calc(100% - 1.25rem)" : "0.125rem", width: "1.125rem", height: "1.125rem" }}
+                >
+                  {isOn && <Check size={10} className="text-accent-gold" />}
+                </span>
+              </button>
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }
@@ -451,7 +535,7 @@ export default function ProfilePage({ token, onBack, onProfileUpdate, userData =
                   <ArrowLeft size={18} />
                 </button>
               )}
-              <AvatarCircle name={profile?.name} size="lg" />
+              <AvatarCircle name={profile?.name} src={profile?.avatar} size="lg" />
               <div className="flex-1 min-w-0">
                 <h2 className="font-bold text-2xl sm:text-3xl md:text-4xl text-text-primary truncate tracking-tight">
                   {profile?.name}
@@ -773,6 +857,9 @@ export default function ProfilePage({ token, onBack, onProfileUpdate, userData =
                 </div>
               )}
             </div>
+
+            {/* Dashboard widget preferences */}
+            <DashboardWidgetsCard uid={profile?.id || profile?._id || null} />
 
           </div>
         </div>

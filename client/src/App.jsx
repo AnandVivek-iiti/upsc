@@ -331,6 +331,7 @@ return (
                   workspaceQuestion={workspaceQuestion}
                   user={user}
                   isLoggedIn={isLoggedIn}
+                  onNavigate={handleViewChange}
                 />
               )}
               {activeView === "pre" && <PrelimsGrind isLoggedIn={isLoggedIn} />}
@@ -362,6 +363,7 @@ return (
                   onSyllabusUpdate={updateProgress}
                   onBulkSyllabusUpdate={bulkUpdateProgress}
                   serverAttempts={userData?.question_attempts || []}
+                  onNavigate={handleViewChange}
                 />
               )}
               {activeView === "profile" && (

@@ -473,6 +473,35 @@ const addSpacedRepetition = async (req, res, next) => {
     next(err);
   }
 };
+// ─── DELETE /api/dashboard/spaced-repetition/:id ──────────────────────────────
+const deleteSpacedRepetition = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    const userData = await UserData.findOne({ where: { user_id: req.user.id } });
+    if (!userData) {
+      return res.status(404).json({ success: false, error: "User data not found." });
+    }
+
+    const sr    = userData.spaced_repetition ?? { queue: [] };
+    const queue = Array.isArray(sr.queue) ? sr.queue : [];
+
+    const exists = queue.some((item) => item.id === id);
+    if (!exists) {
+      return res.status(404).json({ success: false, error: "Revision item not found." });
+    }
+
+    sr.queue = queue.filter((item) => item.id !== id);
+
+    userData.spaced_repetition = sr;
+    userData.changed("spaced_repetition", true);
+    await userData.save();
+
+    res.json({ success: true, id });
+  } catch (err) {
+    next(err);
+  }
+};
 
 module.exports = {
   getUserData,
@@ -483,4 +512,5 @@ module.exports = {
   syncQuestionAttempts,
   getSpacedRepetition,
   addSpacedRepetition,
+  deleteSpacedRepetition,
 };

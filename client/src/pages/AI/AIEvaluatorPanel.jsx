@@ -3,9 +3,38 @@ import {
     Sparkles, Cpu, AlertTriangle, CheckCircle2, XCircle, Minus,
     TrendingUp, TrendingDown, Key, FileText, Award, Star,
     ArrowRight, ChevronRight, PenLine, ChevronDown, Copy,
-    CheckCheck, Zap, RefreshCw, LogIn, Camera, UploadCloud, X, ScanText,
+    CheckCheck, Zap, RefreshCw, LogIn, Camera, UploadCloud, X, ScanText, Crown,
 } from "lucide-react";
-import { evaluateAnswer, evaluateAnswerImage } from "../../hooks/useAI";
+import { evaluateAnswer, evaluateAnswerImage, isLimitReachedError, isPremiumRequiredError } from "../../hooks/useAI";
+
+// ─── Upgrade prompt shown in place of a raw error, for two distinct cases:
+// "limit" - free user used up today's evaluation quota (evaluateLimiter, 429)
+// "premium" - user doesn't have Premium at all (requirePremium, 403) ────────
+function UpgradePrompt({ reason = "limit", onNavigate }) {
+    const isPremiumGate = reason === "premium";
+    return (
+        <div className="flex flex-col items-center gap-2.5 mb-4 px-4 py-5 rounded-xl text-center"
+            style={{ background: "var(--accent-gold-dim)", border: "1px solid rgba(245,158,11,.25)" }}>
+            <Crown size={18} className="text-accent-gold" />
+            <p className="text-sm font-semibold text-text-primary">
+                {isPremiumGate ? "This feature needs Premium" : "You've used today's free evaluations"}
+            </p>
+            <p className="text-xs text-text-secondary max-w-xs">
+                {isPremiumGate
+                    ? "AI answer evaluation - typed or handwritten - is a Premium feature. Upgrade to unlock it."
+                    : "Upgrade to Premium for a higher daily limit and handwritten (Vision) evaluation."}
+            </p>
+            <button
+                type="button"
+                onClick={() => onNavigate?.("premium")}
+                className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-mono mt-1"
+                style={{ background: "var(--accent-gold)", color: "var(--bg-base)" }}
+            >
+                <Crown size={13} /> Upgrade to Premium
+            </button>
+        </div>
+    );
+}
 
 // ─── sub-components ───────────────────────────────────────────────────────────
 
@@ -352,7 +381,7 @@ function EvalResult({ data, provider }) {
 
 const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
 const MAX_IMAGE_BYTES = 10 * 1024 * 1024; // 10MB per page
-const MAX_IMAGES = 5; // max pages per submission
+const MAX_IMAGES = 10; // max pages per submission - keep in sync with evaluateController.js's MAX_IMAGES
 
 function ImageDropzone({ onFiles, hasImages }) {
     const inputRef = useRef(null);
@@ -439,13 +468,15 @@ function ImageGrid({ pages, onRemove, onAddMore }) {
 }
 
 // ─── Main export ──────────────────────────────────────────────────────────────
-export default function AIEvaluatorPanel({ question, paper, answer, isLoggedIn, marks }) {
+export default function AIEvaluatorPanel({ question, paper, answer, isLoggedIn, marks, onNavigate }) {
     const [mode, setMode] = useState("text"); // "text" | "image"
     const [loading, setLoading] = useState(false);
     const [result, setResult] = useState(null);
     const [provider, setProvider] = useState(null);
     const [error, setError] = useState(null);
     const [unreadable, setUnreadable] = useState(false);
+    const [limitReached, setLimitReached] = useState(false);
+    const [premiumRequired, setPremiumRequired] = useState(false);
 
     const [pages, setPages] = useState([]); // [{ id, dataUri, previewUrl }], in page order
 
@@ -454,6 +485,8 @@ export default function AIEvaluatorPanel({ question, paper, answer, isLoggedIn, 
     const clearImage = useCallback(() => {
         setPages([]);
         setUnreadable(false);
+        setLimitReached(false);
+        setPremiumRequired(false);
         setError(null);
     }, []);
 
@@ -524,18 +557,22 @@ export default function AIEvaluatorPanel({ question, paper, answer, isLoggedIn, 
         setMode(m);
         setError(null);
         setUnreadable(false);
+        setLimitReached(false);
+        setPremiumRequired(false);
     }, []);
 
     const handleEvaluate = useCallback(async () => {
         if (!question?.trim()) { setError("No question loaded."); return; }
         if (wordCount < 20) { setError("Write at least 20 words before evaluating."); return; }
 
-        setError(null); setResult(null); setUnreadable(false); setLoading(true);
+        setError(null); setResult(null); setUnreadable(false); setLimitReached(false); setPremiumRequired(false); setLoading(true);
         try {
             const res = await evaluateAnswer({ question, answer, paper: paper || "GS2", marks });
             setResult(res.data);
             setProvider(res.provider_used);
         } catch (e) {
+            if (isPremiumRequiredError(e)) setPremiumRequired(true);
+            else if (isLimitReachedError(e)) setLimitReached(true);
             setError(e.message);
         } finally {
             setLoading(false);
@@ -546,7 +583,7 @@ export default function AIEvaluatorPanel({ question, paper, answer, isLoggedIn, 
         if (!question?.trim()) { setError("No question loaded."); return; }
         if (pages.length === 0) { setError("Please upload at least one photo of your handwritten answer first."); return; }
 
-        setError(null); setResult(null); setUnreadable(false); setLoading(true);
+        setError(null); setResult(null); setUnreadable(false); setLimitReached(false); setPremiumRequired(false); setLoading(true);
         try {
             const res = await evaluateAnswerImage({
                 question,
@@ -558,6 +595,8 @@ export default function AIEvaluatorPanel({ question, paper, answer, isLoggedIn, 
             setProvider(res.provider_used);
         } catch (e) {
             if (e.extraction_failed) setUnreadable(true);
+            if (isPremiumRequiredError(e)) setPremiumRequired(true);
+            else if (isLimitReachedError(e)) setLimitReached(true);
             setError(e.message);
         } finally {
             setLoading(false);
@@ -568,6 +607,8 @@ export default function AIEvaluatorPanel({ question, paper, answer, isLoggedIn, 
         setResult(null);
         setError(null);
         setUnreadable(false);
+        setLimitReached(false);
+        setPremiumRequired(false);
         clearImage();
     };
 
@@ -620,8 +661,11 @@ export default function AIEvaluatorPanel({ question, paper, answer, isLoggedIn, 
                         ))}
                     </div>
 
-                    {/* Error banner - friendlier card for unreadable handwriting */}
-                    {error && unreadable ? (
+                    {/* Error banner - friendlier card for unreadable handwriting, a hit
+                        daily limit, or not having Premium at all */}
+                    {error && (premiumRequired || limitReached) ? (
+                        <UpgradePrompt reason={premiumRequired ? "premium" : "limit"} onNavigate={onNavigate} />
+                    ) : error && unreadable ? (
                         <div className="flex flex-col items-center gap-2 mb-4 px-4 py-5 rounded-xl text-center"
                             style={{ background: "var(--accent-gold-dim)", border: "1px solid rgba(245,158,11,.25)" }}>
                             <AlertTriangle size={18} className="text-accent-gold" />

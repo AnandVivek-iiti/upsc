@@ -62,7 +62,7 @@ const EXCL_USER_COND = `LOWER(u.name) NOT IN (${EXCL_SQL})`;
 const EXCL_NAME_COND = `LOWER(name) NOT IN (${EXCL_SQL})`;
 const EXCL_UID_COND  = `user_id NOT IN (SELECT id FROM "users" WHERE LOWER(name) IN (${EXCL_SQL}))`;
 
-const SESSION_GAP_SECONDS = 1800; 
+const SESSION_GAP_SECONDS = 1800;
 
 // ── Activity tab: date-range resolution + row cap ─────────────────────────
 const ACTIVITY_ROW_CAP = 500;
@@ -223,7 +223,7 @@ async function classifyUsers() {
        FROM "UserEvents" WHERE ${EXCL_UID_COND} GROUP BY user_id
      )
      SELECT
-       u.id, u.name, u.email, u.streak, u.longest_streak, u.created_at,
+       u.id, u.name, u.email, u.avatar, u.streak, u.longest_streak, u.created_at,
        COALESCE(sc.sessions, 0) AS sessions,
        COALESCE(st.study_hours, 0) AS study_hours,
        la.last_active
@@ -709,7 +709,7 @@ const planFilter =
          SELECT DISTINCT user_id FROM "UserEvents" WHERE event_type = 'day_return' AND ${EXCL_UID_COND}
        )
        SELECT
-         u.id, u.name, u.email, u.created_at AS registration_date,
+         u.id, u.name, u.email, u.avatar, u.created_at AS registration_date,
          u.streak, u.longest_streak, u.subscription_tier, u.subscription_expires_at, u.subscription_source,
          COALESCE(daily.total_hours, 0)::numeric(10,1)    AS total_study_hours,
          COALESCE(ev.answers_evaluated, 0)                AS answers_evaluated,
@@ -968,7 +968,7 @@ const getRetention = async (req, res, next) => {
     }));
 
     const churnList = await sequelize.query(
-      `SELECT u.id, u.name, u.email, u.streak, ev.last_active
+      `SELECT u.id, u.name, u.email, u.avatar, u.streak, ev.last_active
        FROM "users" u
        LEFT JOIN (SELECT user_id, MAX(created_at) AS last_active FROM "UserEvents" GROUP BY user_id) ev ON ev.user_id = u.id
        WHERE u.role = 'user' AND ${EXCL_USER_COND} AND (ev.last_active IS NULL OR ev.last_active < NOW() - INTERVAL '7 days')
@@ -1085,7 +1085,7 @@ const getUserSessions = async (req, res, next) => {
   try {
     const { userId } = req.params;
 
-    const user = await User.findOne({ where: { id: userId, role: "user", [Op.and]: sequelize.literal(EXCL_NAME_COND) }, attributes: ["id", "name", "email", "streak", "longest_streak", "created_at"] });
+    const user = await User.findOne({ where: { id: userId, role: "user", [Op.and]: sequelize.literal(EXCL_NAME_COND) }, attributes: ["id", "name", "email", "avatar", "streak", "longest_streak", "created_at"] });
     if (!user) return res.status(404).json({ success: false, error: "User not found." });
 
     const events = await sequelize.query(
@@ -1142,7 +1142,7 @@ const getUserSessions = async (req, res, next) => {
     res.json({
       success: true,
       user: {
-        id: user.id, name: user.name, email: user.email,
+        id: user.id, name: user.name, email: user.email, avatar: user.avatar || null,
         streak: user.streak, longestStreak: user.longest_streak,
         joinedAt: user.created_at,
         totalStudyHours: round(totalStudyHours),

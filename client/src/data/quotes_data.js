@@ -1,13 +1,6 @@
-// quotes_data.js – UPSC-grade wisdom engine
-// Removed generic motivation; enriched with thinkers, literature, ethics, and Fill-In.
 
 export const QUOTES = [
-  // ─────────────────────────────────────────────
-  // ESSAY GOLD – Premium quotations for essays
-  // (at least 150; used daily as one of the required picks)
-  // ─────────────────────────────────────────────
 
-  // Democracy, Governance, Constitution
   {
     text: "Constitutional morality is not a natural sentiment. It has to be cultivated.",
     src: "Dr. B.R. Ambedkar",
@@ -1767,11 +1760,11 @@ function buildDailySet(date, count = 24) {
 
   // Define pools
   const essayGoldPool = QUOTES.filter((q) => q.category === "EssayGold");
-  
+
   const englishLitPool = QUOTES.filter(
     (q) => q.category === "EnglishLiterature"
   );
-  
+
   const englishProverbPool = QUOTES.filter(
     (q) => q.category === "Proverb" && q.lang !== "hi"
   );
@@ -1780,9 +1773,9 @@ function buildDailySet(date, count = 24) {
   // General pool – everything else (excluding those categories to avoid duplication)
   const excludedCategories = new Set([
     "EssayGold",
-  
+
     "EnglishLiterature",
-    
+
     "FillIn",
   ]);
   const generalPool = QUOTES.filter(

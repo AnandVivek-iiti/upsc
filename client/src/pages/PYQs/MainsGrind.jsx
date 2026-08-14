@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback , onNavigate } from "react";
 import { Library, PenSquare, Archive } from "lucide-react";
 import ResourceLibrary from "../User/ResourceLibrary";
 import AddCustomQuestion from "../../components/QuestionStats";
@@ -770,6 +770,7 @@ function MainsSubjectPanel({ subject, accentColor, paperLabel, recordAttempt, at
                   accentColor={subject.color || accentColor}
                   paper={paperLabel}
                   isLoggedIn={isLoggedIn}
+                  onNavigate={onNavigate}
                 />
                 {/* Attempt tracker strip */}
                 {recordAttempt && (
@@ -1241,6 +1242,7 @@ export default function MainsGrind({
   onBulkSyllabusUpdate = null,
   serverAttempts = [],
   isLoggedIn = false,
+  onNavigate = null,
 }) {
   const [activeTab, setActiveTab] = useState("practice");
   const [practiceTab, setPracticeTab] = useState("browse");

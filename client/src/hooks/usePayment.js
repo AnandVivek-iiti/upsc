@@ -63,6 +63,11 @@ export function usePayment(token, { onSuccess } = {}) {
   const startCheckout = useCallback(
     async (plan, user) => {
       setError("");
+      if (!token) {
+        setError("Please sign in to upgrade to Premium.");
+        return;
+      }
+
       setLoading(true);
       try {
         await loadRazorpayScript();

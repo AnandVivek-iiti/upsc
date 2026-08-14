@@ -22,11 +22,8 @@ function expectedWordCountFor(marksValue) {
   if (Number.isFinite(m) && m > 0) return Math.round(m * 15);
   return 150;
 }
-
-// ── Handwritten-answer (image) upload limits ──────────────────────────────
 const MAX_IMAGE_BYTES = 10 * 1024 * 1024; // 10MB per page
-const MAX_IMAGES = 5; // max pages per submission
-const MAX_TOTAL_IMAGE_BYTES = 20 * 1024 * 1024; // combined cap, stays under Gemini's inline-data request ceiling
+const MAX_IMAGES = 10; // pages per submission
 const ALLOWED_IMAGE_MIME = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
 
 const DATA_URI_PATTERN = /^data:(image\/[a-zA-Z0-9.+-]+);base64,([\s\S]+)$/;
@@ -35,6 +32,63 @@ function parseImageDataUri(dataUri) {
   const match = typeof dataUri === "string" ? dataUri.match(DATA_URI_PATTERN) : null;
   if (!match) return null;
   return { mimeType: match[1].toLowerCase(), base64Data: match[2] };
+}
+
+
+function parseAndValidateImages(body) {
+  const raw = Array.isArray(body.images)
+    ? body.images
+    : body.image
+    ? [body.image]
+    : [];
+
+  if (raw.length === 0) return { images: [] };
+
+  if (raw.length > MAX_IMAGES) {
+    return { error: `Too many pages. Maximum allowed is ${MAX_IMAGES} per submission.` };
+  }
+
+  const images = [];
+  for (let i = 0; i < raw.length; i++) {
+    const entry = raw[i];
+    const parsed = parseImageDataUri(entry?.data);
+    if (!parsed) {
+      return { error: `Invalid image data on page ${i + 1}. Please re-upload the photo.` };
+    }
+    if (!ALLOWED_IMAGE_MIME.includes(parsed.mimeType)) {
+      return {
+        error: `Unsupported image format on page ${i + 1}. Please upload a JPG, JPEG, PNG, or WEBP file.`,
+      };
+    }
+    const byteSize = Buffer.byteLength(parsed.base64Data, "base64");
+    if (byteSize > MAX_IMAGE_BYTES) {
+      return { error: `Page ${i + 1} is too large. Maximum allowed size is 10MB per page.` };
+    }
+    images.push({ mimeType: parsed.mimeType, base64Data: parsed.base64Data, byteSize });
+  }
+
+  return { images };
+}
+
+const MAX_PDF_BYTES = 10 * 1024 * 1024; // 10MB
+const PDF_DATA_URI_PATTERN = /^data:application\/pdf;base64,([\s\S]+)$/i;
+
+function parsePdfDataUri(dataUri) {
+  const match = typeof dataUri === "string" ? dataUri.match(PDF_DATA_URI_PATTERN) : null;
+  if (!match) return null;
+  return { mimeType: "application/pdf", base64Data: match[1] };
+}
+
+function parseAndValidatePdf(body) {
+  const parsed = parsePdfDataUri(body?.pdf?.data);
+  if (!parsed) {
+    return { error: "Invalid PDF data. Please re-upload the file." };
+  }
+  const byteSize = Buffer.byteLength(parsed.base64Data, "base64");
+  if (byteSize > MAX_PDF_BYTES) {
+    return { error: "PDF is too large. Maximum allowed size is 10MB." };
+  }
+  return { file: { mimeType: parsed.mimeType, base64Data: parsed.base64Data, byteSize } };
 }
 
 const MEMORY_EXTRACTION_EVERY_N_TURNS = 3;
@@ -127,9 +181,6 @@ function buildStudentContext(user, userData, currentMessage) {
   return `\n\n## Student Context (the student asked about their own progress - use this data to answer factually and specifically; do not add encouragement or commentary beyond the data itself)\n${lines.map((l) => `- ${l}`).join("\n")}`;
 }
 
-/**
- * Turns the first user message of a thread into a short title, ChatGPT-style.
- */
 function deriveTitle(text) {
   const clean = (text || "").trim().replace(/\s+/g, " ");
   if (!clean) return "New chat";
@@ -170,7 +221,7 @@ function migrateLegacyChat(userData) {
 
 const evaluateAnswer = async (req, res, next) => {
   try {
-    const { question, answer, paper, image, images, marks } = req.body;
+    const { question, answer, paper, image, images: imagesInput, pdf, marks } = req.body;
 
     if (!question || question.trim().length < 10) {
       return res.status(400).json({
@@ -178,74 +229,44 @@ const evaluateAnswer = async (req, res, next) => {
         error: "Question text is required (min 10 characters).",
       });
     }
+    const hasImagePayload = (Array.isArray(imagesInput) && imagesInput.length > 0) || !!image?.data;
+    const hasPdfPayload = !!pdf?.data;
 
-    // ─────────────────────────────────────────────────────────────────────
-    // HANDWRITTEN ANSWER (IMAGE) FLOW
-    // Accepts either the new multi-page shape - images: [{ data: "data:image/jpeg;base64,..." }, ...] -
-    // or the legacy single-image shape - image: { data: "data:image/jpeg;base64,..." } - for
-    // backward compatibility with older clients.
-    // ─────────────────────────────────────────────────────────────────────
-    const rawImageList = Array.isArray(images) && images.length > 0
-      ? images
-      : (image && image.data ? [image] : null);
+    if (hasImagePayload && hasPdfPayload) {
+      return res.status(400).json({
+        success: false,
+        error: "Please upload either photo pages or a single PDF, not both.",
+      });
+    }
 
-    if (rawImageList) {
-      if (rawImageList.length > MAX_IMAGES) {
-        return res.status(400).json({
-          success: false,
-          error: `Too many pages. Please upload at most ${MAX_IMAGES} images.`,
-        });
+    if (hasImagePayload || hasPdfPayload) {
+      let attachments, inputMode;
+      if (hasPdfPayload) {
+        const { file, error } = parseAndValidatePdf(req.body);
+        if (error) {
+          return res.status(400).json({ success: false, error });
+        }
+        attachments = [file];
+        inputMode = "pdf";
+      } else {
+        const { images, error } = parseAndValidateImages(req.body);
+        if (error) {
+          return res.status(400).json({ success: false, error });
+        }
+        attachments = images;
+        inputMode = "handwritten";
       }
 
-      const parsedImages = [];
-      let totalBytes = 0;
-
-      for (let i = 0; i < rawImageList.length; i++) {
-        const entry = rawImageList[i];
-        const parsedImage = parseImageDataUri(entry?.data);
-        if (!parsedImage) {
-          return res.status(400).json({
-            success: false,
-            error: `Invalid image data for page ${i + 1}. Please re-upload the photo.`,
-          });
-        }
-        const { mimeType, base64Data } = parsedImage;
-
-        if (!ALLOWED_IMAGE_MIME.includes(mimeType)) {
-          return res.status(400).json({
-            success: false,
-            error: `Unsupported image format for page ${i + 1}. Please upload a JPG, JPEG, PNG, or WEBP file.`,
-          });
-        }
-
-        const byteSize = Buffer.byteLength(base64Data, "base64");
-        if (byteSize > MAX_IMAGE_BYTES) {
-          return res.status(400).json({
-            success: false,
-            error: `Page ${i + 1} is too large. Maximum allowed size is 10MB per image.`,
-          });
-        }
-
-        totalBytes += byteSize;
-        parsedImages.push({ mimeType, base64Data, byteSize });
-      }
-
-      if (totalBytes > MAX_TOTAL_IMAGE_BYTES) {
-        return res.status(400).json({
-          success: false,
-          error: `Combined image size is too large (max ${(MAX_TOTAL_IMAGE_BYTES / (1024 * 1024)).toFixed(0)}MB total). Try fewer pages or smaller photos.`,
-        });
-      }
-
+      const totalBytes = attachments.reduce((sum, a) => sum + a.byteSize, 0);
       console.log(
-        `[Evaluation:Image] Processing for user: ${req.user.id} (${parsedImages.length} page(s), ${(totalBytes / (1024 * 1024)).toFixed(2)}MB total)`,
+        `[Evaluation:${inputMode === "pdf" ? "PDF" : "Image"}] Processing for user: ${req.user.id} (${attachments.length} attachment(s), ${(totalBytes / (1024 * 1024)).toFixed(2)}MB total)`,
       );
 
       let result, provider;
       try {
         ({ result, provider } = await evaluateAnswerImage({
           question,
-          images: parsedImages.map((p) => ({ imageBase64: p.base64Data, mimeType: p.mimeType })),
+          images: attachments,
           paper: paper || "GS2",
           marks,
         }));
@@ -274,8 +295,7 @@ const evaluateAnswer = async (req, res, next) => {
           paper: paper || "GS",
           question: question.trim(),
           answer: extracted,
-          input_mode: "handwritten",
-          page_count: parsedImages.length,
+          input_mode: inputMode,
           evaluation: JSON.stringify(result),
           word_count: wordCount,
         });
@@ -287,8 +307,7 @@ const evaluateAnswer = async (req, res, next) => {
       trackEvent(req.user.id, "answer_evaluated", "AI Evaluator", {
         subject: paper || "GS2",
         score: result?.score ?? null,
-        input_mode: "handwritten",
-        page_count: parsedImages.length,
+        input_mode: inputMode,
       }).catch(() => {});
 
       return res.status(200).json({
@@ -364,9 +383,6 @@ Please evaluate this answer according to your mentor framework. Apply the DEVELO
       data: result,
     });
   } catch (err) {
-    // Full detail goes to server logs only. The client must never see raw
-    // internal error text (e.g. "Cannot read properties of undefined...") -
-    // that's an implementation detail, not something a student should see.
     console.error("Evaluation pipeline crashed:", err);
     return res.status(500).json({
       success: false,
@@ -411,19 +427,11 @@ const chat = async (req, res, next) => {
       };
       threads = [thread, ...threads];
     }
-
-    // Only pulls in personal stats when the question is actually about the
-    // student's own progress - see buildStudentContext for the gate.
-    const contextBlock = buildStudentContext(req.user, userData, message);
+  const contextBlock = buildStudentContext(req.user, userData, message);
     const pageBlock = context_hint
       ? `\n\nThe student is currently in this section of the app: "${context_hint}". Only reference this if directly relevant to the question.`
       : "";
-
-    // Same multi-provider fallback chain (OpenRouter → Gemini → Groq) as the
-    // Mains evaluator and Notes actions, instead of calling Gemini directly —
-    // this is what lets a Gemini rate limit fall through to another model
-    // instead of surfacing a raw 429 straight to the student.
-    const systemInstruction = CHAT_SYSTEM_INSTRUCTION + contextBlock + pageBlock;
+   const systemInstruction = CHAT_SYSTEM_INSTRUCTION + contextBlock + pageBlock;
     const { response: responseText, provider } = await runMentorChat(
       systemInstruction,
       thread.messages,
@@ -517,10 +525,7 @@ const listChatThreads = async (req, res, next) => {
   }
 };
 
-/**
- * GET /api/evaluate/chat-threads/:id
- * Full message list for one saved chat.
- */
+
 const getChatThread = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -563,13 +568,7 @@ const deleteChatThread = async (req, res, next) => {
 // ─── PRELIMS EXPLANATION SYSTEM INSTRUCTION ──────────────────────────────────────────────
 const PRELIM_EXPLAIN_SYSTEM_INSTRUCTION = `You are an expert UPSC Prelims tutor. When given an MCQ, explain clearly and concisely why the correct answer is right and briefly why the other options are wrong. Keep the explanation factually precise, exam-relevant, and 3–5 sentences long. Do not add any preamble, heading, or markdown  - output plain explanation text only.`;
 
-/**
- * POST /api/evaluate/prelim-explain
- * Generates an AI explanation for a UPSC Prelims MCQ using the same
- * multi-provider fallback chain as the Mains evaluator (Gemini → OpenRouter → Groq).
- *
- * Body: { questionText, options: [{id, text}], correctOption, explanation? }
- */
+
 const explainPrelimQuestion = async (req, res, next) => {
   try {
     const { questionText, options, correctOption, explanation } = req.body;

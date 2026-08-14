@@ -5,12 +5,12 @@ import {
   Plus, Search, Trash2, X, ChevronLeft, Check, Loader2,
   Sparkles, AlertTriangle, Zap, Wand2, Eye, EyeOff, Copy,
   RotateCcw, GraduationCap, LogIn, NotebookPen, BookOpen,
-  PenLine, History, Camera,
+  PenLine, History, Camera, Crown,
 } from "lucide-react";
 import {
   improveNotes, findMistakesInNotes, generateRevisionNotes, convertToMainsFormat,
   fetchNotes, createNoteRemote, updateNoteRemote, deleteNoteRemote,
-  extractNoteFromImage,
+  extractNoteFromImage, isPremiumRequiredError,
 } from "../../hooks/useAI";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
@@ -817,7 +817,28 @@ const AIResultBody = memo(function AIResultBody({ actionId, loading, error, resu
 
 // ─── AI Drawer ────────────────────────────────────────────────────────────────
 
-function AIDrawer({ open, action, loading, error, result, suggestions, onClose, onRegenerate, onSaveVersion, onAppendRecap, onInsertText }) {
+// Shown instead of the plain red error box when the AI action failed because
+// the account doesn't have an active Premium subscription (requirePremium,
+// 403, code: "PREMIUM_REQUIRED") - matches AIEvaluatorPanel's UpgradePrompt.
+function NotesUpgradePrompt({ onNavigate }) {
+  return (
+    <div className="flex flex-col items-center gap-2.5 px-4 py-6 rounded-xl text-center"
+      style={{ background: "rgba(245,158,11,.08)", border: "1px solid rgba(245,158,11,.25)" }}>
+      <Crown size={18} className="text-[var(--accent-gold)]" />
+      <p className="text-sm font-semibold text-[var(--text-primary)]">This feature needs Premium</p>
+      <p className="text-xs text-[var(--text-secondary)] max-w-xs">
+        Turning photos of your notes into text is a Premium feature. Upgrade to unlock it.
+      </p>
+      <button type="button" onClick={() => onNavigate?.("premium")}
+        className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-mono mt-1"
+        style={{ background: "var(--accent-gold)", color: "var(--bg-base)" }}>
+        <Crown size={13} /> Upgrade to Premium
+      </button>
+    </div>
+  );
+}
+
+function AIDrawer({ open, action, loading, error, premiumRequired, result, suggestions, onClose, onRegenerate, onSaveVersion, onAppendRecap, onInsertText, onNavigate }) {
   const [copied, setCopied] = useState(false);
   const [view, setView] = useState("text"); // "text" | "suggestions" - photo action only
   const bodyRef = useRef(null);
@@ -892,6 +913,8 @@ function AIDrawer({ open, action, loading, error, result, suggestions, onClose, 
             ) : (
               <p className="text-[12px] font-mono text-[var(--text-muted)]">No specific suggestions - this note already looks solid.</p>
             )
+          ) : error && premiumRequired ? (
+            <NotesUpgradePrompt onNavigate={onNavigate} />
           ) : (
             <AIResultBody actionId={action.id} loading={loading} error={error} result={result} />
           )}
@@ -970,7 +993,7 @@ const SignInGate = memo(function SignInGate({ onClose }) {
 
 // ─── Main component ───────────────────────────────────────────────────────────
 
-export default function MentorNotes({ isLoggedIn = false, contextHint = "Notes section" }) {
+export default function MentorNotes({ isLoggedIn = false, contextHint = "Notes section", onNavigate }) {
   const [notes, setNotes] = useState([]);
   const [notesLoading, setNotesLoading] = useState(true);
   const [notesError, setNotesError] = useState(null);
@@ -990,6 +1013,7 @@ export default function MentorNotes({ isLoggedIn = false, contextHint = "Notes s
   const [activeAction, setActiveAction] = useState(null);
   const [aiLoading, setAiLoading] = useState(false);
   const [aiError, setAiError] = useState(null);
+  const [aiPremiumRequired, setAiPremiumRequired] = useState(false);
   const [aiResult, setAiResult] = useState(null);
   const [signInGateOpen, setSignInGateOpen] = useState(false);
   const [photoLoading, setPhotoLoading] = useState(false);
@@ -1151,11 +1175,14 @@ export default function MentorNotes({ isLoggedIn = false, contextHint = "Notes s
 
   const runAction = useCallback(async (action) => {
     if (!isLoggedIn) { setSignInGateOpen(true); return; }
-    setActiveAction(action); setDrawerOpen(true); setAiLoading(true); setAiError(null); setAiResult(null);
+    setActiveAction(action); setDrawerOpen(true); setAiLoading(true); setAiError(null); setAiPremiumRequired(false); setAiResult(null);
     try {
       const res = await action.fn({ title: draft.title, topic: topicMeta(draft.topic)?.label, content: draft.content });
       setAiResult(res);
-    } catch (e) { setAiError(sanitizeAIError(e.message)); }
+    } catch (e) {
+      if (isPremiumRequiredError(e)) { setAiPremiumRequired(true); setAiError(e.message); }
+      else { setAiError(sanitizeAIError(e.message)); }
+    }
     finally { setAiLoading(false); }
   }, [isLoggedIn, draft]);
 
@@ -1164,12 +1191,15 @@ export default function MentorNotes({ isLoggedIn = false, contextHint = "Notes s
     if (!isLoggedIn) { setSignInGateOpen(true); return; }
     lastPhotoDataUri.current = dataUri;
     setActiveAction(PHOTO_ACTION); setDrawerOpen(true);
-    setAiLoading(true); setAiError(null); setAiResult(null); setPhotoSuggestions([]); setPhotoLoading(true);
+    setAiLoading(true); setAiError(null); setAiPremiumRequired(false); setAiResult(null); setPhotoSuggestions([]); setPhotoLoading(true);
     try {
       const { extractedText, suggestions } = await extractNoteFromImage({ image: dataUri });
       setAiResult(extractedText);
       setPhotoSuggestions(suggestions);
-    } catch (e) { setAiError(sanitizeAIError(e.message)); }
+    } catch (e) {
+      if (isPremiumRequiredError(e)) { setAiPremiumRequired(true); setAiError(e.message); }
+      else { setAiError(sanitizeAIError(e.message)); }
+    }
     finally { setAiLoading(false); setPhotoLoading(false); }
   }, [isLoggedIn]);
 
@@ -1509,11 +1539,12 @@ export default function MentorNotes({ isLoggedIn = false, contextHint = "Notes s
       {drawerOpen && (
         <AIDrawer
           open={drawerOpen} action={activeAction} loading={aiLoading}
-          error={aiError} result={aiResult} suggestions={photoSuggestions} onClose={closeDrawer}
+          error={aiError} premiumRequired={aiPremiumRequired} result={aiResult} suggestions={photoSuggestions} onClose={closeDrawer}
           onRegenerate={() => activeAction?.id === "photo" ? runPhotoExtraction(lastPhotoDataUri.current) : runAction(activeAction)}
           onSaveVersion={handleSaveVersion}
           onAppendRecap={handleAppendRecap}
           onInsertText={handleInsertExtractedText}
+          onNavigate={onNavigate}
         />
       )}
       {signInGateOpen && <SignInGate onClose={() => setSignInGateOpen(false)} />}

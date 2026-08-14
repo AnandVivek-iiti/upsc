@@ -14,11 +14,7 @@
   ChevronUp,
   ChevronLeft,
   ChevronRight,
-  ArrowRight,
-  FileSearch,
   BookOpenCheck,
-  FlaskConical,
-  Rocket,
   MessageSquarePlus,
   Award,
 } from "lucide-react";
@@ -34,6 +30,7 @@ import SubjectAnalyticsDashboard from "./SubjectAnalyticsDashboard";
 import { getISTDateString, getISTDay } from "../../utils/dateUtils";
 import DashboardOnboardingCards from "./DashboardOnboardingCards";
 import RevisionReminderToast from "./RevisionReminderToast";
+import { DASHBOARD_WIDGETS_EVENT, loadEnabledWidgets } from "../../hooks/useDashboardWidgets";
 
 // ─── Tiny helpers ──────────────────────────────────────────────────────────────
 function todayKey() {
@@ -333,136 +330,6 @@ function TodaysMission({ userData, todayHours = 0, overallProgress = 0, onNaviga
             </div>
           );
         })}
-      </div>
-    </div>
-  );
-}
-
-// ─── ActionHub ────────────────────────────────────────────────────────────────
-// Order: 1 Topic-wise Practice, 2 Mock Tests, 3 Answer Evaluation, 4 Notes Auditor
-// (natural preparation sequence per product spec)
-function ActionHub({ onNavigate }) {
-  const [grown, setGrown] = useState(false);
-
-  useEffect(() => {
-    const t = setTimeout(() => setGrown(true), 80);
-    return () => clearTimeout(t);
-  }, []);
-
-  const actions = [
-    {
-      icon: BookOpenCheck,
-      iconColor: "#34d399",
-      gradFrom: "rgba(16,185,129,0.12)",
-      gradTo:   "rgba(16,185,129,0.04)",
-      border:   "rgba(16,185,129,0.25)",
-      glow:     "rgba(16,185,129,0.15)",
-      title: "Topic-wise Practice",
-      desc: "Practice PYQs topic-wise and automatically update syllabus progress when questions are completed.",
-      cta: "Practice Questions",
-      view: "pre",
-    },
-    {
-      icon: FlaskConical,
-      iconColor: "#f472b6",
-      gradFrom: "rgba(236,72,153,0.12)",
-      gradTo:   "rgba(236,72,153,0.04)",
-      border:   "rgba(236,72,153,0.25)",
-      glow:     "rgba(236,72,153,0.15)",
-      title: "Mock Test Series",
-      desc: "Attempt a timed UPSC test. After completion: analyze performance, identify weak areas, and push weak topics into the AI Revision Queue automatically.",
-      cta: "Start Test",
-      view: "test-series",
-    },
-    {
-      icon: Rocket,
-      iconColor: "#f59e0b",
-      gradFrom: "rgba(245,158,11,0.12)",
-      gradTo:   "rgba(245,158,11,0.04)",
-      border:   "rgba(245,158,11,0.25)",
-      glow:     "rgba(245,158,11,0.15)",
-      title: "Answer Evaluation",
-      desc: "Evaluate your GS/Mains answer in seconds. Get score, strengths, weaknesses, keyword coverage, structural feedback and a topper-style rewritten answer.",
-      cta: "Evaluate Answer",
-      view: "mains",
-    },
-    {
-      icon: FileSearch,
-      iconColor: "#818cf8",
-      gradFrom: "rgba(99,102,241,0.12)",
-      gradTo:   "rgba(99,102,241,0.04)",
-      border:   "rgba(99,102,241,0.25)",
-      glow:     "rgba(99,102,241,0.15)",
-      title: "Audit Notes",
-      desc: "Check gaps in your notes instantly. Get missing points, memory traps, 30-second revision cards and improved notes.",
-      cta: "Audit Notes",
-      view: "notes",
-    },
-  ];
-
-  return (
-    <div className="glass-panel p-3 sm:p-5 space-y-3 sm:space-y-4">
-      <div className="flex items-center gap-2">
-        <Rocket size={14} className="text-accent-gold shrink-0" />
-        <div>
-          <h3 className="text-sm sm:text-base font-display font-bold text-text-primary leading-tight">
-            Start Studying
-          </h3>
-          <p className="text-[10px] sm:text-xs font-mono text-text-muted mt-0.5">
-            Choose what you want to work on right now.
-          </p>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
-        {actions.map(({ icon: Icon, iconColor, gradFrom, gradTo, border, glow, title, desc, cta, view }, i) => (
-          <div
-            key={title}
-            className="relative rounded-xl p-3.5 sm:p-4 flex flex-col gap-2.5 sm:gap-3 cursor-pointer group
-                       transition-all duration-300 ease-out hover:-translate-y-0.5 active:scale-[0.98]"
-            style={{
-              background: `linear-gradient(135deg, ${gradFrom} 0%, ${gradTo} 100%)`,
-              border: `1px solid ${border}`,
-              boxShadow: `0 2px 16px ${glow}`,
-              opacity: grown ? 1 : 0,
-              transform: grown ? "translateY(0)" : "translateY(14px)",
-              transition: `opacity 0.45s ease ${i * 80}ms, transform 0.45s ease ${i * 80}ms, box-shadow 0.2s ease, translate 0.2s ease`,
-            }}
-            onClick={() => onNavigate?.(view)}
-          >
-            <div
-              className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
-              style={{ background: `radial-gradient(ellipse at 30% 30%, ${gradFrom} 0%, transparent 70%)` }}
-            />
-            <div className="flex items-center gap-2.5 relative z-10">
-              <div
-                className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg flex items-center justify-center shrink-0"
-                style={{ background: `${iconColor}20`, border: `1px solid ${iconColor}30` }}
-              >
-                <Icon size={16} style={{ color: iconColor }} />
-              </div>
-              <h4 className="text-sm sm:text-[15px] font-display font-bold text-text-primary leading-tight">
-                {title}
-              </h4>
-            </div>
-            <p className="text-[11px] sm:text-xs font-mono text-text-secondary leading-relaxed relative z-10">
-              {desc}
-            </p>
-            <button
-              className="relative z-10 flex items-center justify-center gap-1.5 w-full py-2 sm:py-2.5 rounded-lg
-                         text-[11px] sm:text-xs font-semibold font-mono transition-all duration-200 group-hover:gap-2.5"
-              style={{
-                background: `${iconColor}18`,
-                border: `1px solid ${iconColor}35`,
-                color: iconColor,
-              }}
-              onClick={(e) => { e.stopPropagation(); onNavigate?.(view); }}
-            >
-              {cta}
-              <ArrowRight size={12} className="transition-transform duration-200 group-hover:translate-x-0.5" />
-            </button>
-          </div>
-        ))}
       </div>
     </div>
   );
@@ -995,6 +862,37 @@ export default function Dashboard({
   const [revisionBadge, setRevisionBadge] = useState(false);
   const revisionCheckedRef = useRef(false);
 
+  // ── Which optional widgets the user has added to the Dashboard ────────────
+  // Command Center, the Study Timer, and Subject Study Hours are mandatory
+  // and are never gated behind this - see the render section below. Everything
+  // else defaults to off ("keep 3 things at default") and is turned on from
+  // Profile > Dashboard Widgets. Re-read on user change and whenever that
+  // page saves a change, so this stays in sync without a full reload.
+  const [enabledWidgets, setEnabledWidgets] = useState(() => loadEnabledWidgets(userId));
+
+  useEffect(() => {
+    setEnabledWidgets(loadEnabledWidgets(userId));
+  }, [userId]);
+
+  useEffect(() => {
+    const onWidgetsChanged = (e) => {
+      if (e?.detail?.uid !== undefined && e.detail.uid !== userId) return;
+      setEnabledWidgets(loadEnabledWidgets(userId));
+    };
+    const onStorage = (e) => {
+      if (e.key && !e.key.startsWith("upsc_dashboard_widgets_")) return;
+      setEnabledWidgets(loadEnabledWidgets(userId));
+    };
+    window.addEventListener(DASHBOARD_WIDGETS_EVENT, onWidgetsChanged);
+    window.addEventListener("storage", onStorage);
+    return () => {
+      window.removeEventListener(DASHBOARD_WIDGETS_EVENT, onWidgetsChanged);
+      window.removeEventListener("storage", onStorage);
+    };
+  }, [userId]);
+
+  const hasWidget = (id) => enabledWidgets.includes(id);
+
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
     checkMobile();
@@ -1065,7 +963,7 @@ export default function Dashboard({
             className="flex items-center gap-2 px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl border border-bg-border bg-bg-surface hover:border-accent-gold/30 hover:bg-bg-muted transition-all duration-150 group shrink-0 ml-2"
             title="View profile"
           >
-            <AvatarCircle name={userName} size="sm" as="span" />
+            <AvatarCircle name={userName} src={user?.avatar} size="sm" as="span" />
             <div className="hidden sm:block text-left">
               <p className="text-xs font-semibold text-text-primary leading-tight truncate max-w-[100px] md:max-w-[120px]">
                 {userName}
@@ -1107,35 +1005,29 @@ export default function Dashboard({
         </p>
       </div>
 
-      {/* ── Today's Mission ── */}
-      <TodaysMission
-        userData={userData}
-        todayHours={todayHours}
-        overallProgress={overallProgress}
-        onNavigate={onNavigate}
-        revisionBadge={revisionBadge}
-        onRevisionVisit={handleRevisionVisit}
-      />
-
-      {/* ── Preparation Journey (onboarding milestones) ── */}
-      <DashboardOnboardingCards
-        userData={userData}
-        todayHours={todayHours}
-        overallProgress={overallProgress}
-        onNavigate={onNavigate}
-      />
-
-      {/* ── START STUDYING (Action Hub) ── */}
-      {/* Order: Topic-wise Practice → Mock Tests → Answer Evaluation → Notes Auditor */}
-      {isMobile ? (
-        <CollapsibleSection title="Start Studying" icon={Rocket} defaultOpen={true}>
-          <ActionHub onNavigate={onNavigate} />
-        </CollapsibleSection>
-      ) : (
-        <ActionHub onNavigate={onNavigate} />
+      {/* ── Today's Mission (optional - add from Profile > Dashboard Widgets) ── */}
+      {hasWidget("todaysMission") && (
+        <TodaysMission
+          userData={userData}
+          todayHours={todayHours}
+          overallProgress={overallProgress}
+          onNavigate={onNavigate}
+          revisionBadge={revisionBadge}
+          onRevisionVisit={handleRevisionVisit}
+        />
       )}
 
-      {/* ── Study Timer (subject-tagged) ── */}
+      {/* ── Preparation Journey (optional) ── */}
+      {hasWidget("onboarding") && (
+        <DashboardOnboardingCards
+          userData={userData}
+          todayHours={todayHours}
+          overallProgress={overallProgress}
+          onNavigate={onNavigate}
+        />
+      )}
+
+      {/* ── Study Timer (subject-tagged) - mandatory ── */}
       {/* SubjectStudyTimer does NOT render SubjectAnalyticsDashboard inside it. */}
       {/* The analytics card lives below as its own separate section.            */}
       <SubjectStudyTimer
@@ -1150,7 +1042,7 @@ export default function Dashboard({
         onBulkUpdateSyllabus={onBulkUpdateSyllabus}
       />
 
-      {/* ── Subject Study Analytics ── */}
+      {/* ── Subject Study Hours - mandatory ── */}
       {/* Standalone card. Rendered ONCE here. Never inside SubjectStudyTimer. */}
       {isMobile ? (
         <CollapsibleSection title="Subject Study Hours" icon={BarChart2} defaultOpen={false}>
@@ -1160,52 +1052,63 @@ export default function Dashboard({
         <SubjectAnalyticsDashboard isLoggedIn={isLoggedIn} />
       )}
 
-      {/* ── Today's Tasks ── */}
-      {isMobile ? (
-        <CollapsibleSection title="Today's Tasks" icon={ListChecks} defaultOpen={true}>
-          <TodayPlanner />
-        </CollapsibleSection>
-      ) : (
-        <TodayPlanner />
-      )}
-
-      {/* ── Study Chart + Paper Coverage ── */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-2 sm:gap-3">
-        {isMobile ? (
-          <>
-            <CollapsibleSection title="Study Chart" icon={TrendingUp} defaultOpen={false}>
-              <StudyChart logs={dailyLogs} targetHours={targetHours} />
-            </CollapsibleSection>
-            <CollapsibleSection title="Paper Coverage" icon={BarChart2} defaultOpen={false}>
-              <PaperProgress syllabusData={syllabusData} />
-            </CollapsibleSection>
-          </>
-        ) : (
-          <>
-            <StudyChart logs={dailyLogs} targetHours={targetHours} />
-            <PaperProgress syllabusData={syllabusData} />
-          </>
-        )}
-      </div>
-
-      {/* ── AI Spaced Repetition ── */}
-      <div id="ai-revision-queue-section">
-        {isMobile ? (
-          <CollapsibleSection title="AI Revision Queue" icon={Brain} defaultOpen={false}>
-            <AIRevisionPanel onNavigate={onNavigate} isLoggedIn={isLoggedIn} compact={true} />
+      {/* ── Today's Tasks (optional) ── */}
+      {hasWidget("todayPlanner") && (
+        isMobile ? (
+          <CollapsibleSection title="Today's Tasks" icon={ListChecks} defaultOpen={true}>
+            <TodayPlanner />
           </CollapsibleSection>
         ) : (
-          <AIRevisionPanel onNavigate={onNavigate} isLoggedIn={isLoggedIn} />
-        )}
-      </div>
+          <TodayPlanner />
+        )
+      )}
 
-      {/* ── Question Statistics ── */}
-      {isMobile ? (
-        <CollapsibleSection title="Question Statistics" defaultOpen={false} tight>
+      {/* ── Study Chart + Paper Coverage (each optional independently) ── */}
+      {(hasWidget("studyChart") || hasWidget("paperProgress")) && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-2 sm:gap-3">
+          {hasWidget("studyChart") && (
+            isMobile ? (
+              <CollapsibleSection title="Study Chart" icon={TrendingUp} defaultOpen={false}>
+                <StudyChart logs={dailyLogs} targetHours={targetHours} />
+              </CollapsibleSection>
+            ) : (
+              <StudyChart logs={dailyLogs} targetHours={targetHours} />
+            )
+          )}
+          {hasWidget("paperProgress") && (
+            isMobile ? (
+              <CollapsibleSection title="Paper Coverage" icon={BarChart2} defaultOpen={false}>
+                <PaperProgress syllabusData={syllabusData} />
+              </CollapsibleSection>
+            ) : (
+              <PaperProgress syllabusData={syllabusData} />
+            )
+          )}
+        </div>
+      )}
+
+      {/* ── AI Spaced Repetition (optional) ── */}
+      {hasWidget("aiRevision") && (
+        <div id="ai-revision-queue-section">
+          {isMobile ? (
+            <CollapsibleSection title="AI Revision Queue" icon={Brain} defaultOpen={false}>
+              <AIRevisionPanel onNavigate={onNavigate} isLoggedIn={isLoggedIn} compact={true} />
+            </CollapsibleSection>
+          ) : (
+            <AIRevisionPanel onNavigate={onNavigate} isLoggedIn={isLoggedIn} />
+          )}
+        </div>
+      )}
+
+      {/* ── Question Statistics (optional) ── */}
+      {hasWidget("questionStats") && (
+        isMobile ? (
+          <CollapsibleSection title="Question Statistics" defaultOpen={false} tight>
+            <QuestionStatsPanel />
+          </CollapsibleSection>
+        ) : (
           <QuestionStatsPanel />
-        </CollapsibleSection>
-      ) : (
-        <QuestionStatsPanel />
+        )
       )}
 
       {/* ── Feedback card ── */}

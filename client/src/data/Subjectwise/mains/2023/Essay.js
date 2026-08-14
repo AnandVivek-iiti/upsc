@@ -71,7 +71,7 @@
     marks: 125,
     directive: "Essay",
     wordLimit: 1200,
-    questionText: "Girls are weighed down by restrictions, boys with demands — two equally harmful disciplines.",
+    questionText: "Girls are weighed down by restrictions, boys with demands  - two equally harmful disciplines.",
     keyPoints: [],
     idealAnswer: "",
     sources: [],
