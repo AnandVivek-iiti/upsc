@@ -1,5 +1,5 @@
 import { useState, useCallback, useMemo } from "react";
-import { Library, PenSquare, Zap } from "lucide-react";
+import { Library, PenSquare, Zap, CheckCircle2, CircleDot, Circle } from "lucide-react";
 import MatchTable from "../../components/ui/MatchTable";
 import ExplanationBox from "../../components/ui/ExplanationBox";
 import AIMentorChat from "../AI/AIMentorChat";
@@ -80,6 +80,88 @@ const getYears        = d => [...new Set((d||[]).map(q=>q.year))].sort((a,b)=>b-
 const getTopics       = d => [...new Set((d||[]).map(q=>q.topic).filter(Boolean))].sort();
 const getStyleTags    = d => [...new Set((d||[]).map(q=>q.styleTag).filter(Boolean))];
 const getDifficulties = d => [...new Set((d||[]).map(q=>q.difficulty).filter(Boolean))];
+
+// ─── PAPER PROGRESS STATUS (done / attempted-few / not-touched) ─────────────
+function countAttempted(questions, attemptedIds) {
+  let total = 0;
+  let attempted = 0;
+  (questions || []).forEach(q => {
+    total += 1;
+    const qId = q._id || q.id;
+    if (qId && attemptedIds?.has(qId)) attempted += 1;
+  });
+  return { total, attempted };
+}
+
+function getPaperStatus(paper, attemptedIds) {
+  const dataset = Object.values(paper?.subjects || {}).flatMap(s => s.data || []);
+  if (!dataset.length) return "untouched";
+  const { total, attempted } = countAttempted(dataset, attemptedIds);
+  if (attempted === 0) return "untouched";
+  if (attempted >= total) return "done";
+  return "partial";
+}
+
+const STATUS_META = {
+  done:      { Icon: CheckCircle2, color: "#34d399", label: "Done — every question in this paper attempted" },
+  partial:   { Icon: CircleDot,    color: "#fbbf24", label: "Attempted a few — some questions still pending" },
+  untouched: { Icon: Circle,       color: "#a1a1aa", label: "Not touched — no attempts yet (default)" },
+};
+
+// Icon-only badge for the corner of a paper accordion - meaning explained by <StatusLegend />.
+function StatusBadge({ status }) {
+  const meta = STATUS_META[status] || STATUS_META.untouched;
+  const { Icon, color, label } = meta;
+  return (
+    <span
+      title={label}
+      aria-label={label}
+      style={{
+        position: "absolute",
+        top: 10,
+        right: 10,
+        width: 26,
+        height: 26,
+        borderRadius: "50%",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        background: `${color}1f`,
+        border: `0.5px solid ${color}66`,
+        boxShadow: "var(--shadow-sm)",
+        flexShrink: 0,
+        zIndex: 1,
+      }}
+    >
+      <Icon size={13} color={color} strokeWidth={2.5} />
+    </span>
+  );
+}
+
+// Legend explaining what each corner icon means; shown once above the paper accordions.
+function StatusLegend() {
+  return (
+    <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 16, marginBottom: 12 }}>
+      {Object.entries(STATUS_META).map(([key, meta]) => {
+        const { Icon, color, label } = meta;
+        return (
+          <div key={key} style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            <span
+              style={{
+                width: 20, height: 20, borderRadius: "50%", flexShrink: 0,
+                display: "flex", alignItems: "center", justifyContent: "center",
+                background: `${color}1f`, border: `0.5px solid ${color}66`,
+              }}
+            >
+              <Icon size={11} color={color} strokeWidth={2.5} />
+            </span>
+            <span style={{ fontSize: 11, color: "var(--text-muted)", fontFamily: "'DM Mono', monospace" }}>{label}</span>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
 
 // ─── GLOBAL CSS ───────────────────────────────────────────────────────────────
 const GLOBAL_CSS = `
@@ -577,14 +659,17 @@ function PaperSection({ paperId, paper, isOpen, onToggle, revQueue, onTopicCompl
     () => subjectEntries.reduce((s, [, sub]) => s + (sub.data?.length || 0), 0),
     [subjectEntries]
   );
+  const status = useMemo(() => getPaperStatus(paper, attemptedIds), [paper, attemptedIds]);
 
   return (
     <div style={{
+      position: "relative",
       background: "var(--bg-surface)", border: "0.5px solid var(--bg-border)",
       borderRadius: 14, overflow: "hidden",
       boxShadow: isOpen ? "var(--shadow-md)" : "var(--shadow-sm)",
     }}>
-      <div className="pg-paper-hdr" onClick={handleToggle}>
+      <StatusBadge status={status} />
+      <div className="pg-paper-hdr" style={{ paddingRight: 42 }} onClick={handleToggle}>
         <div style={{ width: 10, height: 10, borderRadius: "50%", background: paper.color, flexShrink: 0, boxShadow: `0 0 6px ${paper.color}60` }} />
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ fontSize: 15, fontWeight: 600, color: "var(--text-primary)", display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
@@ -872,6 +957,7 @@ export default function PrelimsGrind({
             <RevisionQueuePanel revQueue={revQueue} />
           ) : (
             <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              <StatusLegend />
               {paperOrder.map(paperId => {
                 const paper = PRELIMS_PAPERS[paperId];
                 if (!paper) return null;
