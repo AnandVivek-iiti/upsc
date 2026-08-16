@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback , onNavigate } from "react";
-import { Library, PenSquare, Archive } from "lucide-react";
+import { Library, PenSquare, Archive, CheckCircle2, CircleDot, Circle } from "lucide-react";
 import ResourceLibrary from "../User/ResourceLibrary";
 import AddCustomQuestion from "../../components/QuestionStats";
 import AIMentorChat from "../AI/AIMentorChat";
@@ -154,6 +154,88 @@ orderedKeys.forEach(key => {
     subjects: groupMainsDataBySubject(rows, SUBJECT_COLOR_MAPS[key] || {}),
   };
 });
+
+// ─── PAPER PROGRESS STATUS (done / attempted-few / not-touched) ─────────────
+function countAttempted(questions, attemptedIds) {
+  let total = 0;
+  let attempted = 0;
+  (questions || []).forEach(q => {
+    total += 1;
+    const qId = q._id || q.id;
+    if (qId && attemptedIds?.has(qId)) attempted += 1;
+  });
+  return { total, attempted };
+}
+
+function getPaperStatus(paper, attemptedIds) {
+  const dataset = Object.values(paper?.subjects || {}).flatMap(s => s.data || []);
+  if (!dataset.length) return "untouched";
+  const { total, attempted } = countAttempted(dataset, attemptedIds);
+  if (attempted === 0) return "untouched";
+  if (attempted >= total) return "done";
+  return "partial";
+}
+
+const STATUS_META = {
+  done:      { Icon: CheckCircle2, color: "#34d399", label: "Done — every question in this paper attempted" },
+  partial:   { Icon: CircleDot,    color: "#fbbf24", label: "Attempted a few — some questions still pending" },
+  untouched: { Icon: Circle,       color: "#a1a1aa", label: "Not touched — no attempts yet (default)" },
+};
+
+// Icon-only badge for the corner of a paper accordion - meaning explained by <StatusLegend />.
+function StatusBadge({ status }) {
+  const meta = STATUS_META[status] || STATUS_META.untouched;
+  const { Icon, color, label } = meta;
+  return (
+    <span
+      title={label}
+      aria-label={label}
+      style={{
+        position: "absolute",
+        top: 10,
+        right: 10,
+        width: 26,
+        height: 26,
+        borderRadius: "50%",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        background: `${color}1f`,
+        border: `0.5px solid ${color}66`,
+        boxShadow: "var(--shadow-sm)",
+        flexShrink: 0,
+        zIndex: 1,
+      }}
+    >
+      <Icon size={13} color={color} strokeWidth={2.5} />
+    </span>
+  );
+}
+
+// Legend explaining what each corner icon means; shown once above the paper accordions.
+function StatusLegend() {
+  return (
+    <div className="flex flex-wrap items-center gap-4 px-1 mb-3">
+      {Object.entries(STATUS_META).map(([key, meta]) => {
+        const { Icon, color, label } = meta;
+        return (
+          <div key={key} className="flex items-center gap-1.5">
+            <span
+              style={{
+                width: 20, height: 20, borderRadius: "50%", flexShrink: 0,
+                display: "flex", alignItems: "center", justifyContent: "center",
+                background: `${color}1f`, border: `0.5px solid ${color}66`,
+              }}
+            >
+              <Icon size={11} color={color} strokeWidth={2.5} />
+            </span>
+            <span className="text-[11px] text-text-muted font-mono">{label}</span>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
 
 // ─── STYLE / DIFF META ──────────────────────────────────────────────────────
 const STYLE_META = {
@@ -845,6 +927,7 @@ function PaperSection({ paperId, paper, isOpen, onToggle, recordAttempt, attempt
     () => subjectEntries.reduce((s, [, sub]) => s + (sub.data?.length || 0), 0),
     [subjectEntries]
   );
+  const status = useMemo(() => getPaperStatus(paper, attemptedIds), [paper, attemptedIds]);
 
   // Auto-select first subject when opening
   const handleToggle = useCallback(() => {
@@ -857,6 +940,7 @@ function PaperSection({ paperId, paper, isOpen, onToggle, recordAttempt, attempt
   return (
     <div
       style={{
+        position: "relative",
         background: "var(--bg-surface)",
         border: "0.5px solid var(--bg-border)",
         borderRadius: 14,
@@ -864,8 +948,9 @@ function PaperSection({ paperId, paper, isOpen, onToggle, recordAttempt, attempt
         boxShadow: isOpen ? "var(--shadow-md)" : "var(--shadow-sm)",
       }}
     >
+      <StatusBadge status={status} />
       {/* Header */}
-      <div className="tw-paper-hdr" onClick={handleToggle}>
+      <div className="tw-paper-hdr" style={{ paddingRight: 42 }} onClick={handleToggle}>
         <div
           style={{
             width: 10,
@@ -1279,10 +1364,10 @@ export default function MainsGrind({
       <div className="mx-auto flex max-w-7xl flex-col gap-4 sm:gap-6">
         {/* ── Header ── */}
         <header className="rounded-2xl sm:rounded-3xl border border-bg-border bg-bg-surface/90 p-4 sm:p-5 shadow-sm">
-          <div className="flex flex-wrap items-start justify-between gap-4">
-            <div>
+          <div className="flex flex-col sm:flex-row sm:flex-wrap items-start justify-between gap-4">
+            <div className="min-w-0">
               <p className="text-xs uppercase tracking-[0.25em] text-accent-gold">Mains Grind</p>
-              <h1 className="mt-1 font-display text-2xl font-bold text-text-primary">
+              <h1 className="mt-1 font-display text-xl sm:text-2xl font-bold text-text-primary break-words">
                 Interactive Mains Practice
               </h1>
               <p className="mt-2 max-w-3xl text-sm text-text-secondary">
@@ -1309,14 +1394,14 @@ export default function MainsGrind({
                 key={id}
                 type="button"
                 onClick={() => setActiveTab(id)}
-                className={`flex items-center gap-2 rounded-2xl border px-4 py-2 text-sm font-semibold transition ${
+                className={`flex flex-1 sm:flex-none items-center justify-center gap-2 rounded-2xl border px-3 sm:px-4 py-2 min-h-[42px] text-xs sm:text-sm font-semibold transition whitespace-nowrap ${
                   activeTab === id
                     ? "border-accent-gold/30 bg-accent-gold/10 text-accent-gold"
                     : "border-bg-border bg-bg-muted text-text-secondary hover:border-accent-gold/20 hover:text-text-primary"
                 }`}
               >
-                <Icon size={14} />
-                {label}
+                <Icon size={14} className="flex-shrink-0" />
+                <span className="truncate">{label}</span>
               </button>
             ))}
           </div>
@@ -1361,6 +1446,7 @@ export default function MainsGrind({
                   </div>
 
                   {/* Paper accordions */}
+                  <StatusLegend />
                   <div className="mt-4 flex flex-col gap-4">
                     {Object.entries(MAINS_PAPERS).map(([paperId, paper]) => (
                       <PaperSection
