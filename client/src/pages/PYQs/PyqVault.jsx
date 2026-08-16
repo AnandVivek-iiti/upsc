@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback, useEffect, useRef } from "react";
-import { Archive, Link2, Sparkles, BookOpen, Library, PenSquare } from "lucide-react";
+import { Archive, Link2, Sparkles, BookOpen, Library, PenSquare, CheckCircle2, CircleDot, Circle } from "lucide-react";
 import { useRevisionQueue } from "../../hooks/useRevisionQueue";
 import { useQuestionAttempts } from "../../hooks/useQuestionAttempts";
 import ResourceLibrary from "../User/ResourceLibrary";
@@ -166,6 +166,87 @@ const PRELIMS_PAPERS = {
   },
 };
 
+// ─── PAPER PROGRESS STATUS (done / attempted-few / not-touched) ─────────────
+// Flatten each paper's question bank so we can check it against attemptedIds.
+const PRELIMS_PAPER_ID_TO_DATA = {
+  "paper-i": Object.values(PRELIMS_PAPERS.GS.subjects).flatMap(s => s.data || []),
+  "paper-ii": Object.values(PRELIMS_PAPERS.CSAT.subjects).flatMap(s => s.data || []),
+};
+const MAINS_PAPER_ID_TO_DATA = {
+  gs1: allGS1,
+  gs2: allGS2,
+  gs3: allGS3,
+  gs4: allGS4,
+  // essay / optional-i / optional-ii / language-i / language-ii have no
+  // practice question bank yet, so they always read as "not touched".
+};
+
+const STATUS_META = {
+  done:      { Icon: CheckCircle2, color: "#34d399", label: "Done — every question in this paper attempted" },
+  partial:   { Icon: CircleDot,    color: "#fbbf24", label: "Attempted a few — some questions still pending" },
+  untouched: { Icon: Circle,       color: "#a1a1aa", label: "Not touched — no attempts yet (default)" },
+};
+
+// Counts only questions that carry a real `_id`/`id` so status stays accurate
+// even when filters/pagination change what's rendered elsewhere.
+function countAttempted(questions, attemptedIds) {
+  let total = 0;
+  let attempted = 0;
+  (questions || []).forEach(q => {
+    total += 1;
+    const qId = q._id || q.id;
+    if (qId && attemptedIds?.has(qId)) attempted += 1;
+  });
+  return { total, attempted };
+}
+
+function getPaperStatus(examType, paperId, attemptedIds) {
+  const dataset = examType === "prelims" ? PRELIMS_PAPER_ID_TO_DATA[paperId] : MAINS_PAPER_ID_TO_DATA[paperId];
+  if (!dataset || dataset.length === 0) return "untouched";
+  const { total, attempted } = countAttempted(dataset, attemptedIds);
+  if (attempted === 0) return "untouched";
+  if (attempted >= total) return "done";
+  return "partial";
+}
+
+// Icon-only badge for the corner of a paper card - meaning is explained by <StatusLegend />.
+function StatusBadge({ status }) {
+  const meta = STATUS_META[status] || STATUS_META.untouched;
+  const { Icon, color, label } = meta;
+  return (
+    <span
+      className="absolute top-2.5 right-2.5 sm:top-3 sm:right-3 w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center border shadow-sm flex-shrink-0"
+      style={{ background: `${color}1f`, borderColor: `${color}66` }}
+      title={label}
+      aria-label={label}
+    >
+      <Icon size={13} color={color} strokeWidth={2.5} className="sm:w-[14px] sm:h-[14px]" />
+    </span>
+  );
+}
+
+// Legend explaining what each corner icon means; shown once above the paper grid.
+function StatusLegend() {
+  return (
+    <div className="flex flex-wrap items-center gap-4 px-1 -mt-1">
+      {Object.entries(STATUS_META).map(([key, meta]) => {
+        const { Icon, color, label } = meta;
+        return (
+          <div key={key} className="flex items-center gap-1.5">
+            <span
+              className="w-5 h-5 rounded-full flex items-center justify-center border flex-shrink-0"
+              style={{ background: `${color}1f`, borderColor: `${color}66` }}
+            >
+              <Icon size={11} color={color} strokeWidth={2.5} />
+            </span>
+            <span className="text-[11px] text-text-muted font-mono">{label}</span>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 // ─── STYLE / DIFF META ──────────────────────────────────────────────────────
 const STYLE_META = {
   analytical_reasoning: { label: "Analytical", bg: "rgba(79,142,247,0.12)",  text: "#93c5fd", border: "rgba(79,142,247,0.3)"  },
@@ -321,16 +402,16 @@ function FilterPanel({ children, accentColor, count, total }) {
 // ─── MAINS QUESTION CARD ──────────────────────────────────────────────────────────
 function MainsQuestionCard({ q, index, accentColor, paper, isLoggedIn }) {
   return (
-    <div className="border border-bg-border rounded-xl p-3 bg-bg-surface">
-      <div className="flex justify-between items-start">
+    <div className="border border-bg-border rounded-xl p-3 sm:p-4 bg-bg-surface">
+      <div className="flex flex-wrap justify-between items-start gap-x-3 gap-y-1">
         <div className="font-semibold" style={{ color: accentColor }}>Q{index+1}</div>
         <span className="text-xs text-text-muted">{q.marks} marks · {q.directive || "—"}</span>
       </div>
-      <div className="mt-1.5 text-sm leading-relaxed text-text-primary">{q.questionText}</div>
+      <div className="mt-1.5 text-sm leading-relaxed text-text-primary break-words">{q.questionText}</div>
       {q.idealAnswer && (
         <details className="mt-2">
           <summary className="text-xs cursor-pointer" style={{ color: accentColor }}>💡 Model answer hint</summary>
-          <div className="text-xs text-text-secondary mt-1 p-2 bg-bg-muted rounded">{q.idealAnswer}</div>
+          <div className="text-xs text-text-secondary mt-1 p-2 bg-bg-muted rounded break-words">{q.idealAnswer}</div>
         </details>
       )}
     </div>
@@ -411,7 +492,7 @@ function PrelimQuestionCard({ q, index, accentColor, revQueue, subjectMeta, onCo
           Q{index+1}
           {solved && <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block" />}
         </div>
-        <div className="text-sm font-medium text-text-primary flex-1">{q.questionText}</div>
+        <div className="text-sm font-medium text-text-primary flex-1 min-w-0 break-words">{q.questionText}</div>
         <PinButton pinned={pinned} onClick={() => revQueue.toggle({ ...q, _id: qId }, subjectMeta)} />
       </div>
       <div className="px-4 py-2 flex flex-wrap gap-1 items-center border-b border-bg-border">
@@ -852,7 +933,7 @@ function PdfVaultContent({ activeVaultSection, mainsPaper, setMainsPaper, yearFi
           {prelimsPaperOptions.map(paper => (
             <div key={paper.id}>
               <h2 className="text-lg font-semibold text-text-primary mb-3">{paper.label}</h2>
-              <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
                 {prelimsYears.map(year => {
                   const link = getPrelimsPaperLink(year, paper.id);
                   return (
@@ -896,7 +977,7 @@ function PdfVaultContent({ activeVaultSection, mainsPaper, setMainsPaper, yearFi
               </button>
             ))}
           </div>
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
             {visibleMainsYears.map(year => {
               const link = getMainsPaperLink(year, mainsPaper);
               return (
@@ -927,31 +1008,38 @@ function PdfVaultContent({ activeVaultSection, mainsPaper, setMainsPaper, yearFi
 }
 
 // ─── GRID VIEW (Paper selection) ────────────────────────────────────────────
-function PaperGrid({ examType, paperOptions, onSelectPaper }) {
+function PaperGrid({ examType, paperOptions, onSelectPaper, attemptedIds }) {
   return (
-    <div className="grid gap-4 md:grid-cols-2">
-      {paperOptions.map((paper, index) => (
-        <button
-          key={paper.id}
-          type="button"
-          onClick={() => onSelectPaper(paper.id)}
-          className="rounded-3xl border border-bg-border bg-bg-surface p-4 text-left shadow-sm transition duration-150 hover:-translate-y-0.5 hover:border-accent-gold/40 hover:bg-accent-gold/5 hover:shadow-md"
-        >
-          <div className="flex items-center justify-between gap-3">
-            <span className="rounded-full bg-accent-gold/10 px-2.5 py-1 text-[10px] uppercase tracking-[0.25em] text-accent-gold">
-              Paper {index + 1}
-            </span>
-            <Sparkles size={13} className="text-accent-gold" />
-          </div>
-          <h2 className="mt-4 font-display text-xl font-semibold text-text-primary">
-            {paper.label}
-          </h2>
-          <div className="mt-4 flex items-center justify-between rounded-2xl border border-bg-border bg-bg-muted/70 px-3 py-2 text-xs text-text-secondary">
-            <span>Access Workspace</span>
-            <span className="h-2.5 w-2.5 rounded-full bg-amber-500" />
-          </div>
-        </button>
-      ))}
+    <div>
+      <StatusLegend />
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mt-3">
+        {paperOptions.map((paper, index) => {
+          const status = getPaperStatus(examType, paper.id, attemptedIds);
+          return (
+            <button
+              key={paper.id}
+              type="button"
+              onClick={() => onSelectPaper(paper.id)}
+              className="relative rounded-2xl sm:rounded-3xl border border-bg-border bg-bg-surface p-4 text-left shadow-sm transition duration-150 hover:-translate-y-0.5 hover:border-accent-gold/40 hover:bg-accent-gold/5 hover:shadow-md"
+            >
+              <StatusBadge status={status} />
+              <div className="flex items-center justify-between gap-3 pr-9">
+                <span className="rounded-full bg-accent-gold/10 px-2.5 py-1 text-[10px] uppercase tracking-[0.25em] text-accent-gold">
+                  Paper {index + 1}
+                </span>
+                <Sparkles size={13} className="text-accent-gold flex-shrink-0" />
+              </div>
+              <h2 className="mt-4 font-display text-lg sm:text-xl font-semibold text-text-primary break-words pr-2">
+                {paper.label}
+              </h2>
+              <div className="mt-4 flex items-center justify-between rounded-2xl border border-bg-border bg-bg-muted/70 px-3 py-2 text-xs text-text-secondary">
+                <span>Access Workspace</span>
+                <span className="h-2.5 w-2.5 rounded-full bg-amber-500 flex-shrink-0" />
+              </div>
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
 }
@@ -1007,17 +1095,17 @@ function PaperDetail({
     <div className="space-y-4 sm:space-y-6">
       {/* Header */}
       <header className="rounded-2xl sm:rounded-3xl border border-bg-border bg-bg-surface/90 p-4 sm:p-5 shadow-sm">
-        <div className="flex flex-wrap items-start justify-between gap-4">
-          <div>
+        <div className="flex flex-col sm:flex-row sm:flex-wrap items-start justify-between gap-4">
+          <div className="min-w-0">
             <p className="text-xs uppercase tracking-[0.25em] text-accent-gold">PYQ Vault</p>
-            <h1 className="mt-1 font-display text-2xl font-bold text-text-primary">
+            <h1 className="mt-1 font-display text-xl sm:text-2xl font-bold text-text-primary break-words">
               {selectedPaper.label} workspace
             </h1>
             <p className="mt-2 max-w-3xl text-sm text-text-secondary">
               Year-wise PYQs, resources, and custom questions for {selectedPaper.label}.
             </p>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 flex-wrap w-full sm:w-auto">
             <div className="rounded-2xl border border-accent-gold/20 bg-accent-gold/10 px-3 py-2 text-xs text-text-secondary">
               <span className="font-semibold text-accent-gold">Verified:</span> {lastVerified}
             </div>
@@ -1040,14 +1128,14 @@ function PaperDetail({
               key={id}
               type="button"
               onClick={() => setActiveTab(id)}
-              className={`flex items-center gap-2 rounded-2xl border px-4 py-2 text-sm font-semibold transition ${
+              className={`flex flex-1 sm:flex-none items-center justify-center gap-2 rounded-2xl border px-3 sm:px-4 py-2 min-h-[42px] text-xs sm:text-sm font-semibold transition whitespace-nowrap ${
                 activeTab === id
                   ? "border-accent-gold/30 bg-accent-gold/10 text-accent-gold"
                   : "border-bg-border bg-bg-muted text-text-secondary hover:border-accent-gold/20 hover:text-text-primary"
               }`}
             >
-              <Icon size={14} />
-              {label}
+              <Icon size={14} className="flex-shrink-0" />
+              <span className="truncate">{label}</span>
             </button>
           ))}
         </div>
@@ -1055,7 +1143,7 @@ function PaperDetail({
         {/* PYQs Tab */}
         {activeTab === "pyqs" && (
           <>
-            <div className="mt-5 rounded-2xl border border-bg-border bg-bg-muted/60 p-4 flex flex-wrap items-center justify-between gap-3">
+            <div className="mt-5 rounded-2xl border border-bg-border bg-bg-muted/60 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div>
                 <p className="text-xs uppercase tracking-[0.2em] text-text-muted">Sort by year</p>
               </div>
@@ -1077,7 +1165,7 @@ function PaperDetail({
               </div>
             </div>
 
-            <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
               {visibleCards.map((item) => {
                 const savedLink = getSavedLink(item.year);
                 const officialLink = getOfficialLink(item.year);
@@ -1200,17 +1288,17 @@ export default function PyqVault({
     <div className="max-w-7xl mx-auto p-3 sm:p-4 md:p-6 lg:p-8 space-y-4 sm:space-y-6 font-sans text-text-primary animate-fade-in">
       {/* ── Header ── */}
       <header className="rounded-2xl sm:rounded-3xl border border-bg-border bg-bg-surface/90 p-4 sm:p-5 shadow-sm">
-        <div className="flex flex-wrap items-start justify-between gap-4">
-          <div>
+        <div className="flex flex-col sm:flex-row sm:flex-wrap items-start justify-between gap-4">
+          <div className="min-w-0">
             <p className="text-xs uppercase tracking-[0.25em] text-accent-gold">PYQ Vault</p>
-            <h1 className="mt-1 font-display text-2xl font-bold text-text-primary">
+            <h1 className="mt-1 font-display text-xl sm:text-2xl font-bold text-text-primary break-words">
               Official PDFs for PYQS of last 20 years
             </h1>
             <p className="mt-2 max-w-3xl text-sm text-text-secondary">
               Subject‑wise PYQs, official papers, and custom practice for UPSC Prelims &amp; Mains.
             </p>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 flex-wrap w-full sm:w-auto">
             <div className="rounded-2xl border border-accent-gold/20 bg-accent-gold/10 px-3 py-2 text-xs text-text-secondary">
               <span className="font-semibold text-accent-gold">Verified:</span>{" "}
               {examType === "prelims" ? PRELIMS_LAST_VERIFIED_DATE : MAINS_LAST_VERIFIED_DATE}
@@ -1237,7 +1325,7 @@ export default function PyqVault({
                   setActivePaper(null);
                   setPageMode("grid");
                 }}
-                className={`flex-1 min-h-[48px] border-none cursor-pointer transition font-sans text-base font-medium ${
+                className={`flex-1 min-h-[48px] border-none cursor-pointer transition font-sans text-sm sm:text-base font-medium ${
                   examType === id
                     ? "bg-text-primary text-bg-base"
                     : "bg-transparent text-text-secondary hover:text-text-primary"
@@ -1255,6 +1343,7 @@ export default function PyqVault({
                   examType={examType}
                   paperOptions={paperOptions}
                   onSelectPaper={openPaperDetails}
+                  attemptedIds={attemptedIds}
                 />
               ) : (
                 <PaperDetail
