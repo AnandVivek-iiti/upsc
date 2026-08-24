@@ -11,7 +11,7 @@ const NAV_ITEMS = [
   { id: "mains",       label: "Mains Drill",      icon: PenTool },
   { id: "pre",         label: "Prelims Grind",    icon: PenLine },
   { id: "pyq-vault",   label: "PYQ Vault",        icon: Archive },
-  { id: "leaderboard", label: "Leaderboard",      icon: Trophy },
+//  { id: "leaderboard", label: "Leaderboard",      icon: Trophy },
   { id: "premium",     label: "Premium Plans",    icon: Crown },
   { id: "resources",   label: "Resources",        icon: Library },
 ];
