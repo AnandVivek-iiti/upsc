@@ -17,7 +17,7 @@ const PRIMARY_NAV = [
 
 const MORE_NAV = [
   { id: "pyq-vault", label: "PYQS", icon: Archive },
-  { id: "leaderboard", label: "Leaderboard", icon: Trophy },
+//  { id: "leaderboard", label: "Leaderboard", icon: Trophy },
   { id: "premium", label: "Premium", icon: Crown },
   { id: "resources", label: "Resources", icon: Library },
 ];
