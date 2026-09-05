@@ -209,7 +209,7 @@ export const NCERT_BOOKS = [
     subject: "Economics",
     title: "Fundamentals of Economics (Class XI)",
     filePath: null,
-    url: "/assets/Books/NCERT11/economy/client/public/assets/Books/NCERT11/economy/NCERT-Class-11-Economics.pdf",
+    url: "/assets/Books/NCERT11/economy/NCERT-Class-11-Economics.pdf",
     done: false,
   },
 
