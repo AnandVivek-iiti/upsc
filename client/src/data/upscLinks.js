@@ -22,10 +22,10 @@ export const GOV_LINKS = [
   { label: "NITI Aayog", url: "https://www.niti.gov.in" },
   { label: "MyGov", url: "https://www.mygov.in" },
   { label: "Data.gov.in", url: "https://data.gov.in" },
-  { label: "India Code (Laws)", url: "https://www.indiacode.nic.in" },
-  { label: "Lok Sabha", url: "https://loksabha.nic.in" },
-  { label: "Rajya Sabha", url: "https://rajyasabha.nic.in" },
-  { label: "Ministry of Finance", url: "https://finmin.nic.in" },
+  { label: "India Code (Laws)", url: "https://indiacode.gov.in/home" },
+  { label: "Lok Sabha", url: "https://sansad.in/ls" },
+  { label: "Rajya Sabha", url: "https://sansad.in/rs" },
+  { label: "Ministry of Finance", url: "https://financialservices.gov.in/" },
   { label: "MEA India", url: "https://www.mea.gov.in" },
 ];
 
@@ -34,10 +34,10 @@ export const REPORT_LINKS = [
   { label: "Economic Survey", url: "https://www.indiabudget.gov.in/economicsurvey/" },
   { label: "Union Budget", url: "https://www.indiabudget.gov.in" },
   { label: "MoSPI Statistics", url: "https://mospi.gov.in" },
-  { label: "RBI Publications", url: "https://www.rbi.org.in/Scripts/PublicationsView.aspx" },
+  { label: "RBI Publications", url: "https://rbi.org.in/" },
   { label: "CAG Reports", url: "https://cag.gov.in/en/audit-report" },
   { label: "NCRB Crime Stats", url: "https://ncrb.gov.in" },
-  { label: "India Yearbook (Pub. Div.)", url: "https://www.publicationsdivision.nic.in/books/india-year-book" },
+  // { label: "India Yearbook (Pub. Div.)", url: "https://www.publicationsdivision.nic.in/books/india-year-book" },
 ];
 
 // ── 4. Free Learning Resources (+ core news) ────────────────────────────────
@@ -46,9 +46,9 @@ export const LEARNING_LINKS = [
   { label: "SuperKalam (PYQs)", url: "https://superkalam.com/www.upsc-prelims/previous-year-question-paper" },
   { label: "e-PG Pathshala", url: "https://epgp.inflibnet.ac.in" },
   { label: "SWAYAM", url: "https://swayam.gov.in" },
-  { label: "IGNOU eGyanKosh", url: "https://egyankosh.ac.in" },
+  // { label: "IGNOU eGyanKosh", url: "https://egyankosh.ac.in" },
   { label: "Vikaspedia", url: "https://vikaspedia.in" },
-  { label: "Shodhganga (Theses)", url: "https://shodhganga.inflibnet.ac.in" },
+  // { label: "Shodhganga (Theses)", url: "https://shodhganga.inflibnet.ac.in" },
   { label: "The Hindu", url: "https://www.thehindu.com" },
   { label: "Indian Express", url: "https://indianexpress.com" },
 ];
